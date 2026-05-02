@@ -2332,8 +2332,9 @@ async function submitLogin() {
     const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
     if (error) { errEl.textContent = 'Email o contraseña incorrectos.'; errEl.style.display = 'block'; return; }
     document.getElementById('authModal').classList.remove('open');
-    if (data.user) enterApp(data.user);
+    goToApp();
   } catch(e) {
+    console.error('Login error:', e);
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
   }
 }
@@ -2349,8 +2350,14 @@ async function submitSignup() {
     const { data, error } = await supa.auth.signUp({ email, password: pass });
     if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
     document.getElementById('authModal').classList.remove('open');
-    if (data.user) enterApp(data.user);
+    if (data.session && data.session.access_token) {
+      goToApp();
+    } else {
+      // Email confirmation required
+      alert('Cuenta creada. Revisá tu email para confirmar tu cuenta antes de iniciar sesión.');
+    }
   } catch(e) {
+    console.error('Signup error:', e);
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
   }
 }
