@@ -738,7 +738,7 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
 }
 .a-see-all:hover { color: var(--text); }
 .a-models-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
   margin-bottom: 40px;
 }
 .a-model-card {
@@ -748,14 +748,21 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
 }
 .a-model-card:hover { border-color: rgba(255,255,255,0.2); }
 .a-model-thumb {
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px 0 8px;
   position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+.a-model-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .a-model-badge-tl { display: none; }
 .a-model-badge-br { display: none; }
-.a-model-info { padding: 10px 12px 12px; }
-.a-model-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.a-model-info { padding: 12px 14px 14px; }
+.a-model-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
 .a-model-sub { font-size: 11px; color: var(--text2); }
 .a-model-menu {
   position: absolute; top: 8px; right: 8px;
@@ -1572,9 +1579,7 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
       <div class="a-models-grid">
         <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '8s', '9:16', '1080p')">
           <div class="a-model-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-            <div class="a-model-badge-tl">VIDEO</div>
-            <div class="a-model-badge-br">8s</div>
+            <img src="/seedance-preview.jpg" alt="Seedance 2.0" />
             <div class="a-model-menu">⋯</div>
           </div>
           <div class="a-model-info">
@@ -1584,38 +1589,12 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
         </div>
         <div class="a-model-card" onclick="openDrawer('Veo 3.1', 'VIDEO', '15s', '9:16', '1080p')">
           <div class="a-model-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-            <div class="a-model-badge-tl">VIDEO</div>
-            <div class="a-model-badge-br">15s</div>
+            <img src="/veo-preview.jpg" alt="Veo 3.1" />
             <div class="a-model-menu">⋯</div>
           </div>
           <div class="a-model-info">
             <div class="a-model-name">Veo 3.1</div>
             <div class="a-model-sub">Ultra realismo · UGC</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Kling 2.0', 'VIDEO', '5s', '16:9', '1080p')">
-          <div class="a-model-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-            <div class="a-model-badge-tl">VIDEO</div>
-            <div class="a-model-badge-br">5s</div>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Kling 2.0</div>
-            <div class="a-model-sub">Motion cinematic</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Runway Gen-4', 'VIDEO', '8s', '9:16', '720p')">
-          <div class="a-model-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-            <div class="a-model-badge-tl">VIDEO</div>
-            <div class="a-model-badge-br">8s</div>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Runway Gen-4</div>
-            <div class="a-model-sub">Creativo · Experimental</div>
           </div>
         </div>
       </div>
@@ -1626,48 +1605,24 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
         <span class="a-see-all">Ver todos →</span>
       </div>
       <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('GPT-4o Images', 'IMAGEN', '—', '1:1', 'HD')">
+        <div class="a-model-card" onclick="openDrawer('GPT Images 2', 'IMAGEN', '—', '1:1', 'HD')">
           <div class="a-model-thumb">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#333" stroke-width="1.5"><rect x="2" y="2" width="14" height="14" rx="2"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="M2 12l4-4 3 3 2-2 5 5"/></svg>
-            <div class="a-model-badge-tl">IMAGEN</div>
+            <img src="/gpt-images-preview.jpg" alt="GPT Images 2" />
             <div class="a-model-menu">⋯</div>
           </div>
           <div class="a-model-info">
-            <div class="a-model-name">GPT-4o Images</div>
-            <div class="a-model-sub">Fotorrealista</div>
+            <div class="a-model-name">GPT Images 2</div>
+            <div class="a-model-sub">Fotorrealista · Versátil</div>
           </div>
         </div>
-        <div class="a-model-card" onclick="openDrawer('Flux Pro', 'IMAGEN', '—', '3:2', 'Ultra')">
+        <div class="a-model-card" onclick="openDrawer('Nano Banana Pro', 'IMAGEN', '—', '1:1', 'HD')">
           <div class="a-model-thumb">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#333" stroke-width="1.5"><rect x="2" y="2" width="14" height="14" rx="2"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="M2 12l4-4 3 3 2-2 5 5"/></svg>
-            <div class="a-model-badge-tl">IMAGEN</div>
+            <img src="/nano-banana-preview.jpg" alt="Nano Banana Pro" />
             <div class="a-model-menu">⋯</div>
           </div>
           <div class="a-model-info">
-            <div class="a-model-name">Flux Pro</div>
-            <div class="a-model-sub">Artístico · Ultra HD</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('DALL-E 3', 'IMAGEN', '—', '1:1', 'Standard')">
-          <div class="a-model-thumb">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#333" stroke-width="1.5"><rect x="2" y="2" width="14" height="14" rx="2"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="M2 12l4-4 3 3 2-2 5 5"/></svg>
-            <div class="a-model-badge-tl">IMAGEN</div>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">DALL-E 3</div>
-            <div class="a-model-sub">Versatil · Rápido</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Ideogram 2.0', 'IMAGEN', '—', '16:9', 'HD')">
-          <div class="a-model-thumb">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#333" stroke-width="1.5"><rect x="2" y="2" width="14" height="14" rx="2"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="M2 12l4-4 3 3 2-2 5 5"/></svg>
-            <div class="a-model-badge-tl">IMAGEN</div>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Ideogram 2.0</div>
-            <div class="a-model-sub">Tipografía · Diseño</div>
+            <div class="a-model-name">Nano Banana Pro</div>
+            <div class="a-model-sub">Detalle · Rápido</div>
           </div>
         </div>
       </div>
