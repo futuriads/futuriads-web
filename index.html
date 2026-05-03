@@ -573,14 +573,11 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   border-bottom: 1px solid var(--border);
 }
 .a-sidebar-logo {
-  display: flex; align-items: center; gap: 9px; text-decoration: none;
+  display: flex; align-items: center; text-decoration: none;
 }
-.a-logo-f {
-  width: 26px; height: 26px; background: #fff; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+.a-logo-img {
+  height: 32px; width: auto; display: block;
 }
-.a-logo-f svg { width: 14px; height: 14px; }
-.a-logo-text { font-weight: 800; font-size: 15px; color: #fff; letter-spacing: -0.4px; }
 .a-nav {
   flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
   overflow-y: auto;
@@ -1420,12 +1417,9 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   <!-- Sidebar -->
   <aside class="a-sidebar">
     <div class="a-sidebar-top">
-      <a class="a-sidebar-logo" href="#" onclick="return false;">
-        <div class="a-logo-f">
-          <svg viewBox="0 0 20 20" fill="none"><path d="M6 4h9M6 10h7M6 16h5" stroke="#080808" stroke-width="2.5" stroke-linecap="round"/></svg>
-        </div>
-        <span class="a-logo-text">Futuriads</span>
-      </a>
+<a class="a-sidebar-logo" href="#" onclick="return false;">
+    <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
+</a>
     </div>
     <nav class="a-nav">
       <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')">
