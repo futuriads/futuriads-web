@@ -173,17 +173,12 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   width: min(840px, calc(100vw - 32px));
 }
 .l-nav-logo {
-  display: flex; align-items: center; gap: 9px;
+  display: flex; align-items: center;
   text-decoration: none; margin-right: auto;
 }
-.l-logo-f {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: #fff;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.l-logo-img {
+  height: 32px; width: auto; display: block;
 }
-.l-logo-f svg { width: 16px; height: 16px; }
-.l-logo-text { font-weight: 800; font-size: 15px; color: #fff; letter-spacing: -0.4px; }
 .l-nav-links {
   display: flex; align-items: center; gap: 2px;
   margin: 0 16px;
@@ -1170,14 +1165,9 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
 
   <!-- Navbar -->
   <nav class="l-nav" id="lNav">
-    <a class="l-nav-logo" href="#">
-      <div class="l-logo-f">
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 4h9M6 10h7M6 16h5" stroke="#080808" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="l-logo-text">Futuriads</span>
-    </a>
+<a class="l-nav-logo" href="#">
+    <img src="/logo.png" alt="Futuriads" class="l-logo-img" />
+</a>
     <div class="l-nav-links">
       <a class="l-nav-link" href="#features">Características</a>
       <a class="l-nav-link" href="#how">Cómo funciona</a>
