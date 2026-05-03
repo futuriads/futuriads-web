@@ -1671,7 +1671,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
           </div>
           <div class="a-recent-info">
-            <div class="a-recent-name">Marco · Tech</div>
+            <div class="a-recent-name">Facu · Casual</div>
             <div class="a-recent-meta">15s · hace 5 días</div>
           </div>
         </div>
@@ -1680,7 +1680,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
           </div>
           <div class="a-recent-info">
-            <div class="a-recent-name">Aria · Fitness</div>
+            <div class="a-recent-name">Paula · Dinámica</div>
             <div class="a-recent-meta">60s · hace 8 días</div>
           </div>
         </div>
@@ -1705,21 +1705,21 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="a-gen-title">Elegí tu actor</div>
         <p class="a-gen-sub">Cada actor tiene un estilo único adaptado a distintos nichos.</p>
         <div class="a-actor-grid">
-          <div class="a-actor-card" data-actor="Sofia" onclick="selectActor(this)">
-            <div class="a-actor-thumb"><div class="a-actor-initials">SO</div></div>
-            <div class="a-actor-info"><div class="a-actor-name">Sofia</div><div class="a-actor-tag">Lifestyle · Beauty</div></div>
+          <div class="a-actor-card" data-actor="Facu" onclick="selectActor(this)">
+            <div class="a-actor-thumb"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" /></div>
+            <div class="a-actor-info"><div class="a-actor-name">Facu</div><div class="a-actor-tag">Joven · Casual</div></div>
           </div>
-          <div class="a-actor-card" data-actor="Marco" onclick="selectActor(this)">
-            <div class="a-actor-thumb"><div class="a-actor-initials">MA</div></div>
-            <div class="a-actor-info"><div class="a-actor-name">Marco</div><div class="a-actor-tag">Tech · Gadgets</div></div>
+          <div class="a-actor-card" data-actor="Sofi" onclick="selectActor(this)">
+            <div class="a-actor-thumb"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" /></div>
+            <div class="a-actor-info"><div class="a-actor-name">Sofi</div><div class="a-actor-tag">Lifestyle · Hogar</div></div>
           </div>
-          <div class="a-actor-card" data-actor="Aria" onclick="selectActor(this)">
-            <div class="a-actor-thumb"><div class="a-actor-initials">AR</div></div>
-            <div class="a-actor-info"><div class="a-actor-name">Aria</div><div class="a-actor-tag">Fitness · Salud</div></div>
+          <div class="a-actor-card" data-actor="Paula" onclick="selectActor(this)">
+            <div class="a-actor-thumb"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" /></div>
+            <div class="a-actor-info"><div class="a-actor-name">Paula</div><div class="a-actor-tag">Dinámica · Directa</div></div>
           </div>
-          <div class="a-actor-card" data-actor="Kai" onclick="selectActor(this)">
-            <div class="a-actor-thumb"><div class="a-actor-initials">KA</div></div>
-            <div class="a-actor-info"><div class="a-actor-name">Kai</div><div class="a-actor-tag">Finance · Crypto</div></div>
+          <div class="a-actor-card" data-actor="José" onclick="selectActor(this)">
+            <div class="a-actor-thumb"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" /></div>
+            <div class="a-actor-info"><div class="a-actor-name">José</div><div class="a-actor-tag">Maduro · Confiable</div></div>
           </div>
         </div>
         <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente →</button>
@@ -2331,7 +2331,7 @@ async function runGeneration(){
   _generatedVideoUrl = null;
   _generatedRequestId = null;
 
-  const actor = selectedActor || 'Sofia';
+  const actor = selectedActor || 'Sofi';
   const script = document.getElementById('scriptInput')?.value || 'producto destacado';
   const durVal = String(parseInt((document.getElementById('durSelect')?.value || '5').replace(/[^0-9]/g,'')) || 5);
   const tones = [...document.querySelectorAll('.a-tone-pill.active')].map(p=>p.textContent).join(', ') || 'Profesional';
@@ -2452,7 +2452,7 @@ async function runGeneration(){
 }
 
 function setupPreview(){
-  const a = selectedActor || 'Sofia';
+  const a = selectedActor || 'Sofi';
   const dur = document.getElementById('durSelect')?.value || '5';
   document.getElementById('previewActorLabel').textContent = a;
   document.getElementById('previewDur').textContent = dur + 's';
@@ -2482,11 +2482,11 @@ function setupPreview(){
 /* ---- History ---- */
 const histData=[
   {actor:'Sofia',tag:'Lifestyle',date:'hace 2 días',dur:'30s'},
-  {actor:'Marco',tag:'Tech',date:'hace 5 días',dur:'15s'},
-  {actor:'Aria',tag:'Fitness',date:'hace 8 días',dur:'60s'},
-  {actor:'Kai',tag:'Finance',date:'hace 11 días',dur:'30s'},
+  {actor:'Facu',tag:'Casual',date:'hace 5 días',dur:'15s'},
+  {actor:'Paula',tag:'Dinámica',date:'hace 8 días',dur:'10s'},
+  {actor:'José',tag:'Confiable',date:'hace 11 días',dur:'10s'},
   {actor:'Sofia',tag:'Lifestyle',date:'hace 14 días',dur:'15s'},
-  {actor:'Marco',tag:'Tech',date:'hace 18 días',dur:'60s'},
+  {actor:'Facu',tag:'Casual',date:'hace 18 días',dur:'5s'},
 ];
 let histView='grid';
 function setHistView(v){
