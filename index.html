@@ -2003,6 +2003,36 @@ const supa = {
     }
   },
   from: (table) => ({
+    insert: (row) => ({
+      then: async (resolve) => {
+        const session = supa._session || JSON.parse(localStorage.getItem('sb_session') || 'null');
+        const authHeader = session?.access_token ? 'Bearer ' + session.access_token : 'Bearer ' + SUPA_KEY;
+        const res = await fetch(SUPA_URL + '/rest/v1/' + table, {
+          method: 'POST',
+          headers: { ...supa._headers, 'Authorization': authHeader, 'Prefer': 'return=representation' },
+          body: JSON.stringify(row)
+        });
+        const data = await res.json();
+        if (!res.ok) resolve({ data: null, error: data });
+        else resolve({ data, error: null });
+      }
+    }),
+    update: (changes) => ({
+      eq: (col, val) => ({
+        then: async (resolve) => {
+          const session = supa._session || JSON.parse(localStorage.getItem('sb_session') || 'null');
+          const authHeader = session?.access_token ? 'Bearer ' + session.access_token : 'Bearer ' + SUPA_KEY;
+          const res = await fetch(SUPA_URL + '/rest/v1/' + table + '?' + col + '=eq.' + encodeURIComponent(val), {
+            method: 'PATCH',
+            headers: { ...supa._headers, 'Authorization': authHeader, 'Prefer': 'return=representation' },
+            body: JSON.stringify(changes)
+          });
+          const data = await res.json();
+          if (!res.ok) resolve({ data: null, error: data });
+          else resolve({ data, error: null });
+        }
+      })
+    }),
     select: (cols) => ({
       eq: (col, val) => ({
         single: () => ({
@@ -2440,6 +2470,7 @@ async function submitSignup() {
   if (!fullName || !country || !email || !pass) { errEl.textContent = 'Completá todos los campos.'; errEl.style.display = 'block'; return; }
   if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display = 'block'; return; }
   try {
+    // 1. Crear usuario en auth.users
     const { data, error } = await supa.auth.signUp({
       email,
       password: pass,
@@ -2451,11 +2482,25 @@ async function submitSignup() {
       }
     });
     if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
-    document.getElementById('authModal').classList.remove('open');
-    if (data.session && data.session.access_token) {
+
+    // 2. Si se creó con sesión inmediata, actualizar el perfil con nombre y país
+    if (data.session && data.session.access_token && data.user) {
+      try {
+        const { error: updateError } = await supa.from('profiles').update({
+          full_name: fullName,
+          country: country
+        }).eq('id', data.user.id);
+        if (updateError) {
+          console.error('Error actualizando perfil:', updateError);
+        }
+      } catch(updErr) {
+        console.error('Error en update de perfil:', updErr);
+      }
+      document.getElementById('authModal').classList.remove('open');
       goToApp();
     } else {
       // Email confirmation required
+      document.getElementById('authModal').classList.remove('open');
       alert('Cuenta creada. Revisá tu email para confirmar tu cuenta antes de iniciar sesión.');
     }
   } catch(e) {
