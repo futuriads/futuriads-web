@@ -1727,23 +1727,33 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
       <!-- Step 2 -->
       <div id="gen-step-2" style="display:none;">
-        <div class="a-gen-title">Tu script</div>
-        <p class="a-gen-sub">Describí tu producto o pegá el texto que querés que diga el actor.</p>
-        <textarea class="a-script-area" id="scriptInput" placeholder="Describí tu producto o servicio en pocas palabras..." rows="5"></textarea>
+        <div class="a-gen-title">Tu prompt</div>
+        <p class="a-gen-sub">Escribí exactamente lo que querés que diga o haga el actor en el video.</p>
+        <textarea class="a-script-area" id="scriptInput" placeholder="Ej: Una chica argentina mirando a cámara dice: &quot;Este producto cambió mi rutina...&quot;" rows="5"></textarea>
         <div class="a-select-row">
-          <select class="a-select-field"><option>Español</option><option>Inglés</option><option>Portugués</option></select>
-          <select class="a-select-field" id="durSelect"><option value="5">5 segundos</option><option value="10" selected>10 segundos</option><option value="15">15 segundos</option></select>
+          <select class="a-select-field" id="durSelect">
+            <option value="5">5 segundos</option>
+            <option value="10" selected>10 segundos</option>
+            <option value="15">15 segundos</option>
+          </select>
+          <select class="a-select-field" id="resSelect">
+            <option value="480p">480p — Borrador</option>
+            <option value="720p" selected>720p — HD</option>
+          </select>
         </div>
-        <div class="a-tone-row">
-          <div class="a-tone-pill" onclick="this.classList.toggle('active')">Entusiasta</div>
-          <div class="a-tone-pill active" onclick="this.classList.toggle('active')">Profesional</div>
-          <div class="a-tone-pill" onclick="this.classList.toggle('active')">Urgente</div>
-          <div class="a-tone-pill" onclick="this.classList.toggle('active')">Conversacional</div>
-          <div class="a-tone-pill" onclick="this.classList.toggle('active')">Emotivo</div>
+        <div class="a-select-row" style="margin-top:8px;">
+          <select class="a-select-field" id="ratioSelect">
+            <option value="9:16" selected>9:16 — Vertical (Reels/TikTok)</option>
+            <option value="16:9">16:9 — Horizontal (YouTube)</option>
+            <option value="1:1">1:1 — Cuadrado</option>
+            <option value="4:3">4:3 — Clásico</option>
+            <option value="3:4">3:4 — Portrait</option>
+            <option value="21:9">21:9 — Cine</option>
+          </select>
         </div>
-        <div style="display:flex;gap:10px;">
+        <div style="display:flex;gap:10px;margin-top:16px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar con IA →</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video →</button>
         </div>
       </div>
 
@@ -1753,7 +1763,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-loading-msg" id="loadingMsg">Preparando generación...</div>
           <div class="a-prog-wrap"><div class="a-prog-fill" id="genProgressBar"></div></div>
           <div class="a-prompt-box" id="promptResultBox">
-            <div class="a-prompt-label">Prompt generado por IA</div>
+            <div class="a-prompt-label">Tu prompt</div>
             <div class="a-prompt-text" id="promptResultText"></div>
           </div>
           <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview →</button>
@@ -2332,9 +2342,11 @@ async function runGeneration(){
   _generatedRequestId = null;
 
   const actor = selectedActor || 'Sofi';
-  const script = document.getElementById('scriptInput')?.value || 'producto destacado';
+  const script = document.getElementById('scriptInput')?.value?.trim() || '';
+  if (!script) { showToast('Escribí un prompt antes de generar'); return; }
   const durVal = String(parseInt((document.getElementById('durSelect')?.value || '5').replace(/[^0-9]/g,'')) || 5);
-  const tones = [...document.querySelectorAll('.a-tone-pill.active')].map(p=>p.textContent).join(', ') || 'Profesional';
+  const resVal = document.getElementById('resSelect')?.value || '720p';
+  const ratioVal = document.getElementById('ratioSelect')?.value || '9:16';
 
   // Animación de progreso suave
   let currentProg = 0;
@@ -2354,41 +2366,28 @@ async function runGeneration(){
   }
 
   try {
-    // --- Paso 1: Generar script/prompt ---
-    msgEl.textContent = '✦ Analizando tu script...';
-    await setBar(20, 1200);
+    // --- Paso 1: Mostrar prompt del usuario tal cual ---
+    msgEl.textContent = '✦ Preparando tu video...';
+    await setBar(30, 800);
 
-    const scriptRes = await fetch(BACKEND_URL + '/api/generate-script', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // El backend espera: product, tone, duration, language, avatar
-      body: JSON.stringify({ product: script, tone: tones, duration: durVal, language: 'español', avatar: actor })
-    });
-    if (!scriptRes.ok) throw new Error('Error al generar el script (' + scriptRes.status + ')');
-    const scriptData = await scriptRes.json();
-    const generatedPrompt = scriptData.script || scriptData.prompt || script;
-
-    msgEl.textContent = '✦ Optimizando el prompt para Seedance 2.0...';
-    await setBar(40, 800);
-
-    // Mostrar prompt generado
+    // El prompt va tal cual, sin modificar
+    const generatedPrompt = script;
     pbox.style.display = 'block';
     document.getElementById('promptResultText').textContent = generatedPrompt;
 
     // --- Paso 2: Enviar a generar video ---
     msgEl.textContent = '✦ Enviando a Seedance 2.0...';
-    await setBar(55, 600);
+    await setBar(50, 600);
 
     const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // El backend espera: script, avatar, duration, aspectRatio, resolution, userId
       body: JSON.stringify({
         script: generatedPrompt,
         avatar: actor,
         duration: durVal,
-        aspectRatio: '9:16',
-        resolution: '720p'
+        aspectRatio: ratioVal,
+        resolution: resVal
       })
     });
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
@@ -2402,10 +2401,15 @@ async function runGeneration(){
     await setBar(60, 400);
 
     let attempts = 0;
-    const maxAttempts = 60; // 5 min máx (5s * 60)
+    const maxAttempts = 112; // ~15 min máx (8s * 112)
     while (attempts < maxAttempts) {
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 8000)); // poll cada 8s
       attempts++;
+
+      // Mostrar tiempo transcurrido
+      const minutos = Math.floor((attempts * 8) / 60);
+      const segundos = (attempts * 8) % 60;
+      msgEl.textContent = `✦ Generando tu video... ${minutos > 0 ? minutos + 'm ' : ''}${segundos}s`;
 
       const statusRes = await fetch(BACKEND_URL + '/api/check-status', {
         method: 'POST',
@@ -2427,7 +2431,7 @@ async function runGeneration(){
       } else if (status === 'FAILED' || status === 'ERROR') {
         throw new Error('La generación falló en Enhancor: ' + (statusData.error || statusData.message || 'sin detalle'));
       }
-      // Si sigue en PENDING/PROCESSING, continuar
+      // Si sigue en PENDING/IN_QUEUE/IN_PROGRESS, continuar
     }
 
     if (!_generatedVideoUrl) throw new Error('Tiempo de espera agotado. El video tardó demasiado.');
