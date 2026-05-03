@@ -562,11 +562,24 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   height: 100vh; overflow: hidden;
+  transition: width 0.25s ease;
 }
+.a-sidebar.collapsed { width: 64px; }
 .a-sidebar-top {
   padding: 20px 16px 16px;
   border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
+.a-sidebar.collapsed .a-sidebar-top { padding: 20px 12px 16px; justify-content: center; }
+.a-sidebar.collapsed .a-sidebar-logo { display: none; }
+.a-sidebar-toggle {
+  width: 32px; height: 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text2); border-radius: var(--r-sm);
+  transition: background 0.15s, color 0.15s;
+}
+.a-sidebar-toggle:hover { background: var(--hover); color: var(--text); }
 .a-sidebar-logo {
   display: flex; align-items: center; text-decoration: none;
 }
@@ -584,6 +597,7 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   user-select: none; border-left: 2px solid transparent;
+  position: relative; white-space: nowrap;
 }
 .a-nav-item:hover { background: var(--hover); color: var(--text); }
 .a-nav-item.active {
@@ -591,6 +605,18 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   border-left-color: #fff;
 }
 .a-nav-item svg { flex-shrink: 0; }
+.a-sidebar.collapsed .a-nav-item { justify-content: center; padding: 10px 0; }
+.a-sidebar.collapsed .a-nav-item .a-nav-label,
+.a-sidebar.collapsed .a-nav-item .a-nav-pulse { display: none; }
+.a-sidebar.collapsed .a-nav-item[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  background: #1a1a1a; color: #fff;
+  padding: 6px 10px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500; white-space: nowrap;
+  border: 1px solid var(--border);
+  z-index: 1000; pointer-events: none;
+}
 .a-nav-pulse {
   width: 6px; height: 6px; border-radius: 50%;
   background: #fff; margin-left: auto; opacity: 0.6;
@@ -605,6 +631,8 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
   border-top: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px;
 }
+.a-sidebar.collapsed .a-sidebar-bottom { padding: 14px 12px; justify-content: center; }
+.a-sidebar.collapsed .a-user-info { display: none; }
 .a-user-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   background: var(--card2); border: 1px solid var(--border);
@@ -1413,29 +1441,32 @@ em, .serif { font-family: 'SFPro', -apple-system, sans-serif; font-style: italic
 <div id="app">
 
   <!-- Sidebar -->
-  <aside class="a-sidebar">
+  <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
 <a class="a-sidebar-logo" href="#" onclick="return false;">
     <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
 </a>
+      <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>
+      </button>
     </div>
     <nav class="a-nav">
-      <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')">
+      <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')" data-tooltip="Dashboard">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.5"/></svg>
-        Dashboard
+        <span class="a-nav-label">Dashboard</span>
       </div>
-      <div class="a-nav-item" id="nav-nuevo" onclick="showScreen('nuevo')">
+      <div class="a-nav-item" id="nav-nuevo" onclick="showScreen('nuevo')" data-tooltip="Nuevo video">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4.5v6M4.5 7.5h6" stroke-linecap="round"/></svg>
-        Nuevo video
+        <span class="a-nav-label">Nuevo video</span>
         <span class="a-nav-pulse"></span>
       </div>
-      <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')">
+      <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
-        Historial
+        <span class="a-nav-label">Historial</span>
       </div>
-      <div class="a-nav-item" id="nav-perfil" onclick="showScreen('perfil')">
+      <div class="a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="5.5" r="2.8"/><path d="M2 14c0-3 2.5-4.8 5.5-4.8S13 11 13 14" stroke-linecap="round"/></svg>
-        Perfil
+        <span class="a-nav-label">Perfil</span>
       </div>
     </nav>
     <div class="a-sidebar-bottom">
@@ -2305,6 +2336,13 @@ async function submitSignup() {
     console.error('Signup error:', e);
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
   }
+}
+
+// Sidebar collapse toggle
+function toggleSidebar() {
+  var sidebar = document.getElementById('appSidebar');
+  if (!sidebar) return;
+  sidebar.classList.toggle('collapsed');
 }
 </script>
 
