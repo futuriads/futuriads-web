@@ -1732,7 +1732,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <textarea class="a-script-area" id="scriptInput" placeholder="Describí tu producto o servicio en pocas palabras..." rows="5"></textarea>
         <div class="a-select-row">
           <select class="a-select-field"><option>Español</option><option>Inglés</option><option>Portugués</option></select>
-          <select class="a-select-field" id="durSelect"><option>15 segundos</option><option selected>30 segundos</option><option>60 segundos</option></select>
+          <select class="a-select-field" id="durSelect"><option value="5">5 segundos</option><option value="10" selected>10 segundos</option><option value="15">15 segundos</option></select>
         </div>
         <div class="a-tone-row">
           <div class="a-tone-pill" onclick="this.classList.toggle('active')">Entusiasta</div>
@@ -2333,7 +2333,7 @@ async function runGeneration(){
 
   const actor = selectedActor || 'Sofia';
   const script = document.getElementById('scriptInput')?.value || 'producto destacado';
-  const durVal = document.getElementById('durSelect')?.value || '5';
+  const durVal = String(parseInt((document.getElementById('durSelect')?.value || '5').replace(/[^0-9]/g,'')) || 5);
   const tones = [...document.querySelectorAll('.a-tone-pill.active')].map(p=>p.textContent).join(', ') || 'Profesional';
 
   // Animación de progreso suave
