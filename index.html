@@ -2361,11 +2361,12 @@ async function runGeneration(){
     const scriptRes = await fetch(BACKEND_URL + '/api/generate-script', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ script, actor, tone: tones })
+      // El backend espera: product, tone, duration, language, avatar
+      body: JSON.stringify({ product: script, tone: tones, duration: durVal, language: 'español', avatar: actor })
     });
     if (!scriptRes.ok) throw new Error('Error al generar el script (' + scriptRes.status + ')');
     const scriptData = await scriptRes.json();
-    const generatedPrompt = scriptData.prompt || scriptData.optimizedPrompt || scriptData.script || script;
+    const generatedPrompt = scriptData.script || scriptData.prompt || script;
 
     msgEl.textContent = '✦ Optimizando el prompt para Seedance 2.0...';
     await setBar(40, 800);
@@ -2381,10 +2382,13 @@ async function runGeneration(){
     const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      // El backend espera: script, avatar, duration, aspectRatio, resolution, userId
       body: JSON.stringify({
-        prompt: generatedPrompt,
-        actor,
-        duration: parseInt(durVal) || 5
+        script: generatedPrompt,
+        avatar: actor,
+        duration: durVal,
+        aspectRatio: '9:16',
+        resolution: '720p'
       })
     });
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
@@ -2393,6 +2397,7 @@ async function runGeneration(){
     if (!_generatedRequestId) throw new Error('No se recibió requestId del backend');
 
     // --- Paso 3: Polling hasta COMPLETED ---
+    // IMPORTANTE: check-status es POST con body { requestId }, no GET
     msgEl.textContent = '✦ Generando tu video...';
     await setBar(60, 400);
 
@@ -2402,7 +2407,11 @@ async function runGeneration(){
       await new Promise(r => setTimeout(r, 5000));
       attempts++;
 
-      const statusRes = await fetch(BACKEND_URL + '/api/check-status?requestId=' + encodeURIComponent(_generatedRequestId));
+      const statusRes = await fetch(BACKEND_URL + '/api/check-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: _generatedRequestId })
+      });
       if (!statusRes.ok) throw new Error('Error al consultar el estado (' + statusRes.status + ')');
       const statusData = await statusRes.json();
       const status = (statusData.status || '').toUpperCase();
@@ -2412,7 +2421,7 @@ async function runGeneration(){
       bar.style.width = progTarget + '%';
 
       if (status === 'COMPLETED' || status === 'SUCCESS' || status === 'FINISHED') {
-        _generatedVideoUrl = statusData.videoUrl || statusData.video_url || statusData.url || statusData.output;
+        _generatedVideoUrl = statusData.result || statusData.videoUrl || statusData.video_url || statusData.url;
         if (!_generatedVideoUrl) throw new Error('Video completado pero sin URL');
         break;
       } else if (status === 'FAILED' || status === 'ERROR') {
