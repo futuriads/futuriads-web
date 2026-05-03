@@ -1298,7 +1298,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div class="l-feat-big">
         <div>
           <h3 class="l-feat-big-title">Actores IA increíblemente realistas</h3>
-          <p class="l-feat-big-desc">Generados con Veo 3.1, con movimientos naturales, audio sincronizado y capacidad de hablar cualquier idioma.</p>
+          <p class="l-feat-big-desc">Generados con Seedance 2.0, con movimientos naturales, audio sincronizado y capacidad de hablar cualquier idioma.</p>
           <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles →</button>
         </div>
         <div class="l-feat-video-row">
@@ -1525,22 +1525,21 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-gen-opts active" id="videoOpts">
             <div class="custom-select" id="cs-model">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-model')">
-                <span>Veo 3.1</span>
+                <span>Seedance 2.0</span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Veo 3.1</div>
+                <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
               </div>
             </div>
             <div class="custom-select" id="cs-dur">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
-                <span>8s</span>
+                <span>5s</span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">5s</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-dur', this)">8s</div>
+                <div class="custom-select-option selected" onclick="selectCustomOption('cs-dur', this)">5s</div>
+                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">10s</div>
                 <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">15s</div>
               </div>
             </div>
@@ -1557,12 +1556,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
             <div class="custom-select" id="cs-res">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-res')">
-                <span>1080p</span>
+                <span>720p</span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">720p</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">1080p</div>
+                <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">480p</div>
+                <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">720p</div>
               </div>
             </div>
           </div>
@@ -1613,7 +1612,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-see-all">Ver todos →</span>
       </div>
       <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '8s', '9:16', '1080p')">
+        <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '5-15s', '9:16', '720p')">
           <div class="a-model-thumb">
             <video src="/models/seedance-preview.mp4" autoplay loop muted playsinline poster="/models/seedance-preview.jpg"></video>
             <div class="a-model-menu">⋯</div>
@@ -1621,16 +1620,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-model-info">
             <div class="a-model-name">Seedance 2.0</div>
             <div class="a-model-sub">Alta calidad · Rápido</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Veo 3.1', 'VIDEO', '15s', '9:16', '1080p')">
-          <div class="a-model-thumb">
-            <video src="/models/veo-preview.mp4" autoplay loop muted playsinline poster="/models/veo-preview.jpg"></video>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Veo 3.1</div>
-            <div class="a-model-sub">Ultra realismo · UGC</div>
           </div>
         </div>
       </div>
@@ -1786,7 +1775,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           </div>
           <div class="a-info-row">
             <div class="a-info-chip" id="previewDur">—</div>
-            <div class="a-info-chip">Veo 3.1</div>
+            <div class="a-info-chip">Seedance 2.0</div>
             <div class="a-info-chip" id="previewDate">—</div>
           </div>
           <div class="a-preview-actions">
@@ -2328,7 +2317,7 @@ function goGenStep(step){
   if(step===4) setupPreview();
 }
 function runGeneration(){
-  const msgs=['✦ Analizando tu script...','✦ Optimizando el prompt para Veo 3.1...','✦ Generando tu video...','✦ Finalizando...'];
+  const msgs=['✦ Analizando tu script...','✦ Optimizando el prompt para Seedance 2.0...','✦ Generando tu video...','✦ Finalizando...'];
   const dur=[1500,1500,2000,1000];
   const msgEl=document.getElementById('loadingMsg');
   const bar=document.getElementById('genProgressBar');
