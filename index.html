@@ -1765,7 +1765,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="a-gen-title">Tu video está listo</div>
         <p class="a-gen-sub">Revisá el preview y descargalo cuando quieras.</p>
         <div class="a-preview-wrap">
-          <div class="a-video-mock">
+          <!-- Mock (se oculta cuando hay video real) -->
+          <div class="a-video-mock" id="previewVideoMock">
             <div class="a-video-mock-inner">
               <div class="a-play-mock">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><polygon points="3,1 13,7 3,13"/></svg>
@@ -1773,13 +1774,15 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <span class="a-preview-actor" id="previewActorLabel">—</span>
             </div>
           </div>
+          <!-- Video real (oculto hasta que llegue la URL) -->
+          <video id="previewVideoReal" controls playsinline style="display:none;width:100%;max-width:320px;border-radius:12px;background:#000;"></video>
           <div class="a-info-row">
             <div class="a-info-chip" id="previewDur">—</div>
             <div class="a-info-chip">Seedance 2.0</div>
             <div class="a-info-chip" id="previewDate">—</div>
           </div>
           <div class="a-preview-actions">
-            <button class="btn-w" onclick="showToast('Descargando MP4...')">⬇ Descargar MP4</button>
+            <button class="btn-w" id="previewDownloadBtn">⬇ Descargar MP4</button>
             <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Generar otro</button>
           </div>
           <div class="a-back-link" onclick="showScreen('dashboard')">← Volver al dashboard</div>
@@ -2316,40 +2319,155 @@ function goGenStep(step){
   if(step===3) runGeneration();
   if(step===4) setupPreview();
 }
-function runGeneration(){
-  const msgs=['✦ Analizando tu script...','✦ Optimizando el prompt para Seedance 2.0...','✦ Generando tu video...','✦ Finalizando...'];
-  const dur=[1500,1500,2000,1000];
-  const msgEl=document.getElementById('loadingMsg');
-  const bar=document.getElementById('genProgressBar');
-  const pbox=document.getElementById('promptResultBox');
-  const nxt=document.getElementById('step3Next');
+let _generatedVideoUrl = null;
+let _generatedRequestId = null;
+
+async function runGeneration(){
+  const msgEl = document.getElementById('loadingMsg');
+  const bar = document.getElementById('genProgressBar');
+  const pbox = document.getElementById('promptResultBox');
+  const nxt = document.getElementById('step3Next');
   pbox.style.display='none'; nxt.style.display='none'; bar.style.width='0%';
-  let prog=0,idx=0;
-  function run(){
-    if(idx>=msgs.length){
-      bar.style.width='100%';
-      pbox.style.display='block';
-      const actor=selectedActor||'Sofia';
-      const script=document.getElementById('scriptInput')?.value||'producto destacado';
-      document.getElementById('promptResultText').textContent=`UGC ad video, ${actor} speaking directly to camera, casual indoor setting, natural lighting. Script: "${script.slice(0,100)}${script.length>100?'...':''}". Tone: professional, relatable. Format: 9:16 vertical, 30 seconds, synchronized audio, Spanish.`;
-      setTimeout(()=>{nxt.style.display='inline-flex';},400);
-      return;
-    }
-    msgEl.textContent=msgs[idx];
-    const tp=((idx+1)/msgs.length)*92;
-    const t0=Date.now(),sp=prog;
-    function anim(){const t=Math.min((Date.now()-t0)/dur[idx],1);bar.style.width=(sp+(tp-sp)*t)+'%';if(t<1)requestAnimationFrame(anim);}
-    anim();
-    setTimeout(()=>{prog=tp;idx++;run();},dur[idx]);
+  _generatedVideoUrl = null;
+  _generatedRequestId = null;
+
+  const actor = selectedActor || 'Sofia';
+  const script = document.getElementById('scriptInput')?.value || 'producto destacado';
+  const durVal = document.getElementById('durSelect')?.value || '5';
+  const tones = [...document.querySelectorAll('.a-tone-pill.active')].map(p=>p.textContent).join(', ') || 'Profesional';
+
+  // Animación de progreso suave
+  let currentProg = 0;
+  function setBar(target, duration){
+    return new Promise(res=>{
+      const start = currentProg;
+      const t0 = Date.now();
+      function anim(){
+        const t = Math.min((Date.now()-t0)/duration, 1);
+        currentProg = start + (target-start)*t;
+        bar.style.width = currentProg + '%';
+        if(t<1) requestAnimationFrame(anim);
+        else res();
+      }
+      anim();
+    });
   }
-  run();
+
+  try {
+    // --- Paso 1: Generar script/prompt ---
+    msgEl.textContent = '✦ Analizando tu script...';
+    await setBar(20, 1200);
+
+    const scriptRes = await fetch(BACKEND_URL + '/api/generate-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ script, actor, tone: tones })
+    });
+    if (!scriptRes.ok) throw new Error('Error al generar el script (' + scriptRes.status + ')');
+    const scriptData = await scriptRes.json();
+    const generatedPrompt = scriptData.prompt || scriptData.optimizedPrompt || scriptData.script || script;
+
+    msgEl.textContent = '✦ Optimizando el prompt para Seedance 2.0...';
+    await setBar(40, 800);
+
+    // Mostrar prompt generado
+    pbox.style.display = 'block';
+    document.getElementById('promptResultText').textContent = generatedPrompt;
+
+    // --- Paso 2: Enviar a generar video ---
+    msgEl.textContent = '✦ Enviando a Seedance 2.0...';
+    await setBar(55, 600);
+
+    const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: generatedPrompt,
+        actor,
+        duration: parseInt(durVal) || 5
+      })
+    });
+    if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
+    const genData = await genRes.json();
+    _generatedRequestId = genData.requestId || genData.request_id || genData.id;
+    if (!_generatedRequestId) throw new Error('No se recibió requestId del backend');
+
+    // --- Paso 3: Polling hasta COMPLETED ---
+    msgEl.textContent = '✦ Generando tu video...';
+    await setBar(60, 400);
+
+    let attempts = 0;
+    const maxAttempts = 60; // 5 min máx (5s * 60)
+    while (attempts < maxAttempts) {
+      await new Promise(r => setTimeout(r, 5000));
+      attempts++;
+
+      const statusRes = await fetch(BACKEND_URL + '/api/check-status?requestId=' + encodeURIComponent(_generatedRequestId));
+      if (!statusRes.ok) throw new Error('Error al consultar el estado (' + statusRes.status + ')');
+      const statusData = await statusRes.json();
+      const status = (statusData.status || '').toUpperCase();
+
+      // Avanzar la barra progresivamente entre 60% y 92%
+      const progTarget = Math.min(60 + (attempts / maxAttempts) * 32, 92);
+      bar.style.width = progTarget + '%';
+
+      if (status === 'COMPLETED' || status === 'SUCCESS' || status === 'FINISHED') {
+        _generatedVideoUrl = statusData.videoUrl || statusData.video_url || statusData.url || statusData.output;
+        if (!_generatedVideoUrl) throw new Error('Video completado pero sin URL');
+        break;
+      } else if (status === 'FAILED' || status === 'ERROR') {
+        throw new Error('La generación falló en Enhancor: ' + (statusData.error || statusData.message || 'sin detalle'));
+      }
+      // Si sigue en PENDING/PROCESSING, continuar
+    }
+
+    if (!_generatedVideoUrl) throw new Error('Tiempo de espera agotado. El video tardó demasiado.');
+
+    // --- Finalizar ---
+    msgEl.textContent = '✦ ¡Video listo!';
+    await setBar(100, 500);
+
+    setTimeout(()=>{ nxt.style.display='inline-flex'; }, 400);
+
+  } catch(err) {
+    console.error('runGeneration error:', err);
+    bar.style.width = '0%';
+    msgEl.textContent = '✦ ' + (err.message || 'Ocurrió un error. Intentá de nuevo.');
+    msgEl.style.color = '#ff4d4d';
+    setTimeout(()=>{ msgEl.style.color = ''; }, 6000);
+    // Mostrar botón de reintentar
+    nxt.textContent = '← Reintentar';
+    nxt.onclick = () => { goGenStep(2); };
+    nxt.style.display = 'inline-flex';
+  }
 }
+
 function setupPreview(){
-  const a=selectedActor||'Sofia';
-  const dur=document.getElementById('durSelect')?.value||'30 segundos';
-  document.getElementById('previewActorLabel').textContent=a;
-  document.getElementById('previewDur').textContent=dur;
-  document.getElementById('previewDate').textContent=new Date().toLocaleDateString('es-AR');
+  const a = selectedActor || 'Sofia';
+  const dur = document.getElementById('durSelect')?.value || '5';
+  document.getElementById('previewActorLabel').textContent = a;
+  document.getElementById('previewDur').textContent = dur + 's';
+  document.getElementById('previewDate').textContent = new Date().toLocaleDateString('es-AR');
+
+  // Mostrar video real si tenemos URL
+  const mockEl = document.getElementById('previewVideoMock');
+  const realEl = document.getElementById('previewVideoReal');
+  if (_generatedVideoUrl && realEl && mockEl) {
+    realEl.src = _generatedVideoUrl;
+    mockEl.style.display = 'none';
+    realEl.style.display = 'block';
+    // Botón de descarga funcional
+    const dlBtn = document.getElementById('previewDownloadBtn');
+    if (dlBtn) {
+      dlBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = _generatedVideoUrl;
+        a.download = 'futuriads-video.mp4';
+        a.target = '_blank';
+        a.click();
+      };
+    }
+  }
 }
 
 /* ---- History ---- */
