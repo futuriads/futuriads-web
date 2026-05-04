@@ -2452,6 +2452,11 @@ function goToApp(){
       const l=document.getElementById('landing'),a=document.getElementById('app');
       const isPreApp = document.documentElement.classList.contains('pre-app');
 
+      // Limpiar AMBOS guards (pre-app y pre-landing) ahora que estamos seguros de
+      // que hay sesión válida. Sin esto, html.pre-landing bloquea la app vía CSS
+      // si el usuario hace login normal desde la landing (no era refresh).
+      document.documentElement.classList.remove('pre-app', 'pre-landing');
+
       if (isPreApp) {
         // Caso refresh: el pre-render ya mostró la app. Saltarse la animación.
         l.style.display = 'none';
@@ -3521,12 +3526,68 @@ async function generateImage(){
 
     const data = await response.json();
     _generatedImageRequestId = data.requestId;
+    console.log('[generateImage] requestId recibido:', _generatedImageRequestId);
 
     msgEl.textContent = '✦ Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
 
-    // Polling cada 8 segundos para detectar cuando esté lista
+    // Función auxiliar de polling — chequea Supabase por la fila con el request_id.
+    // IMPORTANTE: la implementación custom de supa NO soporta .limit(); por eso
+    // anteriormente la query devolvía undefined y el polling no detectaba nada.
+    const checkOnce = async () => {
+      try {
+        const { data: rows, error } = await supa
+          .from('videos')
+          .select('*')
+          .eq('request_id', _generatedImageRequestId);
+
+        if (error) {
+          console.warn('[poll] Error en query:', error);
+          return false;
+        }
+        if (!rows || rows.length === 0) {
+          console.log('[poll] Sin filas todavía para requestId', _generatedImageRequestId);
+          return false;
+        }
+
+        const row = rows[0];
+        console.log('[poll] Estado actual:', row.status, '| URL:', row.video_url ? 'sí' : 'no');
+
+        if (row.status === 'COMPLETED' && row.video_url) {
+          clearInterval(progInterval);
+          if (_imageRefreshInterval) {
+            clearInterval(_imageRefreshInterval);
+            _imageRefreshInterval = null;
+          }
+          if (bar) bar.style.width = '100%';
+          _generatedImageUrl = row.video_url;
+          setTimeout(() => {
+            document.getElementById('imgPreviewReal').src = row.video_url;
+            goImgStep(3);
+          }, 400);
+          return true;
+        } else if (row.status === 'FAILED') {
+          clearInterval(progInterval);
+          if (_imageRefreshInterval) {
+            clearInterval(_imageRefreshInterval);
+            _imageRefreshInterval = null;
+          }
+          msgEl.textContent = '✗ La imagen falló. Intentá de nuevo.';
+          if (bar) bar.style.width = '0%';
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn('[poll] Excepción:', e);
+        return false;
+      }
+    };
+
+    // Primer check rápido a los 3 segundos (a veces los modelos responden muy rápido)
+    setTimeout(checkOnce, 3000);
+
+    // Polling cada 5 segundos
     let pollCount = 0;
-    const MAX_POLLS = 75; // 75 * 8s = 10 minutos máximo
+    const MAX_POLLS = 120; // 120 * 5s = 10 minutos máximo
     _imageRefreshInterval = setInterval(async () => {
       pollCount++;
       if (pollCount > MAX_POLLS) {
@@ -3536,35 +3597,8 @@ async function generateImage(){
         msgEl.innerHTML = '✓ Tu imagen sigue generándose en segundo plano. <br>La encontrarás en el <a href="#" onclick="event.preventDefault();showScreen(\'historial\');" style="color:#fff;text-decoration:underline;">Historial</a> cuando esté lista.';
         return;
       }
-      try {
-        const { data: rows, error } = await supa
-          .from('videos')
-          .select('*')
-          .eq('request_id', _generatedImageRequestId)
-          .limit(1);
-
-        if (!error && rows && rows.length > 0) {
-          const row = rows[0];
-          if (row.status === 'COMPLETED' && row.video_url) {
-            clearInterval(progInterval);
-            clearInterval(_imageRefreshInterval);
-            _imageRefreshInterval = null;
-            if (bar) bar.style.width = '100%';
-            _generatedImageUrl = row.video_url;
-            setTimeout(() => {
-              document.getElementById('imgPreviewReal').src = row.video_url;
-              goImgStep(3);
-            }, 400);
-          } else if (row.status === 'FAILED') {
-            clearInterval(progInterval);
-            clearInterval(_imageRefreshInterval);
-            _imageRefreshInterval = null;
-            msgEl.textContent = '✗ La imagen falló. Intentá de nuevo.';
-            if (bar) bar.style.width = '0%';
-          }
-        }
-      } catch (e) { /* silencioso, retry en próxima iteración */ }
-    }, 8000);
+      checkOnce();
+    }, 5000);
 
   } catch (err) {
     clearInterval(progInterval);
