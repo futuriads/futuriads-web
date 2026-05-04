@@ -963,6 +963,51 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 @media (max-width: 720px) {
   .a-actor-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 100%; }
 }
+
+/* ==============================================
+   APP — NUEVA IMAGEN
+   ============================================== */
+.img-model-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 16px; cursor: pointer;
+  flex: 1 1 220px; min-width: 220px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.img-model-card:hover { border-color: rgba(255,255,255,0.2); }
+.img-model-card.selected {
+  border-color: rgba(255,255,255,0.45);
+  background: #181818;
+  box-shadow: 0 0 24px rgba(255,255,255,0.05);
+}
+.img-model-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.img-model-desc { font-size: 11px; color: var(--text2); }
+
+.img-ref-thumb {
+  position: relative; width: 80px; height: 80px;
+  border-radius: 8px; overflow: hidden;
+  background: #1a1a1a; border: 1px solid var(--border);
+}
+.img-ref-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-ref-thumb .img-ref-remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(0,0,0,0.75); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; line-height: 1;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.img-ref-thumb .img-ref-remove:hover { background: #d33; border-color: #d33; }
+.img-ref-thumb.uploading::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6);
+  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: imgRefShimmer 1.2s infinite;
+}
+@keyframes imgRefShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 .a-script-area {
   width: 100%; max-width: 580px;
   background: var(--card); border: 1px solid var(--border);
@@ -1521,6 +1566,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-nav-label">Nuevo video</span>
         <span class="a-nav-pulse"></span>
       </div>
+      <div class="a-nav-item" id="nav-nueva-imagen" onclick="showScreen('nueva-imagen')" data-tooltip="Nueva imagen">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2"/><path d="m1.5 11 3.5-3.5L9 11l2-2 2.5 2.5"/></svg>
+        <span class="a-nav-label">Nueva imagen</span>
+      </div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
@@ -1875,10 +1924,119 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       </div>
     </div><!-- /nuevo -->
 
+    <!-- ---- NUEVA IMAGEN ---- -->
+    <div class="screen" id="screen-nueva-imagen">
+      <div class="a-step-ind" style="display:flex;align-items:center;gap:8px;margin-bottom:36px;">
+        <div class="a-step-dot active" id="img-sd0"></div>
+        <div class="a-step-conn" id="img-sc0"></div>
+        <div class="a-step-dot" id="img-sd1"></div>
+        <div class="a-step-conn" id="img-sc1"></div>
+        <div class="a-step-dot" id="img-sd2"></div>
+        <span style="margin-left:14px;font-size:12px;color:var(--text2);" id="imgStepLabel">Tu prompt</span>
+      </div>
+
+      <!-- Step 1: Configuración -->
+      <div id="img-step-1" style="display:block;">
+        <div class="a-gen-title">Crear imagen con IA</div>
+        <p class="a-gen-sub">Generá imágenes únicas con Nano Banana 2 o GPT Image 2.</p>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Modelo</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div class="img-model-card selected" data-model="gpt-image-2" onclick="selectImgModel(this)">
+              <div class="img-model-name">GPT Image 2</div>
+              <div class="img-model-desc">Calidad cinematográfica · 51 créditos</div>
+            </div>
+            <div class="img-model-card" data-model="nano-banana-2" onclick="selectImgModel(this)">
+              <div class="img-model-name">Nano Banana 2</div>
+              <div class="img-model-desc">Edición avanzada · 60 créditos</div>
+            </div>
+          </div>
+        </div>
+
+        <textarea class="a-script-area" id="imgPromptInput" placeholder="Ej: Un producto de skincare sobre fondo mármol blanco, iluminación suave, estilo editorial..." rows="5"></textarea>
+
+        <div class="a-select-row">
+          <div class="custom-select" id="cs-img-step-ratio">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-step-ratio')">
+              <span>1:1 — Cuadrado</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-step-ratio', this)">1:1 — Cuadrado</div>
+              <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-step-ratio', this)">9:16 — Vertical</div>
+              <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-step-ratio', this)">16:9 — Horizontal</div>
+              <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-step-ratio', this)">4:5 — Portrait</div>
+              <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-step-ratio', this)">3:4 — Portrait</div>
+              <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-step-ratio', this)">2:3 — Vertical</div>
+              <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-step-ratio', this)">3:2 — Foto clásica</div>
+              <div class="custom-select-option" data-value="21:9" onclick="selectCustomOption('cs-img-step-ratio', this)">21:9 — Cine</div>
+              <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-step-ratio', this)">Auto</div>
+            </div>
+          </div>
+          <div class="custom-select" id="cs-img-step-res">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-step-res')">
+              <span>2K — Estándar</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-step-res', this)">1K — Borrador</div>
+              <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-step-res', this)">2K — Estándar</div>
+              <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-step-res', this)">4K — Alta resolución</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Imágenes de referencia (image-to-image) -->
+        <div style="margin-top:18px;">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">
+            Imágenes de referencia <span style="text-transform:none;font-weight:400;color:#666;">(opcional)</span>
+          </div>
+          <div id="imgRefList" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;"></div>
+          <input type="file" id="imgRefInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleImgRefUpload(event)" />
+          <button class="btn-outline" id="imgRefBtn" style="border-radius:var(--r-sm);font-size:13px;" onclick="document.getElementById('imgRefInput').click()">
+            + Subir imagen de referencia
+          </button>
+          <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 30MB cada una</div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:24px;">
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">← Atrás</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Loading -->
+      <div id="img-step-2" style="display:none;">
+        <div class="a-gen-title">Generando tu imagen</div>
+        <p class="a-gen-sub" id="imgLoadingMsg">✦ Encolando en Enhancor...</p>
+        <div class="a-progress-bar" style="margin:24px 0;max-width:500px;">
+          <div class="a-progress-fill" id="imgProgressBar" style="width:0%;"></div>
+        </div>
+        <p style="font-size:13px;color:var(--text2);max-width:500px;">
+          Tu imagen se está generando en segundo plano. Podés cerrar esta pestaña y la encontrarás en el <a href="#" onclick="event.preventDefault();showScreen('historial');" style="color:#fff;text-decoration:underline;">Historial</a> cuando esté lista.
+        </p>
+      </div>
+
+      <!-- Step 3: Preview -->
+      <div id="img-step-3" style="display:none;">
+        <div class="a-gen-title">Imagen generada</div>
+        <p class="a-gen-sub">Revisá el resultado o descargalo.</p>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;max-width:600px;margin-bottom:18px;">
+          <img id="imgPreviewReal" src="" alt="" style="width:100%;border-radius:8px;display:block;background:#000;" />
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()">⬇ Descargar imagen</button>
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="resetImageGenerator()">Generar otra</button>
+        </div>
+        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')">← Volver al dashboard</div>
+      </div>
+    </div><!-- /nueva-imagen -->
+
     <!-- ---- HISTORIAL ---- -->
     <div class="screen" id="screen-historial">
       <div class="a-hist-header">
-        <div class="a-hist-title">Mis videos</div>
+        <div class="a-hist-title">Mis creaciones</div>
         <div class="a-view-toggle">
           <button class="a-view-btn active" id="btnGrid" onclick="setHistView('grid')" title="Grid">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="7.5" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx="1"/></svg>
@@ -2361,14 +2519,20 @@ function startFromDashboard(){
   // Detectar si el usuario está en tab "video" o "imagen"
   const isVideo = document.getElementById('tabVideo').classList.contains('active');
 
-  // Si está en imagen, todavía no está implementado
+  // Tomar el prompt que escribió en el dashboard
+  const dashPrompt = document.getElementById('genTextarea')?.value?.trim() || '';
+
+  // Si está en "Crear imagen", redirigir a la pantalla de Nueva imagen
   if (!isVideo) {
-    showToast('La generación de imágenes estará disponible próximamente');
+    showScreen('nueva-imagen');
+    resetImageGenerator();
+    if (dashPrompt) {
+      const promptEl = document.getElementById('imgPromptInput');
+      if (promptEl) promptEl.value = dashPrompt;
+    }
+    if (dashPrompt) document.getElementById('genTextarea').value = '';
     return;
   }
-
-  // Tomar el prompt que escribió en el dashboard (puede estar vacío, no es obligatorio acá)
-  const dashPrompt = document.getElementById('genTextarea')?.value?.trim() || '';
 
   // Sincronizar las preferencias del dashboard (duración, aspect, resolución)
   // con los custom-selects del Step 2 antes de mostrar el flujo
@@ -2628,77 +2792,117 @@ function statusBadge(status){
 function renderHistory(){
   const c=document.getElementById('histContent');
   if(!historyData.length){
-    c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ningún video.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>`;
+    c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ninguna creación.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>`;
     return;
   }
   const escAttr = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
   const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'?'failed':'pending');
   const statusLabel = s => s==='COMPLETED'?'Listo':(s==='FAILED'?'Falló':(s==='IN_PROGRESS'?'Generando':'Pendiente'));
+  const modelLabel = m => ({
+    'seedance-2': 'Seedance 2.0',
+    'gpt-image-2': 'GPT Image 2',
+    'nano-banana-2': 'Nano Banana 2'
+  })[m] || m || '';
 
   if(histView==='grid'){
     c.innerHTML='<div class="a-hist-grid">'+historyData.map((v,i)=>{
+      const isImage = v.type === 'image';
       const completed = v.status==='COMPLETED' && v.video_url;
       const dur = v.duration ? `${v.duration}s` : '';
-      const res = v.resolution || '720p';
-      const ratio = v.aspect_ratio || '9:16';
+      const res = v.resolution || (isImage ? '2K' : '720p');
+      const ratio = v.aspect_ratio || (isImage ? '1:1' : '9:16');
       const prompt = escHtml(v.script || '');
-      const actor = escHtml(v.actor || 'Actor');
+      const titleText = isImage ? (modelLabel(v.model) || 'Imagen') : escHtml(v.actor || 'Actor');
       const safeUrl = escAttr(v.video_url);
-      const safeActor = escAttr(v.actor);
+      const safeActor = escAttr(v.actor || titleText);
+      const downloadFn = isImage ? 'downloadImageFile' : 'downloadVideo';
+      const downloadLabel = isImage ? '⬇ Descargar imagen' : '⬇ Descargar MP4';
+      const openModalFn = isImage ? 'openImageModal' : 'openVideoModal';
+
+      // Thumb depende del tipo
+      let thumbContent = '';
+      if (completed) {
+        if (isImage) {
+          thumbContent = `<img src="${v.video_url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
+            <div class="a-hist-overlay">
+              <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="event.stopPropagation();openImageModal('${safeUrl}','${escAttr(titleText)}')">⛶ Ampliar</button>
+            </div>`;
+        } else {
+          thumbContent = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
+            <div class="a-hist-overlay">
+              <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeActor}')">▶ Reproducir</button>
+            </div>`;
+        }
+      } else {
+        thumbContent = `<div class="a-hist-pending-thumb">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">${statusLabel(v.status)}</span>
+        </div>`;
+      }
+
       return `
       <div class="a-hist-card">
-        <div class="a-hist-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="openVideoModal('${safeUrl}','${safeActor}')"`:''}>
-          ${completed
-            ? `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
-               <div class="a-hist-overlay">
-                 <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeActor}')">▶ Reproducir</button>
-               </div>`
-            : `<div class="a-hist-pending-thumb">
-                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                 <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">${statusLabel(v.status)}</span>
-               </div>`
-          }
+        <div class="a-hist-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="${openModalFn}('${safeUrl}','${escAttr(titleText)}')"`:''}>
+          ${thumbContent}
         </div>
         <div class="a-hist-info">
           <div class="a-hist-info-head">
-            <div class="a-hist-actor">${actor}</div>
+            <div class="a-hist-actor">${escHtml(titleText)}</div>
             <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
           </div>
           <div class="a-hist-prompt">${prompt || '<span style="color:#666;">Sin prompt</span>'}</div>
           <div class="a-hist-specs">
-            ${dur?`<span class="a-hist-spec">⏱ ${dur}</span>`:''}
+            <span class="a-hist-spec">${isImage ? '🖼' : '🎬'} ${isImage ? (modelLabel(v.model) || 'Imagen') : 'Video'}</span>
+            ${dur && !isImage ? `<span class="a-hist-spec">⏱ ${dur}</span>` : ''}
             <span class="a-hist-spec">📐 ${ratio}</span>
-            <span class="a-hist-spec">🎬 ${res}</span>
+            <span class="a-hist-spec">⚙ ${res}</span>
             <span class="a-hist-spec">🕐 ${timeAgo(v.created_at)}</span>
           </div>
           ${completed ? `
             <div class="a-hist-actions">
-              <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="downloadVideo('${safeUrl}','${safeActor||'video'}')">⬇ Descargar MP4</button>
+              <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="${downloadFn}('${safeUrl}','${escAttr(titleText)}')">${downloadLabel}</button>
             </div>` : ''}
         </div>
       </div>`;
     }).join('')+'</div>';
   } else {
     c.innerHTML='<div class="a-hist-list">'+historyData.map(v=>{
+      const isImage = v.type === 'image';
       const completed = v.status==='COMPLETED' && v.video_url;
       const safeUrl = escAttr(v.video_url);
-      const safeActor = escAttr(v.actor);
+      const titleText = isImage ? (modelLabel(v.model) || 'Imagen') : (v.actor || 'Actor');
+      const safeTitle = escAttr(titleText);
+      const downloadFn = isImage ? 'downloadImageFile' : 'downloadVideo';
+      const openModalFn = isImage ? 'openImageModal' : 'openVideoModal';
+
+      let thumb = '';
+      if (completed) {
+        thumb = isImage
+          ? `<img src="${v.video_url}" alt="" style="width:100%;height:100%;object-fit:cover;" />`
+          : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`;
+      } else {
+        thumb = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#aaa" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>`;
+      }
+
+      const metaParts = [timeAgo(v.created_at)];
+      if (!isImage && v.duration) metaParts.push(v.duration + 's');
+      metaParts.push(v.aspect_ratio || (isImage ? '1:1' : '9:16'));
+      metaParts.push(v.resolution || (isImage ? '2K' : '720p'));
+      if (v.model) metaParts.push(modelLabel(v.model));
+
       return `
       <div class="a-hist-row">
-        <div class="a-hist-row-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="openVideoModal('${safeUrl}','${safeActor}')"`:''}>
-          ${completed
-            ? `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`
-            : `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#aaa" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>`
-          }
+        <div class="a-hist-row-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="${openModalFn}('${safeUrl}','${safeTitle}')"`:''}>
+          ${thumb}
         </div>
         <div class="a-hist-row-info">
-          <div class="a-hist-row-name">${escHtml(v.actor||'Actor')}</div>
-          <div class="a-hist-row-meta">${timeAgo(v.created_at)} · ${v.duration||''}s · ${v.aspect_ratio||'9:16'} · ${v.resolution||'720p'}</div>
+          <div class="a-hist-row-name">${escHtml(titleText)}</div>
+          <div class="a-hist-row-meta">${metaParts.join(' · ')}</div>
         </div>
         <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
         ${completed
-          ? `<button class="btn-ghost-sm" onclick="downloadVideo('${safeUrl}','${safeActor||'video'}')">⬇ Descargar</button>`
+          ? `<button class="btn-ghost-sm" onclick="${downloadFn}('${safeUrl}','${safeTitle}')">⬇ Descargar</button>`
           : ''
         }
       </div>`;
@@ -2706,10 +2910,288 @@ function renderHistory(){
   }
 }
 
+function downloadImageFile(url, name){
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `futuriads-${(name||'imagen').replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.png`;
+  a.target = '_blank';
+  a.click();
+}
+
+function openImageModal(url, title){
+  let modal = document.getElementById('imageModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:40px;cursor:pointer;';
+    modal.onclick = () => { modal.style.display = 'none'; };
+    modal.innerHTML = `
+      <div style="position:relative;max-width:90vw;max-height:90vh;cursor:default;" onclick="event.stopPropagation()">
+        <img id="imageModalImg" src="" alt="" style="max-width:100%;max-height:90vh;border-radius:8px;display:block;" />
+        <button onclick="document.getElementById('imageModal').style.display='none'" style="position:absolute;top:-44px;right:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;">×</button>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  document.getElementById('imageModalImg').src = url;
+  modal.style.display = 'flex';
+}
+
 function downloadVideo(url, name){
   const a = document.createElement('a');
   a.href = url;
   a.download = `futuriads-${name}-${Date.now()}.mp4`;
+  a.target = '_blank';
+  a.click();
+}
+
+/* =====================================================
+   NUEVA IMAGEN — selector de modelo, uploader, generación
+   ===================================================== */
+let imgSelectedModel = 'gpt-image-2';
+let imgRefUrls = []; // URLs públicas de Supabase Storage
+let _generatedImageUrl = null;
+let _generatedImageRequestId = null;
+let _imageRefreshInterval = null;
+
+function selectImgModel(el){
+  document.querySelectorAll('.img-model-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  imgSelectedModel = el.dataset.model;
+}
+
+function updateImgStepUI(step){
+  const labels = ['Tu prompt', 'Generando...', 'Resultado'];
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById('img-sd' + i);
+    if (!d) continue;
+    if (i < step - 1) { d.classList.add('done'); d.classList.remove('active'); }
+    else if (i === step - 1) { d.classList.remove('done'); d.classList.add('active'); }
+    else { d.classList.remove('done', 'active'); }
+    if (i < 2) {
+      const c = document.getElementById('img-sc' + i);
+      if (c) { if (i < step - 1) c.classList.add('done'); else c.classList.remove('done'); }
+    }
+  }
+  const lbl = document.getElementById('imgStepLabel');
+  if (lbl) lbl.textContent = labels[step - 1];
+}
+
+function goImgStep(step){
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('img-step-' + i);
+    if (el) el.style.display = 'none';
+  }
+  const nx = document.getElementById('img-step-' + step);
+  if (nx) nx.style.display = 'block';
+  updateImgStepUI(step);
+}
+
+function resetImageGenerator(){
+  imgRefUrls = [];
+  _generatedImageUrl = null;
+  _generatedImageRequestId = null;
+  if (_imageRefreshInterval) { clearInterval(_imageRefreshInterval); _imageRefreshInterval = null; }
+  const promptEl = document.getElementById('imgPromptInput');
+  if (promptEl) promptEl.value = '';
+  const list = document.getElementById('imgRefList');
+  if (list) list.innerHTML = '';
+  const bar = document.getElementById('imgProgressBar');
+  if (bar) bar.style.width = '0%';
+  goImgStep(1);
+}
+
+/* ----- Upload a Supabase Storage ----- */
+async function handleImgRefUpload(event){
+  const files = Array.from(event.target.files || []);
+  event.target.value = ''; // reset para poder subir el mismo archivo de nuevo
+  if (!files.length) return;
+
+  // Verificar sesión
+  const { data: sess } = await supa.auth.getSession();
+  if (!sess?.session) {
+    showToast('Tenés que iniciar sesión para subir imágenes');
+    return;
+  }
+  const userId = sess.session.user.id;
+  const accessToken = sess.session.access_token;
+
+  if (imgRefUrls.length + files.length > 14) {
+    showToast('Máximo 14 imágenes de referencia');
+    return;
+  }
+
+  const list = document.getElementById('imgRefList');
+
+  for (const file of files) {
+    if (file.size > 30 * 1024 * 1024) {
+      showToast(`"${file.name}" supera los 30MB`);
+      continue;
+    }
+
+    // Crear thumb con shimmer mientras sube
+    const thumbEl = document.createElement('div');
+    thumbEl.className = 'img-ref-thumb uploading';
+    const previewUrl = URL.createObjectURL(file);
+    thumbEl.innerHTML = `<img src="${previewUrl}" alt="">`;
+    list.appendChild(thumbEl);
+
+    try {
+      // Generar nombre único: userId/timestamp_random.ext
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+
+      // Upload directo a Supabase Storage vía REST
+      const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      });
+
+      if (!uploadRes.ok) {
+        const errTxt = await uploadRes.text();
+        console.error('Upload error:', errTxt);
+        throw new Error('Falló el upload');
+      }
+
+      // Construir la URL pública del archivo
+      const publicUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+
+      // Guardar URL y actualizar el thumb
+      imgRefUrls.push(publicUrl);
+      thumbEl.classList.remove('uploading');
+
+      // Agregar botón de remover
+      const idx = imgRefUrls.length - 1;
+      const removeBtn = document.createElement('div');
+      removeBtn.className = 'img-ref-remove';
+      removeBtn.textContent = '×';
+      removeBtn.onclick = () => removeImgRef(publicUrl, thumbEl);
+      thumbEl.appendChild(removeBtn);
+
+    } catch (err) {
+      console.error('Error subiendo imagen:', err);
+      thumbEl.remove();
+      showToast('No se pudo subir "' + file.name + '"');
+    }
+  }
+}
+
+function removeImgRef(url, thumbEl){
+  imgRefUrls = imgRefUrls.filter(u => u !== url);
+  thumbEl.remove();
+}
+
+/* ----- Generar imagen ----- */
+async function generateImage(){
+  const prompt = document.getElementById('imgPromptInput')?.value?.trim() || '';
+  if (!prompt) { showToast('Escribí un prompt antes de generar'); return; }
+
+  const ratio = document.querySelector('#cs-img-step-ratio .custom-select-option.selected')?.dataset.value || '1:1';
+  const res = document.querySelector('#cs-img-step-res .custom-select-option.selected')?.dataset.value || '2K';
+
+  // Validación específica de GPT Image 2: 4K solo en algunos ratios
+  if (imgSelectedModel === 'gpt-image-2' && res === '4K') {
+    const allowed4K = ['16:9','9:16','2:1','1:2','9:21','21:9'];
+    if (!allowed4K.includes(ratio)) {
+      showToast(`GPT Image 2 en 4K solo soporta ${allowed4K.join(', ')}`);
+      return;
+    }
+  }
+
+  // Obtener userId
+  let userId = null;
+  try {
+    const { data: sess } = await supa.auth.getSession();
+    userId = sess?.session?.user?.id || null;
+  } catch (e) { /* anónimo */ }
+
+  goImgStep(2);
+
+  const msgEl = document.getElementById('imgLoadingMsg');
+  const bar = document.getElementById('imgProgressBar');
+
+  // Animación de progreso indeterminada (porque no sabemos cuánto tarda)
+  let prog = 0;
+  const progInterval = setInterval(() => {
+    prog = Math.min(prog + Math.random() * 8, 92);
+    if (bar) bar.style.width = prog + '%';
+  }, 800);
+
+  try {
+    msgEl.textContent = '✦ Encolando en Enhancor...';
+
+    const response = await fetch(BACKEND_URL + '/api/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: imgSelectedModel,
+        prompt: prompt,
+        inputImages: imgRefUrls.length > 0 ? imgRefUrls : undefined,
+        aspectRatio: ratio,
+        resolution: res,
+        userId: userId
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Error ${response.status}`);
+    }
+
+    const data = await response.json();
+    _generatedImageRequestId = data.requestId;
+
+    msgEl.textContent = '✦ Imagen encolada — esto puede tardar entre 15 segundos y unos minutos...';
+
+    // Polling al historial cada 5 segundos para detectar cuando esté lista
+    _imageRefreshInterval = setInterval(async () => {
+      try {
+        const { data: rows, error } = await supa
+          .from('videos')
+          .select('*')
+          .eq('request_id', _generatedImageRequestId)
+          .limit(1);
+
+        if (!error && rows && rows.length > 0) {
+          const row = rows[0];
+          if (row.status === 'COMPLETED' && row.video_url) {
+            clearInterval(progInterval);
+            clearInterval(_imageRefreshInterval);
+            _imageRefreshInterval = null;
+            if (bar) bar.style.width = '100%';
+            _generatedImageUrl = row.video_url;
+            setTimeout(() => {
+              document.getElementById('imgPreviewReal').src = row.video_url;
+              goImgStep(3);
+            }, 400);
+          } else if (row.status === 'FAILED') {
+            clearInterval(progInterval);
+            clearInterval(_imageRefreshInterval);
+            _imageRefreshInterval = null;
+            msgEl.textContent = '✗ La imagen falló. Intentá de nuevo.';
+            if (bar) bar.style.width = '0%';
+          }
+        }
+      } catch (e) { /* silencioso, retry en próxima iteración */ }
+    }, 5000);
+
+  } catch (err) {
+    clearInterval(progInterval);
+    if (bar) bar.style.width = '0%';
+    msgEl.textContent = '✗ Error: ' + err.message;
+    console.error(err);
+  }
+}
+
+function downloadGeneratedImage(){
+  if (!_generatedImageUrl) return;
+  const a = document.createElement('a');
+  a.href = _generatedImageUrl;
+  a.download = `futuriads-imagen-${Date.now()}.png`;
   a.target = '_blank';
   a.click();
 }
