@@ -2490,7 +2490,7 @@ function statusBadge(status){
 function renderHistory(){
   const c=document.getElementById('histContent');
   if(!historyData.length){
-    c.innerHTML='<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ningún video.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>';
+    c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ningún video.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>`;
     return;
   }
   if(histView==='grid'){
