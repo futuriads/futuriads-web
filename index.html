@@ -1577,7 +1577,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <button class="a-gen-tab active" id="tabVideo" onclick="switchGenTab('video')">Crear video</button>
           <button class="a-gen-tab" id="tabImage" onclick="switchGenTab('image')">Crear imagen</button>
         </div>
-        <textarea class="a-gen-textarea" id="genTextarea" placeholder="Describí el video o imagen que querés generar..."></textarea>
+        <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
         <div class="a-gen-row">
           <div class="a-gen-opts active" id="videoOpts">
             <div class="custom-select" id="cs-model">
@@ -1659,7 +1659,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               </div>
             </div>
           </div>
-          <button class="a-gen-btn" onclick="showScreen('nuevo');goGenStep(3)">✦ Generar</button>
+          <button class="a-gen-btn" onclick="startFromDashboard()">✦ Empezar →</button>
         </div>
       </div>
 
@@ -2351,7 +2351,70 @@ function switchGenTab(tab){
   document.getElementById('videoOpts').classList.toggle('active',tab==='video');
   document.getElementById('imageOpts').classList.toggle('active',tab==='image');
   document.getElementById('genTextarea').placeholder=
-    tab==='video'? 'Describí el video que querés generar...' : 'Describí la imagen que querés generar...';
+    tab==='video'
+      ? 'Empezá a escribir lo que querés que diga el actor en el video...'
+      : 'Describí la imagen que querés generar...';
+}
+
+/* ---- Dashboard → flujo de generación ---- */
+function startFromDashboard(){
+  // Detectar si el usuario está en tab "video" o "imagen"
+  const isVideo = document.getElementById('tabVideo').classList.contains('active');
+
+  // Si está en imagen, todavía no está implementado
+  if (!isVideo) {
+    showToast('La generación de imágenes estará disponible próximamente');
+    return;
+  }
+
+  // Tomar el prompt que escribió en el dashboard (puede estar vacío, no es obligatorio acá)
+  const dashPrompt = document.getElementById('genTextarea')?.value?.trim() || '';
+
+  // Sincronizar las preferencias del dashboard (duración, aspect, resolución)
+  // con los custom-selects del Step 2 antes de mostrar el flujo
+  const dashDur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim();
+  const dashAspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent?.trim();
+  const dashRes = document.querySelector('#cs-res .custom-select-option.selected')?.textContent?.trim();
+
+  const setStep2Selection = (selectId, dataValue) => {
+    if (!dataValue) return;
+    const el = document.getElementById(selectId);
+    if (!el) return;
+    const opt = el.querySelector(`.custom-select-option[data-value="${dataValue}"]`);
+    if (!opt) return;
+    el.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    const span = el.querySelector('.custom-select-trigger span');
+    if (span) span.textContent = opt.textContent;
+  };
+
+  // Mapear "5s" -> "5", "10s" -> "10", "15s" -> "15"
+  if (dashDur) {
+    const num = dashDur.replace(/[^0-9]/g,'');
+    if (num) setStep2Selection('cs-step2-dur', num);
+  }
+  if (dashAspect) setStep2Selection('cs-step2-ratio', dashAspect);
+  if (dashRes) setStep2Selection('cs-step2-res', dashRes);
+
+  // Pre-cargar el prompt en el textarea del Step 2 (si lo escribió en el dashboard)
+  const scriptInput = document.getElementById('scriptInput');
+  if (scriptInput && dashPrompt) scriptInput.value = dashPrompt;
+
+  // Navegar a "Nuevo video" en el Step 1 (selección de actor)
+  showScreen('nuevo');
+  resetSelectedActor();
+  goGenStep(1);
+
+  // Limpiar el textarea del dashboard para la próxima visita
+  if (dashPrompt) document.getElementById('genTextarea').value = '';
+}
+
+// Helper: limpiar selección de actor sin tocar el prompt ya cargado
+function resetSelectedActor(){
+  selectedActor = null;
+  document.querySelectorAll('.a-actor-card').forEach(c => c.classList.remove('selected'));
+  const btn = document.getElementById('step1Next');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed'; }
 }
 
 /* ---- Model drawer ---- */
