@@ -2245,7 +2245,7 @@ function showScreen(name){
     sc.style.display='block';
     requestAnimationFrame(()=>{sc.classList.add('active');sc.style.opacity='1';});
   },210);
-  if(name==='historial') renderHistory();
+  if(name==='historial') loadHistory();
 }
 
 /* ---- Toast ---- */
@@ -2387,7 +2387,8 @@ async function runGeneration(){
         avatar: actor,
         duration: durVal,
         aspectRatio: ratioVal,
-        resolution: resVal
+        resolution: resVal,
+        userId: (await supa.auth.getSession()).data?.session?.user?.id || null
       })
     });
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
@@ -2395,52 +2396,21 @@ async function runGeneration(){
     _generatedRequestId = genData.requestId || genData.request_id || genData.id;
     if (!_generatedRequestId) throw new Error('No se recibió requestId del backend');
 
-    // --- Paso 3: Polling hasta COMPLETED ---
-    // IMPORTANTE: check-status es POST con body { requestId }, no GET
-    msgEl.textContent = '✦ Generando tu video...';
-    await setBar(60, 400);
+    // --- Paso 3: Video encolado, avisar al usuario y redirigir al historial ---
+    msgEl.textContent = '✦ Video encolado correctamente';
+    await setBar(100, 600);
 
-    let attempts = 0;
-    const maxAttempts = 112; // ~15 min máx (8s * 112)
-    while (attempts < maxAttempts) {
-      await new Promise(r => setTimeout(r, 8000)); // poll cada 8s
-      attempts++;
+    // Mostrar mensaje y redirigir a historial en 3 segundos
+    msgEl.textContent = '✦ Tu video se está generando (5-10 min). Podés cerrar esta pestaña.';
+    msgEl.style.color = '#22c55e';
+    pbox.style.display = 'block';
+    document.getElementById('promptResultText').textContent = generatedPrompt;
 
-      // Mostrar tiempo transcurrido
-      const minutos = Math.floor((attempts * 8) / 60);
-      const segundos = (attempts * 8) % 60;
-      msgEl.textContent = `✦ Generando tu video... ${minutos > 0 ? minutos + 'm ' : ''}${segundos}s`;
-
-      const statusRes = await fetch(BACKEND_URL + '/api/check-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId: _generatedRequestId })
-      });
-      if (!statusRes.ok) throw new Error('Error al consultar el estado (' + statusRes.status + ')');
-      const statusData = await statusRes.json();
-      const status = (statusData.status || '').toUpperCase();
-
-      // Avanzar la barra progresivamente entre 60% y 92%
-      const progTarget = Math.min(60 + (attempts / maxAttempts) * 32, 92);
-      bar.style.width = progTarget + '%';
-
-      if (status === 'COMPLETED' || status === 'SUCCESS' || status === 'FINISHED') {
-        _generatedVideoUrl = statusData.result || statusData.videoUrl || statusData.video_url || statusData.url;
-        if (!_generatedVideoUrl) throw new Error('Video completado pero sin URL');
-        break;
-      } else if (status === 'FAILED' || status === 'ERROR') {
-        throw new Error('La generación falló en Enhancor: ' + (statusData.error || statusData.message || 'sin detalle'));
-      }
-      // Si sigue en PENDING/IN_QUEUE/IN_PROGRESS, continuar
-    }
-
-    if (!_generatedVideoUrl) throw new Error('Tiempo de espera agotado. El video tardó demasiado.');
-
-    // --- Finalizar ---
-    msgEl.textContent = '✦ ¡Video listo!';
-    await setBar(100, 500);
-
-    setTimeout(()=>{ nxt.style.display='inline-flex'; }, 400);
+    setTimeout(()=>{
+      msgEl.style.color = '';
+      showScreen('historial');
+      goGenStep(1); // reset generator para la próxima vez
+    }, 3500);
 
   } catch(err) {
     console.error('runGeneration error:', err);
@@ -2484,50 +2454,118 @@ function setupPreview(){
 }
 
 /* ---- History ---- */
-const histData=[
-  {actor:'Sofia',tag:'Lifestyle',date:'hace 2 días',dur:'30s'},
-  {actor:'Facu',tag:'Casual',date:'hace 5 días',dur:'15s'},
-  {actor:'Paula',tag:'Dinámica',date:'hace 8 días',dur:'10s'},
-  {actor:'José',tag:'Confiable',date:'hace 11 días',dur:'10s'},
-  {actor:'Sofia',tag:'Lifestyle',date:'hace 14 días',dur:'15s'},
-  {actor:'Facu',tag:'Casual',date:'hace 18 días',dur:'5s'},
-];
 let histView='grid';
+let historyData=[];
+
 function setHistView(v){
   histView=v;
   document.getElementById('btnGrid').classList.toggle('active',v==='grid');
   document.getElementById('btnList').classList.toggle('active',v==='list');
   renderHistory();
 }
+
+function timeAgo(dateStr){
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diff/60000);
+  const hrs = Math.floor(diff/3600000);
+  const days = Math.floor(diff/86400000);
+  if(min < 1) return 'ahora';
+  if(min < 60) return `hace ${min} min`;
+  if(hrs < 24) return `hace ${hrs}h`;
+  return `hace ${days} día${days>1?'s':''}`;
+}
+
+function statusBadge(status){
+  const map = {
+    COMPLETED: ['✅','#22c55e'],
+    FAILED:    ['❌','#ef4444'],
+    IN_PROGRESS:['⚙️','#f59e0b'],
+    IN_QUEUE:  ['🕐','#f59e0b'],
+    PENDING:   ['🕐','#f59e0b'],
+  };
+  const [icon, color] = map[status] || ['🕐','#888'];
+  return `<span style="font-size:11px;color:${color};font-weight:600;">${icon} ${status}</span>`;
+}
+
 function renderHistory(){
   const c=document.getElementById('histContent');
+  if(!historyData.length){
+    c.innerHTML='<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ningún video.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>';
+    return;
+  }
   if(histView==='grid'){
-    c.innerHTML='<div class="a-hist-grid">'+histData.map(v=>`
+    c.innerHTML='<div class="a-hist-grid">'+historyData.map((v,i)=>`
       <div class="a-hist-card">
-        <div class="a-hist-thumb">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2a2a2a" stroke-width="1.5"><polygon points="3,2 15,9 3,16"/></svg>
-          <div class="a-hist-overlay">
-            <button class="btn-w" style="font-size:12px;padding:7px 14px;" onclick="showToast('Descargando...')">⬇ Descargar</button>
-          </div>
+        <div class="a-hist-thumb" style="position:relative;overflow:hidden;cursor:${v.status==='COMPLETED'&&v.video_url?'pointer':'default'};" ${v.status==='COMPLETED'&&v.video_url?`onclick="openVideoModal('${v.video_url}','${v.actor||''}')"`:''}>
+          ${v.status==='COMPLETED'&&v.video_url
+            ? `<video src="${v.video_url}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+               <div class="a-hist-overlay">
+                 <button class="btn-w" style="font-size:12px;padding:7px 14px;" onclick="event.stopPropagation();downloadVideo('${v.video_url}','${v.actor||'video'}')">⬇ Descargar</button>
+               </div>`
+            : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;">
+                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#555" stroke-width="1.5"><polygon points="3,2 15,9 3,16"/></svg>
+                 ${statusBadge(v.status)}
+               </div>`
+          }
         </div>
         <div class="a-hist-info">
-          <div class="a-hist-actor">${v.actor} · ${v.tag}</div>
-          <div class="a-hist-meta">${v.dur} · ${v.date}</div>
+          <div class="a-hist-actor">${v.actor||'Actor'}</div>
+          <div class="a-hist-meta">${v.duration||''}s · ${timeAgo(v.created_at)}</div>
         </div>
       </div>`).join('')+'</div>';
   } else {
-    c.innerHTML='<div class="a-hist-list">'+histData.map(v=>`
+    c.innerHTML='<div class="a-hist-list">'+historyData.map(v=>`
       <div class="a-hist-row">
-        <div class="a-hist-row-thumb">
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#2a2a2a" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>
+        <div class="a-hist-row-thumb" style="cursor:${v.status==='COMPLETED'&&v.video_url?'pointer':'default'};" ${v.status==='COMPLETED'&&v.video_url?`onclick="openVideoModal('${v.video_url}','${v.actor||''}')"`:''}>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#aaa" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>
         </div>
         <div class="a-hist-row-info">
-          <div class="a-hist-row-name">${v.actor} · ${v.tag}</div>
-          <div class="a-hist-row-meta">${v.date}</div>
+          <div class="a-hist-row-name">${v.actor||'Actor'}</div>
+          <div class="a-hist-row-meta">${timeAgo(v.created_at)}</div>
         </div>
-        <div style="font-size:12px;color:var(--text2);margin-right:10px;">${v.dur}</div>
-        <button class="btn-ghost-sm" onclick="showToast('Descargando...')">⬇ Descargar</button>
+        <div style="margin-right:10px;">${statusBadge(v.status)}</div>
+        ${v.status==='COMPLETED'&&v.video_url
+          ? `<button class="btn-ghost-sm" onclick="downloadVideo('${v.video_url}','${v.actor||'video'}')">⬇ Descargar</button>`
+          : `<div style="font-size:11px;color:#666;padding:0 8px;">${v.duration||''}s</div>`
+        }
       </div>`).join('')+'</div>';
+  }
+}
+
+function downloadVideo(url, name){
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `futuriads-${name}-${Date.now()}.mp4`;
+  a.target = '_blank';
+  a.click();
+}
+
+function openVideoModal(url, actor){
+  // Crear modal de video si no existe
+  let modal = document.getElementById('videoModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'videoModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;';
+    modal.onclick = (e)=>{ if(e.target===modal) closeVideoModal(); };
+    modal.innerHTML = `
+      <video id="videoModalPlayer" controls autoplay style="max-height:80vh;max-width:90vw;border-radius:12px;"></video>
+      <div style="display:flex;gap:12px;">
+        <button class="btn-w" id="videoModalDl" style="font-size:14px;">⬇ Descargar MP4</button>
+        <button class="btn-outline" onclick="closeVideoModal()" style="border-radius:8px;font-size:14px;">✕ Cerrar</button>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  document.getElementById('videoModalPlayer').src = url;
+  document.getElementById('videoModalDl').onclick = ()=>downloadVideo(url, actor);
+  modal.style.display = 'flex';
+}
+
+function closeVideoModal(){
+  const modal = document.getElementById('videoModal');
+  if(modal){
+    document.getElementById('videoModalPlayer').pause();
+    modal.style.display = 'none';
   }
 }
 
