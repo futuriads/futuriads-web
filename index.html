@@ -680,6 +680,43 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%       { opacity: 0.2; transform: scale(0.7); }
 }
+/* Widget de créditos en el sidebar */
+.a-credits-widget {
+  margin: 0 16px 12px;
+  padding: 12px 14px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm, 10px);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
+.a-credits-widget-label {
+  font-size: 11px; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+.a-credits-widget-amount {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  letter-spacing: -.3px;
+}
+.a-credits-widget-amount.low { color: #f59e0b; }
+.a-credits-widget-amount.empty { color: #ef4444; }
+.a-credits-widget-sub {
+  font-size: 10px; color: var(--text2); margin-top: 2px;
+}
+.a-sidebar.collapsed .a-credits-widget { display: none; }
+
+/* Resumen de créditos arriba de cada pantalla de generación */
+.a-credits-quote {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--card2); border: 1px solid var(--border);
+  font-size: 12px; color: var(--text2);
+  margin-left: 8px;
+}
+.a-credits-quote strong { color: var(--text); font-weight: 700; }
+
 .a-sidebar-bottom {
   padding: 14px 16px;
   border-top: 1px solid var(--border);
@@ -1362,29 +1399,36 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- CREDITS MODAL -->
+<!-- CREDITS MODAL (recarga / topup) -->
 <div class="modal-overlay" id="creditsModal">
   <div class="modal-card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="modal-title">Recargar créditos</div>
+      <div class="modal-title" id="creditsModalTitle">Recargar créditos</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-sub">Cada video consume créditos según el modelo y la duración.</div>
+    <div class="modal-sub" id="creditsModalSub">Los créditos comprados como recarga no caducan nunca.</div>
     <div class="modal-opts">
-      <div class="modal-opt" onclick="selectCredit(this, 500)">
-        <div class="modal-opt-credits">500 créditos</div>
-        <div class="modal-opt-price">$9</div>
-      </div>
-      <div class="modal-opt selected" onclick="selectCredit(this, 1500)">
-        <div class="modal-opt-credits">1500 créditos</div>
-        <div class="modal-opt-price">$19</div>
-      </div>
-      <div class="modal-opt" onclick="selectCredit(this, 5000)">
-        <div class="modal-opt-credits">5000 créditos</div>
-        <div class="modal-opt-price">$49</div>
+      <div class="modal-opt selected" id="topupOption">
+        <div class="modal-opt-credits" id="topupCreditsLabel">— créditos</div>
+        <div class="modal-opt-price" id="topupPriceLabel">$—</div>
       </div>
     </div>
-    <button class="btn-w" style="width:100%;justify-content:center;" onclick="closeModal();showToast('Redirigiendo al checkout...')">Continuar →</button>
+    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar →</button>
+  </div>
+</div>
+
+<!-- INSUFFICIENT CREDITS MODAL (lo abre el flujo cuando el backend devuelve 402) -->
+<div class="modal-overlay" id="noCreditsModal">
+  <div class="modal-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div class="modal-title">Te quedaste sin créditos</div>
+      <button class="modal-close" onclick="closeNoCreditsModal()">✕</button>
+    </div>
+    <div class="modal-sub" id="noCreditsModalSub">Esta generación necesita más créditos de los que tenés disponibles.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin:18px 0;">
+      <button class="btn-w" style="width:100%;justify-content:center;" onclick="closeNoCreditsModal();openCreditsModal()">Recargar créditos</button>
+      <button class="btn-outline" id="noCreditsUpgradeBtn" style="width:100%;justify-content:center;display:none;" onclick="closeNoCreditsModal();showScreen('perfil')">Ver planes</button>
+    </div>
   </div>
 </div>
 
@@ -1681,6 +1725,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-nav-label">Perfil</span>
       </div>
     </nav>
+    <div class="a-credits-widget" id="creditsWidget" onclick="showScreen('perfil')">
+      <div class="a-credits-widget-label">Créditos</div>
+      <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
+      <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
+    </div>
     <div class="a-sidebar-bottom">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
       <div class="a-user-info">
@@ -2155,13 +2204,16 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="a-profile-card">
           <div class="a-profile-card-title">Mi plan</div>
           <div class="a-plan-row">
-            <div class="a-metric-badge" id="profilePlan">Free</div>
+            <div class="a-metric-badge" id="profilePlan">—</div>
             <div class="a-plan-price" id="profilePlanPrice">$0<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span></div>
           </div>
-          <div class="a-plan-videos-text">Videos: 3 de 15 usados</div>
-          <div class="a-plan-bar-bg"><div class="a-plan-bar-fill"></div></div>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:20px;">12 videos restantes · Renueva 1 mayo</div>
-          <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('Redirigiendo a checkout...')">Upgradear a Pro →</button>
+          <div class="a-plan-videos-text">Cargando...</div>
+          <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
+          <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan →</button>
+            <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
+          </div>
         </div>
         <div class="a-profile-card">
           <div class="a-profile-card-title">Mi cuenta</div>
@@ -2579,13 +2631,20 @@ function getFirstName(name) {
 }
 
 function getPlanInfo(plan) {
+  // Espejo de la config del backend en server.js > PLANS
   const plans = {
-    'free':     { label: 'Free',     price: '$0' },
-    'standard': { label: 'Standard', price: '$29' },
-    'pro':      { label: 'Pro',      price: '$59' }
+    'none':    { label: 'Sin plan', price: '$0',  credits: 0,      topup_price: 0, topup_credits: 0    },
+    'starter': { label: 'Starter',  price: '$19', credits: 15000,  topup_price: 9, topup_credits: 8000 },
+    'growth':  { label: 'Growth',   price: '$49', credits: 50000,  topup_price: 7, topup_credits: 8000 },
+    'scale':   { label: 'Scale',    price: '$129',credits: 150000, topup_price: 5, topup_credits: 8000 }
   };
-  return plans[plan] || plans.free;
+  return plans[plan] || plans.none;
 }
+
+// Guardamos los datos del usuario actual acá para poder leerlos desde
+// otras funciones (cálculo de costo, modal de upgrade, etc.) sin volver
+// a pegarle al backend cada vez.
+let _currentUser = null;
 
 async function loadProfile() {
   try {
@@ -2600,40 +2659,158 @@ async function loadProfile() {
     const userEmail = session.user.email;
 
     // PASO INTERMEDIO: actualizar el UI con datos mínimos (email + iniciales del email)
-    // para que el usuario nunca vea "Cargando..." infinito si la query a profiles tarda o falla.
+    // para que el usuario nunca vea "Cargando..." infinito si la query tarda o falla.
     updateProfileUI({
       full_name: userEmail.split('@')[0],
       country: '—',
-      plan: 'free'
+      plan: 'none',
+      subscription_credits: 0,
+      topup_credits: 0
     }, userEmail);
 
-    // 2. Consultar la tabla profiles para obtener los datos reales
-    let profile = null;
+    // 2. Llamar a /api/me en el backend, que aplica el reset de créditos lazy
+    //    y devuelve los datos completos (perfil + créditos + plan).
+    let me = null;
     try {
-      const { data, error } = await supa.from('profiles').select('*').eq('id', userId).single();
-      if (error) {
-        console.error('Error cargando perfil:', error);
-        return; // El UI mínimo ya fue mostrado arriba
+      const resp = await fetch(BACKEND_URL + '/api/me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      if (resp.ok) {
+        me = await resp.json();
+      } else {
+        console.error('Error en /api/me:', resp.status);
       }
-      profile = data;
-    } catch (queryErr) {
-      console.error('Excepción cargando perfil:', queryErr);
-      return; // El UI mínimo ya fue mostrado arriba
+    } catch (apiErr) {
+      console.error('Excepción llamando /api/me:', apiErr);
     }
 
-    // 3. Actualizar el UI con los datos completos
-    if (profile) {
-      updateProfileUI(profile, userEmail);
+    // 3. Si /api/me falló, hacemos fallback a leer profiles directo (UI mínimo)
+    if (!me) {
+      try {
+        const { data, error } = await supa.from('profiles').select('*').eq('id', userId).single();
+        if (!error && data) {
+          me = {
+            full_name: data.full_name,
+            country: data.country,
+            plan: data.plan || 'none',
+            subscription_credits: data.subscription_credits || 0,
+            topup_credits: data.topup_credits || 0,
+            period_end: data.period_end
+          };
+        }
+      } catch (queryErr) {
+        console.error('Excepción cargando perfil de fallback:', queryErr);
+      }
+    }
+
+    if (me) {
+      _currentUser = { ...me, userId, email: userEmail };
+      updateProfileUI(me, userEmail);
     }
   } catch (e) {
     console.error('Error en loadProfile:', e);
   }
 }
 
+/**
+ * Refresca solo los créditos del usuario actual (después de generar algo).
+ * No recarga todo el perfil porque sería overkill.
+ */
+async function refreshCredits() {
+  if (!_currentUser || !_currentUser.userId) return;
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/me', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: _currentUser.userId })
+    });
+    if (!resp.ok) return;
+    const me = await resp.json();
+    _currentUser = { ..._currentUser, ...me };
+    updateCreditsUI(me);
+  } catch (e) {
+    console.error('Error refrescando créditos:', e);
+  }
+}
+
+/**
+ * Actualiza el widget de créditos del sidebar y el card de plan en el perfil.
+ * Se llama desde updateProfileUI y desde refreshCredits.
+ */
+function updateCreditsUI(me) {
+  const sub = me.subscription_credits || 0;
+  const top = me.topup_credits || 0;
+  const total = sub + top;
+  const plan = me.plan || 'none';
+  const planInfo = getPlanInfo(plan);
+
+  // Widget del sidebar
+  const widgetAmount = document.getElementById('creditsWidgetAmount');
+  const widgetSub = document.getElementById('creditsWidgetSub');
+  if (widgetAmount) {
+    widgetAmount.textContent = total.toLocaleString('es-AR');
+    widgetAmount.classList.remove('low', 'empty');
+    if (total === 0) widgetAmount.classList.add('empty');
+    else if (planInfo.credits > 0 && total < planInfo.credits * 0.15) widgetAmount.classList.add('low');
+  }
+  if (widgetSub) {
+    if (plan === 'none') {
+      widgetSub.textContent = 'Suscribite para empezar';
+    } else if (top > 0 && sub > 0) {
+      widgetSub.textContent = `${sub.toLocaleString('es-AR')} suscripción · ${top.toLocaleString('es-AR')} recarga`;
+    } else if (top > 0) {
+      widgetSub.textContent = `${top.toLocaleString('es-AR')} de recarga (no caducan)`;
+    } else if (me.period_end) {
+      const days = Math.max(0, Math.ceil((new Date(me.period_end) - new Date()) / (1000 * 60 * 60 * 24)));
+      widgetSub.textContent = `Renueva en ${days} día${days === 1 ? '' : 's'}`;
+    } else {
+      widgetSub.textContent = planInfo.label;
+    }
+  }
+
+  // Card del perfil ("Mi plan")
+  const profilePlan = document.getElementById('profilePlan');
+  const profilePlanPrice = document.getElementById('profilePlanPrice');
+  if (profilePlan) profilePlan.textContent = planInfo.label;
+  if (profilePlanPrice) profilePlanPrice.innerHTML = planInfo.price + '<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span>';
+
+  const planVideosText = document.querySelector('.a-plan-videos-text');
+  const planBarFill = document.querySelector('.a-plan-bar-fill');
+  const planRenewalText = document.querySelector('.a-plan-card-renewal');
+
+  if (planVideosText) {
+    if (plan === 'none') {
+      planVideosText.textContent = 'No tenés plan activo';
+    } else {
+      const used = Math.max(0, planInfo.credits - sub);
+      planVideosText.textContent = `Suscripción: ${used.toLocaleString('es-AR')} de ${planInfo.credits.toLocaleString('es-AR')} créditos usados`;
+    }
+  }
+  if (planBarFill) {
+    let pct = 0;
+    if (plan !== 'none' && planInfo.credits > 0) {
+      const used = Math.max(0, planInfo.credits - sub);
+      pct = Math.min(100, Math.round(used / planInfo.credits * 100));
+    }
+    planBarFill.style.width = pct + '%';
+  }
+  if (planRenewalText) {
+    if (plan === 'none') {
+      planRenewalText.textContent = 'Suscribite para acceder a todos los modelos';
+    } else if (me.period_end) {
+      const d = new Date(me.period_end);
+      const days = Math.max(0, Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24)));
+      planRenewalText.textContent = `${sub.toLocaleString('es-AR')} créditos restantes · Renueva en ${days} día${days === 1 ? '' : 's'}` + (top > 0 ? ` · ${top.toLocaleString('es-AR')} de recarga` : '');
+    }
+  }
+}
+
 function updateProfileUI(profile, email) {
   const fullName = profile.full_name || 'Usuario';
   const country = profile.country || '—';
-  const plan = profile.plan || 'free';
+  const plan = profile.plan || 'none';
   const initials = getInitials(fullName);
   const firstName = getFirstName(fullName);
   const planInfo = getPlanInfo(plan);
@@ -2650,12 +2827,10 @@ function updateProfileUI(profile, email) {
   const dashGreeting = document.getElementById('dashGreeting');
   if (dashGreeting) dashGreeting.textContent = '¡Hola, ' + firstName + '!';
 
-  // Profile page
+  // Profile page (datos personales)
   const profileAvatar = document.getElementById('profileAvatar');
   const profileName = document.getElementById('profileName');
   const profileEmail = document.getElementById('profileEmail');
-  const profilePlan = document.getElementById('profilePlan');
-  const profilePlanPrice = document.getElementById('profilePlanPrice');
   const profileFieldName = document.getElementById('profileFieldName');
   const profileFieldEmail = document.getElementById('profileFieldEmail');
   const profileFieldCountry = document.getElementById('profileFieldCountry');
@@ -2663,11 +2838,12 @@ function updateProfileUI(profile, email) {
   if (profileAvatar) profileAvatar.textContent = initials;
   if (profileName) profileName.textContent = fullName;
   if (profileEmail) profileEmail.textContent = email;
-  if (profilePlan) profilePlan.textContent = planInfo.label;
-  if (profilePlanPrice) profilePlanPrice.innerHTML = planInfo.price + '<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span>';
   if (profileFieldName) profileFieldName.textContent = fullName;
   if (profileFieldEmail) profileFieldEmail.textContent = email;
   if (profileFieldCountry) profileFieldCountry.textContent = country;
+
+  // Créditos y card de plan (delegamos a updateCreditsUI)
+  updateCreditsUI(profile);
 }
 
 function openSignOutModal() {
@@ -2744,15 +2920,72 @@ function showToast(msg){
   setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),300);},3000);
 }
 
-/* ---- Credits modal ---- */
-function openModal(){ document.getElementById('creditsModal').classList.add('open'); }
-function closeModal(){ document.getElementById('creditsModal').classList.remove('open'); }
-function selectCredit(el,amt){
-  document.querySelectorAll('.modal-opt').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
+/* ---- Credits modal (recarga / topup) ---- */
+function openModal(){ openCreditsModal(); }
+
+function openCreditsModal() {
+  // Llenamos el modal con los datos reales del plan del usuario
+  const plan = (_currentUser && _currentUser.plan) || 'none';
+  const planInfo = getPlanInfo(plan);
+  const titleEl = document.getElementById('creditsModalTitle');
+  const subEl = document.getElementById('creditsModalSub');
+  const creditsEl = document.getElementById('topupCreditsLabel');
+  const priceEl = document.getElementById('topupPriceLabel');
+  const continueBtn = document.getElementById('topupContinueBtn');
+
+  if (plan === 'none') {
+    if (titleEl) titleEl.textContent = 'Necesitás un plan activo';
+    if (subEl) subEl.textContent = 'Para recargar créditos primero tenés que tener un plan. Las recargas se compran al precio del plan que tengas.';
+    if (creditsEl) creditsEl.textContent = '—';
+    if (priceEl) priceEl.textContent = '—';
+    if (continueBtn) continueBtn.textContent = 'Ver planes';
+  } else {
+    if (titleEl) titleEl.textContent = 'Recargar créditos';
+    if (subEl) subEl.textContent = `Plan ${planInfo.label}: ${planInfo.topup_credits.toLocaleString('es-AR')} créditos extra por $${planInfo.topup_price}. No caducan.`;
+    if (creditsEl) creditsEl.textContent = planInfo.topup_credits.toLocaleString('es-AR') + ' créditos';
+    if (priceEl) priceEl.textContent = '$' + planInfo.topup_price;
+    if (continueBtn) continueBtn.textContent = 'Continuar →';
+  }
+  document.getElementById('creditsModal').classList.add('open');
 }
+
+function closeModal(){ document.getElementById('creditsModal').classList.remove('open'); }
+
+function handleTopupCheckout() {
+  closeModal();
+  // TODO: cuando se integre Paddle, acá disparamos el checkout de la recarga.
+  // Por ahora, solo informamos al usuario.
+  if (!_currentUser || _currentUser.plan === 'none') {
+    showToast('El sistema de pagos se habilita pronto');
+  } else {
+    showToast('Sistema de pagos en integración. Próximamente.');
+  }
+}
+
 document.getElementById('creditsModal').addEventListener('click',function(e){
   if(e.target===this) closeModal();
+});
+
+/* ---- Insufficient credits modal ---- */
+function showNoCreditsModal({ cost, available, plan }) {
+  const sub = document.getElementById('noCreditsModalSub');
+  const upgradeBtn = document.getElementById('noCreditsUpgradeBtn');
+  if (sub) {
+    if (plan === 'none') {
+      sub.textContent = 'Todavía no tenés un plan activo. Suscribite para empezar a generar.';
+      if (upgradeBtn) upgradeBtn.style.display = '';
+    } else {
+      sub.textContent = `Esta generación cuesta ${cost.toLocaleString('es-AR')} créditos y vos tenés ${available.toLocaleString('es-AR')}. Recargá créditos o esperá al próximo ciclo.`;
+      if (upgradeBtn) upgradeBtn.style.display = '';
+    }
+  }
+  document.getElementById('noCreditsModal').classList.add('open');
+}
+function closeNoCreditsModal() {
+  document.getElementById('noCreditsModal').classList.remove('open');
+}
+document.getElementById('noCreditsModal').addEventListener('click', function(e){
+  if (e.target === this) closeNoCreditsModal();
 });
 
 /* ---- Gen tab ---- */
@@ -2963,10 +3196,30 @@ async function runGeneration(){
         userId: (await supa.auth.getSession()).data?.session?.user?.id || null
       })
     });
+    // Caso especial: créditos insuficientes
+    if (genRes.status === 402) {
+      const errData = await genRes.json().catch(() => ({}));
+      bar.style.width = '0%';
+      msgEl.textContent = '✦ Sin créditos suficientes';
+      msgEl.style.color = '#f59e0b';
+      showNoCreditsModal({
+        cost: errData.cost || 0,
+        available: errData.available || 0,
+        plan: errData.plan || 'none'
+      });
+      // Botón para volver al paso 2
+      nxt.textContent = '← Volver';
+      nxt.onclick = () => { goGenStep(2); };
+      nxt.style.display = 'inline-flex';
+      return;
+    }
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
     const genData = await genRes.json();
     _generatedRequestId = genData.requestId || genData.request_id || genData.id;
     if (!_generatedRequestId) throw new Error('No se recibió requestId del backend');
+
+    // Refrescar contador de créditos en el sidebar después de descontar
+    refreshCredits();
 
     // --- Paso 3: Video encolado, avisar al usuario y redirigir al historial ---
     msgEl.textContent = '✦ Video encolado correctamente';
@@ -3512,6 +3765,25 @@ async function generateImage(){
       })
     });
 
+    if (response.status === 402) {
+      clearInterval(progInterval);
+      const errData = await response.json().catch(() => ({}));
+      if (bar) bar.style.width = '0%';
+      msgEl.textContent = '✦ Sin créditos suficientes';
+      msgEl.style.color = '#f59e0b';
+      showNoCreditsModal({
+        cost: errData.cost || 0,
+        available: errData.available || 0,
+        plan: errData.plan || 'none'
+      });
+      // Volver al step 1 después de un toque
+      setTimeout(() => {
+        msgEl.style.color = '';
+        goImgStep(1);
+      }, 2000);
+      return;
+    }
+
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
       // Caso especial: el backend pudo encolar en Enhancor pero falló el insert en DB
@@ -3527,6 +3799,9 @@ async function generateImage(){
     const data = await response.json();
     _generatedImageRequestId = data.requestId;
     console.log('[generateImage] requestId recibido:', _generatedImageRequestId);
+
+    // Refrescar contador de créditos en el sidebar después de descontar
+    refreshCredits();
 
     msgEl.textContent = '✦ Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
 
