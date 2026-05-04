@@ -886,6 +886,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   height: 100%; gap: 10px; color: #777;
 }
 
+/* Filtros del historial */
+.a-hist-filters {
+  display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.a-hist-filter {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 999px; padding: 7px 16px;
+  font-size: 12px; color: var(--text2); font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.a-hist-filter:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+.a-hist-filter.active {
+  background: #fff; color: #000; border-color: #fff; font-weight: 600;
+}
+
 /* List view (compact) */
 .a-hist-list { display: flex; flex-direction: column; gap: 8px; max-width: 980px; }
 .a-hist-row {
@@ -981,6 +997,47 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .img-model-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 .img-model-desc { font-size: 11px; color: var(--text2); }
+
+/* Aspect ratio visual indicator (rectángulo proporcional al lado del label) */
+.ar-visual {
+  display: inline-flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+.ar-box {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 2px;
+}
+.custom-select-option.selected .ar-box,
+.custom-select-trigger .ar-box {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.5);
+}
+/* Tamaños proporcionales (max 18px en cualquier dimensión) */
+.ar-box.ar-1-1   { width: 18px; height: 18px; }
+.ar-box.ar-9-16  { width: 11px; height: 18px; }
+.ar-box.ar-16-9  { width: 18px; height: 10px; }
+.ar-box.ar-4-5   { width: 14px; height: 18px; }
+.ar-box.ar-3-4   { width: 14px; height: 18px; }
+.ar-box.ar-2-3   { width: 12px; height: 18px; }
+.ar-box.ar-3-2   { width: 18px; height: 12px; }
+.ar-box.ar-21-9  { width: 22px; height: 9px; }
+.ar-box.ar-9-21  { width: 9px; height: 22px; }
+.ar-box.ar-1-2   { width: 9px; height: 18px; }
+.ar-box.ar-2-1   { width: 18px; height: 9px; }
+.ar-box.ar-4-3   { width: 18px; height: 14px; }
+.ar-box.ar-5-4   { width: 18px; height: 14px; }
+.ar-box.ar-1-4   { width: 5px; height: 20px; }
+.ar-box.ar-4-1   { width: 22px; height: 5px; }
+.ar-box.ar-1-8   { width: 4px; height: 22px; }
+.ar-box.ar-8-1   { width: 22px; height: 4px; }
+.ar-box.ar-auto  {
+  width: 16px; height: 16px;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.4);
+}
+.custom-select-trigger .ar-visual { gap: 8px; }
 
 .img-ref-thumb {
   position: relative; width: 80px; height: 80px;
@@ -1674,37 +1731,39 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-gen-opts" id="imageOpts">
             <div class="custom-select" id="cs-img-model">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-model')">
-                <span>GPT-4o Images</span>
+                <span>GPT Image 2</span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-img-model', this)">GPT-4o Images</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-model', this)">Flux Pro</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-model', this)">DALL-E 3</div>
+                <div class="custom-select-option selected" data-value="gpt-image-2" onclick="selectCustomOption('cs-img-model', this)">GPT Image 2</div>
+                <div class="custom-select-option" data-value="nano-banana-2" onclick="selectCustomOption('cs-img-model', this)">Nano Banana 2</div>
               </div>
             </div>
             <div class="custom-select" id="cs-img-aspect">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-aspect')">
-                <span>1:1</span>
+                <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-img-aspect', this)">1:1</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-aspect', this)">3:2</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-aspect', this)">16:9</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-aspect', this)">9:16</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-aspect', this)">2:3</div>
+                <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></div>
+                <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
+                <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
+                <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-4-5"></span>4:5</span></div>
+                <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-4"></span>3:4</span></div>
+                <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-2-3"></span>2:3</span></div>
+                <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-2"></span>3:2</span></div>
+                <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-auto"></span>Auto</span></div>
               </div>
             </div>
             <div class="custom-select" id="cs-img-quality">
               <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-quality')">
-                <span>HD</span>
+                <span>2K</span>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-quality', this)">Standard</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-img-quality', this)">HD</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-img-quality', this)">Ultra</div>
+                <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-quality', this)">1K</div>
+                <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-quality', this)">2K</div>
+                <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-quality', this)">4K</div>
               </div>
             </div>
           </div>
@@ -1959,31 +2018,17 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="a-select-row">
           <div class="custom-select" id="cs-img-step-ratio">
             <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-step-ratio')">
-              <span>1:1 — Cuadrado</span>
+              <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
             </div>
-            <div class="custom-select-dropdown">
-              <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-step-ratio', this)">1:1 — Cuadrado</div>
-              <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-step-ratio', this)">9:16 — Vertical</div>
-              <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-step-ratio', this)">16:9 — Horizontal</div>
-              <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-step-ratio', this)">4:5 — Portrait</div>
-              <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-step-ratio', this)">3:4 — Portrait</div>
-              <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-step-ratio', this)">2:3 — Vertical</div>
-              <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-step-ratio', this)">3:2 — Foto clásica</div>
-              <div class="custom-select-option" data-value="21:9" onclick="selectCustomOption('cs-img-step-ratio', this)">21:9 — Cine</div>
-              <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-step-ratio', this)">Auto</div>
-            </div>
+            <div class="custom-select-dropdown" id="cs-img-step-ratio-dd"></div>
           </div>
           <div class="custom-select" id="cs-img-step-res">
             <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-step-res')">
-              <span>2K — Estándar</span>
+              <span>2K</span>
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
             </div>
-            <div class="custom-select-dropdown">
-              <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-step-res', this)">1K — Borrador</div>
-              <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-step-res', this)">2K — Estándar</div>
-              <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-step-res', this)">4K — Alta resolución</div>
-            </div>
+            <div class="custom-select-dropdown" id="cs-img-step-res-dd"></div>
           </div>
         </div>
 
@@ -2009,7 +2054,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Step 2: Loading -->
       <div id="img-step-2" style="display:none;">
         <div class="a-gen-title">Generando tu imagen</div>
-        <p class="a-gen-sub" id="imgLoadingMsg">✦ Encolando en Enhancor...</p>
+        <p class="a-gen-sub" id="imgLoadingMsg">✦ Preparando tu imagen...</p>
         <div class="a-progress-bar" style="margin:24px 0;max-width:500px;">
           <div class="a-progress-fill" id="imgProgressBar" style="width:0%;"></div>
         </div>
@@ -2045,6 +2090,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3h11M1 6.5h11M1 10h11" stroke-linecap="round"/></svg>
           </button>
         </div>
+      </div>
+      <div class="a-hist-filters">
+        <button class="a-hist-filter active" data-filter="all" onclick="setHistFilter('all')">Todos</button>
+        <button class="a-hist-filter" data-filter="video" onclick="setHistFilter('video')">Videos</button>
+        <button class="a-hist-filter" data-filter="image" onclick="setHistFilter('image')">Imágenes</button>
       </div>
       <div id="histContent"></div>
     </div>
@@ -2106,7 +2156,13 @@ function toggleCustomSelect(id) {
 function selectCustomOption(selectId, optionEl) {
   const el = document.getElementById(selectId);
   const trigger = el.querySelector('.custom-select-trigger span');
-  trigger.textContent = optionEl.textContent;
+  // Si el option tiene HTML interior (ej: ar-visual con mini rectángulo), preservarlo;
+  // si no, usar el texto plano.
+  if (optionEl.querySelector('.ar-visual')) {
+    trigger.innerHTML = optionEl.innerHTML;
+  } else {
+    trigger.textContent = optionEl.textContent;
+  }
   el.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
   optionEl.classList.add('selected');
   el.classList.remove('open');
@@ -2305,7 +2361,7 @@ const BACKEND_URL = 'https://futuriads-backend-production.up.railway.app';
 async function loadHistory() {
   const container = document.getElementById('histContent');
   if (!container) return;
-  container.innerHTML = '<div style="color:#888;padding:40px;text-align:center;">Cargando videos...</div>';
+  container.innerHTML = '<div style="color:#888;padding:40px;text-align:center;">Cargando creaciones...</div>';
   try {
     const { data, error } = await supa.from('videos').select('*').order('created_at', { ascending: false });
     if (error) throw error;
@@ -2330,11 +2386,37 @@ function goToApp(){
       },300);
       // Cargar el perfil del usuario logueado
       loadProfile();
+
+      // Restaurar última pantalla visitada (si existe y es válida)
+      const validScreens = ['dashboard','nuevo','nueva-imagen','historial','perfil'];
+      let lastScreen = 'dashboard';
+      try {
+        const saved = localStorage.getItem('futuriads_lastScreen');
+        if (saved && validScreens.includes(saved)) lastScreen = saved;
+      } catch(e) {}
+      if (lastScreen !== 'dashboard') {
+        // Esperar que la app esté visible antes de cambiar de pantalla
+        setTimeout(() => showScreen(lastScreen), 320);
+      }
     } else {
       openAuthModal('login');
     }
   });
 }
+
+// Auto-bootstrap: si el usuario refresca la página y ya tiene sesión,
+// llevarlo directo a la app sin que tenga que clickear "Empezar"
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (session) {
+      // Espera mínima para que el DOM esté listo
+      setTimeout(() => goToApp(), 50);
+    }
+  } catch(e) {
+    console.log('No active session on load');
+  }
+});
 function goToLanding(){
   const l=document.getElementById('landing'),a=document.getElementById('app');
   a.style.opacity='0';
@@ -2459,6 +2541,8 @@ async function confirmSignOut() {
   document.getElementById('signOutModal').classList.remove('open');
   try {
     await supa.auth.signOut();
+    // Limpiar la pantalla guardada para que un nuevo login arranque limpio
+    try { localStorage.removeItem('futuriads_lastScreen'); } catch(e) {}
   } catch(e) {
     console.error('Error cerrando sesión:', e);
   }
@@ -2467,6 +2551,9 @@ async function confirmSignOut() {
 
 /* ---- Screen nav ---- */
 function showScreen(name){
+  // Persistir la pantalla actual para recuperarla al refresh
+  try { localStorage.setItem('futuriads_lastScreen', name); } catch(e) {}
+
   document.querySelectorAll('.screen').forEach(s=>{
     s.style.opacity='0';
     setTimeout(()=>{s.classList.remove('active');s.style.display='none';},200);
@@ -2479,6 +2566,10 @@ function showScreen(name){
     requestAnimationFrame(()=>{sc.classList.add('active');sc.style.opacity='1';});
   },210);
   if(name==='historial') loadHistory();
+  if(name==='nueva-imagen') {
+    rebuildRatioDropdown();
+    rebuildResDropdown();
+  }
 }
 
 /* ---- Toast ---- */
@@ -2530,6 +2621,23 @@ function startFromDashboard(){
       const promptEl = document.getElementById('imgPromptInput');
       if (promptEl) promptEl.value = dashPrompt;
     }
+    // Sincronizar modelo, aspect ratio y calidad elegidos en el dashboard
+    const dashImgModel = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value;
+    const dashImgAspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value;
+    const dashImgQuality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.dataset.value;
+
+    if (dashImgModel && (dashImgModel === 'gpt-image-2' || dashImgModel === 'nano-banana-2')) {
+      imgSelectedModel = dashImgModel;
+      // Reflejar visualmente en las cards
+      document.querySelectorAll('.img-model-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.model === dashImgModel);
+      });
+    }
+    if (dashImgAspect) imgSelectedRatio = dashImgAspect;
+    if (dashImgQuality) imgSelectedRes = dashImgQuality;
+    rebuildRatioDropdown();
+    rebuildResDropdown();
+
     if (dashPrompt) document.getElementById('genTextarea').value = '';
     return;
   }
@@ -2757,12 +2865,21 @@ function setupPreview(){
 
 /* ---- History ---- */
 let histView='grid';
+let histFilter='all';
 let historyData=[];
 
 function setHistView(v){
   histView=v;
   document.getElementById('btnGrid').classList.toggle('active',v==='grid');
   document.getElementById('btnList').classList.toggle('active',v==='list');
+  renderHistory();
+}
+
+function setHistFilter(f){
+  histFilter = f;
+  document.querySelectorAll('.a-hist-filter').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === f);
+  });
   renderHistory();
 }
 
@@ -2791,8 +2908,25 @@ function statusBadge(status){
 
 function renderHistory(){
   const c=document.getElementById('histContent');
-  if(!historyData.length){
-    c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ninguna creación.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>`;
+
+  // Aplicar filtro Todos / Videos / Imágenes
+  // (los registros viejos sin 'type' los tratamos como video por compatibilidad)
+  let dataToRender = historyData;
+  if (histFilter === 'video') {
+    dataToRender = historyData.filter(v => (v.type || 'video') === 'video');
+  } else if (histFilter === 'image') {
+    dataToRender = historyData.filter(v => v.type === 'image');
+  }
+
+  if(!dataToRender.length){
+    const emptyMsg = histFilter === 'image'
+      ? 'Todavía no generaste ninguna imagen.'
+      : (histFilter === 'video'
+        ? 'Todavía no generaste ningún video.'
+        : 'Todavía no generaste ninguna creación.');
+    const ctaScreen = histFilter === 'image' ? 'nueva-imagen' : 'nuevo';
+    const ctaLabel = histFilter === 'image' ? 'Crear mi primera imagen →' : 'Crear mi primer video →';
+    c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">${emptyMsg}<br><br><button class="btn-w" onclick="showScreen('${ctaScreen}')" style="margin-top:8px;">${ctaLabel}</button></div>`;
     return;
   }
   const escAttr = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
@@ -2806,7 +2940,7 @@ function renderHistory(){
   })[m] || m || '';
 
   if(histView==='grid'){
-    c.innerHTML='<div class="a-hist-grid">'+historyData.map((v,i)=>{
+    c.innerHTML='<div class="a-hist-grid">'+dataToRender.map((v,i)=>{
       const isImage = v.type === 'image';
       const completed = v.status==='COMPLETED' && v.video_url;
       const dur = v.duration ? `${v.duration}s` : '';
@@ -2867,7 +3001,7 @@ function renderHistory(){
       </div>`;
     }).join('')+'</div>';
   } else {
-    c.innerHTML='<div class="a-hist-list">'+historyData.map(v=>{
+    c.innerHTML='<div class="a-hist-list">'+dataToRender.map(v=>{
       const isImage = v.type === 'image';
       const completed = v.status==='COMPLETED' && v.video_url;
       const safeUrl = escAttr(v.video_url);
@@ -2948,15 +3082,98 @@ function downloadVideo(url, name){
    NUEVA IMAGEN — selector de modelo, uploader, generación
    ===================================================== */
 let imgSelectedModel = 'gpt-image-2';
+let imgSelectedRatio = '1:1';
+let imgSelectedRes = '2K';
 let imgRefUrls = []; // URLs públicas de Supabase Storage
 let _generatedImageUrl = null;
 let _generatedImageRequestId = null;
 let _imageRefreshInterval = null;
 
+// Aspect ratios disponibles por modelo (según docs oficiales)
+const IMG_RATIOS = {
+  'gpt-image-2':   ['auto','1:1','3:2','2:3','4:3','3:4','4:5','5:4','16:9','9:16','2:1','1:2','21:9','9:21'],
+  'nano-banana-2': ['auto','1:1','3:2','2:3','4:3','3:4','4:5','5:4','16:9','9:16','21:9','1:4','4:1','1:8','8:1']
+};
+
+// Resoluciones disponibles. GPT Image 2 tiene restricción: 4K solo en algunos ratios.
+const IMG_RESOLUTIONS = ['1K','2K','4K'];
+const GPT_4K_ALLOWED_RATIOS = ['16:9','9:16','2:1','1:2','9:21','21:9'];
+
+// Genera el HTML del mini-rectángulo visual para un ratio dado
+function arBoxHTML(ratio) {
+  if (ratio === 'auto') return '<span class="ar-box ar-auto"></span>';
+  const cls = 'ar-' + ratio.replace(':', '-');
+  return `<span class="ar-box ${cls}"></span>`;
+}
+
+// Etiqueta humana de un ratio (sólo el código numérico)
+function arLabel(ratio) {
+  return ratio === 'auto' ? 'Auto' : ratio;
+}
+
+// Construye el dropdown de aspect ratio en función del modelo y la resolución actual
+function rebuildRatioDropdown(){
+  const dd = document.getElementById('cs-img-step-ratio-dd');
+  if (!dd) return;
+  let ratios = IMG_RATIOS[imgSelectedModel] || IMG_RATIOS['gpt-image-2'];
+
+  // Si la res es 4K en GPT Image 2, filtrar a los ratios permitidos
+  if (imgSelectedModel === 'gpt-image-2' && imgSelectedRes === '4K') {
+    ratios = ratios.filter(r => GPT_4K_ALLOWED_RATIOS.includes(r));
+  }
+
+  // Si el ratio actual no está en la lista nueva, fallback al primero
+  if (!ratios.includes(imgSelectedRatio)) {
+    imgSelectedRatio = ratios[0] || '1:1';
+  }
+
+  dd.innerHTML = ratios.map(r => `
+    <div class="custom-select-option ${r === imgSelectedRatio ? 'selected' : ''}" data-value="${r}" onclick="onPickImgRatio(this)">
+      <span class="ar-visual">${arBoxHTML(r)}<span>${arLabel(r)}</span></span>
+    </div>
+  `).join('');
+
+  // Actualizar el trigger
+  const trigger = document.querySelector('#cs-img-step-ratio .custom-select-trigger span');
+  if (trigger) trigger.innerHTML = `<span class="ar-visual">${arBoxHTML(imgSelectedRatio)}<span>${arLabel(imgSelectedRatio)}</span></span>`;
+}
+
+function rebuildResDropdown(){
+  const dd = document.getElementById('cs-img-step-res-dd');
+  if (!dd) return;
+  dd.innerHTML = IMG_RESOLUTIONS.map(r => {
+    // En GPT Image 2, deshabilitar 4K si el ratio actual no es uno de los permitidos
+    const disabled = (imgSelectedModel === 'gpt-image-2' && r === '4K' && !GPT_4K_ALLOWED_RATIOS.includes(imgSelectedRatio));
+    if (disabled) {
+      return `<div class="custom-select-option" style="opacity:0.4;cursor:not-allowed;" data-value="${r}" title="No disponible para este aspect ratio">${r}</div>`;
+    }
+    return `<div class="custom-select-option ${r === imgSelectedRes ? 'selected' : ''}" data-value="${r}" onclick="onPickImgRes(this)">${r}</div>`;
+  }).join('');
+  const trigger = document.querySelector('#cs-img-step-res .custom-select-trigger span');
+  if (trigger) trigger.textContent = imgSelectedRes;
+}
+
+function onPickImgRatio(el){
+  imgSelectedRatio = el.dataset.value;
+  // Cerrar dropdown
+  document.getElementById('cs-img-step-ratio').classList.remove('open');
+  rebuildRatioDropdown();
+  rebuildResDropdown(); // por si la res 4K queda no disponible
+}
+
+function onPickImgRes(el){
+  imgSelectedRes = el.dataset.value;
+  document.getElementById('cs-img-step-res').classList.remove('open');
+  rebuildResDropdown();
+  rebuildRatioDropdown(); // si bajamos de 4K, los ratios bloqueados vuelven a estar disponibles
+}
+
 function selectImgModel(el){
   document.querySelectorAll('.img-model-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   imgSelectedModel = el.dataset.model;
+  rebuildRatioDropdown();
+  rebuildResDropdown();
 }
 
 function updateImgStepUI(step){
@@ -2988,6 +3205,8 @@ function goImgStep(step){
 
 function resetImageGenerator(){
   imgRefUrls = [];
+  imgSelectedRatio = '1:1';
+  imgSelectedRes = '2K';
   _generatedImageUrl = null;
   _generatedImageRequestId = null;
   if (_imageRefreshInterval) { clearInterval(_imageRefreshInterval); _imageRefreshInterval = null; }
@@ -2997,6 +3216,9 @@ function resetImageGenerator(){
   if (list) list.innerHTML = '';
   const bar = document.getElementById('imgProgressBar');
   if (bar) bar.style.width = '0%';
+  // Reconstruir los dropdowns con valores por defecto
+  rebuildRatioDropdown();
+  rebuildResDropdown();
   goImgStep(1);
 }
 
@@ -3090,17 +3312,8 @@ async function generateImage(){
   const prompt = document.getElementById('imgPromptInput')?.value?.trim() || '';
   if (!prompt) { showToast('Escribí un prompt antes de generar'); return; }
 
-  const ratio = document.querySelector('#cs-img-step-ratio .custom-select-option.selected')?.dataset.value || '1:1';
-  const res = document.querySelector('#cs-img-step-res .custom-select-option.selected')?.dataset.value || '2K';
-
-  // Validación específica de GPT Image 2: 4K solo en algunos ratios
-  if (imgSelectedModel === 'gpt-image-2' && res === '4K') {
-    const allowed4K = ['16:9','9:16','2:1','1:2','9:21','21:9'];
-    if (!allowed4K.includes(ratio)) {
-      showToast(`GPT Image 2 en 4K solo soporta ${allowed4K.join(', ')}`);
-      return;
-    }
-  }
+  const ratio = imgSelectedRatio || '1:1';
+  const res = imgSelectedRes || '2K';
 
   // Obtener userId
   let userId = null;
@@ -3122,7 +3335,7 @@ async function generateImage(){
   }, 800);
 
   try {
-    msgEl.textContent = '✦ Encolando en Enhancor...';
+    msgEl.textContent = '✦ Preparando tu imagen...';
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
@@ -3145,7 +3358,7 @@ async function generateImage(){
     const data = await response.json();
     _generatedImageRequestId = data.requestId;
 
-    msgEl.textContent = '✦ Imagen encolada — esto puede tardar entre 15 segundos y unos minutos...';
+    msgEl.textContent = '✦ Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
 
     // Polling al historial cada 5 segundos para detectar cuando esté lista
     _imageRefreshInterval = setInterval(async () => {
