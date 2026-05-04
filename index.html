@@ -66,6 +66,11 @@
 .custom-select-option:hover { background: #1e1e1e; color: #fff; }
 .custom-select-option.selected { color: #fff; background: #222; }
 
+/* Step 2 — selects más largos que en el dashboard */
+.a-select-row .custom-select { flex: 1 1 220px; min-width: 220px; }
+.a-select-row .custom-select-trigger { padding: 11px 14px; font-size: 14px; }
+.a-select-row .custom-select-option { font-size: 13px; padding: 9px 12px; }
+
 </style>
 
 <template id="__bundler_thumbnail" data-bg-color="#080808">
@@ -823,44 +828,88 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   transition: color 0.2s, border-color 0.2s;
 }
 .a-view-btn.active { color: #fff; border-color: rgba(255,255,255,0.2); }
-.a-hist-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.a-hist-grid { display: grid; grid-template-columns: 1fr; gap: 16px; max-width: 980px; }
+@media (min-width: 1280px) { .a-hist-grid { grid-template-columns: repeat(2, 1fr); } }
 .a-hist-card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); overflow: hidden; cursor: pointer;
-  transition: border-color 0.2s; position: relative;
+  border-radius: var(--r-lg); overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+  display: grid; grid-template-columns: 200px 1fr;
+  min-height: 280px;
 }
-.a-hist-card:hover { border-color: rgba(255,255,255,0.18); }
+.a-hist-card:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
 .a-hist-thumb {
-  aspect-ratio: 9/16; max-height: 130px;
   background: linear-gradient(160deg, #1c1c1c, #0d0d0d);
   display: flex; align-items: center; justify-content: center; position: relative;
+  overflow: hidden;
 }
+.a-hist-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .a-hist-overlay {
-  position: absolute; inset: 0; background: rgba(0,0,0,0.75);
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity 0.2s;
 }
 .a-hist-card:hover .a-hist-overlay { opacity: 1; }
-.a-hist-info { padding: 12px; }
-.a-hist-actor { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.a-hist-meta { font-size: 11px; color: var(--text2); }
-.a-hist-list { display: flex; flex-direction: column; gap: 6px; }
+.a-hist-info {
+  padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;
+  min-width: 0;
+}
+.a-hist-info-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.a-hist-actor { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; }
+.a-hist-meta { font-size: 12px; color: var(--text2); }
+.a-hist-prompt {
+  font-size: 13px; color: #c8c8c8; line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+  overflow: hidden; word-break: break-word;
+}
+.a-hist-specs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto;
+}
+.a-hist-spec {
+  font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  color: #d0d0d0; font-weight: 500;
+}
+.a-hist-status {
+  font-size: 11px; padding: 5px 10px; border-radius: 999px; font-weight: 600;
+  letter-spacing: 0.2px; text-transform: uppercase;
+}
+.a-hist-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+.a-hist-status.pending { background: rgba(234,179,8,0.12); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
+.a-hist-status.failed { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+.a-hist-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.a-hist-pending-thumb {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; gap: 10px; color: #777;
+}
+
+/* List view (compact) */
+.a-hist-list { display: flex; flex-direction: column; gap: 8px; max-width: 980px; }
 .a-hist-row {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 12px 16px;
-  display: flex; align-items: center; gap: 14px;
+  border-radius: var(--r-md); padding: 14px 18px;
+  display: flex; align-items: center; gap: 16px;
   transition: border-color 0.2s;
 }
 .a-hist-row:hover { border-color: rgba(255,255,255,0.18); }
 .a-hist-row-thumb {
-  width: 30px; aspect-ratio: 9/16;
+  width: 56px; aspect-ratio: 9/16;
   background: linear-gradient(160deg, #1e1e1e, #0d0d0d);
-  border-radius: 4px; flex-shrink: 0;
+  border-radius: 6px; flex-shrink: 0; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
 }
-.a-hist-row-info { flex: 1; }
-.a-hist-row-name { font-size: 13px; font-weight: 600; }
+.a-hist-row-thumb video { width: 100%; height: 100%; object-fit: cover; }
+.a-hist-row-info { flex: 1; min-width: 0; }
+.a-hist-row-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
 .a-hist-row-meta { font-size: 11px; color: var(--text2); }
+
+@media (max-width: 720px) {
+  .a-hist-card { grid-template-columns: 1fr; min-height: auto; }
+  .a-hist-thumb { aspect-ratio: 9/16; max-height: 360px; }
+}
 
 /* ==============================================
    APP — GENERATOR STEPS
@@ -880,32 +929,40 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-gen-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 6px; }
 .a-gen-sub { font-size: 14px; color: var(--text2); margin-bottom: 28px; }
 .a-actor-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-  max-width: 500px; margin-bottom: 28px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px;
+  max-width: 760px; margin-bottom: 28px;
 }
 .a-actor-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--r-lg); overflow: hidden; cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.a-actor-card:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
 }
 .a-actor-card.selected {
-  border-color: rgba(255,255,255,0.4);
-  box-shadow: 0 0 24px rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.45);
+  box-shadow: 0 0 32px rgba(255,255,255,0.08);
 }
 .a-actor-thumb {
-  aspect-ratio: 9/16; max-height: 140px;
+  aspect-ratio: 4/5;
   background: linear-gradient(160deg, #1e1e1e, #0d0d0d);
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
 }
 .a-actor-initials {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 64px; height: 64px; border-radius: 50%;
   background: var(--hover); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; color: var(--text2);
+  font-size: 20px; font-weight: 700; color: var(--text2);
 }
-.a-actor-info { padding: 12px; }
-.a-actor-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-.a-actor-tag { font-size: 11px; color: var(--text2); }
+.a-actor-info { padding: 16px 18px; }
+.a-actor-name { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; }
+.a-actor-tag { display: none; }
+@media (max-width: 720px) {
+  .a-actor-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
 .a-script-area {
   width: 100%; max-width: 580px;
   background: var(--card); border: 1px solid var(--border);
@@ -1731,25 +1788,43 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <p class="a-gen-sub">Escribí exactamente lo que querés que diga o haga el actor en el video.</p>
         <textarea class="a-script-area" id="scriptInput" placeholder="Ej: Una chica argentina mirando a cámara dice: &quot;Este producto cambió mi rutina...&quot;" rows="5"></textarea>
         <div class="a-select-row">
-          <select class="a-select-field" id="durSelect">
-            <option value="5">5 segundos</option>
-            <option value="10" selected>10 segundos</option>
-            <option value="15">15 segundos</option>
-          </select>
-          <select class="a-select-field" id="resSelect">
-            <option value="480p">480p — Borrador</option>
-            <option value="720p" selected>720p — HD</option>
-          </select>
+          <div class="custom-select" id="cs-step2-dur">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-step2-dur')">
+              <span>10 segundos</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="custom-select-option" data-value="5" onclick="selectCustomOption('cs-step2-dur', this)">5 segundos</div>
+              <div class="custom-select-option selected" data-value="10" onclick="selectCustomOption('cs-step2-dur', this)">10 segundos</div>
+              <div class="custom-select-option" data-value="15" onclick="selectCustomOption('cs-step2-dur', this)">15 segundos</div>
+            </div>
+          </div>
+          <div class="custom-select" id="cs-step2-res">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-step2-res')">
+              <span>720p — HD</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-step2-res', this)">480p — Borrador</div>
+              <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-step2-res', this)">720p — HD</div>
+            </div>
+          </div>
         </div>
         <div class="a-select-row" style="margin-top:8px;">
-          <select class="a-select-field" id="ratioSelect">
-            <option value="9:16" selected>9:16 — Vertical (Reels/TikTok)</option>
-            <option value="16:9">16:9 — Horizontal (YouTube)</option>
-            <option value="1:1">1:1 — Cuadrado</option>
-            <option value="4:3">4:3 — Clásico</option>
-            <option value="3:4">3:4 — Portrait</option>
-            <option value="21:9">21:9 — Cine</option>
-          </select>
+          <div class="custom-select" id="cs-step2-ratio">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-step2-ratio')">
+              <span>9:16 — Vertical (Reels/TikTok)</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-step2-ratio', this)">9:16 — Vertical (Reels/TikTok)</div>
+              <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-step2-ratio', this)">16:9 — Horizontal (YouTube)</div>
+              <div class="custom-select-option" data-value="1:1" onclick="selectCustomOption('cs-step2-ratio', this)">1:1 — Cuadrado</div>
+              <div class="custom-select-option" data-value="4:3" onclick="selectCustomOption('cs-step2-ratio', this)">4:3 — Clásico</div>
+              <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-step2-ratio', this)">3:4 — Portrait</div>
+              <div class="custom-select-option" data-value="21:9" onclick="selectCustomOption('cs-step2-ratio', this)">21:9 — Cine</div>
+            </div>
+          </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:16px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">← Atrás</button>
@@ -2344,9 +2419,9 @@ async function runGeneration(){
   const actor = selectedActor || 'Sofi';
   const script = document.getElementById('scriptInput')?.value?.trim() || '';
   if (!script) { showToast('Escribí un prompt antes de generar'); return; }
-  const durVal = String(parseInt((document.getElementById('durSelect')?.value || '5').replace(/[^0-9]/g,'')) || 5);
-  const resVal = document.getElementById('resSelect')?.value || '720p';
-  const ratioVal = document.getElementById('ratioSelect')?.value || '9:16';
+  const durVal = document.querySelector('#cs-step2-dur .custom-select-option.selected')?.dataset.value || '10';
+  const resVal = document.querySelector('#cs-step2-res .custom-select-option.selected')?.dataset.value || '720p';
+  const ratioVal = document.querySelector('#cs-step2-ratio .custom-select-option.selected')?.dataset.value || '9:16';
 
   // Animación de progreso suave
   let currentProg = 0;
@@ -2427,7 +2502,7 @@ async function runGeneration(){
 
 function setupPreview(){
   const a = selectedActor || 'Sofi';
-  const dur = document.getElementById('durSelect')?.value || '5';
+  const dur = document.querySelector('#cs-step2-dur .custom-select-option.selected')?.dataset.value || '10';
   document.getElementById('previewActorLabel').textContent = a;
   document.getElementById('previewDur').textContent = dur + 's';
   document.getElementById('previewDate').textContent = new Date().toLocaleDateString('es-AR');
@@ -2493,42 +2568,78 @@ function renderHistory(){
     c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">Todavía no generaste ningún video.<br><br><button class="btn-w" onclick="showScreen('nuevo')" style="margin-top:8px;">Crear mi primer video →</button></div>`;
     return;
   }
+  const escAttr = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
+  const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'?'failed':'pending');
+  const statusLabel = s => s==='COMPLETED'?'Listo':(s==='FAILED'?'Falló':(s==='IN_PROGRESS'?'Generando':'Pendiente'));
+
   if(histView==='grid'){
-    c.innerHTML='<div class="a-hist-grid">'+historyData.map((v,i)=>`
+    c.innerHTML='<div class="a-hist-grid">'+historyData.map((v,i)=>{
+      const completed = v.status==='COMPLETED' && v.video_url;
+      const dur = v.duration ? `${v.duration}s` : '';
+      const res = v.resolution || '720p';
+      const ratio = v.aspect_ratio || '9:16';
+      const prompt = escHtml(v.script || '');
+      const actor = escHtml(v.actor || 'Actor');
+      const safeUrl = escAttr(v.video_url);
+      const safeActor = escAttr(v.actor);
+      return `
       <div class="a-hist-card">
-        <div class="a-hist-thumb" style="position:relative;overflow:hidden;cursor:${v.status==='COMPLETED'&&v.video_url?'pointer':'default'};" ${v.status==='COMPLETED'&&v.video_url?`onclick="openVideoModal('${v.video_url}','${v.actor||''}')"`:''}>
-          ${v.status==='COMPLETED'&&v.video_url
-            ? `<video src="${v.video_url}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+        <div class="a-hist-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="openVideoModal('${safeUrl}','${safeActor}')"`:''}>
+          ${completed
+            ? `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
                <div class="a-hist-overlay">
-                 <button class="btn-w" style="font-size:12px;padding:7px 14px;" onclick="event.stopPropagation();downloadVideo('${v.video_url}','${v.actor||'video'}')">⬇ Descargar</button>
+                 <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeActor}')">▶ Reproducir</button>
                </div>`
-            : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;">
-                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#555" stroke-width="1.5"><polygon points="3,2 15,9 3,16"/></svg>
-                 ${statusBadge(v.status)}
+            : `<div class="a-hist-pending-thumb">
+                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                 <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">${statusLabel(v.status)}</span>
                </div>`
           }
         </div>
         <div class="a-hist-info">
-          <div class="a-hist-actor">${v.actor||'Actor'}</div>
-          <div class="a-hist-meta">${v.duration||''}s · ${timeAgo(v.created_at)}</div>
+          <div class="a-hist-info-head">
+            <div class="a-hist-actor">${actor}</div>
+            <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+          </div>
+          <div class="a-hist-prompt">${prompt || '<span style="color:#666;">Sin prompt</span>'}</div>
+          <div class="a-hist-specs">
+            ${dur?`<span class="a-hist-spec">⏱ ${dur}</span>`:''}
+            <span class="a-hist-spec">📐 ${ratio}</span>
+            <span class="a-hist-spec">🎬 ${res}</span>
+            <span class="a-hist-spec">🕐 ${timeAgo(v.created_at)}</span>
+          </div>
+          ${completed ? `
+            <div class="a-hist-actions">
+              <button class="btn-w" style="font-size:12px;padding:8px 16px;" onclick="downloadVideo('${safeUrl}','${safeActor||'video'}')">⬇ Descargar MP4</button>
+            </div>` : ''}
         </div>
-      </div>`).join('')+'</div>';
+      </div>`;
+    }).join('')+'</div>';
   } else {
-    c.innerHTML='<div class="a-hist-list">'+historyData.map(v=>`
+    c.innerHTML='<div class="a-hist-list">'+historyData.map(v=>{
+      const completed = v.status==='COMPLETED' && v.video_url;
+      const safeUrl = escAttr(v.video_url);
+      const safeActor = escAttr(v.actor);
+      return `
       <div class="a-hist-row">
-        <div class="a-hist-row-thumb" style="cursor:${v.status==='COMPLETED'&&v.video_url?'pointer':'default'};" ${v.status==='COMPLETED'&&v.video_url?`onclick="openVideoModal('${v.video_url}','${v.actor||''}')"`:''}>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#aaa" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>
+        <div class="a-hist-row-thumb" style="cursor:${completed?'pointer':'default'};" ${completed?`onclick="openVideoModal('${safeUrl}','${safeActor}')"`:''}>
+          ${completed
+            ? `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`
+            : `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#aaa" stroke-width="1.5"><polygon points="1,1 9,5 1,9"/></svg>`
+          }
         </div>
         <div class="a-hist-row-info">
-          <div class="a-hist-row-name">${v.actor||'Actor'}</div>
-          <div class="a-hist-row-meta">${timeAgo(v.created_at)}</div>
+          <div class="a-hist-row-name">${escHtml(v.actor||'Actor')}</div>
+          <div class="a-hist-row-meta">${timeAgo(v.created_at)} · ${v.duration||''}s · ${v.aspect_ratio||'9:16'} · ${v.resolution||'720p'}</div>
         </div>
-        <div style="margin-right:10px;">${statusBadge(v.status)}</div>
-        ${v.status==='COMPLETED'&&v.video_url
-          ? `<button class="btn-ghost-sm" onclick="downloadVideo('${v.video_url}','${v.actor||'video'}')">⬇ Descargar</button>`
-          : `<div style="font-size:11px;color:#666;padding:0 8px;">${v.duration||''}s</div>`
+        <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+        ${completed
+          ? `<button class="btn-ghost-sm" onclick="downloadVideo('${safeUrl}','${safeActor||'video'}')">⬇ Descargar</button>`
+          : ''
         }
-      </div>`).join('')+'</div>';
+      </div>`;
+    }).join('')+'</div>';
   }
 }
 
