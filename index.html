@@ -4,27 +4,22 @@
 <script>
 /* Pre-render guard: decide si mostrar landing o app antes del primer paint
    para evitar el "flash" al refrescar.
-   Buscamos la sesión de Supabase en localStorage (la guarda con clave que empieza con sb-).
-   Si existe, asumimos que el usuario está logueado y mostramos la app directamente. */
+   Buscamos la sesión en localStorage (key 'sb_session') Y verificamos que no esté expirada.
+   Si es válida → mostramos la app directamente; si no → la landing. */
 (function(){
   try {
-    let hasSession = false;
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && (k.startsWith('sb-') || k === 'sb_session') && localStorage.getItem(k)) {
-        // Verificar mínimamente que tenga un access_token
-        try {
-          const v = JSON.parse(localStorage.getItem(k));
-          if (v && (v.access_token || v.currentSession?.access_token)) {
-            hasSession = true; break;
-          }
-        } catch(e){
-          // si no es JSON parseable, asumimos que sí (sb_session string)
-          hasSession = true; break;
+    let valid = false;
+    const stored = localStorage.getItem('sb_session');
+    if (stored) {
+      try {
+        const v = JSON.parse(stored);
+        // Verificar token presente y no expirado
+        if (v && v.access_token && v.expires_at && Date.now()/1000 < v.expires_at) {
+          valid = true;
         }
-      }
+      } catch(e) {}
     }
-    document.documentElement.classList.add(hasSession ? 'pre-app' : 'pre-landing');
+    document.documentElement.classList.add(valid ? 'pre-app' : 'pre-landing');
   } catch(e) {
     document.documentElement.classList.add('pre-landing');
   }
@@ -2471,8 +2466,11 @@ function goToApp(){
           requestAnimationFrame(()=>{a.style.opacity='1';});
         },300);
       }
-      // Cargar el perfil del usuario logueado
-      loadProfile();
+      // Cargar el perfil del usuario logueado (con retry por si falla la primera vez)
+      loadProfile().catch(err => {
+        console.error('[goToApp] loadProfile falló, reintentando en 1s:', err);
+        setTimeout(() => loadProfile(), 1000);
+      });
 
       // Restaurar última pantalla visitada (si existe y es válida)
       const validScreens = ['dashboard','nuevo','nueva-imagen','historial','perfil'];
@@ -2509,112 +2507,41 @@ function goToApp(){
   });
 }
 
-/* ----- Bootstrap instantáneo sin flash a landing -----
-   Si detectamos sesión en localStorage al cargar el script,
-   inmediatamente ocultamos la landing y mostramos la app
-   con la pantalla correcta - SIN transiciones, SIN delay.
-*/
-(function instantBootstrap(){
-  try {
-    const sessRaw = localStorage.getItem('sb_session');
-    if (!sessRaw) return; // no hay sesión guardada → flujo normal
-
-    const sess = JSON.parse(sessRaw);
-    if (!sess || !sess.access_token) return;
-
-    // Verificar que el token no esté expirado (expires_at en epoch seconds)
-    if (sess.expires_at && (sess.expires_at * 1000) < Date.now()) {
-      // Sesión expirada — flujo normal
-      return;
-    }
-
-    // Determinar pantalla destino
-    const validScreens = ['dashboard','nuevo','nueva-imagen','historial','perfil'];
-    let target = 'dashboard';
-    const saved = localStorage.getItem('futuriads_lastScreen');
-    if (saved && validScreens.includes(saved)) target = saved;
-
-    // Inyectar CSS que oculta landing y muestra app desde el primer paint,
-    // y que muestra solo la pantalla correcta sin animaciones de entrada
-    const style = document.createElement('style');
-    style.id = 'instantBootstrapStyles';
-    style.textContent = `
-      #landing { display: none !important; }
-      #app { display: flex !important; opacity: 1 !important; }
-      .screen { display: none !important; opacity: 0 !important; }
-      #screen-${target} { display: block !important; opacity: 1 !important; }
-    `;
-    // Si <head> ya existe lo metemos ahí, sino esperamos al DOM
-    if (document.head) {
-      document.head.appendChild(style);
-    } else {
-      document.addEventListener('readystatechange', () => {
-        if (document.head && !document.getElementById('instantBootstrapStyles')) {
-          document.head.appendChild(style);
-        }
-      });
-    }
-
-    // Marcar globalmente para que el resto del bootstrap no pise nada
-    window.__INSTANT_BOOTSTRAP_TARGET__ = target;
-  } catch(e) {
-    console.log('Instant bootstrap skipped:', e.message);
-  }
-})();
-
 // Auto-bootstrap: completar la inicialización (cargar perfil, marcar nav,
 // remover los CSS overrides cuando todo esté listo)
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const { data: { session } } = await supa.auth.getSession();
+    const isPreApp = document.documentElement.classList.contains('pre-app');
+
     if (!session) {
-      // No hay sesión → quitar los overrides instantáneos si quedaron
-      const s = document.getElementById('instantBootstrapStyles');
-      if (s) s.remove();
+      // No hay sesión real → revertir el guard si existía y mostrar la landing
+      if (isPreApp) {
+        document.documentElement.classList.remove('pre-app');
+        document.documentElement.classList.add('pre-landing');
+        const a = document.getElementById('app');
+        const l = document.getElementById('landing');
+        if (a) a.style.display = 'none';
+        if (l) { l.style.display = 'block'; l.style.opacity = '1'; }
+      }
       return;
     }
 
-    const target = window.__INSTANT_BOOTSTRAP_TARGET__;
-
-    if (target) {
-      // Ya estamos en la pantalla correcta gracias al instantBootstrap.
-      // Solo hace falta: marcar el nav, agregar la clase active, cargar perfil.
-      // Y quitar los overrides para que showScreen vuelva a funcionar normal.
-      const screenEl = document.getElementById('screen-' + target);
-      const navEl = document.getElementById('nav-' + target);
-      if (screenEl) screenEl.classList.add('active');
-      if (navEl) {
-        document.querySelectorAll('.a-nav-item').forEach(n => n.classList.remove('active'));
-        navEl.classList.add('active');
-      }
-      // Quitar los overrides CSS para que las animaciones futuras funcionen
-      const overrideStyle = document.getElementById('instantBootstrapStyles');
-      if (overrideStyle) overrideStyle.remove();
-      // Asegurar que la app y la pantalla correcta sigan visibles después de remover el override
-      document.getElementById('landing').style.display = 'none';
-      const a = document.getElementById('app');
-      a.style.display = 'flex';
-      a.style.opacity = '1';
-      if (screenEl) {
-        screenEl.style.display = 'block';
-        screenEl.style.opacity = '1';
-      }
-      // Cargar perfil + datos según pantalla
-      loadProfile();
-      if (target === 'historial') loadHistory();
-      if (target === 'nueva-imagen') {
-        rebuildRatioDropdown();
-        rebuildResDropdown();
-      }
-    } else {
-      // No tuvimos instantBootstrap pero hay sesión → flujo legacy
-      setTimeout(() => goToApp(), 0);
-    }
+    // Hay sesión real → entrar a la app (goToApp se encarga de cargar perfil
+    // y restaurar la última pantalla).
+    goToApp();
   } catch(e) {
     console.log('Bootstrap error:', e);
+    // Fallback seguro: si algo falla, mostrar landing
+    document.documentElement.classList.remove('pre-app');
+    document.documentElement.classList.add('pre-landing');
   }
 });
 function goToLanding(){
+  // Quitar el guard pre-app si estaba activo (caso post-logout)
+  document.documentElement.classList.remove('pre-app');
+  document.documentElement.classList.add('pre-landing');
+
   const l=document.getElementById('landing'),a=document.getElementById('app');
   a.style.opacity='0';
   setTimeout(()=>{
@@ -2667,18 +2594,32 @@ async function loadProfile() {
     const userId = session.user.id;
     const userEmail = session.user.email;
 
-    // 2. Consultar la tabla profiles
-    const { data: profile, error } = await supa.from('profiles').select('*').eq('id', userId).single();
+    // PASO INTERMEDIO: actualizar el UI con datos mínimos (email + iniciales del email)
+    // para que el usuario nunca vea "Cargando..." infinito si la query a profiles tarda o falla.
+    updateProfileUI({
+      full_name: userEmail.split('@')[0],
+      country: '—',
+      plan: 'free'
+    }, userEmail);
 
-    if (error) {
-      console.error('Error cargando perfil:', error);
-      // Si no existe el perfil, usar valores mínimos del email
-      updateProfileUI({ full_name: userEmail.split('@')[0], country: '—', plan: 'free' }, userEmail);
-      return;
+    // 2. Consultar la tabla profiles para obtener los datos reales
+    let profile = null;
+    try {
+      const { data, error } = await supa.from('profiles').select('*').eq('id', userId).single();
+      if (error) {
+        console.error('Error cargando perfil:', error);
+        return; // El UI mínimo ya fue mostrado arriba
+      }
+      profile = data;
+    } catch (queryErr) {
+      console.error('Excepción cargando perfil:', queryErr);
+      return; // El UI mínimo ya fue mostrado arriba
     }
 
-    // 3. Actualizar el UI con los datos reales
-    updateProfileUI(profile, userEmail);
+    // 3. Actualizar el UI con los datos completos
+    if (profile) {
+      updateProfileUI(profile, userEmail);
+    }
   } catch (e) {
     console.error('Error en loadProfile:', e);
   }
