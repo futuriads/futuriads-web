@@ -2449,14 +2449,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
             </div>
             <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Duración de cada clip</div>
-              <div class="camp-options-row" id="campDurOptions">
-                <button class="camp-option-btn" onclick="campSelectDur(5, this)">5 seg</button>
-                <button class="camp-option-btn selected" onclick="campSelectDur(8, this)">8 seg</button>
-                <button class="camp-option-btn" onclick="campSelectDur(10, this)">10 seg</button>
-                <button class="camp-option-btn" onclick="campSelectDur(15, this)">15 seg</button>
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
+              <div class="camp-options-row" id="campAccentOptions">
+                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
+                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
+                <button class="camp-option-btn" onclick="campSelectAccent('spain', this)">🇪🇸 Español de España</button>
               </div>
-              <div style="font-size:12px;color:var(--text3);" id="campDurHint">8 seg · ~20 palabras por clip · costo: 416 créditos/clip (480p)</div>
+              <div style="font-size:12px;color:var(--text3);">El acento del avatar al hablar en el video. La duración de cada clip se calcula automáticamente.</div>
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
@@ -3265,8 +3264,8 @@ const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
   clipDuration: 8, resolution: '480p',
-  aspectRatio: '9:16', genMode: 'review', chunks: [],
-  hooks: [], bodyChunks: [], corrections: [],
+  aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+  chunks: [], hooks: [], bodyChunks: [], corrections: [],
   campaignId: null, variantsMap: {}, currentClipIndex: 0,
   pollingInterval: null,
   clipsLaunched: false,
@@ -3278,8 +3277,8 @@ function campStartNew() {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
     clipDuration: 8, resolution: '480p',
-    aspectRatio: '9:16', genMode: 'review', chunks: [],
-    hooks: [], bodyChunks: [], corrections: [],
+    aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+    chunks: [], hooks: [], bodyChunks: [], corrections: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}
   });
@@ -3427,23 +3426,16 @@ function campStep2Next() {
   campGoStep(3);
 }
 
-function campSelectDur(secs, btn) {
-  _camp.clipDuration = secs;
-  document.querySelectorAll('#campDurOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+function campSelectAccent(accent, btn) {
+  _camp.accent = accent;
+  document.querySelectorAll('#campAccentOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  const words = Math.round(secs * 2.5);
-  const rate = _camp.resolution === '720p' ? 115 : 52;
-  const cost = secs * rate;
-  document.getElementById('campDurHint').textContent = secs + ' seg · ~' + words + ' palabras por clip · costo: ' + cost + ' créditos/clip (' + _camp.resolution + ')';
 }
 
 function campSelectRes(res, btn) {
   _camp.resolution = res;
   document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  const rate = res === '720p' ? 115 : 52;
-  const cost = _camp.clipDuration * rate;
-  document.getElementById('campDurHint').textContent = _camp.clipDuration + ' seg · ~' + Math.round(_camp.clipDuration * 2.5) + ' palabras por clip · costo: ' + cost + ' créditos/clip (' + res + ')';
 }
 
 function campSelectAspect(aspect, btn) {
@@ -3463,11 +3455,24 @@ async function campLoadChunks() {
   try {
     const resp = await fetch(BACKEND_URL + '/api/campaign/chunk-script', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ script: _camp.script, clipDuration: _camp.clipDuration })
+      body: JSON.stringify({ script: _camp.script })
     });
     const data = await resp.json();
     if(!resp.ok) throw new Error(data.error || 'Error del servidor');
-    _camp.chunks = data.chunks;
+    
+    _camp.hooks = data.hooks || [];
+    _camp.bodyChunks = data.bodyChunks || [];
+    _camp.corrections = data.corrections || [];
+    
+    // Construir chunks combinados: hook[0] + bodyChunks para el primer creativo
+    const firstHook = _camp.hooks.length > 0 ? [_camp.hooks[0]] : [];
+    _camp.chunks = [...firstHook, ..._camp.bodyChunks].map((c, i) => ({
+      ...c,
+      index: i,
+      variantIndex: Math.floor(i / 4),
+      estimatedSeconds: Math.max(4, Math.round(c.text.length / 15))
+    }));
+    
     campRenderChunks(data);
   } catch(e){
     showToast('Error dividiendo el guión: ' + e.message);
@@ -3480,20 +3485,36 @@ function campRenderChunks(data) {
   document.getElementById('campChunksReady').style.display = 'block';
   const list = document.getElementById('campChunksList');
   list.innerHTML = '';
-  data.chunks.forEach((chunk, i) => {
+  
+  _camp.chunks.forEach((chunk, i) => {
+    const isHook = i === 0 && _camp.hooks.length > 0;
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
-    item.innerHTML = '<div class="camp-chunk-num">' + (i+1) + '</div><div style="flex:1;"><textarea class="camp-chunk-text" rows="2" data-index="' + i + '">' + chunk.text + '</textarea><div class="camp-chunk-variant">Variante ' + (chunk.variantIndex+1) + ' · ~' + chunk.estimatedSeconds + 's</div></div><div class="camp-chunk-dur">' + _camp.clipDuration + 's</div>';
-    item.querySelector('textarea').addEventListener('input', (e) => { _camp.chunks[i].text = e.target.value; });
+    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i + 1)) + '</div><div style="flex:1;"><textarea class="camp-chunk-text" rows="2" data-index="' + i + '">' + chunk.text + '</textarea><div class="camp-chunk-variant">Variante ' + (chunk.variantIndex+1) + ' · ~' + chunk.estimatedSeconds + 's' + (isHook ? ' · Hook' : '') + '</div></div><div class="camp-chunk-dur">' + chunk.estimatedSeconds + 's</div>';
+    item.querySelector('textarea').addEventListener('input', (e) => {
+      _camp.chunks[i].text = e.target.value;
+      // Recalcular duración al editar
+      _camp.chunks[i].estimatedSeconds = Math.max(4, Math.round(e.target.value.length / 15));
+      item.querySelector('.camp-chunk-dur').textContent = _camp.chunks[i].estimatedSeconds + 's';
+    });
     list.appendChild(item);
   });
-  const clipCost = _camp.clipDuration * (_camp.resolution === '720p' ? 115 : 52);
-  const variantCost = 48;
-  const totalVariants = data.totalVariantsNeeded;
-  const totalCost = (data.totalChunks * clipCost) + (totalVariants * variantCost);
+  
+  // Calcular costo total
+  const rate = _camp.resolution === '720p' ? 115 : 52;
+  const clipsCost = _camp.chunks.reduce((acc, c) => acc + (c.estimatedSeconds * rate), 0);
+  const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
+  const variantCost = 48 * totalVariants;
+  const totalCost = clipsCost + variantCost;
+  
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
-  document.getElementById('campTotalClips').textContent = data.totalChunks;
+  document.getElementById('campTotalClips').textContent = _camp.chunks.length;
   document.getElementById('campTotalVariants').textContent = totalVariants;
+  
+  // Mostrar hooks disponibles
+  if(_camp.hooks.length > 1) {
+    document.getElementById('campTotalClips').textContent = _camp.chunks.length + ' (creativo 1 de ' + _camp.hooks.length + ')';
+  }
 }
 
 function campSelectMode(mode) {
