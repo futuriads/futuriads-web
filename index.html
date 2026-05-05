@@ -3272,7 +3272,8 @@ const _camp = {
 function campStartNew() {
   Object.assign(_camp, {
     step: 1, title: '', script: '', scriptMode: 'manual',
-    photoBase64: null, clipDuration: 8, resolution: '480p',
+    photoBase64: null, photoUrl: null, photoUploading: false,
+    clipDuration: 8, resolution: '480p',
     aspectRatio: '9:16', genMode: 'review', chunks: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0
   });
@@ -3350,20 +3351,73 @@ function campPhotoSelected(e) {
   const file = e.target.files[0];
   if(!file) return;
   if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
+
+  // Mostrar preview local inmediatamente
   const reader = new FileReader();
   reader.onload = (ev) => {
-    const dataUrl = ev.target.result;
-    _camp.photoBase64 = dataUrl.split(',')[1];
     const preview = document.getElementById('campPhotoPreview');
-    if(preview) preview.src = dataUrl;
+    if(preview) preview.src = ev.target.result;
     const zone = document.getElementById('campUploadZone');
     if(zone) zone.classList.add('has-file');
   };
   reader.readAsDataURL(file);
+
+  // Subir a Supabase Storage en segundo plano
+  _camp.photoUrl = null;
+  _camp.photoUploading = true;
+  campUploadPhoto(file);
+}
+
+async function campUploadPhoto(file) {
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if(!session) { showToast('Error: no hay sesión activa'); return; }
+
+    const ext = file.name.split('.').pop() || 'jpg';
+    const fileName = 'avatars/' + session.user.id + '/' + Date.now() + '.' + ext;
+
+    // Upload directo a Supabase Storage via REST API
+    const uploadResp = await fetch(
+      SUPA_URL + '/storage/v1/object/campaign-photos/' + fileName,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + session.access_token,
+          'Content-Type': file.type || 'image/jpeg',
+          'x-upsert': 'true'
+        },
+        body: file
+      }
+    );
+
+    if(!uploadResp.ok) {
+      const err = await uploadResp.text();
+      console.error('Error subiendo foto:', err);
+      showToast('Error subiendo la foto. Intentá de nuevo.');
+      _camp.photoUploading = false;
+      return;
+    }
+
+    // Construir URL pública
+    _camp.photoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
+    _camp.photoUploading = false;
+    console.log('Foto subida OK:', _camp.photoUrl);
+  } catch(err) {
+    console.error('Error en upload:', err);
+    showToast('Error subiendo la foto.');
+    _camp.photoUploading = false;
+  }
 }
 
 function campStep2Next() {
-  if(!_camp.photoBase64){ showToast('Subí una foto del avatar primero'); return; }
+  if(!_camp.photoUrl && !_camp.photoUploading){
+    showToast('Subí una foto del avatar primero');
+    return;
+  }
+  if(_camp.photoUploading){
+    showToast('Esperá, la foto se está subiendo...');
+    return;
+  }
   campGoStep(3);
 }
 
@@ -3472,7 +3526,7 @@ async function campLaunch() {
     const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        campaignId: _camp.campaignId, photoBase64: _camp.photoBase64,
+        campaignId: _camp.campaignId, photoUrl: _camp.photoUrl,
         totalVariants, userId: _currentUser.userId
       })
     });
