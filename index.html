@@ -3263,10 +3263,14 @@ async function confirmSignOut() {
 // =============================================
 const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
-  photoBase64: null, clipDuration: 8, resolution: '480p',
+  photoBase64: null, photoUrl: null, photoUploading: false,
+  clipDuration: 8, resolution: '480p',
   aspectRatio: '9:16', genMode: 'review', chunks: [],
+  hooks: [], bodyChunks: [], corrections: [],
   campaignId: null, variantsMap: {}, currentClipIndex: 0,
-  pollingInterval: null
+  pollingInterval: null,
+  clipsLaunched: false,
+  clipEnqueued: {}
 };
 
 function campStartNew() {
@@ -3275,7 +3279,9 @@ function campStartNew() {
     photoBase64: null, photoUrl: null, photoUploading: false,
     clipDuration: 8, resolution: '480p',
     aspectRatio: '9:16', genMode: 'review', chunks: [],
-    campaignId: null, variantsMap: {}, currentClipIndex: 0
+    hooks: [], bodyChunks: [], corrections: [],
+    campaignId: null, variantsMap: {}, currentClipIndex: 0,
+    clipsLaunched: false, clipEnqueued: {}
   });
   const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
   const si = document.getElementById('campScriptInput'); if(si) si.value = '';
@@ -3641,10 +3647,25 @@ function campUpdateClipCard(index, status, videoUrl) {
 }
 
 async function campStartClipGeneration() {
+  // ============================================
+  // ANTI-LOOP: si ya se llamó, no hacer nada
+  // ============================================
+  if(_camp.clipsLaunched) {
+    console.log('ANTI-LOOP: campStartClipGeneration ya fue llamada. Ignorando.');
+    return;
+  }
+  _camp.clipsLaunched = true;
+
   if(_camp.genMode === 'auto') {
-    document.getElementById('campGenStatusTitle').textContent = 'Generando todos los clips en paralelo...';
-    await Promise.all(_camp.chunks.map((chunk, i) => campGenerateOneClip(i)));
+    // Modo automático: generar SECUENCIALMENTE (no Promise.all)
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
+    for(let i = 0; i < _camp.chunks.length; i++) {
+      await campGenerateOneClip(i);
+      // Esperar 2 seg entre cada encolado para no saturar Enhancor
+      if(i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 2000));
+    }
   } else {
+    // Modo revisión: generar solo el primero
     document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
     _camp.currentClipIndex = 0;
     await campGenerateOneClip(0);
@@ -3652,22 +3673,51 @@ async function campStartClipGeneration() {
 }
 
 async function campGenerateOneClip(index) {
+  // ============================================
+  // ANTI-LOOP: si este clip ya fue encolado, no volver a encolar
+  // ============================================
+  if(_camp.clipEnqueued[index]) {
+    console.log('ANTI-LOOP: Clip ' + index + ' ya fue encolado. Ignorando.');
+    return;
+  }
+
   const chunk = _camp.chunks[index];
   if(!chunk) return;
   const variantImageUrl = _camp.variantsMap[chunk.variantIndex];
   if(!variantImageUrl){ console.error('No hay imagen para variante', chunk.variantIndex); return; }
+  
+  // Marcar como encolado ANTES de hacer el request
+  _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
+  
   try {
-    await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
-        variantImageUrl, clipDuration: _camp.clipDuration,
+        variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
         resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
         userId: _currentUser.userId
       })
     });
-  } catch(e){ console.error('Error generando clip', index, e); }
+    
+    // Si el backend rechaza por CLIP_ALREADY_EXISTS, no es error
+    if(resp.status === 409) {
+      console.log('Backend: clip ' + index + ' ya existía, ignorando.');
+      return;
+    }
+    if(!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      console.error('Error generando clip', index, errData);
+      // Permitir reintentar este clip
+      _camp.clipEnqueued[index] = false;
+      campUpdateClipCard(index, 'failed', null);
+    }
+  } catch(e){ 
+    console.error('Error generando clip', index, e); 
+    _camp.clipEnqueued[index] = false;
+    campUpdateClipCard(index, 'failed', null);
+  }
 }
 
 function campShowReviewControls(index) {
@@ -3690,11 +3740,14 @@ async function campApproveClip() {
 }
 
 async function campRegenCurrentClip() {
+  _camp.clipEnqueued[_camp.currentClipIndex] = false;
   await campGenerateOneClip(_camp.currentClipIndex);
   document.getElementById('campReviewControls').style.display = 'none';
 }
 
 async function campRegenClip(index) {
+  // Resetear el flag para permitir regeneración manual
+  _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
   await campGenerateOneClip(index);
 }
