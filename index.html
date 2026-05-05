@@ -116,6 +116,181 @@ html.pre-landing #app { display: none !important; }
 .a-select-row .custom-select-trigger { padding: 11px 14px; font-size: 14px; }
 .a-select-row .custom-select-option { font-size: 13px; padding: 9px 12px; }
 
+/* ==============================================
+   APP — CAMPAÑAS
+   ============================================== */
+.camp-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+}
+.camp-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; }
+.camp-list { display: flex; flex-direction: column; gap: 12px; max-width: 860px; }
+.camp-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px 22px;
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+}
+.camp-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+.camp-card-icon {
+  width: 44px; height: 44px; border-radius: var(--r-md);
+  background: var(--hover); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--text2);
+}
+.camp-card-info { flex: 1; min-width: 0; }
+.camp-card-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.camp-card-meta { font-size: 12px; color: var(--text2); }
+.camp-card-status {
+  font-size: 11px; font-weight: 600; padding: 4px 12px;
+  border-radius: 999px; flex-shrink: 0;
+}
+.camp-card-status.draft { background: rgba(255,255,255,0.06); color: #888; border: 1px solid rgba(255,255,255,0.1); }
+.camp-card-status.generating_clips,
+.camp-card-status.generating_variants { background: rgba(234,179,8,0.12); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
+.camp-card-status.clips_ready,
+.camp-card-status.variants_ready { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+.camp-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+.camp-card-status.failed { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+.camp-empty {
+  text-align: center; padding: 64px 40px;
+  background: var(--card); border: 1px dashed var(--border);
+  border-radius: var(--r-xl); max-width: 860px;
+}
+.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+.camp-empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+.camp-wizard { max-width: 720px; }
+.camp-wizard-step { display: none; }
+.camp-wizard-step.active { display: block; }
+.camp-step-header { margin-bottom: 28px; }
+.camp-step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; }
+.camp-step-title { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 6px; }
+.camp-step-sub { font-size: 14px; color: var(--text2); }
+.camp-textarea {
+  width: 100%; background: var(--hover); border: 1px solid transparent;
+  border-radius: var(--r-md); padding: 16px; resize: vertical;
+  font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #fff;
+  line-height: 1.7; min-height: 200px; outline: none; transition: border-color 0.2s;
+}
+.camp-textarea:focus { border-color: rgba(255,255,255,0.2); }
+.camp-textarea::placeholder { color: var(--text3); }
+.camp-input {
+  width: 100%; background: var(--hover); border: 1px solid transparent;
+  border-radius: var(--r-md); padding: 13px 16px;
+  font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #fff;
+  outline: none; transition: border-color 0.2s; margin-bottom: 12px;
+}
+.camp-input:focus { border-color: rgba(255,255,255,0.2); }
+.camp-input::placeholder { color: var(--text3); }
+.camp-options-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.camp-option-btn {
+  background: var(--hover); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px 18px;
+  font-family: 'Inter', -apple-system, sans-serif; font-size: 13px;
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.camp-option-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+.camp-option-btn.selected { background: #fff; color: #080808; border-color: #fff; font-weight: 600; }
+.camp-nav-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+.camp-progress { display: flex; align-items: center; gap: 6px; }
+.camp-prog-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); transition: background 0.3s; }
+.camp-prog-dot.active { background: #fff; }
+.camp-prog-dot.done { background: rgba(255,255,255,0.35); }
+.camp-upload-zone {
+  border: 2px dashed var(--border); border-radius: var(--r-lg);
+  padding: 48px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s; position: relative;
+}
+.camp-upload-zone:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
+.camp-upload-zone.has-file { border-style: solid; border-color: rgba(255,255,255,0.2); }
+.camp-upload-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+.camp-upload-label { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.camp-upload-sub { font-size: 13px; color: var(--text2); }
+.camp-upload-preview { width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--r-md); margin-top: 16px; display: none; }
+.camp-upload-zone.has-file .camp-upload-preview { display: block; }
+.camp-upload-zone.has-file .camp-upload-icon,
+.camp-upload-zone.has-file .camp-upload-label,
+.camp-upload-zone.has-file .camp-upload-sub { display: none; }
+.camp-chunks-list { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; margin-bottom: 20px; }
+.camp-chunk-item {
+  background: var(--hover); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.camp-chunk-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--card2); border: 1px solid var(--border);
+  font-size: 10px; font-weight: 700; color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.camp-chunk-variant { font-size: 10px; color: var(--text3); margin-top: 4px; }
+.camp-chunk-text {
+  font-size: 13px; color: #d0d0d0; line-height: 1.6;
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'Inter', -apple-system, sans-serif; resize: none; min-height: 40px;
+}
+.camp-chunk-dur { font-size: 11px; color: var(--text3); flex-shrink: 0; margin-top: 3px; }
+.camp-clips-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.camp-clip-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden;
+  aspect-ratio: 9/16; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.camp-clip-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.camp-clip-card.pending { opacity: 0.5; }
+.camp-clip-card.generating { border-color: rgba(234,179,8,0.4); }
+.camp-clip-card.completed { border-color: rgba(34,197,94,0.3); }
+.camp-clip-card.failed { border-color: rgba(239,68,68,0.3); }
+.camp-clip-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; background: rgba(0,0,0,0.5);
+}
+.camp-clip-spinner {
+  width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.camp-clip-idx {
+  position: absolute; top: 6px; left: 6px;
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px 6px;
+}
+.camp-clip-regen {
+  position: absolute; bottom: 6px; right: 6px;
+  background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px; padding: 4px 8px; font-size: 10px; color: #aaa;
+  cursor: pointer; display: none; font-family: inherit;
+}
+.camp-clip-card.completed:hover .camp-clip-regen { display: block; }
+.camp-clip-card.failed .camp-clip-regen { display: block; color: #f87171; }
+.camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.camp-mode-card {
+  flex: 1; min-width: 200px; background: var(--hover);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 16px; cursor: pointer; transition: all 0.15s;
+}
+.camp-mode-card:hover { border-color: rgba(255,255,255,0.2); }
+.camp-mode-card.selected { border-color: rgba(255,255,255,0.45); background: #181818; }
+.camp-mode-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.camp-mode-card-sub { font-size: 12px; color: var(--text2); }
+.camp-cost-banner {
+  background: var(--hover); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 16px;
+  font-size: 13px; color: var(--text2); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.camp-cost-num { font-size: 15px; font-weight: 700; color: #fff; }
+
 </style>
 
 <template id="__bundler_thumbnail" data-bg-color="#080808">
@@ -1716,6 +1891,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2"/><path d="m1.5 11 3.5-3.5L9 11l2-2 2.5 2.5"/></svg>
         <span class="a-nav-label">Nueva imagen</span>
       </div>
+      <div class="a-nav-item" id="nav-campanas" onclick="showScreen('campanas')" data-tooltip="Campañas">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="10" rx="2"/><path d="M7 5.5l4 2-4 2V5.5z" fill="currentColor" stroke="none"/></svg>
+        <span class="a-nav-label">Campañas</span>
+      </div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
@@ -2172,6 +2351,217 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       </div>
     </div><!-- /nueva-imagen -->
 
+    <!-- ---- CAMPAÑAS ---- -->
+    <div class="screen" id="screen-campanas">
+
+      <!-- Vista: lista de campañas -->
+      <div id="campView-list">
+        <div class="camp-header">
+          <div class="camp-title">Campañas</div>
+          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;">✦ Nueva campaña</button>
+        </div>
+        <div id="campListContainer">
+          <div class="camp-empty">
+            <div class="camp-empty-icon">🎬</div>
+            <div class="camp-empty-title">Todavía no tenés campañas</div>
+            <div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div>
+            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista: wizard nueva campaña -->
+      <div id="campView-wizard" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;">← Volver</button>
+          <div style="font-size:13px;color:var(--text2);">Nueva campaña</div>
+        </div>
+
+        <div class="camp-wizard">
+
+          <!-- PASO 1: Título y guión -->
+          <div class="camp-wizard-step active" id="campStep-1">
+            <div class="camp-step-header">
+              <div class="camp-step-num">Paso 1 de 4</div>
+              <div class="camp-step-title">El guión</div>
+              <div class="camp-step-sub">Pegá tu guión completo o describí tu producto y lo generamos con IA.</div>
+            </div>
+            <input class="camp-input" id="campTitleInput" placeholder="Nombre de la campaña (ej: Shampoo verano 2025)">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <button class="camp-option-btn selected" id="campScriptModeManual" onclick="campSetScriptMode('manual')">Tengo mi guión</button>
+              <button class="camp-option-btn" id="campScriptModeAI" onclick="campSetScriptMode('ai')">Generarlo con IA</button>
+            </div>
+            <div id="campScriptManualArea">
+              <textarea class="camp-textarea" id="campScriptInput" placeholder="Pegá acá el guión completo del video. Puede ser tan largo como quieras — Futuriads lo va a dividir automáticamente en clips de la duración que elijas.&#10;&#10;Ejemplo:&#10;¿Cansada de gastar una fortuna en el peluquero? Este shampoo lo cambió todo para mí. En serio, llevo tres meses usándolo y mi pelo nunca estuvo tan bien..."></textarea>
+            </div>
+            <div id="campScriptAIArea" style="display:none;">
+              <textarea class="camp-textarea" id="campProductInput" placeholder="Describí tu producto o servicio. ¿Qué hace? ¿Para quién es? ¿Qué problema resuelve?&#10;&#10;Ejemplo: Shampoo nutritivo para pelo dañado o teñido. Contiene queratina y aceite de argán. Público: mujeres 25-45 que van a la peluquería seguido y quieren mantener el resultado en casa." style="min-height:140px;"></textarea>
+              <button class="btn-outline" onclick="campGenerateScript()" id="campGenScriptBtn" style="font-size:13px;padding:9px 20px;margin-bottom:12px;">✦ Generar guión con IA</button>
+              <textarea class="camp-textarea" id="campScriptAIResult" placeholder="El guión generado va a aparecer acá. Podés editarlo antes de continuar." style="min-height:160px;display:none;"></textarea>
+            </div>
+            <div class="camp-nav-row">
+              <div class="camp-progress">
+                <div class="camp-prog-dot active"></div>
+                <div class="camp-prog-dot"></div>
+                <div class="camp-prog-dot"></div>
+                <div class="camp-prog-dot"></div>
+              </div>
+              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- PASO 2: Foto del avatar -->
+          <div class="camp-wizard-step" id="campStep-2">
+            <div class="camp-step-header">
+              <div class="camp-step-num">Paso 2 de 4</div>
+              <div class="camp-step-title">La foto del avatar</div>
+              <div class="camp-step-sub">Subí una foto de la persona que va a hablar en el video. Futuriads va a generar variantes automáticamente para que el creativo se vea dinámico.</div>
+            </div>
+            <div class="camp-upload-zone" id="campUploadZone" onclick="document.getElementById('campPhotoInput').click()">
+              <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+              <div class="camp-upload-icon">📷</div>
+              <div class="camp-upload-label">Subí la foto del avatar</div>
+              <div class="camp-upload-sub">JPG o PNG · máx. 5MB · preferentemente vertical</div>
+              <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
+            </div>
+            <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6;">
+              Futuriads va a generar variantes de esta foto (distinta pose, fondo, ángulo) para que el avatar aparezca en posiciones diferentes cada 4 clips — como un UGC real.
+            </div>
+            <div class="camp-nav-row">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="camp-progress">
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot active"></div>
+                  <div class="camp-prog-dot"></div>
+                  <div class="camp-prog-dot"></div>
+                </div>
+                <button class="btn-ghost-sm" onclick="campGoStep(1)">← Atrás</button>
+              </div>
+              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- PASO 3: Configuración -->
+          <div class="camp-wizard-step" id="campStep-3">
+            <div class="camp-step-header">
+              <div class="camp-step-num">Paso 3 de 4</div>
+              <div class="camp-step-title">Configuración</div>
+              <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Duración de cada clip</div>
+              <div class="camp-options-row" id="campDurOptions">
+                <button class="camp-option-btn" onclick="campSelectDur(5, this)">5 seg</button>
+                <button class="camp-option-btn selected" onclick="campSelectDur(8, this)">8 seg</button>
+                <button class="camp-option-btn" onclick="campSelectDur(10, this)">10 seg</button>
+                <button class="camp-option-btn" onclick="campSelectDur(15, this)">15 seg</button>
+              </div>
+              <div style="font-size:12px;color:var(--text3);" id="campDurHint">8 seg · ~20 palabras por clip · costo: 416 créditos/clip (480p)</div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
+              <div class="camp-options-row" id="campResOptions">
+                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 52 cr/seg</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 115 cr/seg</span></button>
+              </div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Formato</div>
+              <div class="camp-options-row" id="campAspectOptions">
+                <button class="camp-option-btn selected" onclick="campSelectAspect('9:16', this)">9:16 · Vertical (Reels)</button>
+                <button class="camp-option-btn" onclick="campSelectAspect('1:1', this)">1:1 · Cuadrado</button>
+              </div>
+            </div>
+            <div class="camp-nav-row">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="camp-progress">
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot active"></div>
+                  <div class="camp-prog-dot"></div>
+                </div>
+                <button class="btn-ghost-sm" onclick="campGoStep(2)">← Atrás</button>
+              </div>
+              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- PASO 4: Revisar chunks y modo de generación -->
+          <div class="camp-wizard-step" id="campStep-4">
+            <div class="camp-step-header">
+              <div class="camp-step-num">Paso 4 de 4</div>
+              <div class="camp-step-title">Revisá los chunks</div>
+              <div class="camp-step-sub">Claude dividió el guión en fragmentos. Podés editarlos antes de generar.</div>
+            </div>
+            <div id="campChunksLoading" style="text-align:center;padding:40px;color:var(--text2);">
+              <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
+              Dividiendo el guión con IA...
+            </div>
+            <div id="campChunksReady" style="display:none;">
+              <div class="camp-chunks-list" id="campChunksList"></div>
+              <div class="camp-cost-banner">
+                <span>💡</span>
+                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · <span id="campTotalVariants">—</span> variantes de avatar</span>
+              </div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modo de generación</div>
+              <div class="camp-gen-mode">
+                <div class="camp-mode-card selected" id="campModeReview" onclick="campSelectMode('review')">
+                  <div class="camp-mode-card-title">Revisión clip por clip</div>
+                  <div class="camp-mode-card-sub">Aprobás cada clip antes de generar el siguiente. Más control.</div>
+                </div>
+                <div class="camp-mode-card" id="campModeAuto" onclick="campSelectMode('auto')">
+                  <div class="camp-mode-card-title">Automático</div>
+                  <div class="camp-mode-card-sub">Genera todos los clips en paralelo. Más rápido, revisás al final.</div>
+                </div>
+              </div>
+            </div>
+            <div class="camp-nav-row">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="camp-progress">
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot done"></div>
+                  <div class="camp-prog-dot active"></div>
+                </div>
+                <button class="btn-ghost-sm" onclick="campGoStep(3)">← Atrás</button>
+              </div>
+              <button class="btn-w" onclick="campLaunch()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">✦ Empezar generación</button>
+            </div>
+          </div>
+
+        </div><!-- /camp-wizard -->
+      </div><!-- /campView-wizard -->
+
+      <!-- Vista: generación en curso -->
+      <div id="campView-generating" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+          <button class="btn-ghost-sm" onclick="campBackToList()">← Mis campañas</button>
+          <div style="font-size:13px;color:var(--text2);" id="campGenCampaignTitle">—</div>
+        </div>
+        <div style="margin-bottom:24px;">
+          <div style="font-size:20px;font-weight:800;letter-spacing:-0.4px;margin-bottom:4px;" id="campGenStatusTitle">Generando variantes del avatar...</div>
+          <div style="font-size:13px;color:var(--text2);" id="campGenStatusSub">Esto puede tardar unos minutos. Podés dejar esta pantalla abierta.</div>
+        </div>
+        <div style="background:var(--hover);border-radius:999px;height:6px;margin-bottom:24px;max-width:600px;">
+          <div id="campGenProgressBar" style="background:#fff;height:6px;border-radius:999px;width:0%;transition:width 0.5s;"></div>
+        </div>
+        <div class="camp-clips-grid" id="campClipsGrid"></div>
+        <div id="campReviewControls" style="display:none;margin-bottom:20px;">
+          <div style="font-size:14px;color:var(--text2);margin-bottom:12px;" id="campReviewMsg">Revisá el clip. ¿Está bien?</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir →</button>
+            <button class="btn-outline" onclick="campRegenCurrentClip()" style="font-size:13px;padding:10px 22px;">Regenerar este clip</button>
+          </div>
+        </div>
+        <div id="campAllDoneControls" style="display:none;margin-top:16px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px;">✓ Todos los clips generados</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Revisá los clips arriba. El ensamblado automático estará disponible próximamente.</div>
+          <button class="btn-w" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
+        </div>
+      </div><!-- /campView-generating -->
+
+    </div><!-- /screen-campanas -->
+
     <!-- ---- HISTORIAL ---- -->
     <div class="screen" id="screen-historial">
       <div class="a-hist-header">
@@ -2530,7 +2920,7 @@ function goToApp(){
       });
 
       // Restaurar última pantalla visitada (si existe y es válida)
-      const validScreens = ['dashboard','nuevo','nueva-imagen','historial','perfil'];
+      const validScreens = ['dashboard','nuevo','nueva-imagen','historial','perfil','campanas'];
       let lastScreen = 'dashboard';
       try {
         const saved = localStorage.getItem('futuriads_lastScreen');
@@ -2868,6 +3258,413 @@ async function confirmSignOut() {
   goToLanding();
 }
 
+// =============================================
+// CAMPAÑAS — Estado global
+// =============================================
+const _camp = {
+  step: 1, title: '', script: '', scriptMode: 'manual',
+  photoBase64: null, clipDuration: 8, resolution: '480p',
+  aspectRatio: '9:16', genMode: 'review', chunks: [],
+  campaignId: null, variantsMap: {}, currentClipIndex: 0,
+  pollingInterval: null
+};
+
+function campStartNew() {
+  Object.assign(_camp, {
+    step: 1, title: '', script: '', scriptMode: 'manual',
+    photoBase64: null, clipDuration: 8, resolution: '480p',
+    aspectRatio: '9:16', genMode: 'review', chunks: [],
+    campaignId: null, variantsMap: {}, currentClipIndex: 0
+  });
+  const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
+  const si = document.getElementById('campScriptInput'); if(si) si.value = '';
+  const pi = document.getElementById('campProductInput'); if(pi) pi.value = '';
+  const sr = document.getElementById('campScriptAIResult'); if(sr){ sr.value=''; sr.style.display='none'; }
+  const pz = document.getElementById('campUploadZone'); if(pz) pz.classList.remove('has-file');
+  const pp = document.getElementById('campPhotoPreview'); if(pp){ pp.src=''; }
+  campGoStep(1);
+  document.getElementById('campView-list').style.display = 'none';
+  document.getElementById('campView-wizard').style.display = 'block';
+  document.getElementById('campView-generating').style.display = 'none';
+}
+
+function campBackToList() {
+  if (_camp.pollingInterval){ clearInterval(_camp.pollingInterval); _camp.pollingInterval = null; }
+  document.getElementById('campView-list').style.display = 'block';
+  document.getElementById('campView-wizard').style.display = 'none';
+  document.getElementById('campView-generating').style.display = 'none';
+  campLoadList();
+}
+
+function campGoStep(n) {
+  document.querySelectorAll('.camp-wizard-step').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('campStep-' + n);
+  if(el) el.classList.add('active');
+  _camp.step = n;
+}
+
+function campSetScriptMode(mode) {
+  _camp.scriptMode = mode;
+  document.getElementById('campScriptModeManual').classList.toggle('selected', mode === 'manual');
+  document.getElementById('campScriptModeAI').classList.toggle('selected', mode === 'ai');
+  document.getElementById('campScriptManualArea').style.display = mode === 'manual' ? 'block' : 'none';
+  document.getElementById('campScriptAIArea').style.display = mode === 'ai' ? 'block' : 'none';
+}
+
+async function campGenerateScript() {
+  const product = document.getElementById('campProductInput').value.trim();
+  if(!product){ showToast('Describí el producto primero'); return; }
+  const btn = document.getElementById('campGenScriptBtn');
+  btn.textContent = 'Generando...'; btn.disabled = true;
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/generate-script', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product, tone: 'Entusiasta y cercano', duration: '60', language: 'español rioplatense' })
+    });
+    const data = await resp.json();
+    if(data.script){
+      const el = document.getElementById('campScriptAIResult');
+      el.value = data.script; el.style.display = 'block';
+      showToast('Guión generado. Revisalo y editalo si querés.');
+    }
+  } catch(e){ showToast('Error generando el guión'); }
+  btn.textContent = '✦ Generar guión con IA'; btn.disabled = false;
+}
+
+function campStep1Next() {
+  const title = document.getElementById('campTitleInput').value.trim();
+  if(!title){ showToast('Ponele un nombre a la campaña'); return; }
+  let script = '';
+  if(_camp.scriptMode === 'manual'){
+    script = document.getElementById('campScriptInput').value.trim();
+  } else {
+    script = document.getElementById('campScriptAIResult').value.trim();
+  }
+  if(!script || script.length < 50){ showToast('El guión es muy corto. Necesitás al menos 50 caracteres.'); return; }
+  _camp.title = title;
+  _camp.script = script;
+  campGoStep(2);
+}
+
+function campPhotoSelected(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    _camp.photoBase64 = dataUrl.split(',')[1];
+    const preview = document.getElementById('campPhotoPreview');
+    if(preview) preview.src = dataUrl;
+    const zone = document.getElementById('campUploadZone');
+    if(zone) zone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function campStep2Next() {
+  if(!_camp.photoBase64){ showToast('Subí una foto del avatar primero'); return; }
+  campGoStep(3);
+}
+
+function campSelectDur(secs, btn) {
+  _camp.clipDuration = secs;
+  document.querySelectorAll('#campDurOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const words = Math.round(secs * 2.5);
+  const rate = _camp.resolution === '720p' ? 115 : 52;
+  const cost = secs * rate;
+  document.getElementById('campDurHint').textContent = secs + ' seg · ~' + words + ' palabras por clip · costo: ' + cost + ' créditos/clip (' + _camp.resolution + ')';
+}
+
+function campSelectRes(res, btn) {
+  _camp.resolution = res;
+  document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const rate = res === '720p' ? 115 : 52;
+  const cost = _camp.clipDuration * rate;
+  document.getElementById('campDurHint').textContent = _camp.clipDuration + ' seg · ~' + Math.round(_camp.clipDuration * 2.5) + ' palabras por clip · costo: ' + cost + ' créditos/clip (' + res + ')';
+}
+
+function campSelectAspect(aspect, btn) {
+  _camp.aspectRatio = aspect;
+  document.querySelectorAll('#campAspectOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function campStep3Next() {
+  campGoStep(4);
+  campLoadChunks();
+}
+
+async function campLoadChunks() {
+  document.getElementById('campChunksLoading').style.display = 'block';
+  document.getElementById('campChunksReady').style.display = 'none';
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/chunk-script', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ script: _camp.script, clipDuration: _camp.clipDuration })
+    });
+    const data = await resp.json();
+    if(!resp.ok) throw new Error(data.error || 'Error del servidor');
+    _camp.chunks = data.chunks;
+    campRenderChunks(data);
+  } catch(e){
+    showToast('Error dividiendo el guión: ' + e.message);
+    document.getElementById('campChunksLoading').style.display = 'none';
+  }
+}
+
+function campRenderChunks(data) {
+  document.getElementById('campChunksLoading').style.display = 'none';
+  document.getElementById('campChunksReady').style.display = 'block';
+  const list = document.getElementById('campChunksList');
+  list.innerHTML = '';
+  data.chunks.forEach((chunk, i) => {
+    const item = document.createElement('div');
+    item.className = 'camp-chunk-item';
+    item.innerHTML = '<div class="camp-chunk-num">' + (i+1) + '</div><div style="flex:1;"><textarea class="camp-chunk-text" rows="2" data-index="' + i + '">' + chunk.text + '</textarea><div class="camp-chunk-variant">Variante ' + (chunk.variantIndex+1) + ' · ~' + chunk.estimatedSeconds + 's</div></div><div class="camp-chunk-dur">' + _camp.clipDuration + 's</div>';
+    item.querySelector('textarea').addEventListener('input', (e) => { _camp.chunks[i].text = e.target.value; });
+    list.appendChild(item);
+  });
+  const clipCost = _camp.clipDuration * (_camp.resolution === '720p' ? 115 : 52);
+  const variantCost = 48;
+  const totalVariants = data.totalVariantsNeeded;
+  const totalCost = (data.totalChunks * clipCost) + (totalVariants * variantCost);
+  document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
+  document.getElementById('campTotalClips').textContent = data.totalChunks;
+  document.getElementById('campTotalVariants').textContent = totalVariants;
+}
+
+function campSelectMode(mode) {
+  _camp.genMode = mode;
+  document.getElementById('campModeReview').classList.toggle('selected', mode === 'review');
+  document.getElementById('campModeAuto').classList.toggle('selected', mode === 'auto');
+}
+
+async function campLaunch() {
+  if(!_camp.chunks.length){ showToast('Esperá a que se carguen los chunks'); return; }
+  const btn = document.getElementById('campLaunchBtn');
+  btn.textContent = 'Creando campaña...'; btn.disabled = true;
+  try {
+    const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: _currentUser.userId, title: _camp.title, script: _camp.script,
+        clipDuration: _camp.clipDuration, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
+      })
+    });
+    const createData = await createResp.json();
+    if(!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
+    _camp.campaignId = createData.campaign.id;
+
+    document.getElementById('campView-wizard').style.display = 'none';
+    document.getElementById('campView-generating').style.display = 'block';
+    document.getElementById('campGenCampaignTitle').textContent = _camp.title;
+    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar...';
+    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
+    document.getElementById('campReviewControls').style.display = 'none';
+    document.getElementById('campAllDoneControls').style.display = 'none';
+    document.getElementById('campGenProgressBar').style.width = '0%';
+    campRenderClipsGrid();
+
+    const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
+    const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId, photoBase64: _camp.photoBase64,
+        totalVariants, userId: _currentUser.userId
+      })
+    });
+    const varData = await varResp.json();
+    if(!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
+    showToast('Variantes encoladas. Esperando resultados...');
+    campStartPolling();
+  } catch(e){
+    showToast('Error: ' + e.message);
+    btn.textContent = '✦ Empezar generación'; btn.disabled = false;
+  }
+}
+
+function campRenderClipsGrid() {
+  const grid = document.getElementById('campClipsGrid');
+  grid.innerHTML = '';
+  _camp.chunks.forEach((chunk, i) => {
+    const card = document.createElement('div');
+    card.className = 'camp-clip-card pending';
+    card.id = 'campClip-' + i;
+    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.4);">Esperando...</div></div><div class="camp-clip-idx">' + (i+1) + '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function campStartPolling() {
+  if(_camp.pollingInterval) clearInterval(_camp.pollingInterval);
+  _camp.pollingInterval = setInterval(campPollStatus, 5000);
+  campPollStatus();
+}
+
+async function campPollStatus() {
+  if(!_camp.campaignId || !_currentUser) return;
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/status', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaignId: _camp.campaignId, userId: _currentUser.userId })
+    });
+    if(!resp.ok) return;
+    const data = await resp.json();
+    campUpdateGeneratingView(data);
+  } catch(e){ console.error('Error polling:', e); }
+}
+
+async function campUpdateGeneratingView(data) {
+  const { variants, clips } = data;
+  const variantsDone = variants.filter(v => v.status === 'completed').length;
+  const variantsTotal = variants.length;
+  const clipsDone = clips.filter(c => c.status === 'completed').length;
+  const clipsTotal = _camp.chunks.length;
+
+  variants.forEach(v => {
+    if(v.status === 'completed' && v.image_url) _camp.variantsMap[v.variant_index] = v.image_url;
+  });
+
+  if(variantsTotal > 0 && variantsDone < variantsTotal) {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar... (' + variantsDone + '/' + variantsTotal + ')';
+    document.getElementById('campGenProgressBar').style.width = Math.round((variantsDone / variantsTotal) * 30) + '%';
+    return;
+  }
+
+  if(variantsDone === variantsTotal && variantsTotal > 0 && clips.length === 0) {
+    document.getElementById('campGenStatusTitle').textContent = 'Variantes listas. Iniciando generación de clips...';
+    await campStartClipGeneration();
+    return;
+  }
+
+  clips.forEach(clip => campUpdateClipCard(clip.clip_index, clip.status, clip.video_url));
+
+  const totalSteps = variantsTotal + clipsTotal;
+  const doneSoFar = variantsDone + clipsDone;
+  const pct = totalSteps > 0 ? Math.round((doneSoFar / totalSteps) * 100) : 0;
+  document.getElementById('campGenProgressBar').style.width = pct + '%';
+
+  if(_camp.genMode === 'review' && clips.length > 0) {
+    const currentClip = clips.find(c => c.clip_index === _camp.currentClipIndex);
+    if(currentClip && currentClip.status === 'completed') {
+      campShowReviewControls(_camp.currentClipIndex);
+    } else if(currentClip && currentClip.status === 'generating') {
+      document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex+1) + ' de ' + clipsTotal + '...';
+      document.getElementById('campReviewControls').style.display = 'none';
+    }
+  }
+  if(_camp.genMode === 'auto') {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clips... (' + clipsDone + '/' + clipsTotal + ')';
+  }
+
+  if(clipsTotal > 0 && clipsDone === clipsTotal) {
+    clearInterval(_camp.pollingInterval); _camp.pollingInterval = null;
+    document.getElementById('campGenProgressBar').style.width = '100%';
+    document.getElementById('campGenStatusTitle').textContent = '✓ Todos los clips están listos';
+    document.getElementById('campGenStatusSub').textContent = '';
+    document.getElementById('campReviewControls').style.display = 'none';
+    document.getElementById('campAllDoneControls').style.display = 'block';
+    refreshCredits();
+  }
+}
+
+function campUpdateClipCard(index, status, videoUrl) {
+  const card = document.getElementById('campClip-' + index);
+  if(!card) return;
+  card.className = 'camp-clip-card ' + status;
+  if(status === 'generating') {
+    card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-spinner"></div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
+  } else if(status === 'completed' && videoUrl) {
+    card.innerHTML = '<video src="' + videoUrl + '" autoplay loop muted playsinline></video><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
+  } else if(status === 'failed') {
+    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>';
+  } else if(status === 'pending') {
+    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.3);">En cola</div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
+  }
+}
+
+async function campStartClipGeneration() {
+  if(_camp.genMode === 'auto') {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando todos los clips en paralelo...';
+    await Promise.all(_camp.chunks.map((chunk, i) => campGenerateOneClip(i)));
+  } else {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
+    _camp.currentClipIndex = 0;
+    await campGenerateOneClip(0);
+  }
+}
+
+async function campGenerateOneClip(index) {
+  const chunk = _camp.chunks[index];
+  if(!chunk) return;
+  const variantImageUrl = _camp.variantsMap[chunk.variantIndex];
+  if(!variantImageUrl){ console.error('No hay imagen para variante', chunk.variantIndex); return; }
+  campUpdateClipCard(index, 'generating', null);
+  try {
+    await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
+        variantImageUrl, clipDuration: _camp.clipDuration,
+        resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
+        userId: _currentUser.userId
+      })
+    });
+  } catch(e){ console.error('Error generando clip', index, e); }
+}
+
+function campShowReviewControls(index) {
+  document.getElementById('campReviewControls').style.display = 'block';
+  document.getElementById('campReviewMsg').textContent = 'Clip ' + (index+1) + ' listo. ¿Está bien?';
+  document.getElementById('campGenStatusTitle').textContent = 'Clip ' + (index+1) + ' de ' + _camp.chunks.length + ' listo para revisión';
+}
+
+async function campApproveClip() {
+  _camp.currentClipIndex++;
+  if(_camp.currentClipIndex >= _camp.chunks.length){
+    document.getElementById('campReviewControls').style.display = 'none';
+    document.getElementById('campAllDoneControls').style.display = 'block';
+    clearInterval(_camp.pollingInterval); _camp.pollingInterval = null;
+    return;
+  }
+  document.getElementById('campReviewControls').style.display = 'none';
+  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex+1) + '...';
+  await campGenerateOneClip(_camp.currentClipIndex);
+}
+
+async function campRegenCurrentClip() {
+  await campGenerateOneClip(_camp.currentClipIndex);
+  document.getElementById('campReviewControls').style.display = 'none';
+}
+
+async function campRegenClip(index) {
+  _camp.currentClipIndex = index;
+  await campGenerateOneClip(index);
+}
+
+async function campLoadList() {
+  if(!_currentUser) return;
+  const container = document.getElementById('campListContainer');
+  if(!container) return;
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/list', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: _currentUser.userId })
+    });
+    const data = await resp.json();
+    const campaigns = data.campaigns || [];
+    if(!campaigns.length){
+      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon">🎬</div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button></div>';
+      return;
+    }
+    const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
+    container.innerHTML = '<div class="camp-list">' + campaigns.map(c => '<div class="camp-card"><div class="camp-card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="16" height="12" rx="2"/><path d="M7 7l5 2-5 2V7z" fill="currentColor" stroke="none"/></svg></div><div class="camp-card-info"><div class="camp-card-title">' + c.title + '</div><div class="camp-card-meta">' + new Date(c.created_at).toLocaleDateString('es-AR') + ' · ' + c.clip_duration + 's por clip · ' + c.resolution + '</div></div><div class="camp-card-status ' + c.status + '">' + (statusLabels[c.status] || c.status) + '</div></div>').join('') + '</div>';
+  } catch(e){ console.error('Error cargando campañas:', e); }
+}
+
 /* ---- Screen nav ---- */
 function showScreen(name, instant){
   // Persistir la pantalla actual para recuperarla al refresh
@@ -2904,6 +3701,7 @@ function showScreen(name, instant){
   }
 
   if(name==='historial') loadHistory();
+  if(name==='campanas'){ campLoadList(); document.getElementById('campView-list').style.display='block'; document.getElementById('campView-wizard').style.display='none'; document.getElementById('campView-generating').style.display='none'; }
   if(name==='nueva-imagen') {
     rebuildRatioDropdown();
     rebuildResDropdown();
