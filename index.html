@@ -3804,8 +3804,68 @@ async function campLoadList() {
       return;
     }
     const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
-    container.innerHTML = '<div class="camp-list">' + campaigns.map(c => '<div class="camp-card"><div class="camp-card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="16" height="12" rx="2"/><path d="M7 7l5 2-5 2V7z" fill="currentColor" stroke="none"/></svg></div><div class="camp-card-info"><div class="camp-card-title">' + c.title + '</div><div class="camp-card-meta">' + new Date(c.created_at).toLocaleDateString('es-AR') + ' · ' + c.clip_duration + 's por clip · ' + c.resolution + '</div></div><div class="camp-card-status ' + c.status + '">' + (statusLabels[c.status] || c.status) + '</div></div>').join('') + '</div>';
+    container.innerHTML = '<div class="camp-list">' + campaigns.map(c => '<div class="camp-card" onclick="campOpenDetail(\'' + c.id + '\',\'' + c.title.replace(/'/g, "\\'") + '\')"><div class="camp-card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="16" height="12" rx="2"/><path d="M7 7l5 2-5 2V7z" fill="currentColor" stroke="none"/></svg></div><div class="camp-card-info"><div class="camp-card-title">' + c.title + '</div><div class="camp-card-meta">' + new Date(c.created_at).toLocaleDateString('es-AR') + ' · ' + c.resolution + '</div></div><div class="camp-card-status ' + c.status + '">' + (statusLabels[c.status] || c.status) + '</div></div>').join('') + '</div>';
   } catch(e){ console.error('Error cargando campañas:', e); }
+}
+
+async function campOpenDetail(campaignId, title) {
+  _camp.campaignId = campaignId;
+  document.getElementById('campView-list').style.display = 'none';
+  document.getElementById('campView-wizard').style.display = 'none';
+  document.getElementById('campView-generating').style.display = 'block';
+  document.getElementById('campGenCampaignTitle').textContent = title;
+  document.getElementById('campGenStatusTitle').textContent = 'Cargando clips...';
+  document.getElementById('campGenStatusSub').textContent = '';
+  document.getElementById('campReviewControls').style.display = 'none';
+  document.getElementById('campAllDoneControls').style.display = 'none';
+  document.getElementById('campGenProgressBar').style.width = '0%';
+  document.getElementById('campClipsGrid').innerHTML = '';
+
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/status', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaignId, userId: _currentUser.userId })
+    });
+    if(!resp.ok) throw new Error('Error cargando campaña');
+    const data = await resp.json();
+    const { clips, variants } = data;
+
+    // Renderizar grid de clips
+    const grid = document.getElementById('campClipsGrid');
+    grid.innerHTML = '';
+    
+    if(clips.length === 0) {
+      document.getElementById('campGenStatusTitle').textContent = 'Sin clips generados';
+      document.getElementById('campGenStatusSub').textContent = 'Esta campaña no tiene clips todavía.';
+      return;
+    }
+
+    clips.forEach((clip) => {
+      const card = document.createElement('div');
+      card.className = 'camp-clip-card ' + clip.status;
+      card.id = 'campClip-' + clip.clip_index;
+      
+      if(clip.status === 'completed' && clip.video_url) {
+        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a>';
+      } else if(clip.status === 'failed') {
+        card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
+      } else {
+        card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.3);">' + clip.status + '</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
+      }
+      grid.appendChild(card);
+    });
+
+    const clipsDone = clips.filter(c => c.status === 'completed').length;
+    const clipsFailed = clips.filter(c => c.status === 'failed').length;
+    document.getElementById('campGenProgressBar').style.width = '100%';
+    document.getElementById('campGenStatusTitle').textContent = title;
+    document.getElementById('campGenStatusSub').textContent = clipsDone + ' clips completados' + (clipsFailed > 0 ? ' · ' + clipsFailed + ' fallidos' : '');
+    document.getElementById('campAllDoneControls').style.display = 'block';
+
+  } catch(e) {
+    console.error('Error abriendo campaña:', e);
+    document.getElementById('campGenStatusTitle').textContent = 'Error cargando la campaña';
+  }
 }
 
 /* ---- Screen nav ---- */
