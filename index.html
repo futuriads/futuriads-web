@@ -269,9 +269,9 @@ html.pre-landing #app { display: none !important; }
   position: absolute; bottom: 6px; right: 6px;
   background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15);
   border-radius: 6px; padding: 4px 8px; font-size: 10px; color: #aaa;
-  cursor: pointer; display: none; font-family: inherit;
+  cursor: pointer; font-family: inherit;
 }
-.camp-clip-card.completed:hover .camp-clip-regen { display: block; }
+.camp-clip-card.completed .camp-clip-regen { display: block; }
 .camp-clip-card.failed .camp-clip-regen { display: block; color: #f87171; }
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
@@ -3659,7 +3659,7 @@ function campUpdateClipCard(index, status, videoUrl) {
   if(status === 'generating') {
     card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-spinner"></div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
   } else if(status === 'completed' && videoUrl) {
-    card.innerHTML = '<video src="' + videoUrl + '" autoplay loop muted playsinline></video><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
+    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
   } else if(status === 'failed') {
     card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>';
   } else if(status === 'pending') {
@@ -3711,6 +3711,9 @@ async function campGenerateOneClip(index) {
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
   
+  // Construir master prompt con acento
+  const masterPrompt = campBuildMasterPrompt();
+  
   try {
     const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -3718,7 +3721,8 @@ async function campGenerateOneClip(index) {
         campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
         variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
         resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
-        userId: _currentUser.userId
+        userId: _currentUser.userId,
+        masterPrompt: masterPrompt
       })
     });
     
@@ -3739,6 +3743,17 @@ async function campGenerateOneClip(index) {
     _camp.clipEnqueued[index] = false;
     campUpdateClipCard(index, 'failed', null);
   }
+}
+
+function campBuildMasterPrompt() {
+  const accentMap = {
+    'argentine': 'Argentine accent. She MUST speak with a strong Argentine accent throughout the entire video, even when saying technical or scientific words.',
+    'neutral': 'Neutral Latin American Spanish accent. She MUST speak with a neutral Latin American accent throughout the entire video, even when saying technical or scientific words.',
+    'spain': 'Spain Spanish accent. She MUST speak with a Spanish accent from Spain throughout the entire video, even when saying technical or scientific words.'
+  };
+  const accentText = accentMap[_camp.accent] || accentMap['argentine'];
+
+  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend.\n\nLANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\nTECHNICAL: No text overlays, no watermarks, no subtitles, no captions, no background music, no sound effects, no filters, no transitions. Only her voice and ambient room sound. Vertical format 9:16. Indoor natural soft lighting.\n\nPERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. No acting, no exaggeration. Genuine delivery.\n\nSHE SAYS EXACTLY: "[CHUNK]"';
 }
 
 function campShowReviewControls(index) {
