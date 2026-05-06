@@ -3467,12 +3467,12 @@ async function campLoadChunks() {
     _camp.corrections = data.corrections || [];
     
     // Construir chunks combinados: hook[0] + bodyChunks para el primer creativo
+    // Usar estimatedSeconds que ya vienen calculados del backend (ratio 15 para hooks, 20 para body)
     const firstHook = _camp.hooks.length > 0 ? [_camp.hooks[0]] : [];
     _camp.chunks = [...firstHook, ..._camp.bodyChunks].map((c, i) => ({
       ...c,
       index: i,
-      variantIndex: Math.floor(i / 4),
-      estimatedSeconds: Math.max(4, Math.round(c.text.length / 15))
+      variantIndex: Math.floor(i / 4)
     }));
     
     campRenderChunks(data);
