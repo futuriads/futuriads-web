@@ -214,7 +214,7 @@ html.pre-landing #app { display: none !important; }
 .camp-upload-zone.has-file .camp-upload-icon,
 .camp-upload-zone.has-file .camp-upload-label,
 .camp-upload-zone.has-file .camp-upload-sub { display: none; }
-.camp-chunks-list { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; margin-bottom: 20px; }
+.camp-chunks-list { display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; margin-bottom: 20px; }
 .camp-chunk-item {
   background: var(--hover); border: 1px solid var(--border);
   border-radius: var(--r-md); padding: 14px 16px;
@@ -230,10 +230,12 @@ html.pre-landing #app { display: none !important; }
 .camp-chunk-variant { font-size: 10px; color: var(--text3); margin-top: 4px; }
 .camp-chunk-text {
   font-size: 13px; color: #d0d0d0; line-height: 1.6;
-  flex: 1; background: transparent; border: none; outline: none;
-  font-family: 'Inter', -apple-system, sans-serif; resize: none; min-height: 40px;
+  width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+  outline: none; padding: 10px 12px; box-sizing: border-box;
+  font-family: 'Inter', -apple-system, sans-serif; resize: vertical; min-height: 80px;
+  transition: border-color 0.2s;
 }
-.camp-chunk-dur { font-size: 11px; color: var(--text3); flex-shrink: 0; margin-top: 3px; }
+.camp-chunk-text:focus { border-color: var(--accent); }
 .camp-clips-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 12px; margin-bottom: 24px;
@@ -3486,35 +3488,73 @@ function campRenderChunks(data) {
   const list = document.getElementById('campChunksList');
   list.innerHTML = '';
   
+  // Función para auto-ajustar altura del textarea al contenido
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
+  }
+  
+  // Ratios: hooks hablan más lento (frases cortas con énfasis), body habla fluido
+  const HOOK_CHARS_PER_SEC = 15;
+  const BODY_CHARS_PER_SEC = 20;
+
   _camp.chunks.forEach((chunk, i) => {
     const isHook = i === 0 && _camp.hooks.length > 0;
+    const ratio = isHook ? HOOK_CHARS_PER_SEC : BODY_CHARS_PER_SEC;
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
-    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i + 1)) + '</div><div style="flex:1;"><textarea class="camp-chunk-text" rows="2" data-index="' + i + '">' + chunk.text + '</textarea><div class="camp-chunk-variant">Variante ' + (chunk.variantIndex+1) + ' · ~' + chunk.estimatedSeconds + 's' + (isHook ? ' · Hook' : '') + '</div></div><div class="camp-chunk-dur">' + chunk.estimatedSeconds + 's</div>';
-    item.querySelector('textarea').addEventListener('input', (e) => {
+    
+    const label = isHook ? 'Hook' : 'Clip ' + (i + 1);
+    
+    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : i) + '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+          '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
+          '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">~' + chunk.estimatedSeconds + 's · ' + chunk.text.length + ' chars</span>' +
+        '</div>' +
+        '<textarea class="camp-chunk-text" data-index="' + i + '">' + chunk.text + '</textarea>' +
+        '<div class="camp-chunk-variant" style="margin-top:6px;">Variante ' + (chunk.variantIndex + 1) + (isHook ? ' · Hook' : '') + '</div>' +
+      '</div>';
+    
+    const ta = item.querySelector('textarea');
+    
+    // Auto-resize al cargar
+    setTimeout(() => autoResize(ta), 0);
+    
+    ta.addEventListener('input', (e) => {
       _camp.chunks[i].text = e.target.value;
-      // Recalcular duración al editar
-      _camp.chunks[i].estimatedSeconds = Math.max(4, Math.round(e.target.value.length / 15));
-      item.querySelector('.camp-chunk-dur').textContent = _camp.chunks[i].estimatedSeconds + 's';
+      const newSecs = isHook
+        ? Math.max(4, Math.round(e.target.value.length / HOOK_CHARS_PER_SEC))
+        : Math.min(15, Math.max(4, Math.round(e.target.value.length / BODY_CHARS_PER_SEC)));
+      _camp.chunks[i].estimatedSeconds = newSecs;
+      item.querySelector('.camp-chunk-dur-badge').textContent = '~' + newSecs + 's · ' + e.target.value.length + ' chars';
+      autoResize(e.target);
+      campUpdateCostSummary();
     });
+    
     list.appendChild(item);
   });
   
-  // Calcular costo total
-  const rate = _camp.resolution === '720p' ? 115 : 52;
+  campUpdateCostSummary();
+  
+  if(_camp.hooks.length > 1) {
+    document.getElementById('campTotalClips').textContent = _camp.chunks.length + ' (creativo 1 de ' + _camp.hooks.length + ')';
+  }
+}
+
+function campUpdateCostSummary() {
+  // Tarifas reales Seedance UGC mode
+  const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
+  const rate = rateMap[_camp.resolution] || 93.5;
   const clipsCost = _camp.chunks.reduce((acc, c) => acc + (c.estimatedSeconds * rate), 0);
   const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
   const variantCost = 48 * totalVariants;
-  const totalCost = clipsCost + variantCost;
+  const totalCost = Math.round(clipsCost + variantCost);
   
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.chunks.length;
   document.getElementById('campTotalVariants').textContent = totalVariants;
-  
-  // Mostrar hooks disponibles
-  if(_camp.hooks.length > 1) {
-    document.getElementById('campTotalClips').textContent = _camp.chunks.length + ' (creativo 1 de ' + _camp.hooks.length + ')';
-  }
+}
 }
 
 function campSelectMode(mode) {
