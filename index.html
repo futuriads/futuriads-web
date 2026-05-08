@@ -3466,10 +3466,10 @@ async function campLoadChunks() {
     _camp.bodyChunks = data.bodyChunks || [];
     _camp.corrections = data.corrections || [];
     
-    // Construir chunks combinados: hook[0] + bodyChunks para el primer creativo
+    // Construir chunks combinados: todos los hooks + bodyChunks
+    // Cada hook es un clip independiente (corto), seguido de los clips del body
     // Usar estimatedSeconds que ya vienen calculados del backend (ratio 15 para hooks, 20 para body)
-    const firstHook = _camp.hooks.length > 0 ? [_camp.hooks[0]] : [];
-    _camp.chunks = [...firstHook, ..._camp.bodyChunks].map((c, i) => ({
+    _camp.chunks = [..._camp.hooks, ..._camp.bodyChunks].map((c, i) => ({
       ...c,
       index: i,
       variantIndex: Math.floor(i / 4)
@@ -3497,16 +3497,22 @@ function campRenderChunks(data) {
   // Ratios: hooks hablan más lento (frases cortas con énfasis), body habla fluido
   const HOOK_CHARS_PER_SEC = 15;
   const BODY_CHARS_PER_SEC = 20;
+  const totalHooks = _camp.hooks.length;
 
   _camp.chunks.forEach((chunk, i) => {
-    const isHook = i === 0 && _camp.hooks.length > 0;
+    const isHook = i < totalHooks;
     const ratio = isHook ? HOOK_CHARS_PER_SEC : BODY_CHARS_PER_SEC;
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
     
-    const label = isHook ? 'Hook' : 'Clip ' + (i + 1);
+    // Label: "Hook 1", "Hook 2", "Hook 3" para hooks, "Clip 4", "Clip 5" para body
+    const label = isHook
+      ? (totalHooks > 1 ? 'Hook ' + (i + 1) : 'Hook')
+      : 'Clip ' + (i + 1);
     
-    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : i) + '</div>' +
+    const badge = isHook ? 'H' + (totalHooks > 1 ? (i + 1) : '') : (i + 1 - totalHooks + 1);
+    
+    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i - totalHooks + 1)) + '</div>' +
       '<div style="flex:1;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
           '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
@@ -3536,10 +3542,6 @@ function campRenderChunks(data) {
   });
   
   campUpdateCostSummary();
-  
-  if(_camp.hooks.length > 1) {
-    document.getElementById('campTotalClips').textContent = _camp.chunks.length + ' (creativo 1 de ' + _camp.hooks.length + ')';
-  }
 }
 
 function campUpdateCostSummary() {
