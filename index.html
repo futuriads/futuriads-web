@@ -2419,8 +2419,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <div class="camp-step-title">La foto del avatar</div>
               <div class="camp-step-sub">Subí una foto de la persona que va a hablar en el video. Futuriads va a generar variantes automáticamente para que el creativo se vea dinámico.</div>
             </div>
-            <div class="camp-upload-zone" id="campUploadZone" onclick="document.getElementById('campPhotoInput').click()">
-              <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+            <div class="camp-upload-zone" id="campUploadZone">
+              <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
               <div class="camp-upload-icon">📷</div>
               <div class="camp-upload-label">Subí la foto del avatar</div>
               <div class="camp-upload-sub">JPG o PNG · máx. 5MB · preferentemente vertical</div>
@@ -2492,7 +2492,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 4 de 4</div>
               <div class="camp-step-title">Revisá los chunks</div>
-              <div class="camp-step-sub">Claude dividió el guión en fragmentos. Podés editarlos antes de generar.</div>
+              <div class="camp-step-sub">Tu guión fue dividido en fragmentos. Podés editarlos antes de generar.</div>
             </div>
             <div id="campChunksLoading" style="text-align:center;padding:40px;color:var(--text2);">
               <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
@@ -3359,6 +3359,9 @@ function campPhotoSelected(e) {
   if(!file) return;
   if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
 
+  // Resetear el input para permitir re-selección del mismo archivo
+  e.target.value = '';
+
   // Mostrar preview local inmediatamente
   const reader = new FileReader();
   reader.onload = (ev) => {
@@ -3830,6 +3833,10 @@ async function campRegenClip(index) {
 }
 
 async function campLoadList() {
+  // Esperar hasta que _currentUser esté disponible (máx 5 segundos)
+  if(!_currentUser) {
+    for(let i = 0; i < 25 && !_currentUser; i++) await new Promise(r => setTimeout(r, 200));
+  }
   if(!_currentUser) return;
   const container = document.getElementById('campListContainer');
   if(!container) return;
