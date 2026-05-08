@@ -2451,19 +2451,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
             </div>
             <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
-              <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('spain', this)">🇪🇸 Español de España</button>
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del avatar</div>
+              <div class="camp-options-row" id="campVoiceOptions">
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">👩 Femenina (argentina)</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">👨 Masculina (argentina)</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('ugc', this)">🤖 Generada por IA</button>
               </div>
-              <div style="font-size:12px;color:var(--text3);">El acento del avatar al hablar en el video. La duración de cada clip se calcula automáticamente.</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:6px;">Las voces femenina y masculina usan audio real con acento argentino y lipsync preciso. "Generada por IA" deja que Seedance genere la voz (acento menos preciso pero sin costo extra de audio).</div>
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
               <div class="camp-options-row" id="campResOptions">
-                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 52 cr/seg</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 115 cr/seg</span></button>
+                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
               </div>
             </div>
             <div style="margin-bottom:20px;">
@@ -3266,12 +3266,13 @@ const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
   clipDuration: 8, resolution: '480p',
-  aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+  aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
   campaignId: null, variantsMap: {}, currentClipIndex: 0,
   pollingInterval: null,
   clipsLaunched: false,
-  clipEnqueued: {}
+  clipEnqueued: {},
+  audioUrls: {}
 };
 
 function campStartNew() {
@@ -3279,10 +3280,10 @@ function campStartNew() {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
     clipDuration: 8, resolution: '480p',
-    aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+    aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
-    clipsLaunched: false, clipEnqueued: {}
+    clipsLaunched: false, clipEnqueued: {}, audioUrls: {}
   });
   const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
   const si = document.getElementById('campScriptInput'); if(si) si.value = '';
@@ -3437,6 +3438,17 @@ function campSelectAccent(accent, btn) {
   btn.classList.add('selected');
 }
 
+function campSelectVoice(voice, btn) {
+  _camp.voice = voice;
+  document.querySelectorAll('#campVoiceOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // Si es lipsync (female/male), el acento siempre es argentino
+  if (voice === 'female' || voice === 'male') {
+    _camp.accent = 'argentine';
+  }
+  campUpdateCostSummary();
+}
+
 function campSelectRes(res, btn) {
   _camp.resolution = res;
   document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
@@ -3554,11 +3566,29 @@ function campUpdateCostSummary() {
   const clipsCost = _camp.chunks.reduce((acc, c) => acc + (c.estimatedSeconds * rate), 0);
   const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
   const variantCost = 48 * totalVariants;
-  const totalCost = Math.round(clipsCost + variantCost);
+  
+  // Costo de audio ElevenLabs (solo si voice es female o male)
+  let audioCost = 0;
+  if (_camp.voice === 'female' || _camp.voice === 'male') {
+    const totalChars = _camp.chunks.reduce((acc, c) => acc + c.text.length, 0);
+    audioCost = Math.round(totalChars * 0.2); // ratio 0.2 cred/char
+  }
+  
+  const totalCost = Math.round(clipsCost + variantCost + audioCost);
+  
+  const costLabel = audioCost > 0
+    ? totalCost.toLocaleString('es-AR') + ' créditos · ' + _camp.chunks.length + ' clips · ' + totalVariants + ' variantes · audio incluido'
+    : totalCost.toLocaleString('es-AR') + ' créditos · ' + _camp.chunks.length + ' clips · ' + totalVariants + ' variantes de avatar';
   
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.chunks.length;
   document.getElementById('campTotalVariants').textContent = totalVariants;
+  
+  // Actualizar el banner completo
+  const banner = document.querySelector('.camp-cost-banner');
+  if (banner) {
+    banner.innerHTML = '<span>💡</span><span>Total estimado: <span class="camp-cost-num">' + totalCost.toLocaleString('es-AR') + '</span> créditos · ' + _camp.chunks.length + (audioCost > 0 ? ' clips · ' + totalVariants + ' variantes · audio incluido' : ' clips · ' + totalVariants + ' variantes de avatar') + '</span>';
+  }
 }
 
 function campSelectMode(mode) {
@@ -3721,16 +3751,71 @@ async function campStartClipGeneration() {
   }
   _camp.clipsLaunched = true;
 
+  const useLipsync = _camp.voice === 'female' || _camp.voice === 'male';
+
+  // ── PASO A: Generar audios con ElevenLabs (solo si lipsync) ──
+  if (useLipsync) {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando audios...';
+    document.getElementById('campGenStatusSub').textContent = 'Creando la voz para cada clip con acento argentino.';
+    
+    for (let i = 0; i < _camp.chunks.length; i++) {
+      const chunk = _camp.chunks[i];
+      document.getElementById('campGenStatusTitle').textContent = 'Generando audio ' + (i + 1) + ' de ' + _camp.chunks.length + '...';
+      
+      try {
+        const resp = await fetch(BACKEND_URL + '/api/campaign/generate-audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            campaignId: _camp.campaignId,
+            clipIndex: i,
+            text: chunk.text,
+            voice: _camp.voice,
+            userId: _currentUser.userId
+          })
+        });
+        
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          console.error('Error generando audio clip ' + i + ':', err);
+          if (resp.status === 402) {
+            showToast('No tenés créditos suficientes para los audios.');
+            _camp.clipsLaunched = false;
+            return;
+          }
+          showToast('Error generando audio del clip ' + (i + 1));
+          _camp.clipsLaunched = false;
+          return;
+        }
+        
+        const data = await resp.json();
+        _camp.audioUrls[i] = data.audioUrl;
+        console.log('Audio clip ' + i + ' OK:', data.audioUrl);
+        
+        // Esperar 500ms entre audios para no saturar ElevenLabs
+        if (i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 500));
+        
+      } catch (e) {
+        console.error('Error generando audio clip ' + i + ':', e);
+        showToast('Error generando audio del clip ' + (i + 1));
+        _camp.clipsLaunched = false;
+        return;
+      }
+    }
+    
+    console.log('Todos los audios generados OK');
+    await refreshCredits();
+  }
+
+  // ── PASO B: Generar clips con Enhancor ──
   if(_camp.genMode === 'auto') {
-    // Modo automático: generar SECUENCIALMENTE (no Promise.all)
     document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
+    document.getElementById('campGenStatusSub').textContent = useLipsync ? 'Sincronizando labios con el audio.' : 'Esto puede tardar 1-2 minutos.';
     for(let i = 0; i < _camp.chunks.length; i++) {
       await campGenerateOneClip(i);
-      // Esperar 2 seg entre cada encolado para no saturar Enhancor
       if(i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 2000));
     }
   } else {
-    // Modo revisión: generar solo el primero
     document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
     _camp.currentClipIndex = 0;
     await campGenerateOneClip(0);
@@ -3759,15 +3844,22 @@ async function campGenerateOneClip(index) {
   const masterPrompt = campBuildMasterPrompt();
   
   try {
+    const reqBody = {
+      campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
+      variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
+      resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
+      userId: _currentUser.userId,
+      masterPrompt: masterPrompt
+    };
+    
+    // Si hay audio pregenerado (lipsync), pasarlo
+    if (_camp.audioUrls[index]) {
+      reqBody.audioUrl = _camp.audioUrls[index];
+    }
+    
     const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
-        variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
-        resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
-        userId: _currentUser.userId,
-        masterPrompt: masterPrompt
-      })
+      body: JSON.stringify(reqBody)
     });
     
     // Si el backend rechaza por CLIP_ALREADY_EXISTS, no es error
