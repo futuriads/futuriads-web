@@ -3753,62 +3753,22 @@ async function campStartClipGeneration() {
 
   const useLipsync = _camp.voice === 'female' || _camp.voice === 'male';
 
-  // ── PASO A: Generar audios con ElevenLabs (solo si lipsync) ──
-  if (useLipsync) {
-    document.getElementById('campGenStatusTitle').textContent = 'Generando audios...';
-    document.getElementById('campGenStatusSub').textContent = 'Creando la voz para cada clip con acento argentino.';
-    
-    for (let i = 0; i < _camp.chunks.length; i++) {
-      const chunk = _camp.chunks[i];
-      document.getElementById('campGenStatusTitle').textContent = 'Generando audio ' + (i + 1) + ' de ' + _camp.chunks.length + '...';
-      
-      try {
-        const resp = await fetch(BACKEND_URL + '/api/campaign/generate-audio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            campaignId: _camp.campaignId,
-            clipIndex: i,
-            text: chunk.text,
-            voice: _camp.voice,
-            userId: _currentUser.userId
-          })
-        });
-        
-        if (!resp.ok) {
-          const err = await resp.json().catch(() => ({}));
-          console.error('Error generando audio clip ' + i + ':', err);
-          if (resp.status === 402) {
-            showToast('No tenés créditos suficientes para los audios.');
-            _camp.clipsLaunched = false;
-            return;
-          }
-          showToast('Error generando audio del clip ' + (i + 1));
-          _camp.clipsLaunched = false;
-          return;
-        }
-        
-        const data = await resp.json();
-        _camp.audioUrls[i] = data.audioUrl;
-        console.log('Audio clip ' + i + ' OK:', data.audioUrl);
-        
-        // Esperar 500ms entre audios para no saturar ElevenLabs
-        if (i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 500));
-        
-      } catch (e) {
-        console.error('Error generando audio clip ' + i + ':', e);
-        showToast('Error generando audio del clip ' + (i + 1));
-        _camp.clipsLaunched = false;
-        return;
-      }
-    }
-    
-    console.log('Todos los audios generados OK');
-    await refreshCredits();
-  }
-
-  // ── PASO B: Generar clips con Enhancor ──
   if(_camp.genMode === 'auto') {
+    // ── MODO AUTOMÁTICO: generar TODOS los audios primero, después todos los clips ──
+    if (useLipsync) {
+      document.getElementById('campGenStatusTitle').textContent = 'Generando audios...';
+      document.getElementById('campGenStatusSub').textContent = 'Creando la voz para cada clip con acento argentino.';
+      
+      for (let i = 0; i < _camp.chunks.length; i++) {
+        document.getElementById('campGenStatusTitle').textContent = 'Generando audio ' + (i + 1) + ' de ' + _camp.chunks.length + '...';
+        const ok = await campGenerateOneAudio(i);
+        if (!ok) { _camp.clipsLaunched = false; return; }
+        if (i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 500));
+      }
+      console.log('Todos los audios generados OK');
+      await refreshCredits();
+    }
+
     document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
     document.getElementById('campGenStatusSub').textContent = useLipsync ? 'Sincronizando labios con el audio.' : 'Esto puede tardar 1-2 minutos.';
     for(let i = 0; i < _camp.chunks.length; i++) {
@@ -3816,9 +3776,67 @@ async function campStartClipGeneration() {
       if(i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 2000));
     }
   } else {
+    // ── MODO REVIEW: generar audio + clip de a uno ──
     document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
+    document.getElementById('campGenStatusSub').textContent = useLipsync ? 'Generando audio y clip con lipsync.' : 'Esto puede tardar 1-2 minutos.';
     _camp.currentClipIndex = 0;
+    
+    if (useLipsync) {
+      document.getElementById('campGenStatusTitle').textContent = 'Generando audio del clip 1...';
+      const ok = await campGenerateOneAudio(0);
+      if (!ok) { _camp.clipsLaunched = false; return; }
+      await refreshCredits();
+    }
+    
     await campGenerateOneClip(0);
+  }
+}
+
+// Genera el audio de UN solo clip con ElevenLabs
+// Devuelve true si salió bien, false si falló
+async function campGenerateOneAudio(index) {
+  const chunk = _camp.chunks[index];
+  if (!chunk) return false;
+  
+  // Si ya tiene audio, no regenerar
+  if (_camp.audioUrls[index]) {
+    console.log('Audio clip ' + index + ' ya existe, saltando.');
+    return true;
+  }
+  
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-audio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        clipIndex: index,
+        text: chunk.text,
+        voice: _camp.voice,
+        userId: _currentUser.userId
+      })
+    });
+    
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      console.error('Error generando audio clip ' + index + ':', err);
+      if (resp.status === 402) {
+        showToast('No tenés créditos suficientes para los audios.');
+      } else {
+        showToast('Error generando audio del clip ' + (index + 1));
+      }
+      return false;
+    }
+    
+    const data = await resp.json();
+    _camp.audioUrls[index] = data.audioUrl;
+    console.log('Audio clip ' + index + ' OK:', data.audioUrl);
+    return true;
+    
+  } catch (e) {
+    console.error('Error generando audio clip ' + index + ':', e);
+    showToast('Error generando audio del clip ' + (index + 1));
+    return false;
   }
 }
 
@@ -3907,20 +3925,50 @@ async function campApproveClip() {
     return;
   }
   document.getElementById('campReviewControls').style.display = 'none';
-  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex+1) + '...';
-  await campGenerateOneClip(_camp.currentClipIndex);
+  
+  const useLipsync = _camp.voice === 'female' || _camp.voice === 'male';
+  const nextIdx = _camp.currentClipIndex;
+  
+  // Si es lipsync, generar audio primero
+  if (useLipsync) {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando audio del clip ' + (nextIdx + 1) + '...';
+    const ok = await campGenerateOneAudio(nextIdx);
+    if (!ok) return;
+    await refreshCredits();
+  }
+  
+  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (nextIdx + 1) + '...';
+  await campGenerateOneClip(nextIdx);
 }
 
 async function campRegenCurrentClip() {
-  _camp.clipEnqueued[_camp.currentClipIndex] = false;
-  await campGenerateOneClip(_camp.currentClipIndex);
+  const idx = _camp.currentClipIndex;
+  _camp.clipEnqueued[idx] = false;
+  
+  // Si es lipsync y no tiene audio, regenerar audio también
+  const useLipsync = _camp.voice === 'female' || _camp.voice === 'male';
+  if (useLipsync && !_camp.audioUrls[idx]) {
+    const ok = await campGenerateOneAudio(idx);
+    if (!ok) return;
+    await refreshCredits();
+  }
+  
+  await campGenerateOneClip(idx);
   document.getElementById('campReviewControls').style.display = 'none';
 }
 
 async function campRegenClip(index) {
-  // Resetear el flag para permitir regeneración manual
   _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
+  
+  // Si es lipsync y no tiene audio, regenerar audio también
+  const useLipsync = _camp.voice === 'female' || _camp.voice === 'male';
+  if (useLipsync && !_camp.audioUrls[index]) {
+    const ok = await campGenerateOneAudio(index);
+    if (!ok) return;
+    await refreshCredits();
+  }
+  
   await campGenerateOneClip(index);
 }
 
