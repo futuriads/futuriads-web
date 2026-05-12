@@ -3400,9 +3400,9 @@ function campPhotoSelected(e) {
   };
   reader.readAsDataURL(file);
 
-  // Subir a Supabase Storage en segundo plano
   _camp.photoUrl = null;
   _camp.photoUploading = true;
+  showToast('Subiendo foto del avatar...');
   campUploadPhoto(file);
 }
 
@@ -3440,6 +3440,7 @@ async function campUploadPhoto(file) {
     _camp.photoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
     _camp.photoUploading = false;
     console.log('Foto subida OK:', _camp.photoUrl);
+    showToast('Foto del avatar subida ✓');
   } catch(err) {
     console.error('Error en upload:', err);
     showToast('Error subiendo la foto.');
@@ -3482,13 +3483,14 @@ function campProductPhotoSelected(e) {
   reader.readAsDataURL(file);
   _camp.productPhotoUrl = null;
   _camp.productPhotoUploading = true;
+  showToast('Subiendo foto del producto...');
   campUploadProductPhoto(file);
 }
 
 async function campUploadProductPhoto(file) {
   try {
     const { data: { session } } = await supa.auth.getSession();
-    if(!session) { showToast('Error: no hay sesión activa'); return; }
+    if(!session) { showToast('Error: no hay sesión activa'); _camp.productPhotoUploading = false; return; }
     const ext = file.name.split('.').pop() || 'jpg';
     const fileName = 'products/' + session.user.id + '/' + Date.now() + '.' + ext;
     const uploadResp = await fetch(
@@ -3496,13 +3498,16 @@ async function campUploadProductPhoto(file) {
       { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'true' }, body: file }
     );
     if(!uploadResp.ok) {
-      showToast('Error subiendo la foto del producto.');
+      const err = await uploadResp.text();
+      console.error('Error subiendo foto producto:', err);
+      showToast('Error subiendo la foto del producto. Intentá de nuevo.');
       _camp.productPhotoUploading = false;
       return;
     }
     _camp.productPhotoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
     _camp.productPhotoUploading = false;
     console.log('Foto producto subida:', _camp.productPhotoUrl);
+    showToast('Foto del producto subida ✓');
   } catch(err) {
     console.error('Error upload producto:', err);
     showToast('Error subiendo la foto del producto.');
