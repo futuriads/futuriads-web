@@ -3810,28 +3810,31 @@ async function campUpdateGeneratingView(data) {
   const variantsDone = variants.filter(v => v.status === 'completed').length;
   const variantsTotal = variants.length;
   const clipsDone = clips.filter(c => c.status === 'completed').length;
-  const clipsTotal = _camp.chunks.length;
+  const clipsTotal = _camp.chunks.length || _camp.audioClips.length || clips.length;
 
   variants.forEach(v => {
     if(v.status === 'completed' && v.image_url) _camp.variantsMap[v.variant_index] = v.image_url;
   });
 
+  // Si hay variantes pendientes, mostrar progreso de variantes
   if(variantsTotal > 0 && variantsDone < variantsTotal) {
     document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar... (' + variantsDone + '/' + variantsTotal + ')';
     document.getElementById('campGenProgressBar').style.width = Math.round((variantsDone / variantsTotal) * 30) + '%';
     return;
   }
 
+  // Si hay variantes listas y no hay clips todavía, iniciar generación de clips
   if(variantsDone === variantsTotal && variantsTotal > 0 && clips.length === 0) {
     document.getElementById('campGenStatusTitle').textContent = 'Variantes listas. Iniciando generación de clips...';
-    await campStartClipGeneration();
+    await campStartClipGenerationV2();
     return;
   }
 
+  // Actualizar cards de clips
   clips.forEach(clip => campUpdateClipCard(clip.clip_index, clip.status, clip.video_url));
 
-  const totalSteps = variantsTotal + clipsTotal;
-  const doneSoFar = variantsDone + clipsDone;
+  const totalSteps = Math.max(variantsTotal, 1) + clipsTotal;
+  const doneSoFar = (variantsTotal > 0 ? variantsDone : 1) + clipsDone;
   const pct = totalSteps > 0 ? Math.round((doneSoFar / totalSteps) * 100) : 0;
   document.getElementById('campGenProgressBar').style.width = pct + '%';
 
