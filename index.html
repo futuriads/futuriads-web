@@ -2576,8 +2576,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         </div>
         <div id="campAllDoneControls" style="display:none;margin-top:16px;">
           <div style="font-size:15px;font-weight:700;margin-bottom:6px;">✓ Todos los clips generados</div>
-          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Revisá los clips arriba. El ensamblado automático estará disponible próximamente.</div>
-          <button class="btn-w" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Revisá los clips arriba. Cuando estés conforme, ensamblá el video final con audio y subtítulos.</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">🎬 Ensamblar video final</button>
+            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
+          </div>
+          <div id="campAssembleStatus" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
+            <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
+            <div id="campAssembleMsg" style="text-align:center;font-size:13px;color:var(--text2);">Ensamblando video...</div>
+          </div>
+          <div id="campFinalVideo" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
+            <div style="font-size:13px;font-weight:600;color:var(--text1);margin-bottom:10px;">🎉 Video final listo</div>
+            <video id="campFinalPlayer" controls style="width:100%;max-height:500px;border-radius:8px;background:#000;"></video>
+            <div style="margin-top:10px;display:flex;gap:10px;">
+              <a id="campFinalDownload" href="#" download="creativo-final.mp4" class="btn-w" style="font-size:13px;padding:8px 18px;text-decoration:none;">⬇ Descargar</a>
+            </div>
+          </div>
         </div>
       </div><!-- /campView-generating -->
 
@@ -3322,6 +3336,55 @@ function campStartNew() {
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'block';
   document.getElementById('campView-generating').style.display = 'none';
+}
+
+async function campAssemble() {
+  if (!_camp.campaignId) { showToast('Error: no hay campaña activa'); return; }
+  
+  const btn = document.getElementById('campAssembleBtn');
+  btn.disabled = true; btn.textContent = 'Ensamblando...';
+  document.getElementById('campAssembleStatus').style.display = 'block';
+  document.getElementById('campAssembleMsg').textContent = 'Ensamblando audio + video + subtítulos... Esto puede tardar un minuto.';
+  document.getElementById('campFinalVideo').style.display = 'none';
+
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/assemble', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        userId: _currentUser.userId,
+        subtitleStyle: {
+          fontFamily: 'Arial',
+          fontSize: 28,
+          fontColor: '&H00FFFFFF',
+          outlineColor: '&H00000000',
+          outlineWidth: 3,
+          position: 'bottom'
+        }
+      })
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Error ensamblando');
+
+    console.log('Video final:', data.finalVideoUrl);
+    
+    document.getElementById('campAssembleStatus').style.display = 'none';
+    document.getElementById('campFinalVideo').style.display = 'block';
+    document.getElementById('campFinalPlayer').src = data.finalVideoUrl;
+    document.getElementById('campFinalDownload').href = data.finalVideoUrl;
+    
+    btn.textContent = '✓ Video ensamblado';
+    showToast('Video final listo');
+
+  } catch (e) {
+    console.error('Error ensamblando:', e);
+    showToast('Error: ' + e.message);
+    document.getElementById('campAssembleMsg').textContent = 'Error: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = '🎬 Ensamblar video final';
+  }
 }
 
 function campBackToList() {
