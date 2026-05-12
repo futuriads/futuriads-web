@@ -3700,6 +3700,9 @@ async function campLaunchV2() {
     }));
     campRenderClipsGrid();
 
+    // Iniciar polling para detectar cuando los clips terminan
+    campStartPolling();
+
     // Generar clips directamente (sin variantes, usamos las fotos originales)
     _camp.clipsLaunched = false;
     await campStartClipGenerationV2();
