@@ -2416,18 +2416,30 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="camp-wizard-step" id="campStep-2">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 2 de 4</div>
-              <div class="camp-step-title">La foto del avatar</div>
-              <div class="camp-step-sub">Subí una foto de la persona que va a hablar en el video. Futuriads va a generar variantes automáticamente para que el creativo se vea dinámico.</div>
+              <div class="camp-step-title">Fotos del avatar y el producto</div>
+              <div class="camp-step-sub">Subí la foto de la persona que va a protagonizar el video y una foto del producto que se va a promocionar.</div>
             </div>
-            <div class="camp-upload-zone" id="campUploadZone">
-              <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-              <div class="camp-upload-icon">📷</div>
-              <div class="camp-upload-label">Subí la foto del avatar</div>
-              <div class="camp-upload-sub">JPG o PNG · máx. 5MB · preferentemente vertical</div>
-              <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
-            </div>
-            <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6;">
-              Futuriads va a generar variantes de esta foto (distinta pose, fondo, ángulo) para que el avatar aparezca en posiciones diferentes cada 4 clips — como un UGC real.
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Avatar (persona)</div>
+                <div class="camp-upload-zone" id="campUploadZone">
+                  <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
+                  <div class="camp-upload-icon">👩</div>
+                  <div class="camp-upload-label">Subí la foto del avatar</div>
+                  <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
+                  <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
+                </div>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Producto</div>
+                <div class="camp-upload-zone" id="campUploadZoneProduct">
+                  <input type="file" id="campProductPhotoInput" accept="image/*" onchange="campProductPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
+                  <div class="camp-upload-icon">📦</div>
+                  <div class="camp-upload-label">Subí la foto del producto</div>
+                  <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
+                  <img class="camp-upload-preview" id="campProductPreview" alt="Preview">
+                </div>
+              </div>
             </div>
             <div class="camp-nav-row">
               <div style="display:flex;align-items:center;gap:12px;">
@@ -2448,14 +2460,15 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 3 de 4</div>
               <div class="camp-step-title">Configuración</div>
-              <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
+              <div class="camp-step-sub">Elegí la voz, la resolución y el formato del creativo.</div>
             </div>
             <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
-              <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del audio</div>
+              <div class="camp-options-row" id="campVoiceOptions">
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">👩 Femenina argentina</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">👨 Masculina argentina</button>
               </div>
+              <div style="font-size:12px;color:var(--text3);margin-top:6px;">El audio se genera con acento argentino real usando IA de voz. Los clips de video son mudos — el audio se superpone al final.</div>
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
@@ -2485,23 +2498,32 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
           </div>
 
-          <!-- PASO 4: Revisar chunks y modo de generación -->
+          <!-- PASO 4: Audio + Clips visuales -->
           <div class="camp-wizard-step" id="campStep-4">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 4 de 4</div>
-              <div class="camp-step-title">Revisá los chunks</div>
-              <div class="camp-step-sub">Tu guión fue dividido en fragmentos. Podés editarlos antes de generar.</div>
+              <div class="camp-step-title">Revisá los clips</div>
+              <div class="camp-step-sub">Futuriads genera el audio, lo divide en clips sincronizados, y crea prompts visuales para cada uno.</div>
             </div>
-            <div id="campChunksLoading" style="text-align:center;padding:40px;color:var(--text2);">
+            <div id="campAudioLoading" style="text-align:center;padding:40px;color:var(--text2);">
               <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
-              Dividiendo el guión con IA...
+              <div id="campAudioLoadingMsg">Generando audio con IA de voz...</div>
             </div>
-            <div id="campChunksReady" style="display:none;">
-              <div class="camp-chunks-list" id="campChunksList"></div>
+            <div id="campClipsReady" style="display:none;">
+              <!-- Audio player -->
+              <div style="margin-bottom:16px;padding:14px 16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Audio generado</div>
+                <audio id="campAudioPlayer" controls style="width:100%;height:36px;"></audio>
+                <div style="font-size:11px;color:var(--text3);margin-top:6px;">Duración: <span id="campAudioDuration">—</span>s · <span id="campAudioClipCount">—</span> clips</div>
+              </div>
+              <!-- Lista de clips -->
+              <div class="camp-chunks-list" id="campClipsList"></div>
+              <!-- Costo -->
               <div class="camp-cost-banner">
                 <span>💡</span>
-                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · <span id="campTotalVariants">—</span> variantes de avatar</span>
+                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · audio incluido</span>
               </div>
+              <!-- Modo de generación -->
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modo de generación</div>
               <div class="camp-gen-mode">
                 <div class="camp-mode-card selected" id="campModeReview" onclick="campSelectMode('review')">
@@ -2510,7 +2532,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 </div>
                 <div class="camp-mode-card" id="campModeAuto" onclick="campSelectMode('auto')">
                   <div class="camp-mode-card-title">Automático</div>
-                  <div class="camp-mode-card-sub">Genera todos los clips en paralelo. Más rápido, revisás al final.</div>
+                  <div class="camp-mode-card-sub">Genera todos los clips en secuencia. Más rápido, revisás al final.</div>
                 </div>
               </div>
             </div>
@@ -2524,7 +2546,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 </div>
                 <button class="btn-ghost-sm" onclick="campGoStep(3)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campLaunch()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">✦ Empezar generación</button>
+              <button class="btn-w" onclick="campLaunchV2()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">✦ Empezar generación</button>
             </div>
           </div>
 
@@ -3263,9 +3285,13 @@ async function confirmSignOut() {
 const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
+  productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
   clipDuration: 8, resolution: '480p',
-  aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+  aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
+  // V2: audio + visual prompts
+  audioUrl: null, audioDuration: 0, audioClips: [],
+  visualPrompts: [],
   campaignId: null, variantsMap: {}, currentClipIndex: 0,
   pollingInterval: null,
   clipsLaunched: false,
@@ -3276,9 +3302,11 @@ function campStartNew() {
   Object.assign(_camp, {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
+    productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
     clipDuration: 8, resolution: '480p',
-    aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
+    aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
+    audioUrl: null, audioDuration: 0, audioClips: [], visualPrompts: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}
   });
@@ -3288,6 +3316,8 @@ function campStartNew() {
   const sr = document.getElementById('campScriptAIResult'); if(sr){ sr.value=''; sr.style.display='none'; }
   const pz = document.getElementById('campUploadZone'); if(pz) pz.classList.remove('has-file');
   const pp = document.getElementById('campPhotoPreview'); if(pp){ pp.src=''; }
+  const pzp = document.getElementById('campUploadZoneProduct'); if(pzp) pzp.classList.remove('has-file');
+  const ppp = document.getElementById('campProductPreview'); if(ppp){ ppp.src=''; }
   campGoStep(1);
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'block';
@@ -3423,10 +3453,67 @@ function campStep2Next() {
     return;
   }
   if(_camp.photoUploading){
-    showToast('Esperá, la foto se está subiendo...');
+    showToast('Esperá, la foto del avatar se está subiendo...');
+    return;
+  }
+  if(!_camp.productPhotoUrl && !_camp.productPhotoUploading){
+    showToast('Subí una foto del producto primero');
+    return;
+  }
+  if(_camp.productPhotoUploading){
+    showToast('Esperá, la foto del producto se está subiendo...');
     return;
   }
   campGoStep(3);
+}
+
+function campProductPhotoSelected(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const preview = document.getElementById('campProductPreview');
+    if(preview) preview.src = ev.target.result;
+    const zone = document.getElementById('campUploadZoneProduct');
+    if(zone) zone.classList.add('has-file');
+  };
+  reader.readAsDataURL(file);
+  _camp.productPhotoUrl = null;
+  _camp.productPhotoUploading = true;
+  campUploadProductPhoto(file);
+}
+
+async function campUploadProductPhoto(file) {
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if(!session) { showToast('Error: no hay sesión activa'); return; }
+    const ext = file.name.split('.').pop() || 'jpg';
+    const fileName = 'products/' + session.user.id + '/' + Date.now() + '.' + ext;
+    const uploadResp = await fetch(
+      SUPA_URL + '/storage/v1/object/campaign-photos/' + fileName,
+      { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'true' }, body: file }
+    );
+    if(!uploadResp.ok) {
+      showToast('Error subiendo la foto del producto.');
+      _camp.productPhotoUploading = false;
+      return;
+    }
+    _camp.productPhotoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
+    _camp.productPhotoUploading = false;
+    console.log('Foto producto subida:', _camp.productPhotoUrl);
+  } catch(err) {
+    console.error('Error upload producto:', err);
+    showToast('Error subiendo la foto del producto.');
+    _camp.productPhotoUploading = false;
+  }
+}
+
+function campSelectVoice(voice, btn) {
+  _camp.voice = voice;
+  document.querySelectorAll('#campVoiceOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
 }
 
 function campSelectAccent(accent, btn) {
@@ -3449,113 +3536,132 @@ function campSelectAspect(aspect, btn) {
 
 function campStep3Next() {
   campGoStep(4);
-  campLoadChunks();
+  campLoadAudioAndClips();
 }
 
-async function campLoadChunks() {
-  document.getElementById('campChunksLoading').style.display = 'block';
-  document.getElementById('campChunksReady').style.display = 'none';
+async function campLoadAudioAndClips() {
+  document.getElementById('campAudioLoading').style.display = 'block';
+  document.getElementById('campClipsReady').style.display = 'none';
+  document.getElementById('campAudioLoadingMsg').textContent = 'Generando audio con IA de voz...';
+
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/chunk-script', {
+    // Paso 1: Crear campaña primero (necesitamos el ID)
+    if (!_camp.campaignId) {
+      const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: _currentUser.userId, title: _camp.title, script: _camp.script,
+          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
+        })
+      });
+      const createData = await createResp.json();
+      if (!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
+      _camp.campaignId = createData.campaign.id;
+    }
+
+    // Paso 2: Generar audio con timestamps
+    document.getElementById('campAudioLoadingMsg').textContent = 'Generando audio con IA de voz...';
+    const audioResp = await fetch(BACKEND_URL + '/api/campaign/generate-audio-with-timestamps', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ script: _camp.script })
+      body: JSON.stringify({
+        campaignId: _camp.campaignId, script: _camp.script,
+        voice: _camp.voice, userId: _currentUser.userId
+      })
     });
-    const data = await resp.json();
-    if(!resp.ok) throw new Error(data.error || 'Error del servidor');
-    
-    _camp.hooks = data.hooks || [];
-    _camp.bodyChunks = data.bodyChunks || [];
-    _camp.corrections = data.corrections || [];
-    
-    // Construir chunks combinados: todos los hooks + bodyChunks
-    // Cada hook es un clip independiente (corto), seguido de los clips del body
-    // Usar estimatedSeconds que ya vienen calculados del backend (ratio 15 para hooks, 20 para body)
-    _camp.chunks = [..._camp.hooks, ..._camp.bodyChunks].map((c, i) => ({
-      ...c,
-      index: i,
-      variantIndex: Math.floor(i / 4)
-    }));
-    
-    campRenderChunks(data);
-  } catch(e){
-    showToast('Error dividiendo el guión: ' + e.message);
-    document.getElementById('campChunksLoading').style.display = 'none';
+    const audioData = await audioResp.json();
+    if (!audioResp.ok) {
+      if (audioResp.status === 402) { showToast('No tenés créditos suficientes para el audio.'); return; }
+      throw new Error(audioData.error || 'Error generando audio');
+    }
+
+    _camp.audioUrl = audioData.audioUrl;
+    _camp.audioDuration = audioData.totalDuration;
+    _camp.audioClips = audioData.clips;
+
+    await refreshCredits();
+
+    // Paso 3: Generar prompts visuales con Claude
+    document.getElementById('campAudioLoadingMsg').textContent = 'Creando escenas visuales sincronizadas...';
+    const promptResp = await fetch(BACKEND_URL + '/api/campaign/generate-visual-prompts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clips: _camp.audioClips,
+        productDescription: 'Producto de e-commerce visible en la foto subida por el usuario',
+        avatarDescription: 'Persona visible en la foto subida por el usuario, estilo UGC selfie casual',
+        aspectRatio: _camp.aspectRatio
+      })
+    });
+    const promptData = await promptResp.json();
+    if (!promptResp.ok) throw new Error(promptData.error || 'Error generando prompts');
+
+    _camp.visualPrompts = promptData.visualPrompts;
+
+    // Mostrar resultado
+    campRenderAudioClips();
+
+  } catch (e) {
+    showToast('Error: ' + e.message);
+    document.getElementById('campAudioLoading').style.display = 'none';
   }
 }
 
-function campRenderChunks(data) {
-  document.getElementById('campChunksLoading').style.display = 'none';
-  document.getElementById('campChunksReady').style.display = 'block';
-  const list = document.getElementById('campChunksList');
+function campRenderAudioClips() {
+  document.getElementById('campAudioLoading').style.display = 'none';
+  document.getElementById('campClipsReady').style.display = 'block';
+
+  // Audio player
+  const player = document.getElementById('campAudioPlayer');
+  if (player && _camp.audioUrl) player.src = _camp.audioUrl;
+  document.getElementById('campAudioDuration').textContent = _camp.audioDuration.toFixed(1);
+  document.getElementById('campAudioClipCount').textContent = _camp.audioClips.length;
+
+  // Renderizar clips
+  const list = document.getElementById('campClipsList');
   list.innerHTML = '';
-  
-  // Función para auto-ajustar altura del textarea al contenido
+
   function autoResize(ta) {
     ta.style.height = 'auto';
     ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
   }
-  
-  // Ratios: hooks hablan más lento (frases cortas con énfasis), body habla fluido
-  const HOOK_CHARS_PER_SEC = 15;
-  const BODY_CHARS_PER_SEC = 20;
-  const totalHooks = _camp.hooks.length;
 
-  _camp.chunks.forEach((chunk, i) => {
-    const isHook = i < totalHooks;
-    const ratio = isHook ? HOOK_CHARS_PER_SEC : BODY_CHARS_PER_SEC;
+  _camp.audioClips.forEach((clip, i) => {
+    const vp = _camp.visualPrompts.find(p => p.clipIndex === i);
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
-    
-    // Label: "Hook 1", "Hook 2", "Hook 3" para hooks, "Clip 4", "Clip 5" para body
-    const label = isHook
-      ? (totalHooks > 1 ? 'Hook ' + (i + 1) : 'Hook')
-      : 'Clip ' + (i + 1);
-    
-    const badge = isHook ? 'H' + (totalHooks > 1 ? (i + 1) : '') : (i + 1 - totalHooks + 1);
-    
-    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i - totalHooks + 1)) + '</div>' +
+
+    item.innerHTML = '<div class="camp-chunk-num">' + (i + 1) + '</div>' +
       '<div style="flex:1;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-          '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
-          '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">~' + chunk.estimatedSeconds + 's · ' + chunk.text.length + ' chars</span>' +
+          '<span style="font-size:12px;font-weight:600;color:var(--text1);">Clip ' + (i + 1) + '</span>' +
+          '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">' + clip.start.toFixed(1) + 's - ' + clip.end.toFixed(1) + 's · ' + clip.duration.toFixed(1) + 's</span>' +
         '</div>' +
-        '<textarea class="camp-chunk-text" data-index="' + i + '">' + chunk.text + '</textarea>' +
-        '<div class="camp-chunk-variant" style="margin-top:6px;">Variante ' + (chunk.variantIndex + 1) + (isHook ? ' · Hook' : '') + '</div>' +
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">🎤 ' + clip.text + '</div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px;text-transform:uppercase;">Prompt visual</div>' +
+        '<textarea class="camp-chunk-text" data-index="' + i + '">' + (vp ? vp.prompt : '') + '</textarea>' +
       '</div>';
-    
+
     const ta = item.querySelector('textarea');
-    
-    // Auto-resize al cargar
     setTimeout(() => autoResize(ta), 0);
-    
     ta.addEventListener('input', (e) => {
-      _camp.chunks[i].text = e.target.value;
-      const newSecs = isHook
-        ? Math.max(4, Math.round(e.target.value.length / HOOK_CHARS_PER_SEC))
-        : Math.min(15, Math.max(4, Math.round(e.target.value.length / BODY_CHARS_PER_SEC)));
-      _camp.chunks[i].estimatedSeconds = newSecs;
-      item.querySelector('.camp-chunk-dur-badge').textContent = '~' + newSecs + 's · ' + e.target.value.length + ' chars';
+      if (_camp.visualPrompts[i]) _camp.visualPrompts[i].prompt = e.target.value;
       autoResize(e.target);
-      campUpdateCostSummary();
     });
-    
+
     list.appendChild(item);
   });
-  
-  campUpdateCostSummary();
+
+  campUpdateCostSummaryV2();
 }
 
-function campUpdateCostSummary() {
+function campUpdateCostSummaryV2() {
   const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
   const rate = rateMap[_camp.resolution] || 93.5;
-  const clipsCost = _camp.chunks.reduce((acc, c) => acc + (c.estimatedSeconds * rate), 0);
-  const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
-  const variantCost = 48 * totalVariants;
-  const totalCost = Math.round(clipsCost + variantCost);
-  
+  const clipsCost = _camp.audioClips.reduce((acc, c) => acc + Math.round(Math.min(15, Math.ceil(c.duration)) * rate), 0);
+  const audioCost = Math.round(_camp.script.length * 0.2);
+  const totalCost = Math.round(clipsCost + audioCost);
+
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
-  document.getElementById('campTotalClips').textContent = _camp.chunks.length;
-  document.getElementById('campTotalVariants').textContent = totalVariants;
+  document.getElementById('campTotalClips').textContent = _camp.audioClips.length;
 }
 
 function campSelectMode(mode) {
@@ -3564,48 +3670,103 @@ function campSelectMode(mode) {
   document.getElementById('campModeAuto').classList.toggle('selected', mode === 'auto');
 }
 
-async function campLaunch() {
-  if(!_camp.chunks.length){ showToast('Esperá a que se carguen los chunks'); return; }
-  const btn = document.getElementById('campLaunchBtn');
-  btn.textContent = 'Creando campaña...'; btn.disabled = true;
-  try {
-    const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: _currentUser.userId, title: _camp.title, script: _camp.script,
-        clipDuration: _camp.clipDuration, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
-      })
-    });
-    const createData = await createResp.json();
-    if(!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
-    _camp.campaignId = createData.campaign.id;
+async function campLaunchV2() {
+  if (!_camp.audioClips.length) { showToast('Esperá a que se genere el audio'); return; }
+  if (!_camp.visualPrompts.length) { showToast('Esperá a que se generen los prompts'); return; }
 
+  const btn = document.getElementById('campLaunchBtn');
+  btn.textContent = 'Generando clips...'; btn.disabled = true;
+
+  try {
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
     document.getElementById('campGenCampaignTitle').textContent = _camp.title;
-    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clips de video...';
+    document.getElementById('campGenStatusSub').textContent = 'Los clips se generan sin audio. Después se ensambla todo.';
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'none';
     document.getElementById('campGenProgressBar').style.width = '0%';
+
+    // Renderizar grid con cantidad de clips de audio
+    _camp.chunks = _camp.audioClips.map((c, i) => ({
+      index: i, text: c.text,
+      estimatedSeconds: Math.min(15, Math.ceil(c.duration)),
+      variantIndex: 0
+    }));
     campRenderClipsGrid();
 
-    const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
-    const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId, photoUrl: _camp.photoUrl,
-        totalVariants, userId: _currentUser.userId
-      })
-    });
-    const varData = await varResp.json();
-    if(!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
-    showToast('Variantes encoladas. Esperando resultados...');
-    campStartPolling();
-  } catch(e){
+    // Generar clips directamente (sin variantes, usamos las fotos originales)
+    _camp.clipsLaunched = false;
+    await campStartClipGenerationV2();
+
+  } catch (e) {
     showToast('Error: ' + e.message);
     btn.textContent = '✦ Empezar generación'; btn.disabled = false;
   }
+}
+
+async function campStartClipGenerationV2() {
+  if (_camp.clipsLaunched) return;
+  _camp.clipsLaunched = true;
+
+  if (_camp.genMode === 'auto') {
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
+    for (let i = 0; i < _camp.audioClips.length; i++) {
+      await campGenerateOneClipV2(i);
+      if (i < _camp.audioClips.length - 1) await new Promise(r => setTimeout(r, 2000));
+    }
+  } else {
+    _camp.currentClipIndex = 0;
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
+    await campGenerateOneClipV2(0);
+  }
+}
+
+async function campGenerateOneClipV2(index) {
+  if (_camp.clipEnqueued[index]) return;
+
+  const clip = _camp.audioClips[index];
+  const vp = _camp.visualPrompts.find(p => p.clipIndex === index);
+  if (!clip || !vp) return;
+
+  _camp.clipEnqueued[index] = true;
+  campUpdateClipCard(index, 'generating', null);
+
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        clipIndex: index,
+        visualPrompt: vp.prompt,
+        avatarImageUrl: _camp.photoUrl,
+        productImageUrl: _camp.productPhotoUrl,
+        clipDuration: Math.min(15, Math.ceil(clip.duration)),
+        resolution: _camp.resolution,
+        aspectRatio: _camp.aspectRatio,
+        userId: _currentUser.userId
+      })
+    });
+
+    if (resp.status === 409) return;
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      console.error('Error generando clip v2', index, err);
+      _camp.clipEnqueued[index] = false;
+      campUpdateClipCard(index, 'failed', null);
+      if (resp.status === 402) showToast('No tenés créditos suficientes.');
+    }
+  } catch (e) {
+    console.error('Error clip v2', index, e);
+    _camp.clipEnqueued[index] = false;
+    campUpdateClipCard(index, 'failed', null);
+  }
+}
+
+// Mantener campLaunch original para compatibilidad con campañas viejas
+async function campLaunch() {
+  // Redirigir al flujo v2
+  await campLaunchV2();
 }
 
 function campRenderClipsGrid() {
@@ -3796,7 +3957,7 @@ function campShowReviewControls(index) {
 
 async function campApproveClip() {
   _camp.currentClipIndex++;
-  if(_camp.currentClipIndex >= _camp.chunks.length){
+  if(_camp.currentClipIndex >= _camp.audioClips.length){
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'block';
     clearInterval(_camp.pollingInterval); _camp.pollingInterval = null;
@@ -3804,19 +3965,19 @@ async function campApproveClip() {
   }
   document.getElementById('campReviewControls').style.display = 'none';
   document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex + 1) + '...';
-  await campGenerateOneClip(_camp.currentClipIndex);
+  await campGenerateOneClipV2(_camp.currentClipIndex);
 }
 
 async function campRegenCurrentClip() {
   _camp.clipEnqueued[_camp.currentClipIndex] = false;
-  await campGenerateOneClip(_camp.currentClipIndex);
+  await campGenerateOneClipV2(_camp.currentClipIndex);
   document.getElementById('campReviewControls').style.display = 'none';
 }
 
 async function campRegenClip(index) {
   _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
-  await campGenerateOneClip(index);
+  await campGenerateOneClipV2(index);
 }
 
 async function campLoadList() {
