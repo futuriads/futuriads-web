@@ -2479,8 +2479,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div id="campVoiceSection" style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del audio</div>
               <div class="camp-options-row" id="campVoiceOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">👩 Femenina argentina</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">👨 Masculina argentina</button>
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">👩 Mujer · 20 años</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">👨 Hombre · 20 años</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('female40', this)">👩 Mujer · Mediana edad</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male40', this)">👨 Hombre · Mediana edad</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">El audio se genera con acento argentino real usando IA de voz.</div>
             </div>
@@ -4286,7 +4288,7 @@ async function campGenerateOneClip(index) {
 function campBuildMasterPrompt() {
   // Detectar género: si la voz es male o el usuario subió foto de hombre
   // Por ahora inferimos del selector de voz (si existe) o usamos neutro
-  const isMale = _camp.voice === 'male';
+  const isMale = _camp.voice === 'male' || _camp.voice === 'male40';
   const pronoun = isMale ? 'He' : 'She';
   const possessive = isMale ? 'his' : 'her';
   const person = isMale ? 'man' : 'woman';
@@ -4308,7 +4310,7 @@ function campBuildMasterPrompt() {
 // Permite al usuario en modo talking elegir género para el prompt
 function campDetectGender() {
   // Si hay selector de voz activo, usar eso
-  if (_camp.voice === 'male') return 'male';
+  if (_camp.voice === 'male' || _camp.voice === 'male40') return 'male';
   return 'female';
 }
 
