@@ -4258,7 +4258,8 @@ async function campGenerateOneClip(index) {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
-        variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
+        variantImageUrl, productImageUrl: _camp.productPhotoUrl || null,
+        clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
         resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
         userId: _currentUser.userId,
         masterPrompt: masterPrompt
