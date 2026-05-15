@@ -2493,6 +2493,15 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Seedance genera la voz del avatar. El acento puede variar en precisión.</div>
             </div>
+            <!-- Género del avatar (solo talking) -->
+            <div id="campGenderSection" style="margin-bottom:20px;display:none;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Género del avatar</div>
+              <div class="camp-options-row" id="campGenderOptions">
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">👩 Mujer</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">👨 Hombre</button>
+              </div>
+              <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
+            </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
               <div class="camp-options-row" id="campResOptions">
@@ -3578,6 +3587,7 @@ function campStep2Next() {
   // Actualizar UI del paso 3 según modo
   document.getElementById('campVoiceSection').style.display = _camp.videoMode === 'voiceover' ? 'block' : 'none';
   document.getElementById('campAccentSection').style.display = _camp.videoMode === 'talking' ? 'block' : 'none';
+  document.getElementById('campGenderSection').style.display = _camp.videoMode === 'talking' ? 'block' : 'none';
   campGoStep(3);
 }
 
@@ -4275,14 +4285,32 @@ async function campGenerateOneClip(index) {
 }
 
 function campBuildMasterPrompt() {
+  // Detectar género: si la voz es male o el usuario subió foto de hombre
+  // Por ahora inferimos del selector de voz (si existe) o usamos neutro
+  const isMale = _camp.voice === 'male';
+  const pronoun = isMale ? 'He' : 'She';
+  const possessive = isMale ? 'his' : 'her';
+  const person = isMale ? 'man' : 'woman';
+
   const accentMap = {
-    'argentine': 'Argentine accent. She MUST speak with a strong Argentine accent throughout the entire video, even when saying technical or scientific words.',
-    'neutral': 'Neutral Latin American Spanish accent. She MUST speak with a neutral Latin American accent throughout the entire video, even when saying technical or scientific words.',
-    'spain': 'Spain Spanish accent. She MUST speak with a Spanish accent from Spain throughout the entire video, even when saying technical or scientific words.'
+    'argentine': 'Argentine accent. ' + pronoun + ' MUST speak with a strong Argentine accent throughout the entire video, even when saying technical or scientific words.',
+    'neutral': 'Neutral Latin American Spanish accent. ' + pronoun + ' MUST speak with a neutral Latin American accent throughout the entire video.'
   };
   const accentText = accentMap[_camp.accent] || accentMap['argentine'];
 
-  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend.\n\nLANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\nTECHNICAL: No text overlays, no watermarks, no subtitles, no captions, no background music, no sound effects, no filters, no transitions. Only her voice and ambient room sound. Vertical format 9:16. Indoor natural soft lighting.\n\nPERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. No acting, no exaggeration. Genuine delivery.\n\nSHE SAYS EXACTLY: "[CHUNK]"';
+  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend. The video should have DYNAMIC scene changes — the ' + person + ' talks to camera, shows the product, gestures naturally, changes angles. NOT a static talking head.\n\n' +
+    'LANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\n' +
+    'VISUAL DIRECTION: Multiple angles and scenes within the clip. Mix of: selfie angle talking to camera, close-up of the product in ' + possessive + ' hand, ' + possessive + ' reaction expressions, ' + person + ' holding/showing the product. Natural transitions between angles. Handheld phone camera feel.\n\n' +
+    'TECHNICAL: No text overlays, no watermarks, no subtitles, no captions. Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
+    'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
+    pronoun + ' SAYS EXACTLY: "[CHUNK]"';
+}
+
+// Permite al usuario en modo talking elegir género para el prompt
+function campDetectGender() {
+  // Si hay selector de voz activo, usar eso
+  if (_camp.voice === 'male') return 'male';
+  return 'female';
 }
 
 function campShowReviewControls(index) {
