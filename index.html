@@ -3732,15 +3732,13 @@ function campRenderTalkingClips() {
     ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
   }
 
-  const totalHooks = _camp.hooks.length;
   _camp.chunks.forEach((chunk, i) => {
-    const isHook = i < totalHooks;
-    const label = isHook ? (totalHooks > 1 ? 'Hook ' + (i + 1) : 'Hook') : 'Clip ' + (i + 1);
+    const label = 'Clip ' + (i + 1);
     const vp = _camp.visualPrompts.find(p => p.clipIndex === i);
 
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
-    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i - totalHooks + 1)) + '</div>' +
+    item.innerHTML = '<div class="camp-chunk-num">' + (i + 1) + '</div>' +
       '<div style="flex:1;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
           '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
