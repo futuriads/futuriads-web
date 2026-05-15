@@ -3427,12 +3427,12 @@ function campGoStep(n) {
   // Adaptar paso 2 según modo
   if (n === 2) {
     const prodSection = document.getElementById('campProductUploadSection');
-    if (prodSection) prodSection.style.display = _camp.videoMode === 'voiceover' ? 'block' : 'none';
+    if (prodSection) prodSection.style.display = 'block';
     const title = document.getElementById('campStep2Title');
     const sub = document.getElementById('campStep2Sub');
     if (_camp.videoMode === 'talking') {
-      if (title) title.textContent = 'Foto del avatar';
-      if (sub) sub.textContent = 'Subí una foto de la persona que va a hablar en el video.';
+      if (title) title.textContent = 'Fotos del avatar y el producto';
+      if (sub) sub.textContent = 'Subí la foto de la persona que va a hablar en el video. La foto del producto es opcional.';
     } else {
       if (title) title.textContent = 'Fotos del avatar y el producto';
       if (sub) sub.textContent = 'Subí la foto de la persona que va a protagonizar el video y una foto del producto.';
