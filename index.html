@@ -130,7 +130,7 @@ html.pre-landing #app { display: none !important; }
   display: flex; align-items: center; gap: 16px;
   cursor: pointer; transition: border-color 0.2s, transform 0.15s;
 }
-.camp-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+.camp-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
 .camp-card-icon {
   width: 44px; height: 44px; border-radius: var(--r-md);
   background: var(--hover); border: 1px solid var(--border);
@@ -156,15 +156,15 @@ html.pre-landing #app { display: none !important; }
   background: var(--card); border: 1px dashed var(--border);
   border-radius: var(--r-xl); max-width: 860px;
 }
-.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+.camp-empty-icon { margin-bottom: 20px; opacity: 0.3; color: var(--text2); }
 .camp-empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
 .camp-wizard { max-width: 720px; }
 .camp-wizard-step { display: none; }
 .camp-wizard-step.active { display: block; }
 .camp-step-header { margin-bottom: 28px; }
-.camp-step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; }
-.camp-step-title { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 6px; }
+.camp-step-num { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 10px; }
+.camp-step-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
 .camp-step-sub { font-size: 14px; color: var(--text2); }
 .camp-textarea {
   width: 100%; background: var(--hover); border: 1px solid transparent;
@@ -206,7 +206,7 @@ html.pre-landing #app { display: none !important; }
 }
 .camp-upload-zone:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
 .camp-upload-zone.has-file { border-style: solid; border-color: rgba(255,255,255,0.2); }
-.camp-upload-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+.camp-upload-icon { margin-bottom: 12px; opacity: 0.35; color: var(--text2); }
 .camp-upload-label { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
 .camp-upload-sub { font-size: 13px; color: var(--text2); }
 .camp-upload-preview { width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--r-md); margin-top: 16px; display: none; }
@@ -242,7 +242,7 @@ html.pre-landing #app { display: none !important; }
 .sub-select { width:100%;padding:7px 10px;background:var(--hover);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none; }
 .sub-preset-btn { padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
 .sub-preset-btn:hover { border-color:rgba(255,255,255,.35);color:#fff; }
-.sub-pos-btn { flex:1;padding:6px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s; }
+.sub-pos-btn { flex:1;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:var(--card);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s; }
 .sub-pos-active { border-color:#fff!important;color:#fff!important; }
 .sub-style-btn { width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s; }
 .sub-style-active { border-color:#fff!important;color:#fff!important; }
@@ -445,11 +445,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   background: #fff; color: #080808;
   font-weight: 600; font-size: 14px;
   border: none; border-radius: var(--r-pill);
-  padding: 9px 20px; cursor: pointer;
-  transition: opacity 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 12px rgba(255,255,255,0.15);
+  padding: 9px 18px; cursor: pointer;
+  transition: opacity 0.2s;
 }
-.l-nav-cta:hover { opacity: 0.9; box-shadow: 0 2px 20px rgba(255,255,255,0.2); }
+.l-nav-cta:hover { opacity: 0.88; }
 
 /* ==============================================
    LANDING — HERO
@@ -496,12 +495,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
 }
 .l-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-pill);
-  padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.03);
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r-pill);
+  padding: 5px 12px; font-size: 12px; color: var(--text2);
 }
-.l-badge svg { opacity: 0.5; }
 
 /* Floating video cards */
 .l-hero-cards {
@@ -509,21 +506,16 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .actor-card {
   position: absolute;
-  width: 150px; border-radius: 16px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,0,0,0.5);
+  width: 160px; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7);
   animation: float var(--fd, 4s) ease-in-out var(--fd2, 0s) infinite alternate;
   will-change: transform;
-}
-.actor-card::after {
-  content: ''; position: absolute; inset: 0;
-  border-radius: 16px;
-  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%);
-  pointer-events: none;
 }
 .actor-card video {
   display: block; width: 100%;
   aspect-ratio: 9/16; object-fit: cover;
+  border-radius: 14px;
 }
 .actor-card:nth-child(1) { top: 12%; left: 12%;  --fd2: 0s;   --fd: 3.8s; }
 .actor-card:nth-child(2) { top: 46%; left: 7%;   --fd2: 0.7s; --fd: 4.3s; }
@@ -553,12 +545,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-trust-logos { display: flex; align-items: center; gap: 32px; }
 .l-trust-logo {
-  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.3);
-  letter-spacing: 0;
-}
-.l-trust-logo-dot {
-  width: 3px; height: 3px; border-radius: 50%;
-  background: rgba(255,255,255,0.15); flex-shrink: 0;
+  font-size: 13px; font-weight: 700; color: var(--text3);
+  letter-spacing: -0.3px;
 }
 
 /* ==============================================
@@ -592,13 +580,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .l-section-alt { background: var(--bg2); }
 .l-section-center { text-align: center; }
 .l-section-label {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
-  color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 18px;
-}
-.l-section-label::before, .l-section-label::after {
-  content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
-  display: none;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: var(--text3); text-transform: uppercase; margin-bottom: 16px;
 }
 .l-section-title {
   max-width: 100%; width: auto !important;
@@ -628,9 +611,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .l-step + .l-step { border-left: 1px solid var(--border); }
 .l-step.visible { opacity: 1; transform: translateY(0); }
 .l-step-num {
-  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
-  color: rgba(255,255,255,0.25); margin-bottom: 28px;
-  font-variant-numeric: tabular-nums;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  color: var(--text3); margin-bottom: 24px;
 }
 .l-step-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.4px; }
 .l-step-desc { font-size: 14px; color: var(--text2); line-height: 1.7; }
@@ -657,15 +639,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   position: relative;
 }
 .l-feat-vid-card {
-  width: 100px; border-radius: 14px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3);
-  position: relative;
-}
-.l-feat-vid-card::after {
-  content: ''; position: absolute; inset: 0; border-radius: 14px;
-  background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.5) 100%);
-  pointer-events: none;
+  width: 100px; border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 .l-feat-vid-card:nth-child(1) { transform: rotate(-4deg) translateY(8px); }
 .l-feat-vid-card:nth-child(2) { transform: rotate(0deg); z-index: 2; }
@@ -685,10 +661,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .l-feat-card.visible { opacity: 1; transform: translateY(0); }
 .l-feat-card:hover { border-color: rgba(255,255,255,0.18); }
 .l-feat-icon {
-  width: 36px; height: 36px; border-radius: 9px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 22px; color: rgba(255,255,255,0.5);
+  margin-bottom: 20px; color: var(--text2);
 }
 .l-feat-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
 .l-feat-desc { font-size: 14px; color: var(--text2); line-height: 1.65; }
@@ -708,20 +684,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-testi-card.visible { opacity: 1; transform: translateY(0); }
 .l-testi-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-  border: 1px solid rgba(255,255,255,0.12);
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--card2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
-  letter-spacing: 0.5px;
-  margin-bottom: 20px;
+  font-size: 13px; font-weight: 700; color: var(--text2);
+  margin-bottom: 16px;
 }
-.l-testi-stars {
-  display: flex; gap: 3px; margin-bottom: 14px;
-}
-.l-testi-stars svg { color: #f59e0b; }
-.l-testi-quote { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; margin-bottom: 20px; font-style: italic; }
-.l-testi-name { font-size: 12px; color: rgba(255,255,255,0.35); font-style: normal; letter-spacing: 0.2px; }
+.l-testi-quote { font-size: 14px; color: var(--text); line-height: 1.75; margin-bottom: 20px; }
+.l-testi-name { font-size: 12px; color: var(--text2); }
 
 /* ==============================================
    LANDING — PRICING
@@ -762,15 +732,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; gap: 10px;
   font-size: 14px; color: var(--text2);
 }
-.l-pricing-list li {
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 14px; color: rgba(255,255,255,0.65);
-}
 .l-pricing-list li::before {
-  content: '';
-  width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px;
-  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='7.5' stroke='rgba(255,255,255,0.15)'/%3E%3Cpath d='M5 8l2 2 4-4' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-size: contain;
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,0.4); flex-shrink: 0;
 }
 
 /* ==============================================
@@ -986,7 +950,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-radius: var(--r-pill); padding: 8px 8px 8px 16px;
   cursor: default;
 }
-.a-credits-label { font-size: 13px; font-weight: 600; }
+.a-credits-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text2); text-transform: uppercase; }
 .a-credits-val { font-size: 13px; color: var(--text2); }
 .a-credits-add {
   width: 26px; height: 26px; border-radius: 50%;
@@ -1638,7 +1602,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="modal-opt-price" id="topupPriceLabel">$—</div>
       </div>
     </div>
-    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar →</button>
+    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
   </div>
 </div>
 
@@ -1713,18 +1677,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
       </div>
       <div class="l-hero-badges">
-        <span class="l-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="2"/><path d="M6 1v1.5M6 9.5V11M1 6h1.5M9.5 6H11M2.6 2.6l1.1 1.1M8.3 8.3l1.1 1.1M9.4 2.6l-1.1 1.1M3.7 8.3l-1.1 1.1" stroke-linecap="round"/></svg>
-          Avatares IA realistas
-        </span>
-        <span class="l-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5V6l2 1.5" stroke-linecap="round"/></svg>
-          Videos en minutos
-        </span>
-        <span class="l-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H5M9.5 2.5V7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Listo para publicar
-        </span>
+        <span class="l-badge">✦ Actores IA realistas</span>
+        <span class="l-badge">⏱ Videos en minutos</span>
+        <span class="l-badge">↗ Listo para publicar</span>
       </div>
     </div>
   </section>
@@ -1734,12 +1689,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <span class="l-trust-label">Usado para</span>
     <div class="l-trust-logos">
       <span class="l-trust-logo">Meta Ads</span>
-      <span class="l-trust-logo-dot"></span>
       <span class="l-trust-logo">TikTok</span>
-      <span class="l-trust-logo-dot"></span>
       <span class="l-trust-logo">Instagram</span>
-      <span class="l-trust-logo-dot"></span>
-      <span class="l-trust-logo">YouTube Shorts</span>
+      <span class="l-trust-logo">YouTube</span>
     </div>
   </div>
 
@@ -1784,7 +1736,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div>
           <h3 class="l-feat-big-title">Actores IA increíblemente realistas</h3>
           <p class="l-feat-big-desc">Generados con Seedance 2.0, con movimientos naturales, audio sincronizado y capacidad de hablar cualquier idioma.</p>
-          <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles</button>
+          <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles →</button>
         </div>
         <div class="l-feat-video-row">
           <div class="l-feat-vid-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
@@ -1828,21 +1780,18 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <div class="l-testi-grid">
       <div class="l-testi-card">
         <div class="l-testi-avatar">MR</div>
-        <div class="l-testi-stars"><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg></div>
-        <p class="l-testi-quote">"Antes pagaba productoras para cada video. Con Futuriads genero variantes en minutos y pruebo qué funciona antes de invertir en pauta."</p>
-        <div class="l-testi-name">Martín R. · E-commerce de indumentaria</div>
+        <p class="l-testi-quote">"Antes gastaba $800 por video con productoras. Ahora genero 12 videos por mes por $29. El ROAS subió 40% el primer mes."</p>
+        <div class="l-testi-name">Martín R. · Tienda de indumentaria, Buenos Aires</div>
       </div>
       <div class="l-testi-card">
         <div class="l-testi-avatar">LS</div>
-        <div class="l-testi-stars"><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg></div>
-        <p class="l-testi-quote">"Subí el primer anuncio el mismo día que probé la plataforma. El proceso es tan simple que no necesitás saber nada de video."</p>
-        <div class="l-testi-name">Lucía S. · Cosmética natural</div>
+        <p class="l-testi-quote">"Los actores IA se ven increíblemente reales. Mis clientes no pueden creer que no es una producción profesional."</p>
+        <div class="l-testi-name">Lucía S. · Cosmética natural, Córdoba</div>
       </div>
       <div class="l-testi-card">
         <div class="l-testi-avatar">FG</div>
-        <div class="l-testi-stars"><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg><svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 1l1.5 3 3.3.5-2.4 2.3.6 3.2L6.5 8.5 3 10l.6-3.2L1.2 4.5 4.5 4z"/></svg></div>
-        <p class="l-testi-quote">"Lo que más me sorprendió es la velocidad. Tenés el anuncio listo para publicar en el tiempo que tardás en tomarte un café."</p>
-        <div class="l-testi-name">Federico G. · Suplementos deportivos</div>
+        <p class="l-testi-quote">"En 20 minutos tenía 4 variaciones de un anuncio. La que funcionó mejor me generó 3x el retorno esperado."</p>
+        <div class="l-testi-name">Federico G. · Suplementos deportivos, Rosario</div>
       </div>
     </div>
   </section>
@@ -1850,25 +1799,37 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Pricing -->
   <section class="l-section l-section-center" id="pricing">
     <div class="l-section-label">Precios</div>
-    <h2 class="l-section-title">Acceso <em>anticipado</em></h2>
-    <p class="l-section-sub" style="padding: 22px">Entrá antes del lanzamiento oficial con un precio especial que no va a volver.</p>
-    <div class="l-pricing-grid" style="grid-template-columns:1fr;max-width:480px;">
-      <div class="l-pricing-card featured" style="text-align:left;">
-        <div class="l-pricing-popular">ACCESO ANTICIPADO</div>
-        <div class="l-pricing-name" style="margin-top:12px;">Starter</div>
-        <div class="l-pricing-price">$99<span> USD</span></div>
-        <div class="l-pricing-period">Pago único · Créditos incluidos · Sin suscripción</div>
+    <h2 class="l-section-title">Simple, <em>sin sorpresas</em></h2>
+    <p class="l-section-sub" style="padding: 22px">Pagás solo lo que usás. Cancelás cuando querés.</p>
+    <div class="l-pricing-grid">
+      <div class="l-pricing-card">
+        <div class="l-pricing-name">Standard</div>
+        <div class="l-pricing-price">$29<span>/mes</span></div>
+        <div class="l-pricing-period">Facturado mensualmente</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li>Créditos para generar anuncios</li>
-          <li>Voiceover con IA (voz en off)</li>
-          <li>Avatar IA modo selfie</li>
-          <li>Subtítulos automáticos</li>
-          <li>Formato 9:16 · MP4 listo para publicar</li>
-          <li>Acceso a nuevas features durante el beta</li>
+          <li>15 videos por mes</li>
+          <li>Actores IA</li>
+          <li>Script generado con IA</li>
+          <li>Formato 9:16 nativo · MP4 720p</li>
+          <li>Historial de videos</li>
         </ul>
-        <button class="btn-w" style="width:100%;justify-content:center;" onclick="openAuthModal('signup')">Conseguir acceso</button>
-        <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:14px;">Cupos limitados · Los precios van a subir al lanzamiento oficial</p>
+        <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Standard</button>
+      </div>
+      <div class="l-pricing-card featured">
+        <div class="l-pricing-popular">MÁS POPULAR</div>
+        <div class="l-pricing-name">Pro</div>
+        <div class="l-pricing-price">$59<span>/mes</span></div>
+        <div class="l-pricing-period">Facturado mensualmente</div>
+        <div class="l-pricing-hr"></div>
+        <ul class="l-pricing-list">
+          <li>40 videos por mes</li>
+          <li>Actores premium</li>
+          <li>MP4 1080p</li>
+          <li>Soporte prioritario</li>
+          <li>Acceso anticipado a novedades</li>
+        </ul>
+        <button class="btn-w" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Pro</button>
       </div>
     </div>
   </section>
@@ -1982,7 +1943,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-dash-sub">¿Qué estás creando hoy?</div>
         </div>
         <div class="a-credits-badge">
-          <span class="a-credits-label">✦ Créditos:</span>
+          <span class="a-credits-label">Créditos</span>
           <span class="a-credits-val">1.500</span>
           <div class="a-credits-add" onclick="openModal()" title="Recargar créditos">+</div>
         </div>
@@ -2093,14 +2054,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               </div>
             </div>
           </div>
-          <button class="a-gen-btn" onclick="startFromDashboard()">✦ Empezar →</button>
+          <button class="a-gen-btn" onclick="startFromDashboard()">Generar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
         </div>
       </div>
 
       <!-- Available video models -->
       <div class="a-section-row">
         <div class="a-section-title">Modelos de video disponibles</div>
-        <span class="a-see-all">Ver todos →</span>
+        <span class="a-see-all">Ver todos <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></span>
       </div>
       <div class="a-models-grid">
         <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '5-15s', '9:16', '720p')">
@@ -2118,7 +2079,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Available image models -->
       <div class="a-section-row">
         <div class="a-section-title">Modelos de imagen disponibles</div>
-        <span class="a-see-all">Ver todos →</span>
+        <span class="a-see-all">Ver todos <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></span>
       </div>
       <div class="a-models-grid">
         <div class="a-model-card" onclick="openDrawer('GPT Images 2', 'IMAGEN', '—', '1:1', 'HD')">
@@ -2213,7 +2174,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-actor-info"><div class="a-actor-name">José</div><div class="a-actor-tag">Maduro · Confiable</div></div>
           </div>
         </div>
-        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente →</button>
+        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
       </div>
 
       <!-- Step 2 -->
@@ -2261,8 +2222,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:16px;">
-          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video →</button>
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
         </div>
       </div>
 
@@ -2275,7 +2236,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-prompt-label">Tu prompt</div>
             <div class="a-prompt-text" id="promptResultText"></div>
           </div>
-          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview →</button>
+          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
         </div>
       </div>
 
@@ -2301,10 +2262,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-info-chip" id="previewDate">—</div>
           </div>
           <div class="a-preview-actions">
-            <button class="btn-w" id="previewDownloadBtn">⬇ Descargar MP4</button>
+            <button class="btn-w" id="previewDownloadBtn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar MP4</button>
             <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Generar otro</button>
           </div>
-          <div class="a-back-link" onclick="showScreen('dashboard')">← Volver al dashboard</div>
+          <div class="a-back-link" onclick="showScreen('dashboard')"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver al dashboard</div>
         </div>
       </div>
     </div><!-- /nuevo -->
@@ -2373,14 +2334,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
         <div style="display:flex;gap:10px;margin-top:24px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen →</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
         </div>
       </div>
 
       <!-- Step 2: Loading -->
       <div id="img-step-2" style="display:none;">
         <div class="a-gen-title">Generando tu imagen</div>
-        <p class="a-gen-sub" id="imgLoadingMsg">✦ Preparando tu imagen...</p>
+        <p class="a-gen-sub" id="imgLoadingMsg">Preparando tu imagen...</p>
         <div class="a-progress-bar" style="margin:24px 0;max-width:500px;">
           <div class="a-progress-fill" id="imgProgressBar" style="width:0%;"></div>
         </div>
@@ -2397,10 +2358,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <img id="imgPreviewReal" src="" alt="" style="width:100%;border-radius:8px;display:block;background:#000;" />
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()">⬇ Descargar imagen</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar imagen</button>
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="resetImageGenerator()">Generar otra</button>
         </div>
-        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')">← Volver al dashboard</div>
+        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver al dashboard</div>
       </div>
     </div><!-- /nueva-imagen -->
 
@@ -2411,14 +2372,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div id="campView-list">
         <div class="camp-header">
           <div class="camp-title">Campañas</div>
-          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;">✦ Nueva campaña</button>
+          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg> Nueva campaña</button>
         </div>
         <div id="campListContainer">
           <div class="camp-empty">
-            <div class="camp-empty-icon">🎬</div>
+            <div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div>
             <div class="camp-empty-title">Todavía no tenés campañas</div>
             <div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div>
-            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button>
+            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button>
           </div>
         </div>
       </div>
@@ -2426,7 +2387,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: wizard nueva campaña -->
       <div id="campView-wizard" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;">← Volver</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver</button>
           <div style="font-size:13px;color:var(--text2);">Nueva campaña</div>
         </div>
 
@@ -2444,11 +2405,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Tipo de video</div>
               <div style="display:flex;gap:8px;">
                 <div class="camp-mode-card selected" id="campVideoModeTalking" onclick="campSelectVideoMode('talking')" style="flex:1;cursor:pointer;">
-                  <div class="camp-mode-card-title">🗣 Avatar habla a cámara</div>
+                  <div class="camp-mode-card-title">Avatar habla a cámara</div>
                   <div class="camp-mode-card-sub">La persona habla directamente en el video. Ideal para testimonios y reviews.</div>
                 </div>
                 <div class="camp-mode-card" id="campVideoModeVoiceover" onclick="campSelectVideoMode('voiceover')" style="flex:1;cursor:pointer;">
-                  <div class="camp-mode-card-title">🎬 Voz en off</div>
+                  <div class="camp-mode-card-title">Voz en off</div>
                   <div class="camp-mode-card-sub">Audio pregrabado + video visual con escenas y producto. Más dinámico y producido.</div>
                 </div>
               </div>
@@ -2462,7 +2423,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
             <div id="campScriptAIArea" style="display:none;">
               <textarea class="camp-textarea" id="campProductInput" placeholder="Describí tu producto o servicio. ¿Qué hace? ¿Para quién es? ¿Qué problema resuelve?&#10;&#10;Ejemplo: Shampoo nutritivo para pelo dañado o teñido. Contiene queratina y aceite de argán. Público: mujeres 25-45 que van a la peluquería seguido y quieren mantener el resultado en casa." style="min-height:140px;"></textarea>
-              <button class="btn-outline" onclick="campGenerateScript()" id="campGenScriptBtn" style="font-size:13px;padding:9px 20px;margin-bottom:12px;">✦ Generar guión con IA</button>
+              <button class="btn-outline" onclick="campGenerateScript()" id="campGenScriptBtn" style="font-size:13px;padding:9px 20px;margin-bottom:12px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg> Generar guión con IA</button>
               <textarea class="camp-textarea" id="campScriptAIResult" placeholder="El guión generado va a aparecer acá. Podés editarlo antes de continuar." style="min-height:160px;display:none;"></textarea>
             </div>
             <div class="camp-nav-row">
@@ -2472,7 +2433,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div class="camp-prog-dot"></div>
                 <div class="camp-prog-dot"></div>
               </div>
-              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             </div>
           </div>
 
@@ -2488,7 +2449,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Avatar (persona)</div>
                 <div class="camp-upload-zone" id="campUploadZone">
                   <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-                  <div class="camp-upload-icon">👩</div>
+                  <div class="camp-upload-icon"><svg width="28" height="28" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="7" cy="5" r="2.5"/><path d="M2 13c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5"/></svg></div>
                   <div class="camp-upload-label">Subí la foto del avatar</div>
                   <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
                   <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
@@ -2498,7 +2459,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Producto</div>
                 <div class="camp-upload-zone" id="campUploadZoneProduct">
                   <input type="file" id="campProductPhotoInput" accept="image/*" onchange="campProductPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-                  <div class="camp-upload-icon">📦</div>
+                  <div class="camp-upload-icon"><svg width="28" height="28" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l5 2.5v5L7 12 2 9.5v-5z"/><path d="M2 4.5l5 2.5 5-2.5M7 7v5"/></svg></div>
                   <div class="camp-upload-label">Subí la foto del producto</div>
                   <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
                   <img class="camp-upload-preview" id="campProductPreview" alt="Preview">
@@ -2513,9 +2474,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot"></div>
                   <div class="camp-prog-dot"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(1)">← Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(1)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             </div>
           </div>
 
@@ -2530,10 +2491,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div id="campVoiceSection" style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del audio</div>
               <div class="camp-options-row" id="campVoiceOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">👩 Mujer · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">👨 Hombre · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('female40', this)">👩 Mujer · Mediana edad</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male40', this)">👨 Hombre · Mediana edad</button>
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">Mujer · 20 años</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">Hombre · 20 años</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('female40', this)">Mujer · Mediana edad</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male40', this)">Hombre · Mediana edad</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">El audio se genera con acento argentino real usando IA de voz.</div>
             </div>
@@ -2541,8 +2502,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div id="campAccentSection" style="margin-bottom:20px;display:none;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
               <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
+                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">Rioplatense</button>
+                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">Neutro latinoamericano</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Seedance genera la voz del avatar. El acento puede variar en precisión.</div>
             </div>
@@ -2550,8 +2511,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div id="campGenderSection" style="margin-bottom:20px;display:none;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Género del avatar</div>
               <div class="camp-options-row" id="campGenderOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">👩 Mujer</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">👨 Hombre</button>
+                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Mujer</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Hombre</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
             </div>
@@ -2577,9 +2538,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot active"></div>
                   <div class="camp-prog-dot"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(2)">← Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(2)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             </div>
           </div>
 
@@ -2605,7 +2566,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <div class="camp-chunks-list" id="campClipsList"></div>
               <!-- Costo -->
               <div class="camp-cost-banner">
-                <span>💡</span>
+                <span style="opacity:0.45"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg></span>
                 <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · audio incluido</span>
               </div>
               <!-- Modo de generación -->
@@ -2629,9 +2590,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot done"></div>
                   <div class="camp-prog-dot active"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(3)">← Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
               </div>
-              <button class="btn-w" onclick="campLaunchV2()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">✦ Empezar generación</button>
+              <button class="btn-w" onclick="campLaunchV2()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             </div>
           </div>
 
@@ -2641,7 +2602,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: generación en curso -->
       <div id="campView-generating" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()">← Mis campañas</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Mis campañas</button>
           <div style="font-size:13px;color:var(--text2);" id="campGenCampaignTitle">—</div>
         </div>
         <div style="margin-bottom:24px;">
@@ -2655,12 +2616,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="campReviewControls" style="display:none;margin-bottom:20px;">
           <div style="font-size:14px;color:var(--text2);margin-bottom:12px;" id="campReviewMsg">Revisá el clip. ¿Está bien?</div>
           <div style="display:flex;gap:10px;">
-            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir →</button>
+            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             <button class="btn-outline" onclick="campRegenCurrentClip()" style="font-size:13px;padding:10px 22px;">Regenerar este clip</button>
           </div>
         </div>
         <div id="campAllDoneControls" style="display:none;margin-top:16px;">
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px;">✓ Todos los clips generados</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 6-6"/></svg> Todos los clips generados</div>
           <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Revisá los clips arriba. Configurá los subtítulos y ensamblá el video final.</div>
 
           <!-- CONFIGURACIÓN DE SUBTÍTULOS -->
@@ -2669,7 +2630,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <!-- Header accordion -->
             <div onclick="campToggleSubPanel()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--card2);user-select:none;">
               <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:15px;">🔤</span>
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h11M2 7.5h7M2 11h9"/></svg>
                 <span style="font-size:13px;font-weight:700;">Subtítulos</span>
                 <span id="campSubStatusBadge" style="font-size:11px;padding:2px 10px;border-radius:99px;background:#fff;color:#000;font-weight:700;">ON</span>
               </div>
@@ -2755,9 +2716,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div>
                     <div class="sub-label">Posición</div>
                     <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubPosTop"    onclick="campSetPosition('top')"    class="sub-pos-btn">↑</button>
-                      <button id="campSubPosCenter" onclick="campSetPosition('center')" class="sub-pos-btn">↕</button>
-                      <button id="campSubPosBottom" onclick="campSetPosition('bottom')" class="sub-pos-btn sub-pos-active">↓</button>
+                      <button id="campSubPosTop"    onclick="campSetPosition('top')"    class="sub-pos-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V3M4 6l3-3 3 3"/></svg></button>
+                      <button id="campSubPosCenter" onclick="campSetPosition('center')" class="sub-pos-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4 6l3-3 3 3M4 8l3 3 3-3" opacity="0.5"/></svg></button>
+                      <button id="campSubPosBottom" onclick="campSetPosition('bottom')" class="sub-pos-btn sub-pos-active"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4 8l3 3 3-3"/></svg></button>
                     </div>
                   </div>
                 </div>
@@ -2809,18 +2770,18 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           </div>
 
                     <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">🎬 Ensamblar video final</button>
-            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
+            <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">Ensamblar video final</button>
+            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver a mis campañas</button>
           </div>
           <div id="campAssembleStatus" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
             <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
             <div id="campAssembleMsg" style="text-align:center;font-size:13px;color:var(--text2);">Ensamblando video...</div>
           </div>
           <div id="campFinalVideo" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
-            <div style="font-size:13px;font-weight:600;color:var(--text1);margin-bottom:10px;">🎉 Video final listo</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text1);margin-bottom:10px;">Video final listo</div>
             <video id="campFinalPlayer" controls style="width:100%;max-height:500px;border-radius:8px;background:#000;"></video>
             <div style="margin-top:10px;display:flex;gap:10px;">
-              <a id="campFinalDownload" href="#" download="creativo-final.mp4" class="btn-w" style="font-size:13px;padding:8px 18px;text-decoration:none;">⬇ Descargar</a>
+              <a id="campFinalDownload" href="#" download="creativo-final.mp4" class="btn-w" style="font-size:13px;padding:8px 18px;text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a>
             </div>
           </div>
         </div>
@@ -2867,7 +2828,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
           <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan →</button>
+            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -2933,7 +2894,7 @@ document.addEventListener('click', function(e) {
 <script>
 /* ---- Marquee ---- */
 (function(){
-  const items=['✦ Actores IA realistas','Script a video en minutos','Meta · TikTok · Instagram','Prompts con IA incluidos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos'];
+  const items=['Avatares IA realistas','Script a video en minutos','Meta · TikTok · Instagram','Prompts con IA incluidos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos'];
   const t=document.getElementById('marqueeTrack');
   [...items,...items,...items,...items].forEach(s=>{
     const el=document.createElement('span');
@@ -3772,7 +3733,7 @@ async function campAssemble() {
     document.getElementById('campFinalPlayer').src = data.finalVideoUrl;
     document.getElementById('campFinalDownload').href = data.finalVideoUrl;
     
-    btn.textContent = '✓ Video ensamblado';
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 6-6"/></svg> Video ensamblado`;
     showToast('Video final listo');
 
   } catch (e) {
@@ -3780,7 +3741,7 @@ async function campAssemble() {
     showToast('Error: ' + e.message);
     document.getElementById('campAssembleMsg').textContent = 'Error: ' + e.message;
     btn.disabled = false;
-    btn.textContent = '🎬 Ensamblar video final';
+    btn.textContent = 'Ensamblar video final';
   }
 }
 
@@ -3839,7 +3800,7 @@ async function campGenerateScript() {
       showToast('Guión generado. Revisalo y editalo si querés.');
     }
   } catch(e){ showToast('Error generando el guión'); }
-  btn.textContent = '✦ Generar guión con IA'; btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg> Generar guión con IA`; btn.disabled = false;
 }
 
 function campSelectVideoMode(mode) {
@@ -4109,7 +4070,7 @@ function campRenderTalkingClips() {
           '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
           '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">~' + (chunk.estimatedSeconds || 10) + 's · ' + chunk.text.length + ' chars</span>' +
         '</div>' +
-        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">🗣 ' + chunk.text + '</div>' +
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">' + chunk.text + '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
           '<span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;">Prompt</span>' +
         '</div>' +
@@ -4233,10 +4194,10 @@ function campRenderAudioClips() {
           '<span style="font-size:12px;font-weight:600;color:var(--text1);">Clip ' + (i + 1) + '</span>' +
           '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">' + clip.start.toFixed(1) + 's - ' + clip.end.toFixed(1) + 's · ' + clip.duration.toFixed(1) + 's</span>' +
         '</div>' +
-        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">🎤 ' + clip.text + '</div>' +
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">' + clip.text + '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
           '<span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;">Prompt visual</span>' +
-          '<button class="btn-ghost-sm" onclick="campRegenPrompt(' + i + ')" style="font-size:11px;padding:3px 10px;" id="campRegenBtn-' + i + '">🔄 Regenerar</button>' +
+          '<button class="btn-ghost-sm" onclick="campRegenPrompt(' + i + ')" style="font-size:11px;padding:3px 10px;" id="campRegenBtn-' + i + '">Regenerar</button>' +
         '</div>' +
         '<textarea class="camp-chunk-text" data-index="' + i + '" id="campPromptTA-' + i + '">' + (vp ? vp.prompt : '') + '</textarea>' +
       '</div>';
@@ -4290,7 +4251,7 @@ async function campRegenPrompt(clipIndex) {
   } catch (e) {
     showToast('Error: ' + e.message);
   }
-  btn.textContent = '🔄 Regenerar'; btn.disabled = false;
+  btn.textContent = 'Regenerar'; btn.disabled = false;
 }
 
 function campUpdateCostSummaryV2() {
@@ -4364,7 +4325,7 @@ async function campLaunchTalking() {
     campStartPolling();
   } catch (e) {
     showToast('Error: ' + e.message);
-    btn.textContent = '✦ Empezar generación'; btn.disabled = false;
+    btn.innerHTML = `Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`; btn.disabled = false;
   }
 }
 
@@ -4403,7 +4364,7 @@ async function campLaunchVoiceover() {
 
   } catch (e) {
     showToast('Error: ' + e.message);
-    btn.textContent = '✦ Empezar generación'; btn.disabled = false;
+    btn.innerHTML = `Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`; btn.disabled = false;
   }
 }
 
@@ -4570,7 +4531,7 @@ function campUpdateClipCard(index, status, videoUrl) {
   if(status === 'generating') {
     card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-spinner"></div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
   } else if(status === 'completed' && videoUrl) {
-    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
+    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
   } else if(status === 'failed') {
     card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>';
   } else if(status === 'pending') {
@@ -4813,7 +4774,7 @@ async function campLoadList() {
     const data = await resp.json();
     const campaigns = data.campaigns || [];
     if(!campaigns.length){
-      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon">🎬</div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button></div>';
+      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button></div>';
       return;
     }
     const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
@@ -4859,7 +4820,7 @@ async function campOpenDetail(campaignId, title) {
       card.id = 'campClip-' + clip.clip_index;
       
       if(clip.status === 'completed' && clip.video_url) {
-        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a>';
+        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a>';
       } else if(clip.status === 'failed') {
         card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
       } else {
@@ -4958,7 +4919,7 @@ function openCreditsModal() {
     if (subEl) subEl.textContent = `Plan ${planInfo.label}: ${planInfo.topup_credits.toLocaleString('es-AR')} créditos extra por $${planInfo.topup_price}. No caducan.`;
     if (creditsEl) creditsEl.textContent = planInfo.topup_credits.toLocaleString('es-AR') + ' créditos';
     if (priceEl) priceEl.textContent = '$' + planInfo.topup_price;
-    if (continueBtn) continueBtn.textContent = 'Continuar →';
+    if (continueBtn) continueBtn.innerHTML = `Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`;
   }
   document.getElementById('creditsModal').classList.add('open');
 }
@@ -5186,7 +5147,7 @@ async function runGeneration(){
 
   try {
     // --- Paso 1: Mostrar prompt del usuario tal cual ---
-    msgEl.textContent = '✦ Preparando tu video...';
+    msgEl.textContent = 'Preparando tu video...';
     await setBar(30, 800);
 
     // El prompt va tal cual, sin modificar
@@ -5195,7 +5156,7 @@ async function runGeneration(){
     document.getElementById('promptResultText').textContent = generatedPrompt;
 
     // --- Paso 2: Enviar a generar video ---
-    msgEl.textContent = '✦ Enviando a Seedance 2.0...';
+    msgEl.textContent = 'Enviando a Seedance 2.0...';
     await setBar(50, 600);
 
     const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
@@ -5214,7 +5175,7 @@ async function runGeneration(){
     if (genRes.status === 402) {
       const errData = await genRes.json().catch(() => ({}));
       bar.style.width = '0%';
-      msgEl.textContent = '✦ Sin créditos suficientes';
+      msgEl.textContent = 'Sin créditos suficientes';
       msgEl.style.color = '#f59e0b';
       showNoCreditsModal({
         cost: errData.cost || 0,
@@ -5222,7 +5183,7 @@ async function runGeneration(){
         plan: errData.plan || 'none'
       });
       // Botón para volver al paso 2
-      nxt.textContent = '← Volver';
+      nxt.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver`;
       nxt.onclick = () => { goGenStep(2); };
       nxt.style.display = 'inline-flex';
       return;
@@ -5236,11 +5197,11 @@ async function runGeneration(){
     refreshCredits();
 
     // --- Paso 3: Video encolado, avisar al usuario y redirigir al historial ---
-    msgEl.textContent = '✦ Video encolado correctamente';
+    msgEl.textContent = 'Video encolado correctamente';
     await setBar(100, 600);
 
     // Mostrar mensaje y redirigir a historial en 3 segundos
-    msgEl.textContent = '✦ Tu video se está generando (5-10 min). Podés cerrar esta pestaña.';
+    msgEl.textContent = 'Tu video se está generando (5-10 min). Podés cerrar esta pestaña.';
     msgEl.style.color = '#22c55e';
     pbox.style.display = 'block';
     document.getElementById('promptResultText').textContent = generatedPrompt;
@@ -5254,7 +5215,7 @@ async function runGeneration(){
   } catch(err) {
     console.error('runGeneration error:', err);
     bar.style.width = '0%';
-    msgEl.textContent = '✦ ' + (err.message || 'Ocurrió un error. Intentá de nuevo.');
+    msgEl.textContent = err.message || 'Ocurrió un error. Intentá de nuevo.';
     msgEl.style.color = '#ff4d4d';
     setTimeout(()=>{ msgEl.style.color = ''; }, 6000);
     // Mostrar botón de reintentar
@@ -5328,10 +5289,10 @@ function statusBadge(status){
     COMPLETED: ['✅','#22c55e'],
     FAILED:    ['❌','#ef4444'],
     IN_PROGRESS:['⚙️','#f59e0b'],
-    IN_QUEUE:  ['🕐','#f59e0b'],
-    PENDING:   ['🕐','#f59e0b'],
+    IN_QUEUE:  ['','#f59e0b'],
+    PENDING:   ['','#f59e0b'],
   };
-  const [icon, color] = map[status] || ['🕐','#888'];
+  const [icon, color] = map[status] || ['','#888'];
   return `<span style="font-size:11px;color:${color};font-weight:600;">${icon} ${status}</span>`;
 }
 
@@ -5380,7 +5341,7 @@ function renderHistory(){
       const safeUrl = escAttr(v.video_url);
       const safeActor = escAttr(v.actor || titleText);
       const downloadFn = isImage ? 'downloadImageFile' : 'downloadVideo';
-      const downloadLabel = isImage ? '⬇ Descargar imagen' : '⬇ Descargar MP4';
+      const downloadLabel = isImage ? 'Descargar imagen' : 'Descargar MP4';
       const openModalFn = isImage ? 'openImageModal' : 'openVideoModal';
 
       // Thumb depende del tipo
@@ -5416,11 +5377,11 @@ function renderHistory(){
           </div>
           <div class="a-hist-prompt">${prompt || '<span style="color:#666;">Sin prompt</span>'}</div>
           <div class="a-hist-specs">
-            <span class="a-hist-spec">${isImage ? '🖼' : '🎬'} ${isImage ? (modelLabel(v.model) || 'Imagen') : 'Video'}</span>
-            ${dur && !isImage ? `<span class="a-hist-spec">⏱ ${dur}</span>` : ''}
-            <span class="a-hist-spec">📐 ${ratio}</span>
-            <span class="a-hist-spec">⚙ ${res}</span>
-            <span class="a-hist-spec">🕐 ${timeAgo(v.created_at)}</span>
+            <span class="a-hist-spec">${isImage ? (modelLabel(v.model) || 'Imagen') : 'Video'}</span>
+            ${dur && !isImage ? `<span class="a-hist-spec">${dur}</span>` : ''}
+            <span class="a-hist-spec">${ratio}</span>
+            <span class="a-hist-spec">${res}</span>
+            <span class="a-hist-spec">${timeAgo(v.created_at)}</span>
           </div>
           ${completed ? `
             <div class="a-hist-actions">
@@ -5465,7 +5426,7 @@ function renderHistory(){
         </div>
         <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
         ${completed
-          ? `<button class="btn-ghost-sm" onclick="${downloadFn}('${safeUrl}','${safeTitle}')">⬇ Descargar</button>`
+          ? `<button class="btn-ghost-sm" onclick="${downloadFn}('${safeUrl}','${safeTitle}')">Descargar</button>`
           : ''
         }
       </div>`;
@@ -5764,7 +5725,7 @@ async function generateImage(){
   }, 800);
 
   try {
-    msgEl.textContent = '✦ Preparando tu imagen...';
+    msgEl.textContent = 'Preparando tu imagen...';
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
@@ -5783,7 +5744,7 @@ async function generateImage(){
       clearInterval(progInterval);
       const errData = await response.json().catch(() => ({}));
       if (bar) bar.style.width = '0%';
-      msgEl.textContent = '✦ Sin créditos suficientes';
+      msgEl.textContent = 'Sin créditos suficientes';
       msgEl.style.color = '#f59e0b';
       showNoCreditsModal({
         cost: errData.cost || 0,
@@ -5817,7 +5778,7 @@ async function generateImage(){
     // Refrescar contador de créditos en el sidebar después de descontar
     refreshCredits();
 
-    msgEl.textContent = '✦ Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
+    msgEl.textContent = 'Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
 
     // Función auxiliar de polling — chequea Supabase por la fila con el request_id.
     // IMPORTANTE: la implementación custom de supa NO soporta .limit(); por eso
@@ -5917,7 +5878,7 @@ function openVideoModal(url, actor){
     modal.innerHTML = `
       <video id="videoModalPlayer" controls autoplay style="max-height:80vh;max-width:90vw;border-radius:12px;"></video>
       <div style="display:flex;gap:12px;">
-        <button class="btn-w" id="videoModalDl" style="font-size:14px;">⬇ Descargar MP4</button>
+        <button class="btn-w" id="videoModalDl" style="font-size:14px;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar MP4</button>
         <button class="btn-outline" onclick="closeVideoModal()" style="border-radius:8px;font-size:14px;">✕ Cerrar</button>
       </div>`;
     document.body.appendChild(modal);
