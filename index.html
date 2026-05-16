@@ -3649,7 +3649,8 @@ function campGetSubtitleStyle() {
     position: _subtitleState.position || 'bottom',
     bold: _subtitleState.bold,
     italic: _subtitleState.italic,
-    mode: _subtitleState.mode || 'block'
+    mode: _subtitleState.mode || 'block',
+    wordsPerBlock: _subtitleState.mode === 'word' ? 1 : 4
   };
 }
 
