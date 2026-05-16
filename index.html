@@ -1933,7 +1933,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
       <a class="a-sidebar-logo" href="#" onclick="return false;">
-        <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
+        <span style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px;">Futuriads</span>
       </a>
       <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
@@ -1945,17 +1945,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1.2"/><rect x="8" y="1" width="5" height="5" rx="1.2"/><rect x="1" y="8" width="5" height="5" rx="1.2"/><rect x="8" y="8" width="5" height="5" rx="1.2"/></svg>
         <span class="a-nav-label">Dashboard</span>
       </div>
-      <div class="a-nav-item" id="nav-nuevo" onclick="showScreen('nuevo')" data-tooltip="Nuevo video">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M4.5 7h5" stroke-linecap="round"/></svg>
-        <span class="a-nav-label">Nuevo video</span>
-      </div>
-      <div class="a-nav-item" id="nav-nueva-imagen" onclick="showScreen('nueva-imagen')" data-tooltip="Nueva imagen">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="1.8"/><circle cx="5" cy="5" r="1.1"/><path d="m1.5 10 3-3 2.5 2.5 1.5-1.5 2.5 2.5"/></svg>
-        <span class="a-nav-label">Nueva imagen</span>
-      </div>
-      <div class="a-nav-item" id="nav-campanas" onclick="showScreen('campanas')" data-tooltip="Campañas">
+      <div class="a-nav-item" id="nav-campanas" onclick="showScreen('campanas')" data-tooltip="Crear anuncio">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="9" rx="1.8"/><path d="M6.5 5l3.5 1.75L6.5 8.5V5z" fill="currentColor" stroke="none"/></svg>
-        <span class="a-nav-label">Campañas</span>
+        <span class="a-nav-label">Crear anuncio</span>
       </div>
       <div class="a-nav-section">General</div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
@@ -3208,7 +3200,7 @@ function updateCreditsUI(me) {
   // Badge de créditos en el dashboard
   const dashCreditsVal = document.getElementById('dashCreditsVal');
   if (dashCreditsVal) {
-    dashCreditsVal.textContent = total.toLocaleString('es-AR') + ' disponibles';
+    dashCreditsVal.textContent = total.toLocaleString('es-AR');
   }
 
   // Card del perfil ("Mi plan")
