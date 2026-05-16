@@ -976,12 +976,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-radius: var(--r-md); padding: 10px 10px 10px 16px;
   flex-shrink: 0;
 }
-.a-credits-badge-inner { display: flex; flex-direction: column; align-items: flex-end; }
+.a-credits-badge-inner { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
 .a-credits-label {
   font-size: 10px; font-weight: 600; letter-spacing: 0.8px; color: var(--text3);
   text-transform: uppercase; line-height: 1;
 }
-.a-credits-val { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; line-height: 1.2; }
+.a-credits-val { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; line-height: 1; }
 .a-credits-add {
   width: 30px; height: 30px; border-radius: 50%;
   background: var(--hover); border: 1px solid rgba(255,255,255,0.12);
@@ -994,7 +994,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
 /* Métricas */
 .a-metrics {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
   margin-bottom: 28px;
 }
 .a-metric {
@@ -1048,7 +1048,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-gen-textarea:focus { border-color: transparent; }
 .a-gen-textarea::placeholder { color: var(--text3); }
 
-/* Fila de opciones del gen box — estilo "Modelo · Duración · Aspecto · Resolución Generar→" */
+/* Fila de opciones del gen box — estilo "Modelo · Duración · Aspecto · Resolución Generar" */
 .a-gen-row {
   display: flex; align-items: center; gap: 0; flex-wrap: nowrap;
   overflow: visible;
@@ -1089,6 +1089,18 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-gen-btn:hover { opacity: 0.88; }
 .a-gen-select { display: none; }
+
+/* Botón de imagen de referencia junto a Generar */
+.a-ref-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--hover); border: 1px solid var(--border);
+  border-radius: var(--r-sm); cursor: pointer; color: var(--text2);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  margin-left: 6px;
+}
+.a-ref-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; background: #222; }
+.a-ref-btn.has-refs { border-color: rgba(255,255,255,0.35); color: #fff; }
 
 /* Section rows y titles */
 .a-section-row {
@@ -1650,7 +1662,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="modal-opt-price" id="topupPriceLabel">$—</div>
       </div>
     </div>
-    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar →</button>
+    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar</button>
   </div>
 </div>
 
@@ -1784,7 +1796,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div>
           <h3 class="l-feat-big-title">Actores IA increíblemente realistas</h3>
           <p class="l-feat-big-desc">Generados con Seedance 2.0, con movimientos naturales, audio sincronizado y capacidad de hablar cualquier idioma.</p>
-          <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles →</button>
+          <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles</button>
         </div>
         <div class="l-feat-video-row">
           <div class="l-feat-vid-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
@@ -1933,7 +1945,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
       <a class="a-sidebar-logo" href="#" onclick="return false;">
-        <span style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.3px;">Futuriads</span>
+        <span style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.5px;">Futuriads</span>
       </a>
       <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
@@ -2016,14 +2028,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-metric-label">Tiempo ahorrado</div>
           <div class="a-metric-val" id="metricTime">0 h</div>
           <div class="a-metric-sub">Equivale a ~$0 en producción</div>
-        </div>
-        <div class="a-metric">
-          <div class="a-metric-icon">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="9" rx="1.5"/><path d="M6.5 5l3 1.5-3 1.5V5z" fill="currentColor" stroke="none"/></svg>
-          </div>
-          <div class="a-metric-label">Campañas activas</div>
-          <div class="a-metric-val" id="metricCampaigns">0</div>
-          <div class="a-metric-sub" id="metricCampaignsSub">—</div>
         </div>
       </div>
 
@@ -2141,14 +2145,25 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               </div>
             </div>
           </div>
-          <button class="a-gen-btn" onclick="startFromDashboard()">Generar →</button>
+          <button class="a-gen-btn" onclick="startFromDashboard()">Generar</button>
+          <button class="a-ref-btn" onclick="document.getElementById('dashRefInput').click()" title="Agregar imagen de referencia">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2"/><path d="m1.5 11 3.5-3.5L9 11l2-2 2.5 2.5"/></svg>
+          </button>
+        </div>
+
+        <!-- Input oculto para imagen de referencia del dashboard -->
+        <input type="file" id="dashRefInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleDashRefUpload(event)" />
+        <!-- Preview de imágenes de referencia seleccionadas -->
+        <div id="dashRefPreview" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Imágenes de referencia</div>
+          <div id="dashRefList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
         </div>
       </div>
 
       <!-- Métricas rápidas de historial -->
       <div class="a-section-row" style="margin-top:4px;">
         <div class="a-section-title">Recientes</div>
-        <span class="a-see-all" onclick="showScreen('historial')">Ver todo →</span>
+        <span class="a-see-all" onclick="showScreen('historial')">Ver todo</span>
       </div>
       <div class="a-recent-grid" id="dashRecent">
         <div class="a-recent-card">
@@ -2198,7 +2213,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-actor-info"><div class="a-actor-name">José</div><div class="a-actor-tag">Maduro · Confiable</div></div>
           </div>
         </div>
-        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente →</button>
+        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente</button>
       </div>
 
       <!-- Step 2 -->
@@ -2247,7 +2262,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         </div>
         <div style="display:flex;gap:10px;margin-top:16px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video →</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video</button>
         </div>
       </div>
 
@@ -2260,7 +2275,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-prompt-label">Tu prompt</div>
             <div class="a-prompt-text" id="promptResultText"></div>
           </div>
-          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview →</button>
+          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview</button>
         </div>
       </div>
 
@@ -2358,7 +2373,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
         <div style="display:flex;gap:10px;margin-top:24px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen →</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen</button>
         </div>
       </div>
 
@@ -2444,7 +2459,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div class="camp-prog-dot"></div>
                 <div class="camp-prog-dot"></div>
               </div>
-              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente</button>
             </div>
           </div>
 
@@ -2475,7 +2490,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 </div>
                 <button class="btn-ghost-sm" onclick="campGoStep(1)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente</button>
             </div>
           </div>
 
@@ -2519,7 +2534,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 </div>
                 <button class="btn-ghost-sm" onclick="campGoStep(2)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
+              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente</button>
             </div>
           </div>
 
@@ -2586,7 +2601,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="campReviewControls" style="display:none;margin-bottom:20px;">
           <div style="font-size:14px;color:var(--text2);margin-bottom:12px;" id="campReviewMsg">Revisá el clip. ¿Está bien?</div>
           <div style="display:flex;gap:10px;">
-            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir →</button>
+            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir</button>
             <button class="btn-outline" onclick="campRegenCurrentClip()" style="font-size:13px;padding:10px 22px;">Regenerar este clip</button>
           </div>
         </div>
@@ -2638,7 +2653,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
           <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan →</button>
+            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -4003,7 +4018,7 @@ function openCreditsModal() {
     if (subEl) subEl.textContent = `Plan ${planInfo.label}: ${planInfo.topup_credits.toLocaleString('es-AR')} créditos extra por $${planInfo.topup_price}. No caducan.`;
     if (creditsEl) creditsEl.textContent = planInfo.topup_credits.toLocaleString('es-AR') + ' créditos';
     if (priceEl) priceEl.textContent = '$' + planInfo.topup_price;
-    if (continueBtn) continueBtn.textContent = 'Continuar →';
+    if (continueBtn) continueBtn.textContent = 'Continuar';
   }
   document.getElementById('creditsModal').classList.add('open');
 }
@@ -4059,6 +4074,58 @@ function switchGenTab(tab){
       : 'Describí la imagen que querés generar...';
 }
 
+/* ---- Imágenes de referencia del dashboard ---- */
+let _dashRefs = []; // Array de { file, base64 }
+
+function handleDashRefUpload(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  const maxTotal = 14;
+  const remaining = maxTotal - _dashRefs.length;
+  const toAdd = files.slice(0, remaining);
+
+  toAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result.split(',')[1];
+      _dashRefs.push({ file, base64, dataUrl: e.target.result });
+      renderDashRefs();
+    };
+    reader.readAsDataURL(file);
+  });
+  // Limpiar el input para permitir volver a seleccionar los mismos archivos
+  event.target.value = '';
+}
+
+function renderDashRefs() {
+  const list = document.getElementById('dashRefList');
+  const preview = document.getElementById('dashRefPreview');
+  const btn = document.querySelector('.a-ref-btn');
+  if (!list) return;
+
+  list.innerHTML = '';
+  _dashRefs.forEach((ref, i) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'img-ref-thumb';
+    thumb.style.cssText = 'position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
+    thumb.innerHTML = `
+      <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />
+      <button onclick="removeDashRef(${i})" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:#fff;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>
+    `;
+    list.appendChild(thumb);
+  });
+
+  const hasRefs = _dashRefs.length > 0;
+  if (preview) preview.style.display = hasRefs ? 'block' : 'none';
+  if (btn) btn.classList.toggle('has-refs', hasRefs);
+  if (btn) btn.title = hasRefs ? `${_dashRefs.length} imagen${_dashRefs.length > 1 ? 'es' : ''} de referencia` : 'Agregar imagen de referencia';
+}
+
+function removeDashRef(i) {
+  _dashRefs.splice(i, 1);
+  renderDashRefs();
+}
+
 /* ---- Dashboard → flujo de generación ---- */
 function startFromDashboard(){
   // Detectar si el usuario está en tab "video" o "imagen"
@@ -4093,6 +4160,14 @@ function startFromDashboard(){
     rebuildResDropdown();
 
     if (dashPrompt) document.getElementById('genTextarea').value = '';
+
+    // Pasar imágenes de referencia del dashboard a la pantalla de imagen
+    if (_dashRefs.length > 0 && typeof imgRefs !== 'undefined') {
+      imgRefs = _dashRefs.map(r => ({ file: r.file, base64: r.base64 }));
+      renderImgRefs();
+      _dashRefs = [];
+      renderDashRefs();
+    }
     return;
   }
 
@@ -4399,7 +4474,7 @@ function renderHistory(){
         ? 'Todavía no generaste ningún video.'
         : 'Todavía no generaste ninguna creación.');
     const ctaScreen = histFilter === 'image' ? 'nueva-imagen' : 'nuevo';
-    const ctaLabel = histFilter === 'image' ? 'Crear mi primera imagen →' : 'Crear mi primer video →';
+    const ctaLabel = histFilter === 'image' ? 'Crear mi primera imagen' : 'Crear mi primer video';
     c.innerHTML=`<div style="color:#888;padding:60px;text-align:center;">${emptyMsg}<br><br><button class="btn-w" onclick="showScreen('${ctaScreen}')" style="margin-top:8px;">${ctaLabel}</button></div>`;
     return;
   }
