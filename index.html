@@ -130,7 +130,7 @@ html.pre-landing #app { display: none !important; }
   display: flex; align-items: center; gap: 16px;
   cursor: pointer; transition: border-color 0.2s, transform 0.15s;
 }
-.camp-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.camp-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
 .camp-card-icon {
   width: 44px; height: 44px; border-radius: var(--r-md);
   background: var(--hover); border: 1px solid var(--border);
@@ -156,15 +156,15 @@ html.pre-landing #app { display: none !important; }
   background: var(--card); border: 1px dashed var(--border);
   border-radius: var(--r-xl); max-width: 860px;
 }
-.camp-empty-icon { margin-bottom: 20px; opacity: 0.3; color: var(--text2); }
+.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
 .camp-empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
 .camp-wizard { max-width: 720px; }
 .camp-wizard-step { display: none; }
 .camp-wizard-step.active { display: block; }
 .camp-step-header { margin-bottom: 28px; }
-.camp-step-num { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 10px; }
-.camp-step-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+.camp-step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; }
+.camp-step-title { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 6px; }
 .camp-step-sub { font-size: 14px; color: var(--text2); }
 .camp-textarea {
   width: 100%; background: var(--hover); border: 1px solid transparent;
@@ -206,7 +206,7 @@ html.pre-landing #app { display: none !important; }
 }
 .camp-upload-zone:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
 .camp-upload-zone.has-file { border-style: solid; border-color: rgba(255,255,255,0.2); }
-.camp-upload-icon { margin-bottom: 12px; opacity: 0.35; color: var(--text2); }
+.camp-upload-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
 .camp-upload-label { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
 .camp-upload-sub { font-size: 13px; color: var(--text2); }
 .camp-upload-preview { width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--r-md); margin-top: 16px; display: none; }
@@ -214,7 +214,7 @@ html.pre-landing #app { display: none !important; }
 .camp-upload-zone.has-file .camp-upload-icon,
 .camp-upload-zone.has-file .camp-upload-label,
 .camp-upload-zone.has-file .camp-upload-sub { display: none; }
-.camp-chunks-list { display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; margin-bottom: 20px; }
+.camp-chunks-list { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; margin-bottom: 20px; }
 .camp-chunk-item {
   background: var(--hover); border: 1px solid var(--border);
   border-radius: var(--r-md); padding: 14px 16px;
@@ -230,24 +230,10 @@ html.pre-landing #app { display: none !important; }
 .camp-chunk-variant { font-size: 10px; color: var(--text3); margin-top: 4px; }
 .camp-chunk-text {
   font-size: 13px; color: #d0d0d0; line-height: 1.6;
-  width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
-  outline: none; padding: 10px 12px; box-sizing: border-box;
-  font-family: 'Inter', -apple-system, sans-serif; resize: vertical; min-height: 80px;
-  transition: border-color 0.2s;
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'Inter', -apple-system, sans-serif; resize: none; min-height: 40px;
 }
-.camp-chunk-text:focus { border-color: var(--accent); }
-
-/* Subtitle panel */
-.sub-label { font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text2);text-transform:uppercase; }
-.sub-select { width:100%;padding:7px 10px;background:var(--hover);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none; }
-.sub-preset-btn { padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
-.sub-preset-btn:hover { border-color:rgba(255,255,255,.35);color:#fff; }
-.sub-pos-btn { flex:1;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:var(--card);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s; }
-.sub-pos-active { border-color:#fff!important;color:#fff!important; }
-.sub-style-btn { width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s; }
-.sub-style-active { border-color:#fff!important;color:#fff!important; }
-.sub-mode-btn { flex:1;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
-.sub-mode-active { border-color:#fff!important;color:#fff!important; }
+.camp-chunk-dur { font-size: 11px; color: var(--text3); flex-shrink: 0; margin-top: 3px; }
 .camp-clips-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 12px; margin-bottom: 24px;
@@ -419,11 +405,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center;
   text-decoration: none; margin-right: auto;
 }
-.l-logo-wordmark {
-  font-size: 17px; font-weight: 800; color: #fff;
-  letter-spacing: -0.5px; line-height: 1;
+.l-logo-img {
+  height: 32px; width: auto; display: block;
 }
-.l-logo-img { height: 32px; width: auto; display: block; }
 .l-nav-links {
   display: flex; align-items: center; gap: 2px;
   margin: 0 16px;
@@ -460,7 +444,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
   padding: 100px 40px 60px;
-  background: #080808;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1a1a 0%, #080808 70%);
 }
 .l-hero-center {
   display: flex; flex-direction: column; align-items: center;
@@ -469,23 +453,24 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   margin: 0 auto;
 }
 .l-hero-headline {
-  font-size: clamp(52px, 7.5vw, 108px);
-  font-weight: 900; line-height: 0.95;
-  letter-spacing: -4px; margin: 0 0 28px 0;
+  font-size: clamp(48px, 7vw, 100px);
+  font-weight: 900; line-height: 1.0;
+  letter-spacing: -3px; margin: 0 0 24px 0;
   color: #ffffff; text-align: center;
   width: 100%;
 }
 .l-hero-headline .hl-line2 {
   display: block;
+  font-family: 'Inter', -apple-system, sans-serif;
   font-style: italic;
-  font-weight: 300;
-  color: rgba(255,255,255,0.5);
-  letter-spacing: -3px;
+  font-weight: 200;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: -2px;
 }
 .l-hero-sub {
   font-size: 16px; color: var(--text2);
-  max-width: 480px; line-height: 1.65;
-  margin-bottom: 40px; font-size: 17px; color: rgba(255,255,255,0.55);
+  max-width: 400px; line-height: 1.7;
+  margin-bottom: 36px;
 }
 .l-hero-btns {
   display: flex; align-items: center; gap: 10px;
@@ -586,13 +571,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-section-title {
   max-width: 100%; width: auto !important;
-  font-size: clamp(36px, 4.5vw, 60px);
-  font-weight: 900; letter-spacing: -2.5px; line-height: 1.05;
-  margin-bottom: 16px;
-}
-.l-section-title em {
-  font-style: italic; font-weight: 300;
-  color: rgba(255,255,255,0.55);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800; letter-spacing: -2px; line-height: 1.1;
+  margin-bottom: 14px;
 }
 .l-section-sub {
   font-size: 16px; color: var(--text2); max-width: 480px;
@@ -706,13 +687,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   max-width: 720px; margin: 0 auto;
 }
 .l-pricing-card {
-  background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px; padding: 40px 36px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 40px 32px;
   display: flex; flex-direction: column;
   transition: border-color 0.2s;
 }
 .l-pricing-card.featured {
-  background: #111; border-color: rgba(255,255,255,0.15);
+  background: var(--card2); border-color: rgba(255,255,255,0.18);
 }
 .l-pricing-popular {
   display: inline-flex; align-items: center; justify-content: center;
@@ -724,10 +705,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-pricing-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
 .l-pricing-price {
-  font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 4px;
-  display: flex; align-items: baseline; gap: 8px;
+  font-size: 48px; font-weight: 900; letter-spacing: -3px; margin-bottom: 2px;
 }
-.l-pricing-price span { font-size: 16px; font-weight: 500; color: var(--text2); letter-spacing: 0; }
+.l-pricing-price span { font-size: 16px; font-weight: 400; color: var(--text2); letter-spacing: 0; }
 .l-pricing-period { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
 .l-pricing-hr { height: 1px; background: var(--border); margin-bottom: 24px; }
 .l-pricing-list {
@@ -803,26 +783,28 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .fade-up.visible { opacity: 1; transform: translateY(0); }
 
 /* ==============================================
-   APP — SIDEBAR
+   APP — SIDEBAR (Claude Design)
    ============================================== */
 .a-sidebar {
-  width: 240px; flex-shrink: 0;
+  width: 220px; flex-shrink: 0;
   background: #0a0a0a;
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   height: 100vh; overflow: hidden;
   transition: width 0.25s ease;
 }
-.a-sidebar.collapsed { width: 64px; }
+.a-sidebar.collapsed { width: 56px; }
+
+/* Top: logo + hamburger */
 .a-sidebar-top {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 14px 12px;
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  flex-shrink: 0;
 }
-.a-sidebar.collapsed .a-sidebar-top { padding: 20px 12px 16px; justify-content: center; }
+.a-sidebar.collapsed .a-sidebar-top { padding: 16px 10px 12px; justify-content: center; }
 .a-sidebar.collapsed .a-sidebar-logo { display: none; }
 .a-sidebar-toggle {
-  width: 32px; height: 32px; flex-shrink: 0;
+  width: 30px; height: 30px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: none; cursor: pointer;
   color: var(--text2); border-radius: var(--r-sm);
@@ -832,31 +814,40 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-sidebar-logo {
   display: flex; align-items: center; text-decoration: none;
 }
-.a-logo-wordmark {
-  font-size: 16px; font-weight: 800; color: #fff;
-  letter-spacing: -0.4px; line-height: 1;
+.a-logo-img {
+  height: 28px; width: auto; display: block;
 }
-.a-logo-img { height: 32px; width: auto; display: block; }
+
+/* Nav principal */
 .a-nav {
-  flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
+  flex: 1; padding: 6px 10px 10px; display: flex; flex-direction: column; gap: 1px;
   overflow-y: auto;
 }
+
+/* Labels de sección (ESPACIO / GENERAL) */
+.a-nav-section {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--text3);
+  text-transform: uppercase; padding: 10px 8px 4px;
+  margin-top: 4px;
+}
+.a-nav-section:first-child { margin-top: 0; }
+.a-sidebar.collapsed .a-nav-section { display: none; }
+
 .a-nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: var(--r-sm);
-  font-size: 13px; font-weight: 500; color: var(--text2);
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 400; color: var(--text2);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
-  user-select: none; border-left: 2px solid transparent;
+  user-select: none;
   position: relative; white-space: nowrap;
 }
 .a-nav-item:hover { background: var(--hover); color: var(--text); }
 .a-nav-item.active {
-  background: rgba(255,255,255,0.08); color: #fff;
-  border-left-color: transparent;
-  font-weight: 600;
+  background: var(--card2); color: #fff; font-weight: 500;
 }
-.a-nav-item svg { flex-shrink: 0; }
+.a-nav-item svg { flex-shrink: 0; opacity: 0.7; }
+.a-nav-item.active svg { opacity: 1; }
 .a-sidebar.collapsed .a-nav-item { justify-content: center; padding: 10px 0; }
 .a-sidebar.collapsed .a-nav-item .a-nav-label,
 .a-sidebar.collapsed .a-nav-item .a-nav-pulse { display: none; }
@@ -870,49 +861,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   z-index: 1000; pointer-events: none;
 }
 .a-nav-pulse {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #fff; margin-left: auto; opacity: 0.6;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #fff; margin-left: auto; opacity: 0.5;
   animation: pulse 2s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 0.2; transform: scale(0.7); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 0.15; transform: scale(0.7); }
 }
-
-/* Nav group labels */
-.a-nav-group-label {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.2); text-transform: uppercase;
-  padding: 8px 12px 4px; margin-top: 4px;
-}
-.a-sidebar.collapsed .a-nav-group-label { display: none; }
-
-/* Widget de créditos en el sidebar */
-.a-credits-widget {
-  margin: 0 16px 12px;
-  padding: 12px 14px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm, 10px);
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
-}
-.a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
-.a-credits-widget-label {
-  font-size: 11px; color: var(--text2);
-  text-transform: uppercase; letter-spacing: .5px;
-  margin-bottom: 4px;
-}
-.a-credits-widget-amount {
-  font-size: 18px; font-weight: 800; color: var(--text);
-  letter-spacing: -.3px;
-}
-.a-credits-widget-amount.low { color: #f59e0b; }
-.a-credits-widget-amount.empty { color: #ef4444; }
-.a-credits-widget-sub {
-  font-size: 10px; color: var(--text2); margin-top: 2px;
-}
-.a-sidebar.collapsed .a-credits-widget { display: none; }
 
 /* Resumen de créditos arriba de cada pantalla de generación */
 .a-credits-quote {
@@ -924,29 +880,74 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-credits-quote strong { color: var(--text); font-weight: 700; }
 
+/* Bloque de créditos abajo del sidebar */
+.a-sidebar-credits {
+  margin: 0 10px 8px;
+  padding: 12px 14px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.a-sidebar-credits:hover { background: var(--hover); border-color: rgba(255,255,255,0.15); }
+.a-sidebar-credits-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.8px; color: var(--text3);
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.a-sidebar-credits-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.a-sidebar-credits-num {
+  font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px;
+  line-height: 1;
+}
+.a-sidebar-credits-num.low { color: #f59e0b; }
+.a-sidebar-credits-num.empty { color: #ef4444; }
+.a-sidebar-credits-add {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--hover); border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2); font-size: 16px; font-weight: 400; line-height: 1;
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.a-sidebar-credits-add:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.a-sidebar-credits-sub {
+  font-size: 10px; color: var(--text3); margin-top: 4px;
+}
+.a-sidebar.collapsed .a-sidebar-credits { display: none; }
+
+/* Bottom: usuario */
 .a-sidebar-bottom {
-  padding: 14px 16px;
+  padding: 10px 14px 14px;
   border-top: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0; cursor: pointer;
+  transition: background 0.15s;
 }
-.a-sidebar.collapsed .a-sidebar-bottom { padding: 14px 12px; justify-content: center; }
-.a-sidebar.collapsed .a-user-info { display: none; }
+.a-sidebar-bottom:hover { background: var(--hover); }
+.a-sidebar.collapsed .a-sidebar-bottom { padding: 12px 10px; justify-content: center; }
+.a-sidebar.collapsed .a-user-info,
+.a-sidebar.collapsed .a-user-chevron { display: none; }
 .a-user-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: 50%;
   background: var(--card2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
 }
 .a-user-info { flex: 1; min-width: 0; }
-.a-user-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.a-user-plan { font-size: 11px; color: var(--text2); }
+.a-user-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+.a-user-plan { font-size: 11px; color: var(--text3); line-height: 1.3; }
+.a-user-chevron { color: var(--text3); flex-shrink: 0; }
 
 /* ==============================================
    APP — MAIN AREA
    ============================================== */
 .a-main {
   flex: 1; overflow-y: auto; overflow-x: visible; background: var(--bg);
-  padding: 40px 48px;
+  padding: 36px 44px;
 }
 
 /* Screen transitions */
@@ -954,41 +955,61 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .screen.active { display: block; opacity: 1; }
 
 /* ==============================================
-   APP — DASHBOARD
+   APP — DASHBOARD (Claude Design)
    ============================================== */
 .a-dash-header {
   display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 36px;
+  margin-bottom: 28px;
 }
-.a-dash-greeting { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
-.a-dash-sub { font-size: 15px; color: var(--text2); margin-top: 4px; }
+.a-dash-greeting {
+  font-size: 28px; font-weight: 800; letter-spacing: -0.8px; line-height: 1.15;
+}
+.a-dash-greeting em {
+  font-style: italic; font-weight: 300; color: rgba(255,255,255,0.75);
+}
+.a-dash-sub { font-size: 14px; color: var(--text2); margin-top: 3px; }
+
+/* Badge de créditos top-right */
 .a-credits-badge {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--r-pill); padding: 8px 8px 8px 16px;
-  cursor: default;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px 10px 10px 16px;
+  flex-shrink: 0;
 }
-.a-credits-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text2); text-transform: uppercase; }
-.a-credits-val { font-size: 14px; font-weight: 700; color: var(--text); }
+.a-credits-badge-inner { display: flex; flex-direction: column; align-items: flex-end; }
+.a-credits-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.8px; color: var(--text3);
+  text-transform: uppercase; line-height: 1;
+}
+.a-credits-val { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; line-height: 1.2; }
 .a-credits-add {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: var(--hover); border: 1px solid var(--border);
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--hover); border: 1px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text2); font-size: 14px; font-weight: 700;
+  cursor: pointer; color: var(--text2); font-size: 18px; font-weight: 300; line-height: 1;
   transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
 }
-.a-credits-add:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.a-credits-add:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Métricas */
 .a-metrics {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  margin-bottom: 36px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  margin-bottom: 28px;
 }
 .a-metric {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 24px;
+  border-radius: var(--r-lg); padding: 20px 22px;
+  position: relative;
 }
-.a-metric-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 10px; letter-spacing: 0.3px; }
-.a-metric-val { font-size: 40px; font-weight: 900; letter-spacing: -2px; }
+.a-metric-label { font-size: 11px; font-weight: 500; color: var(--text2); margin-bottom: 10px; letter-spacing: 0.3px; text-transform: uppercase; }
+.a-metric-val { font-size: 36px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
 .a-metric-val.dim { color: var(--text2); font-size: 28px; }
+.a-metric-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+.a-metric-icon {
+  position: absolute; top: 18px; right: 18px;
+  color: var(--text3); opacity: 0.6;
+}
 .a-metric-badge {
   display: inline-flex; align-items: center;
   background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
@@ -998,74 +1019,91 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
 /* Generation box */
 .a-gen-box {
-  background: var(--card); border: 1px solid var(--border2);
-  border-radius: var(--r-xl); padding: 28px;
-  margin-bottom: 40px; overflow: visible; position: relative; z-index: 10;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px 24px;
+  margin-bottom: 36px; overflow: visible; position: relative; z-index: 10;
 }
 .a-gen-toggle {
-  display: flex; align-items: center; gap: 4px;
-  background: var(--hover); border-radius: var(--r-pill);
-  padding: 4px; margin-bottom: 20px; width: fit-content;
+  display: flex; align-items: center; gap: 2px;
+  background: var(--hover); border-radius: var(--r-sm);
+  padding: 3px; margin-bottom: 16px; width: fit-content;
 }
 .a-gen-tab {
-  padding: 8px 20px; border-radius: var(--r-pill);
+  padding: 6px 16px; border-radius: 6px;
   font-size: 13px; font-weight: 500; color: var(--text2);
-  cursor: pointer; transition: background 0.2s, color 0.2s;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
   border: none; background: transparent;
 }
 .a-gen-tab.active {
   background: var(--card2); color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 .a-gen-textarea {
-  width: 100%; background: var(--hover);
-  border: 1px solid transparent; border-radius: var(--r-md);
-  padding: 16px; resize: none;
+  width: 100%; background: transparent;
+  border: none; border-radius: 0;
+  padding: 0; resize: none;
   font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #fff;
-  line-height: 1.65; min-height: 100px; outline: none;
-  transition: border-color 0.2s; margin-bottom: 16px;
+  line-height: 1.65; min-height: 80px; outline: none;
+  margin-bottom: 20px;
 }
-.a-gen-textarea:focus { border-color: rgba(255,255,255,0.2); }
+.a-gen-textarea:focus { border-color: transparent; }
 .a-gen-textarea::placeholder { color: var(--text3); }
+
+/* Fila de opciones del gen box — estilo "Modelo · Duración · Aspecto · Resolución Generar→" */
 .a-gen-row {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible;
+  display: flex; align-items: center; gap: 0; flex-wrap: nowrap;
+  overflow: visible;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
 }
-.a-gen-select {
-  background: var(--hover); border: 1px solid transparent;
-  border-radius: var(--r-sm); padding: 9px 12px;
-  font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; color: var(--text);
-  cursor: pointer; outline: none; transition: border-color 0.2s;
-  flex: 1; min-width: 120px;
+.a-gen-opts { display: none; align-items: center; gap: 0; flex: 1; flex-wrap: nowrap; overflow: visible; }
+.a-gen-opts.active { display: flex; }
+
+/* Cada select en el gen box tiene un label antes */
+.a-gen-param {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text3);
+  padding-right: 16px;
+  border-right: 1px solid var(--border);
+  margin-right: 16px;
 }
-.a-gen-select:focus { border-color: rgba(255,255,255,0.2); }
-.a-gen-select option { background: #1a1a1a; }
+.a-gen-param:last-of-type { border-right: none; }
+.a-gen-param-label { font-size: 12px; color: var(--text3); white-space: nowrap; }
+
+/* Overrides para los custom-select dentro del gen-box */
+.a-gen-opts .custom-select-trigger {
+  background: transparent; border: none; padding: 0;
+  font-size: 13px; font-weight: 600; color: var(--text);
+  border-radius: 0;
+}
+.a-gen-opts .custom-select-trigger:hover { background: transparent; }
+.a-gen-opts .custom-select.open .custom-select-trigger { border-color: transparent; }
+
 .a-gen-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: #fff; color: #080808;
-  font-family: 'Inter', -apple-system, sans-serif; font-weight: 700; font-size: 14px;
-  border: none; border-radius: var(--r-pill);
-  padding: 10px 22px; cursor: pointer;
+  font-family: 'Inter', -apple-system, sans-serif; font-weight: 700; font-size: 13px;
+  border: none; border-radius: var(--r-sm);
+  padding: 9px 18px; cursor: pointer;
   margin-left: auto; flex-shrink: 0;
   transition: opacity 0.2s;
 }
 .a-gen-btn:hover { opacity: 0.88; }
-.a-gen-opts { display: none; }
-.a-gen-opts.active { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible; }
+.a-gen-select { display: none; }
 
-/* Available models section */
+/* Section rows y titles */
 .a-section-row {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-.a-section-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.a-section-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
 .a-see-all {
   font-size: 13px; color: var(--text2); cursor: pointer;
   transition: color 0.2s;
 }
 .a-see-all:hover { color: var(--text); }
 .a-models-grid {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 240px)); gap: 14px;
-  margin-bottom: 40px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 200px)); gap: 12px;
+  margin-bottom: 32px;
 }
 .a-model-card {
   background: var(--card); border: 1px solid var(--border);
@@ -1074,22 +1112,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-model-card:hover { border-color: rgba(255,255,255,0.2); }
 .a-model-thumb {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  overflow: hidden;
+  position: relative; width: 100%; aspect-ratio: 9/16; overflow: hidden;
   background: #0a0a0a;
 }
-.a-model-thumb img,
-.a-model-thumb video {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.a-model-thumb img, .a-model-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .a-model-badge-tl { display: none; }
 .a-model-badge-br { display: none; }
-.a-model-info { padding: 12px 14px 14px; }
-.a-model-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.a-model-info { padding: 11px 13px 13px; }
+.a-model-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
 .a-model-sub { font-size: 11px; color: var(--text2); }
 .a-model-menu {
   position: absolute; top: 8px; right: 8px;
@@ -1620,7 +1650,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="modal-opt-price" id="topupPriceLabel">$—</div>
       </div>
     </div>
-    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+    <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar →</button>
   </div>
 </div>
 
@@ -1660,7 +1690,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- Navbar -->
   <nav class="l-nav" id="lNav">
-<a class="l-nav-logo" href="#"><span class="l-logo-wordmark">Futuriads</span></a>
+<a class="l-nav-logo" href="#">
+    <img src="/logo.png" alt="Futuriads" class="l-logo-img" />
+</a>
     <div class="l-nav-links">
       <a class="l-nav-link" href="#features">Características</a>
       <a class="l-nav-link" href="#how">Cómo funciona</a>
@@ -1675,21 +1707,21 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Hero -->
   <section class="l-hero" id="heroSection">
     <div class="l-hero-cards" id="heroCards">
-      <div class="actor-card" data-label="UGC"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card" data-label="REEL"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card" data-label="ADS"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card" data-label="9:16"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card" data-label="HD"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card" data-label="UGC"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline></video></div>
     </div>
     <div class="l-hero-center">
       <h1 class="l-hero-headline">
         Creá anuncios
         <span class="hl-line2">que venden de verdad</span>
       </h1>
-      <p class="l-hero-sub">Escribí tu script, elegí un actor IA y obtené un video listo para Meta, TikTok e Instagram en minutos — sin filmar, sin editar.</p>
+      <p class="l-hero-sub">Escribí tu script, elegí un actor IA y generá un video listo para Meta, TikTok e Instagram en minutos.</p>
       <div class="l-hero-btns">
-        <button class="btn-w" onclick="goToApp()">Empezar ahora</button>
+        <button class="btn-w" onclick="goToApp()">✦ Empezar ahora</button>
         <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
       </div>
       <div class="l-hero-badges">
@@ -1718,22 +1750,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- How it works -->
   <section class="l-section l-section-alt l-section-center" id="how">
-    <div class="l-section-label"><span class="l-label-line"></span>Cómo funciona<span class="l-label-line"></span></div>
+    <div class="l-section-label">Cómo funciona</div>
     <h2 class="l-section-title">Tres pasos y tu anuncio <em>está listo</em></h2>
     <p class="l-section-sub">Sin equipos de producción. Sin demoras. Solo resultados.</p>
     <div class="l-steps">
       <div class="l-step">
-        <div class="l-step-num"><em>01</em></div>
+        <div class="l-step-num">01</div>
         <div class="l-step-title">Elegí tu actor</div>
         <p class="l-step-desc">Seleccioná uno de nuestros actores IA con personalidades y estilos únicos, adaptados a tu producto.</p>
       </div>
       <div class="l-step">
-        <div class="l-step-num"><em>02</em></div>
+        <div class="l-step-num">02</div>
         <div class="l-step-title">Escribí tu script</div>
         <p class="l-step-desc">Describí tu producto o dejá que la IA genere el guión por vos según el tono y duración que necesitás.</p>
       </div>
       <div class="l-step">
-        <div class="l-step-num"><em>03</em></div>
+        <div class="l-step-num">03</div>
         <div class="l-step-title">Descargá tu video</div>
         <p class="l-step-desc">En minutos tenés un MP4 listo para publicar en Meta, TikTok o Instagram con audio sincronizado.</p>
       </div>
@@ -1743,7 +1775,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Features -->
   <section class="l-section" id="features">
     <div class="l-section-center" style="margin-bottom:56px;">
-      <div class="l-section-label"><span class="l-label-line"></span>Features<span class="l-label-line"></span></div>
+      <div class="l-section-label">Features</div>
       <h2 class="l-section-title">Creá mejores anuncios <em>con IA</em></h2>
       <p class="l-section-sub">Todo lo que necesitás para escalar tus campañas sin escalar tu equipo.</p>
     </div>
@@ -1789,7 +1821,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Testimonials -->
   <section class="l-section l-section-alt">
     <div class="l-section-center" style="margin-bottom:52px;">
-      <div class="l-section-label"><span class="l-label-line"></span>Testimonios<span class="l-label-line"></span></div>
+      <div class="l-section-label">Testimonios</div>
       <h2 class="l-section-title">Recomendado por <em>emprendedores</em></h2>
       <p class="l-section-sub">Dueños de e-commerce que ya generan anuncios con Futuriads</p>
     </div>
@@ -1814,7 +1846,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- Pricing -->
   <section class="l-section l-section-center" id="pricing">
-    <div class="l-section-label"><span class="l-label-line"></span>Precios<span class="l-label-line"></span></div>
+    <div class="l-section-label">Precios</div>
     <h2 class="l-section-title">Simple, <em>sin sorpresas</em></h2>
     <p class="l-section-sub" style="padding: 22px">Pagás solo lo que usás. Cancelás cuando querés.</p>
     <div class="l-pricing-grid">
@@ -1854,7 +1886,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <section class="l-section l-cta l-section-alt" style="background-color: rgb(0, 0, 0)">
     <h2 class="l-section-title fade-up">Tu próximo anuncio <em>empieza acá</em></h2>
     <p class="l-section-sub fade-up">Sumate a cientos de tiendas que ya usan Futuriads para vender más.</p>
-    <button class="btn-w fade-up" style="font-size:15px;padding:14px 32px;" onclick="goToApp()">Crear mi primer video</button>
+    <button class="btn-w fade-up" style="font-size:15px;padding:14px 32px;" onclick="goToApp()">✦ Crear mi primer video</button>
   </section>
 
   <!-- Footer -->
@@ -1900,51 +1932,60 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Sidebar -->
   <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
-<a class="a-sidebar-logo" href="#" onclick="return false;"><span class="a-logo-wordmark">Futuriads</span></a>
+      <a class="a-sidebar-logo" href="#" onclick="return false;">
+        <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
+      </a>
       <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
       </button>
     </div>
     <nav class="a-nav">
-      <div class="a-nav-group-label">ESPACIO</div>
+      <div class="a-nav-section">Espacio</div>
       <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')" data-tooltip="Dashboard">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.5"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1.2"/><rect x="8" y="1" width="5" height="5" rx="1.2"/><rect x="1" y="8" width="5" height="5" rx="1.2"/><rect x="8" y="8" width="5" height="5" rx="1.2"/></svg>
         <span class="a-nav-label">Dashboard</span>
       </div>
       <div class="a-nav-item" id="nav-nuevo" onclick="showScreen('nuevo')" data-tooltip="Nuevo video">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4.5v6M4.5 7.5h6" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M4.5 7h5" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Nuevo video</span>
-        <span class="a-nav-pulse"></span>
       </div>
       <div class="a-nav-item" id="nav-nueva-imagen" onclick="showScreen('nueva-imagen')" data-tooltip="Nueva imagen">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2"/><path d="m1.5 11 3.5-3.5L9 11l2-2 2.5 2.5"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="1.8"/><circle cx="5" cy="5" r="1.1"/><path d="m1.5 10 3-3 2.5 2.5 1.5-1.5 2.5 2.5"/></svg>
         <span class="a-nav-label">Nueva imagen</span>
       </div>
       <div class="a-nav-item" id="nav-campanas" onclick="showScreen('campanas')" data-tooltip="Campañas">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="10" rx="2"/><path d="M7 5.5l4 2-4 2V5.5z" fill="currentColor" stroke="none"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="9" rx="1.8"/><path d="M6.5 5l3.5 1.75L6.5 8.5V5z" fill="currentColor" stroke="none"/></svg>
         <span class="a-nav-label">Campañas</span>
       </div>
-      <div class="a-nav-group-label" style="margin-top:8px;">GENERAL</div>
+      <div class="a-nav-section">General</div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="1.8"/><path d="M3.5 5h7M3.5 7.5h5M3.5 10h5.5" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
       </div>
       <div class="a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="5.5" r="2.8"/><path d="M2 14c0-3 2.5-4.8 5.5-4.8S13 11 13 14" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="5" r="2.5"/><path d="M1.5 13c0-2.8 2.5-4.5 5.5-4.5s5.5 1.7 5.5 4.5" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Perfil</span>
       </div>
     </nav>
-    <div class="a-credits-widget" id="creditsWidget" onclick="showScreen('perfil')">
-      <div class="a-credits-widget-label">Créditos</div>
-      <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
-      <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
+
+    <!-- Bloque de créditos -->
+    <div class="a-sidebar-credits" id="creditsWidget" onclick="openCreditsModal()">
+      <div class="a-sidebar-credits-label">Créditos</div>
+      <div class="a-sidebar-credits-row">
+        <div class="a-sidebar-credits-num" id="creditsWidgetAmount">—</div>
+        <div class="a-sidebar-credits-add" onclick="event.stopPropagation();openCreditsModal()">+</div>
+      </div>
+      <div class="a-sidebar-credits-sub" id="creditsWidgetSub">Cargando...</div>
     </div>
-    <div class="a-sidebar-bottom">
+
+    <!-- Usuario -->
+    <div class="a-sidebar-bottom" onclick="showScreen('perfil')">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
       <div class="a-user-info">
         <div class="a-user-name" id="sidebarUserName">Cargando...</div>
-        <div class="a-user-plan" id="sidebarUserPlan">Free</div>
+        <div class="a-user-plan" id="sidebarUserPlan">Sin plan</div>
       </div>
+      <svg class="a-user-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 5 2 2 2-2"/></svg>
     </div>
   </aside>
 
@@ -1955,31 +1996,42 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <div class="screen active" id="screen-dashboard">
       <div class="a-dash-header">
         <div>
-          <div class="a-dash-greeting" id="dashGreeting">¡Hola!</div>
+          <div class="a-dash-greeting" id="dashGreeting">Buenas tardes, <em>cargando...</em></div>
           <div class="a-dash-sub" id="dashSub">¿Qué estás creando hoy?</div>
         </div>
         <div class="a-credits-badge">
-          <span class="a-credits-label">CRÉDITOS</span>
-          <span class="a-credits-val" id="dashCreditsVal">—</span>
-          <div class="a-credits-add" onclick="openModal()" title="Recargar créditos">+</div>
+          <div class="a-credits-badge-inner">
+            <span class="a-credits-label">Créditos</span>
+            <span class="a-credits-val" id="dashCreditsVal">—</span>
+          </div>
+          <div class="a-credits-add" onclick="openCreditsModal()" title="Recargar créditos">+</div>
         </div>
       </div>
 
       <div class="a-metrics">
         <div class="a-metric">
-          <div class="a-metric-label">VIDEOS ESTE MES</div>
-          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div>
-          <div class="a-metric-val">3</div>
+          <div class="a-metric-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1"/><rect x="8" y="1.5" width="4.5" height="4.5" rx="1"/><rect x="1.5" y="8" width="4.5" height="4.5" rx="1"/><rect x="8" y="8" width="4.5" height="4.5" rx="1"/></svg>
+          </div>
+          <div class="a-metric-label">Videos este mes</div>
+          <div class="a-metric-val" id="metricVideos">0</div>
+          <div class="a-metric-sub" id="metricVideosSub">—</div>
         </div>
         <div class="a-metric">
-          <div class="a-metric-label">VIDEOS RESTANTES</div>
-          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5"/></svg></div>
-          <div class="a-metric-val" style="color:var(--text2);">12</div>
+          <div class="a-metric-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v3l2 1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="a-metric-label">Tiempo ahorrado</div>
+          <div class="a-metric-val" id="metricTime">0 h</div>
+          <div class="a-metric-sub">Equivale a ~$0 en producción</div>
         </div>
         <div class="a-metric">
-          <div class="a-metric-label">CAMPAÑAS ACTIVAS</div>
-          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="9" rx="2"/><path d="M6 5.5l3.5 2L6 9V5.5z" fill="currentColor" stroke="none"/></svg></div>
-          <div class="a-metric-badge" style="margin-top: 8px; font-size: 22px">Standard</div>
+          <div class="a-metric-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="11" height="9" rx="1.5"/><path d="M6.5 5l3 1.5-3 1.5V5z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="a-metric-label">Campañas activas</div>
+          <div class="a-metric-val" id="metricCampaigns">0</div>
+          <div class="a-metric-sub" id="metricCampaignsSub">—</div>
         </div>
       </div>
 
@@ -1989,170 +2041,131 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <button class="a-gen-tab active" id="tabVideo" onclick="switchGenTab('video')">Crear video</button>
           <button class="a-gen-tab" id="tabImage" onclick="switchGenTab('image')">Crear imagen</button>
         </div>
-        <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
+        <textarea class="a-gen-textarea" id="genTextarea" placeholder="Describí tu producto y el ángulo del anuncio... (ej: zapatillas para correr ligeras, target runners principiantes, tono motivacional)"></textarea>
         <div class="a-gen-row">
+          <!-- Video opts -->
           <div class="a-gen-opts active" id="videoOpts">
-            <div class="custom-select" id="cs-model">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-model')">
-                <span>Seedance 2.0</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-dur">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
-                <span>5s</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-dur', this)">5s</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">10s</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">15s</div>
+            <div class="a-gen-param">
+              <span class="a-gen-param-label">Modelo</span>
+              <div class="custom-select" id="cs-model">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-model')">
+                  <span>Seedance 2.0</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
+                </div>
               </div>
             </div>
-            <div class="custom-select" id="cs-aspect">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-aspect')">
-                <span>9:16</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-aspect', this)">9:16</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">16:9</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">1:1</div>
+            <div class="a-gen-param">
+              <span class="a-gen-param-label">Duración</span>
+              <div class="custom-select" id="cs-dur">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
+                  <span>15s</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">5s</div>
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">10s</div>
+                  <div class="custom-select-option selected" onclick="selectCustomOption('cs-dur', this)">15s</div>
+                </div>
               </div>
             </div>
-            <div class="custom-select" id="cs-res">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-res')">
-                <span>720p</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            <div class="a-gen-param">
+              <span class="a-gen-param-label">Aspecto</span>
+              <div class="custom-select" id="cs-aspect">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-aspect')">
+                  <span>9:16</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option selected" onclick="selectCustomOption('cs-aspect', this)">9:16</div>
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">16:9</div>
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">1:1</div>
+                </div>
               </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">480p</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">720p</div>
+            </div>
+            <div class="a-gen-param" style="border-right:none;margin-right:0;">
+              <span class="a-gen-param-label">Resolución</span>
+              <div class="custom-select" id="cs-res">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-res')">
+                  <span>1080p</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">480p</div>
+                  <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">720p</div>
+                  <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">1080p</div>
+                </div>
               </div>
             </div>
           </div>
+          <!-- Image opts -->
           <div class="a-gen-opts" id="imageOpts">
-            <div class="custom-select" id="cs-img-model">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-model')">
-                <span>GPT Image 2</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" data-value="gpt-image-2" onclick="selectCustomOption('cs-img-model', this)">GPT Image 2</div>
-                <div class="custom-select-option" data-value="nano-banana-2" onclick="selectCustomOption('cs-img-model', this)">Nano Banana 2</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-img-aspect">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-aspect')">
-                <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></div>
-                <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
-                <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
-                <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-4-5"></span>4:5</span></div>
-                <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-4"></span>3:4</span></div>
-                <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-2-3"></span>2:3</span></div>
-                <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-2"></span>3:2</span></div>
-                <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-auto"></span>Auto</span></div>
+            <div class="a-gen-param">
+              <span class="a-gen-param-label">Modelo</span>
+              <div class="custom-select" id="cs-img-model">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-model')">
+                  <span>GPT Image 2</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option selected" data-value="gpt-image-2" onclick="selectCustomOption('cs-img-model', this)">GPT Image 2</div>
+                  <div class="custom-select-option" data-value="nano-banana-2" onclick="selectCustomOption('cs-img-model', this)">Nano Banana 2</div>
+                </div>
               </div>
             </div>
-            <div class="custom-select" id="cs-img-quality">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-quality')">
-                <span>2K</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+            <div class="a-gen-param">
+              <span class="a-gen-param-label">Aspecto</span>
+              <div class="custom-select" id="cs-img-aspect">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-aspect')">
+                  <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></div>
+                  <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
+                  <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
+                  <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-4-5"></span>4:5</span></div>
+                  <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-4"></span>3:4</span></div>
+                  <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-2-3"></span>2:3</span></div>
+                  <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-2"></span>3:2</span></div>
+                  <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-auto"></span>Auto</span></div>
+                </div>
               </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-quality', this)">1K</div>
-                <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-quality', this)">2K</div>
-                <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-quality', this)">4K</div>
+            </div>
+            <div class="a-gen-param" style="border-right:none;margin-right:0;">
+              <span class="a-gen-param-label">Calidad</span>
+              <div class="custom-select" id="cs-img-quality">
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-quality')">
+                  <span>2K</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+                </div>
+                <div class="custom-select-dropdown">
+                  <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-quality', this)">1K</div>
+                  <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-quality', this)">2K</div>
+                  <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-quality', this)">4K</div>
+                </div>
               </div>
             </div>
           </div>
-          <button class="a-gen-btn" onclick="startFromDashboard()">Generar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+          <button class="a-gen-btn" onclick="startFromDashboard()">Generar →</button>
         </div>
       </div>
 
-      <!-- Available video models -->
-      <div class="a-section-row">
-        <div class="a-section-title">Modelos de video disponibles</div>
-        <span class="a-see-all">Ver todos <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></span>
-      </div>
-      <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '5-15s', '9:16', '720p')">
-          <div class="a-model-thumb">
-            <video src="/models/seedance-preview.mp4" autoplay loop muted playsinline poster="/models/seedance-preview.jpg"></video>
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Seedance 2.0</div>
-            <div class="a-model-sub">Alta calidad · Rápido</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Available image models -->
-      <div class="a-section-row">
-        <div class="a-section-title">Modelos de imagen disponibles</div>
-        <span class="a-see-all">Ver todos <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></span>
-      </div>
-      <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('GPT Images 2', 'IMAGEN', '—', '1:1', 'HD')">
-          <div class="a-model-thumb">
-            <img src="/models/gpt-images-preview.jpg" alt="GPT Images 2" />
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">GPT Images 2</div>
-            <div class="a-model-sub">Fotorrealista · Versátil</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Nano Banana Pro', 'IMAGEN', '—', '1:1', 'HD')">
-          <div class="a-model-thumb">
-            <img src="/models/nano-banana-preview.jpg" alt="Nano Banana Pro" />
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Nano Banana Pro</div>
-            <div class="a-model-sub">Detalle · Rápido</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recientes -->
-      <div class="a-section-row" style="margin-top:8px;">
+      <!-- Métricas rápidas de historial -->
+      <div class="a-section-row" style="margin-top:4px;">
         <div class="a-section-title">Recientes</div>
+        <span class="a-see-all" onclick="showScreen('historial')">Ver todo →</span>
       </div>
-      <div class="a-recent-grid">
+      <div class="a-recent-grid" id="dashRecent">
         <div class="a-recent-card">
           <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"><circle cx="14" cy="14" r="12"/><polygon points="11,9 20,14 11,19" fill="rgba(255,255,255,0.12)" stroke="none"/></svg>
           </div>
           <div class="a-recent-info">
-            <div class="a-recent-name">Sofia · Lifestyle</div>
-            <div class="a-recent-meta">30s · hace 2 días</div>
-          </div>
-        </div>
-        <div class="a-recent-card">
-          <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-          </div>
-          <div class="a-recent-info">
-            <div class="a-recent-name">Facu · Casual</div>
-            <div class="a-recent-meta">15s · hace 5 días</div>
-          </div>
-        </div>
-        <div class="a-recent-card">
-          <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-          </div>
-          <div class="a-recent-info">
-            <div class="a-recent-name">Paula · Dinámica</div>
-            <div class="a-recent-meta">60s · hace 8 días</div>
+            <div class="a-recent-name" style="color:var(--text3);">Sin creaciones aún</div>
+            <div class="a-recent-meta">Generá tu primer video</div>
           </div>
         </div>
       </div>
@@ -2161,13 +2174,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <!-- ---- NUEVO VIDEO ---- -->
     <div class="screen" id="screen-nuevo">
       <div class="a-step-ind" id="stepInd">
-        <div class="a-step-dot active" id="sd0">1</div>
+        <div class="a-step-dot active" id="sd0"></div>
         <div class="a-step-line" id="sc0"></div>
-        <div class="a-step-dot" id="sd1">2</div>
+        <div class="a-step-dot" id="sd1"></div>
         <div class="a-step-line" id="sc1"></div>
-        <div class="a-step-dot" id="sd2">3</div>
+        <div class="a-step-dot" id="sd2"></div>
         <div class="a-step-line" id="sc2"></div>
-        <div class="a-step-dot" id="sd3">4</div>
+        <div class="a-step-dot" id="sd3"></div>
         <span class="a-step-lbl" id="stepLabel">Elegí tu actor</span>
       </div>
 
@@ -2193,7 +2206,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-actor-info"><div class="a-actor-name">José</div><div class="a-actor-tag">Maduro · Confiable</div></div>
           </div>
         </div>
-        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+        <button class="btn-w" id="step1Next" onclick="goGenStep(2)" disabled style="opacity:0.35;cursor:not-allowed;">Siguiente →</button>
       </div>
 
       <!-- Step 2 -->
@@ -2241,8 +2254,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:16px;">
-          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">← Atrás</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video →</button>
         </div>
       </div>
 
@@ -2255,7 +2268,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-prompt-label">Tu prompt</div>
             <div class="a-prompt-text" id="promptResultText"></div>
           </div>
-          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+          <button class="btn-w" id="step3Next" onclick="goGenStep(4)" style="display:none;">Ver preview →</button>
         </div>
       </div>
 
@@ -2281,10 +2294,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="a-info-chip" id="previewDate">—</div>
           </div>
           <div class="a-preview-actions">
-            <button class="btn-w" id="previewDownloadBtn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar MP4</button>
+            <button class="btn-w" id="previewDownloadBtn">⬇ Descargar MP4</button>
             <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Generar otro</button>
           </div>
-          <div class="a-back-link" onclick="showScreen('dashboard')"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver al dashboard</div>
+          <div class="a-back-link" onclick="showScreen('dashboard')">← Volver al dashboard</div>
         </div>
       </div>
     </div><!-- /nuevo -->
@@ -2292,11 +2305,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <!-- ---- NUEVA IMAGEN ---- -->
     <div class="screen" id="screen-nueva-imagen">
       <div class="a-step-ind" style="display:flex;align-items:center;gap:8px;margin-bottom:36px;">
-        <div class="a-step-dot active" id="img-sd0">1</div>
+        <div class="a-step-dot active" id="img-sd0"></div>
         <div class="a-step-conn" id="img-sc0"></div>
-        <div class="a-step-dot" id="img-sd1">2</div>
+        <div class="a-step-dot" id="img-sd1"></div>
         <div class="a-step-conn" id="img-sc1"></div>
-        <div class="a-step-dot" id="img-sd2">3</div>
+        <div class="a-step-dot" id="img-sd2"></div>
         <span style="margin-left:14px;font-size:12px;color:var(--text2);" id="imgStepLabel">Tu prompt</span>
       </div>
 
@@ -2353,14 +2366,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
         <div style="display:flex;gap:10px;margin-top:24px;">
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">← Atrás</button>
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen →</button>
         </div>
       </div>
 
       <!-- Step 2: Loading -->
       <div id="img-step-2" style="display:none;">
         <div class="a-gen-title">Generando tu imagen</div>
-        <p class="a-gen-sub" id="imgLoadingMsg">Preparando tu imagen...</p>
+        <p class="a-gen-sub" id="imgLoadingMsg">✦ Preparando tu imagen...</p>
         <div class="a-progress-bar" style="margin:24px 0;max-width:500px;">
           <div class="a-progress-fill" id="imgProgressBar" style="width:0%;"></div>
         </div>
@@ -2377,10 +2390,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <img id="imgPreviewReal" src="" alt="" style="width:100%;border-radius:8px;display:block;background:#000;" />
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar imagen</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()">⬇ Descargar imagen</button>
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="resetImageGenerator()">Generar otra</button>
         </div>
-        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver al dashboard</div>
+        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')">← Volver al dashboard</div>
       </div>
     </div><!-- /nueva-imagen -->
 
@@ -2391,14 +2404,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div id="campView-list">
         <div class="camp-header">
           <div class="camp-title">Campañas</div>
-          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg> Nueva campaña</button>
+          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;">✦ Nueva campaña</button>
         </div>
         <div id="campListContainer">
           <div class="camp-empty">
-            <div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div>
+            <div class="camp-empty-icon">🎬</div>
             <div class="camp-empty-title">Todavía no tenés campañas</div>
             <div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div>
-            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button>
+            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button>
           </div>
         </div>
       </div>
@@ -2406,43 +2419,30 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: wizard nueva campaña -->
       <div id="campView-wizard" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;">← Volver</button>
           <div style="font-size:13px;color:var(--text2);">Nueva campaña</div>
         </div>
 
         <div class="camp-wizard">
 
-          <!-- PASO 1: Título, modo y guión -->
+          <!-- PASO 1: Título y guión -->
           <div class="camp-wizard-step active" id="campStep-1">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 1 de 4</div>
               <div class="camp-step-title">El guión</div>
-              <div class="camp-step-sub">Elegí el tipo de video y pegá tu guión completo o describí tu producto y lo generamos con IA.</div>
+              <div class="camp-step-sub">Pegá tu guión completo o describí tu producto y lo generamos con IA.</div>
             </div>
             <input class="camp-input" id="campTitleInput" placeholder="Nombre de la campaña (ej: Shampoo verano 2025)">
-            <div style="margin-bottom:16px;">
-              <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Tipo de video</div>
-              <div style="display:flex;gap:8px;">
-                <div class="camp-mode-card selected" id="campVideoModeTalking" onclick="campSelectVideoMode('talking')" style="flex:1;cursor:pointer;">
-                  <div class="camp-mode-card-title">Avatar habla a cámara</div>
-                  <div class="camp-mode-card-sub">La persona habla directamente en el video. Ideal para testimonios y reviews.</div>
-                </div>
-                <div class="camp-mode-card" id="campVideoModeVoiceover" onclick="campSelectVideoMode('voiceover')" style="flex:1;cursor:pointer;">
-                  <div class="camp-mode-card-title">Voz en off</div>
-                  <div class="camp-mode-card-sub">Audio pregrabado + video visual con escenas y producto. Más dinámico y producido.</div>
-                </div>
-              </div>
-            </div>
             <div style="display:flex;gap:8px;margin-bottom:12px;">
               <button class="camp-option-btn selected" id="campScriptModeManual" onclick="campSetScriptMode('manual')">Tengo mi guión</button>
               <button class="camp-option-btn" id="campScriptModeAI" onclick="campSetScriptMode('ai')">Generarlo con IA</button>
             </div>
             <div id="campScriptManualArea">
-              <textarea class="camp-textarea" id="campScriptInput" placeholder="Pegá acá el guión completo del video. Puede ser tan largo como quieras — Futuriads lo va a dividir automáticamente en clips.&#10;&#10;Ejemplo:&#10;¿Cansada de gastar una fortuna en el peluquero? Este shampoo lo cambió todo para mí. En serio, llevo tres meses usándolo y mi pelo nunca estuvo tan bien..."></textarea>
+              <textarea class="camp-textarea" id="campScriptInput" placeholder="Pegá acá el guión completo del video. Puede ser tan largo como quieras — Futuriads lo va a dividir automáticamente en clips de la duración que elijas.&#10;&#10;Ejemplo:&#10;¿Cansada de gastar una fortuna en el peluquero? Este shampoo lo cambió todo para mí. En serio, llevo tres meses usándolo y mi pelo nunca estuvo tan bien..."></textarea>
             </div>
             <div id="campScriptAIArea" style="display:none;">
               <textarea class="camp-textarea" id="campProductInput" placeholder="Describí tu producto o servicio. ¿Qué hace? ¿Para quién es? ¿Qué problema resuelve?&#10;&#10;Ejemplo: Shampoo nutritivo para pelo dañado o teñido. Contiene queratina y aceite de argán. Público: mujeres 25-45 que van a la peluquería seguido y quieren mantener el resultado en casa." style="min-height:140px;"></textarea>
-              <button class="btn-outline" onclick="campGenerateScript()" id="campGenScriptBtn" style="font-size:13px;padding:9px 20px;margin-bottom:12px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg> Generar guión con IA</button>
+              <button class="btn-outline" onclick="campGenerateScript()" id="campGenScriptBtn" style="font-size:13px;padding:9px 20px;margin-bottom:12px;">✦ Generar guión con IA</button>
               <textarea class="camp-textarea" id="campScriptAIResult" placeholder="El guión generado va a aparecer acá. Podés editarlo antes de continuar." style="min-height:160px;display:none;"></textarea>
             </div>
             <div class="camp-nav-row">
@@ -2452,7 +2452,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div class="camp-prog-dot"></div>
                 <div class="camp-prog-dot"></div>
               </div>
-              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+              <button class="btn-w" onclick="campStep1Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
             </div>
           </div>
 
@@ -2460,30 +2460,18 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="camp-wizard-step" id="campStep-2">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 2 de 4</div>
-              <div class="camp-step-title" id="campStep2Title">Fotos del avatar y el producto</div>
-              <div class="camp-step-sub" id="campStep2Sub">Subí la foto de la persona que va a protagonizar el video y una foto del producto que se va a promocionar.</div>
+              <div class="camp-step-title">La foto del avatar</div>
+              <div class="camp-step-sub">Subí una foto de la persona que va a hablar en el video. Futuriads va a generar variantes automáticamente para que el creativo se vea dinámico.</div>
             </div>
-            <div style="display:flex;gap:16px;flex-wrap:wrap;">
-              <div style="flex:1;min-width:200px;">
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Avatar (persona)</div>
-                <div class="camp-upload-zone" id="campUploadZone">
-                  <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-                  <div class="camp-upload-icon"><svg width="28" height="28" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><circle cx="7" cy="5" r="2.5"/><path d="M2 13c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5"/></svg></div>
-                  <div class="camp-upload-label">Subí la foto del avatar</div>
-                  <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
-                  <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
-                </div>
-              </div>
-              <div style="flex:1;min-width:200px;" id="campProductUploadSection">
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Producto</div>
-                <div class="camp-upload-zone" id="campUploadZoneProduct">
-                  <input type="file" id="campProductPhotoInput" accept="image/*" onchange="campProductPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-                  <div class="camp-upload-icon"><svg width="28" height="28" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l5 2.5v5L7 12 2 9.5v-5z"/><path d="M2 4.5l5 2.5 5-2.5M7 7v5"/></svg></div>
-                  <div class="camp-upload-label">Subí la foto del producto</div>
-                  <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
-                  <img class="camp-upload-preview" id="campProductPreview" alt="Preview">
-                </div>
-              </div>
+            <div class="camp-upload-zone" id="campUploadZone" onclick="document.getElementById('campPhotoInput').click()">
+              <input type="file" id="campPhotoInput" accept="image/*" onchange="campPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+              <div class="camp-upload-icon">📷</div>
+              <div class="camp-upload-label">Subí la foto del avatar</div>
+              <div class="camp-upload-sub">JPG o PNG · máx. 5MB · preferentemente vertical</div>
+              <img class="camp-upload-preview" id="campPhotoPreview" alt="Preview">
+            </div>
+            <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6;">
+              Futuriads va a generar variantes de esta foto (distinta pose, fondo, ángulo) para que el avatar aparezca en posiciones diferentes cada 4 clips — como un UGC real.
             </div>
             <div class="camp-nav-row">
               <div style="display:flex;align-items:center;gap:12px;">
@@ -2493,9 +2481,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot"></div>
                   <div class="camp-prog-dot"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(1)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(1)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+              <button class="btn-w" onclick="campStep2Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
             </div>
           </div>
 
@@ -2504,42 +2492,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 3 de 4</div>
               <div class="camp-step-title">Configuración</div>
-              <div class="camp-step-sub">Ajustá los parámetros de generación.</div>
+              <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
             </div>
-            <!-- Voz ElevenLabs (solo voiceover) -->
-            <div id="campVoiceSection" style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del audio</div>
-              <div class="camp-options-row" id="campVoiceOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">Mujer · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">Hombre · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('female40', this)">Mujer · Mediana edad</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male40', this)">Hombre · Mediana edad</button>
-              </div>
-              <div style="font-size:12px;color:var(--text3);margin-top:6px;">El audio se genera con acento argentino real usando IA de voz.</div>
-            </div>
-            <!-- Acento (solo talking) -->
-            <div id="campAccentSection" style="margin-bottom:20px;display:none;">
+            <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
               <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">Rioplatense</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">Neutro latinoamericano</button>
+                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
+                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
+                <button class="camp-option-btn" onclick="campSelectAccent('spain', this)">🇪🇸 Español de España</button>
               </div>
-              <div style="font-size:12px;color:var(--text3);margin-top:6px;">Seedance genera la voz del avatar. El acento puede variar en precisión.</div>
-            </div>
-            <!-- Género del avatar (solo talking) -->
-            <div id="campGenderSection" style="margin-bottom:20px;display:none;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Género del avatar</div>
-              <div class="camp-options-row" id="campGenderOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Mujer</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Hombre</button>
-              </div>
-              <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
+              <div style="font-size:12px;color:var(--text3);">El acento del avatar al hablar en el video. La duración de cada clip se calcula automáticamente.</div>
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
               <div class="camp-options-row" id="campResOptions">
-                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
+                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 52 cr/seg</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 115 cr/seg</span></button>
               </div>
             </div>
             <div style="margin-bottom:20px;">
@@ -2557,38 +2525,29 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot active"></div>
                   <div class="camp-prog-dot"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(2)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(2)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+              <button class="btn-w" onclick="campStep3Next()" style="font-size:13px;padding:10px 22px;">Siguiente →</button>
             </div>
           </div>
 
-          <!-- PASO 4: Audio + Clips visuales -->
+          <!-- PASO 4: Revisar chunks y modo de generación -->
           <div class="camp-wizard-step" id="campStep-4">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 4 de 4</div>
-              <div class="camp-step-title">Revisá los clips</div>
-              <div class="camp-step-sub">Futuriads genera el audio, lo divide en clips sincronizados, y crea prompts visuales para cada uno.</div>
+              <div class="camp-step-title">Revisá los chunks</div>
+              <div class="camp-step-sub">Claude dividió el guión en fragmentos. Podés editarlos antes de generar.</div>
             </div>
-            <div id="campAudioLoading" style="text-align:center;padding:40px;color:var(--text2);">
+            <div id="campChunksLoading" style="text-align:center;padding:40px;color:var(--text2);">
               <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
-              <div id="campAudioLoadingMsg">Generando audio con IA de voz...</div>
+              Dividiendo el guión con IA...
             </div>
-            <div id="campClipsReady" style="display:none;">
-              <!-- Audio player -->
-              <div style="margin-bottom:16px;padding:14px 16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Audio generado</div>
-                <audio id="campAudioPlayer" controls style="width:100%;height:36px;"></audio>
-                <div style="font-size:11px;color:var(--text3);margin-top:6px;">Duración: <span id="campAudioDuration">—</span>s · <span id="campAudioClipCount">—</span> clips</div>
-              </div>
-              <!-- Lista de clips -->
-              <div class="camp-chunks-list" id="campClipsList"></div>
-              <!-- Costo -->
+            <div id="campChunksReady" style="display:none;">
+              <div class="camp-chunks-list" id="campChunksList"></div>
               <div class="camp-cost-banner">
-                <span style="opacity:0.45"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg></span>
-                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · audio incluido</span>
+                <span>💡</span>
+                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · <span id="campTotalVariants">—</span> variantes de avatar</span>
               </div>
-              <!-- Modo de generación -->
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modo de generación</div>
               <div class="camp-gen-mode">
                 <div class="camp-mode-card selected" id="campModeReview" onclick="campSelectMode('review')">
@@ -2597,7 +2556,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 </div>
                 <div class="camp-mode-card" id="campModeAuto" onclick="campSelectMode('auto')">
                   <div class="camp-mode-card-title">Automático</div>
-                  <div class="camp-mode-card-sub">Genera todos los clips en secuencia. Más rápido, revisás al final.</div>
+                  <div class="camp-mode-card-sub">Genera todos los clips en paralelo. Más rápido, revisás al final.</div>
                 </div>
               </div>
             </div>
@@ -2609,9 +2568,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                   <div class="camp-prog-dot done"></div>
                   <div class="camp-prog-dot active"></div>
                 </div>
-                <button class="btn-ghost-sm" onclick="campGoStep(3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Atrás</button>
+                <button class="btn-ghost-sm" onclick="campGoStep(3)">← Atrás</button>
               </div>
-              <button class="btn-w" onclick="campLaunchV2()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+              <button class="btn-w" onclick="campLaunch()" id="campLaunchBtn" style="font-size:13px;padding:10px 22px;">✦ Empezar generación</button>
             </div>
           </div>
 
@@ -2621,7 +2580,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: generación en curso -->
       <div id="campView-generating" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Mis campañas</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()">← Mis campañas</button>
           <div style="font-size:13px;color:var(--text2);" id="campGenCampaignTitle">—</div>
         </div>
         <div style="margin-bottom:24px;">
@@ -2635,174 +2594,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="campReviewControls" style="display:none;margin-bottom:20px;">
           <div style="font-size:14px;color:var(--text2);margin-bottom:12px;" id="campReviewMsg">Revisá el clip. ¿Está bien?</div>
           <div style="display:flex;gap:10px;">
-            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+            <button class="btn-w" onclick="campApproveClip()" style="font-size:13px;padding:10px 22px;">Aprobar y seguir →</button>
             <button class="btn-outline" onclick="campRegenCurrentClip()" style="font-size:13px;padding:10px 22px;">Regenerar este clip</button>
           </div>
         </div>
         <div id="campAllDoneControls" style="display:none;margin-top:16px;">
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 6-6"/></svg> Todos los clips generados</div>
-          <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Revisá los clips arriba. Configurá los subtítulos y ensamblá el video final.</div>
-
-          <!-- CONFIGURACIÓN DE SUBTÍTULOS -->
-          <div style="margin-bottom:20px;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-
-            <!-- Header accordion -->
-            <div onclick="campToggleSubPanel()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--card2);user-select:none;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h11M2 7.5h7M2 11h9"/></svg>
-                <span style="font-size:13px;font-weight:700;">Subtítulos</span>
-                <span id="campSubStatusBadge" style="font-size:11px;padding:2px 10px;border-radius:99px;background:#fff;color:#000;font-weight:700;">ON</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:12px;">
-                <div id="campSubToggle" onclick="event.stopPropagation();campToggleSubtitles()" style="width:40px;height:22px;border-radius:99px;background:#fff;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;">
-                  <div id="campSubThumb" style="position:absolute;top:3px;left:20px;width:16px;height:16px;border-radius:50%;background:#000;transition:left 0.2s;"></div>
-                </div>
-                <span id="campSubChevron" style="color:var(--text2);font-size:12px;transition:transform 0.2s;">▼</span>
-              </div>
-            </div>
-
-            <!-- Body colapsable -->
-            <div id="campSubBody" style="padding:16px 18px;display:block;">
-              <div id="campSubOptions">
-
-                <!-- Fila 1: Presets -->
-                <div style="margin-bottom:14px;">
-                  <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text2);text-transform:uppercase;margin-bottom:7px;">Preset rápido</div>
-                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                    <button onclick="campApplyPreset('tiktok')"    class="sub-preset-btn">TikTok</button>
-                    <button onclick="campApplyPreset('netflix')"   class="sub-preset-btn">Netflix</button>
-                    <button onclick="campApplyPreset('bold')"      class="sub-preset-btn">Bold</button>
-                    <button onclick="campApplyPreset('minimal')"   class="sub-preset-btn">Minimal</button>
-                    <button onclick="campApplyPreset('highlight')" class="sub-preset-btn">Highlight</button>
-                  </div>
-                </div>
-
-                <!-- Fila 2: Fuente + Tamaño -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Fuente</div>
-                    <select id="campSubFont" onchange="campSubtitlePreview()" class="sub-select">
-                      <option value="Arial">Arial</option>
-                      <option value="Arial Black" selected>Arial Black</option>
-                      <option value="Impact">Impact</option>
-                      <option value="Helvetica">Helvetica</option>
-                      <option value="Georgia">Georgia</option>
-                      <option value="Verdana">Verdana</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="sub-label">Tamaño <span id="campSubSizeVal" style="color:var(--text);font-weight:600;">26</span></div>
-                    <input type="range" id="campSubSize" min="14" max="52" value="26"
-                      oninput="document.getElementById('campSubSizeVal').textContent=this.value;campSubtitlePreview();"
-                      style="width:100%;margin-top:12px;accent-color:#fff;">
-                  </div>
-                </div>
-
-                <!-- Fila 3: Colores -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Color texto</div>
-                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                      <input type="color" id="campSubColor" value="#ffffff"
-                        oninput="document.getElementById('campSubColorHex').value=this.value;campSubtitlePreview();"
-                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
-                      <input type="text" id="campSubColorHex" value="#ffffff" maxlength="7"
-                        oninput="campSyncColorFromHex('campSubColor','campSubColorHex');"
-                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    </div>
-                  </div>
-                  <div>
-                    <div class="sub-label">Color borde</div>
-                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                      <input type="color" id="campSubOutlineColor" value="#000000"
-                        oninput="document.getElementById('campSubOutlineHex').value=this.value;campSubtitlePreview();"
-                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
-                      <input type="text" id="campSubOutlineHex" value="#000000" maxlength="7"
-                        oninput="campSyncColorFromHex('campSubOutlineColor','campSubOutlineHex');"
-                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Fila 4: Borde + Posición -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Borde <span id="campSubBorderVal" style="color:var(--text);font-weight:600;">3</span></div>
-                    <input type="range" id="campSubOutlineWidth" min="0" max="8" value="3"
-                      oninput="document.getElementById('campSubBorderVal').textContent=this.value;campSubtitlePreview();"
-                      style="width:100%;margin-top:12px;accent-color:#fff;">
-                  </div>
-                  <div>
-                    <div class="sub-label">Posición</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubPosTop"    onclick="campSetPosition('top')"    class="sub-pos-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V3M4 6l3-3 3 3"/></svg></button>
-                      <button id="campSubPosCenter" onclick="campSetPosition('center')" class="sub-pos-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4 6l3-3 3 3M4 8l3 3 3-3" opacity="0.5"/></svg></button>
-                      <button id="campSubPosBottom" onclick="campSetPosition('bottom')" class="sub-pos-btn sub-pos-active"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4 8l3 3 3-3"/></svg></button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Fila 5: Estilo + Modo -->
-                <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin-bottom:14px;">
-                  <div>
-                    <div class="sub-label">Estilo</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubBoldBtn"   onclick="campToggleBold()"   class="sub-style-btn sub-style-active" style="font-weight:900;">B</button>
-                      <button id="campSubItalicBtn" onclick="campToggleItalic()" class="sub-style-btn" style="font-style:italic;">I</button>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="sub-label">Modo</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubModeBlock" onclick="campSetSubMode('block')" class="sub-mode-btn sub-mode-active">Bloque</button>
-                      <button id="campSubModeWord"  onclick="campSetSubMode('word')"  class="sub-mode-btn">Palabra x palabra</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Color highlight (solo word mode) -->
-                <div id="campSubHighlightRow" style="display:none;margin-bottom:14px;">
-                  <div class="sub-label">Color palabra activa</div>
-                  <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                    <input type="color" id="campSubHighlightColor" value="#FFD700"
-                      oninput="document.getElementById('campSubHighlightHex').value=this.value;campSubtitlePreview();"
-                      style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;">
-                    <input type="text" id="campSubHighlightHex" value="#FFD700" maxlength="7"
-                      oninput="campSyncColorFromHex('campSubHighlightColor','campSubHighlightHex');"
-                      style="width:90px;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    <span style="font-size:11px;color:var(--text2);">Resalta la palabra que se está diciendo</span>
-                  </div>
-                </div>
-
-                <!-- Preview 9:16 compacto -->
-                <div class="sub-label" style="margin-bottom:6px;">Preview</div>
-                <div style="display:flex;justify-content:center;">
-                  <div style="position:relative;width:120px;border-radius:10px;overflow:hidden;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a2e,#0f3460);flex-shrink:0;">
-                    <div id="campSubPreviewBox" style="position:absolute;bottom:12%;left:0;right:0;display:flex;justify-content:center;padding:0 8px;">
-                      <span id="campSubPreviewText" style="font-family:'Arial Black';font-size:11px;font-weight:900;color:#fff;text-align:center;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000;line-height:1.3;">Así van a verse tus subtítulos</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">Ensamblar video final</button>
-            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver a mis campañas</button>
-          </div>
-          <div id="campAssembleStatus" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
-            <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
-            <div id="campAssembleMsg" style="text-align:center;font-size:13px;color:var(--text2);">Ensamblando video...</div>
-          </div>
-          <div id="campFinalVideo" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
-            <div style="font-size:13px;font-weight:600;color:var(--text1);margin-bottom:10px;">Video final listo</div>
-            <video id="campFinalPlayer" controls style="width:100%;max-height:500px;border-radius:8px;background:#000;"></video>
-            <div style="margin-top:10px;display:flex;gap:10px;">
-              <a id="campFinalDownload" href="#" download="creativo-final.mp4" class="btn-w" style="font-size:13px;padding:8px 18px;text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a>
-            </div>
-          </div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px;">✓ Todos los clips generados</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Revisá los clips arriba. El ensamblado automático estará disponible próximamente.</div>
+          <button class="btn-w" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
         </div>
       </div><!-- /campView-generating -->
 
@@ -2847,7 +2646,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
           <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg></button>
+            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan →</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -2913,7 +2712,7 @@ document.addEventListener('click', function(e) {
 <script>
 /* ---- Marquee ---- */
 (function(){
-  const items=['Avatares IA realistas','Script a video en minutos','Meta · TikTok · Instagram','Prompts con IA incluidos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos'];
+  const items=['✦ Actores IA realistas','Script a video en minutos','Meta · TikTok · Instagram','Prompts con IA incluidos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos'];
   const t=document.getElementById('marqueeTrack');
   [...items,...items,...items,...items].forEach(s=>{
     const el=document.createElement('span');
@@ -3382,9 +3181,7 @@ function updateCreditsUI(me) {
   const plan = me.plan || 'none';
   const planInfo = getPlanInfo(plan);
 
-  // Widget del sidebar
-  const dashCreditsVal = document.getElementById('dashCreditsVal');
-  if (dashCreditsVal) dashCreditsVal.textContent = total.toLocaleString('es-AR');
+  // Widget del sidebar (nuevo diseño)
   const widgetAmount = document.getElementById('creditsWidgetAmount');
   const widgetSub = document.getElementById('creditsWidgetSub');
   if (widgetAmount) {
@@ -3395,17 +3192,23 @@ function updateCreditsUI(me) {
   }
   if (widgetSub) {
     if (plan === 'none') {
-      widgetSub.textContent = 'Suscribite para empezar';
+      widgetSub.textContent = 'Sin plan activo';
     } else if (top > 0 && sub > 0) {
-      widgetSub.textContent = `${sub.toLocaleString('es-AR')} suscripción · ${top.toLocaleString('es-AR')} recarga`;
+      widgetSub.textContent = `de ${planInfo.credits.toLocaleString('es-AR')} mensuales`;
     } else if (top > 0) {
-      widgetSub.textContent = `${top.toLocaleString('es-AR')} de recarga (no caducan)`;
+      widgetSub.textContent = `${top.toLocaleString('es-AR')} de recarga`;
     } else if (me.period_end) {
       const days = Math.max(0, Math.ceil((new Date(me.period_end) - new Date()) / (1000 * 60 * 60 * 24)));
-      widgetSub.textContent = `Renueva en ${days} día${days === 1 ? '' : 's'}`;
+      widgetSub.textContent = `de ${planInfo.credits.toLocaleString('es-AR')} mensuales`;
     } else {
       widgetSub.textContent = planInfo.label;
     }
+  }
+
+  // Badge de créditos en el dashboard
+  const dashCreditsVal = document.getElementById('dashCreditsVal');
+  if (dashCreditsVal) {
+    dashCreditsVal.textContent = total.toLocaleString('es-AR') + ' disponibles';
   }
 
   // Card del perfil ("Mi plan")
@@ -3461,13 +3264,13 @@ function updateProfileUI(profile, email) {
   if (sidebarUserName) sidebarUserName.textContent = firstName;
   if (sidebarUserPlan) sidebarUserPlan.textContent = planInfo.label;
 
-  // Dashboard greeting
+  // Dashboard greeting — "Buenas tardes, <em>Juan</em>"
   const dashGreeting = document.getElementById('dashGreeting');
   if (dashGreeting) {
-      const hour = new Date().getHours();
-      const saludo = hour < 12 ? 'Buenos días' : hour < 19 ? 'Buenas tardes' : 'Buenas noches';
-      dashGreeting.textContent = saludo + ', ' + firstName + '.';
-    }
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches';
+    dashGreeting.innerHTML = greeting + ', <em>' + firstName + '</em>';
+  }
 
   // Profile page (datos personales)
   const profileAvatar = document.getElementById('profileAvatar');
@@ -3486,6 +3289,16 @@ function updateProfileUI(profile, email) {
 
   // Créditos y card de plan (delegamos a updateCreditsUI)
   updateCreditsUI(profile);
+
+  // Métricas del dashboard
+  const planInfo2 = getPlanInfo(plan);
+  const metricVideosSub = document.getElementById('metricVideosSub');
+  if (metricVideosSub) {
+    if (plan === 'none') metricVideosSub.textContent = 'Sin plan activo';
+    else metricVideosSub.textContent = '+0 vs. mes pasado';
+  }
+  const metricCampaignsSub = document.getElementById('metricCampaignsSub');
+  if (metricCampaignsSub) metricCampaignsSub.textContent = '0 en revisión final';
 }
 
 function openSignOutModal() {
@@ -3516,13 +3329,9 @@ async function confirmSignOut() {
 const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
-  productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
-  clipDuration: 8, resolution: '480p', videoMode: 'talking',
-  aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
+  clipDuration: 8, resolution: '480p',
+  aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
-  // V2: audio + visual prompts
-  audioUrl: null, audioDuration: 0, audioClips: [],
-  visualPrompts: [],
   campaignId: null, variantsMap: {}, currentClipIndex: 0,
   pollingInterval: null,
   clipsLaunched: false,
@@ -3533,11 +3342,9 @@ function campStartNew() {
   Object.assign(_camp, {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
-    productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
     clipDuration: 8, resolution: '480p',
-    aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
+    aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
-    audioUrl: null, audioDuration: 0, audioClips: [], visualPrompts: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}
   });
@@ -3547,227 +3354,10 @@ function campStartNew() {
   const sr = document.getElementById('campScriptAIResult'); if(sr){ sr.value=''; sr.style.display='none'; }
   const pz = document.getElementById('campUploadZone'); if(pz) pz.classList.remove('has-file');
   const pp = document.getElementById('campPhotoPreview'); if(pp){ pp.src=''; }
-  const pzp = document.getElementById('campUploadZoneProduct'); if(pzp) pzp.classList.remove('has-file');
-  const ppp = document.getElementById('campProductPreview'); if(ppp){ ppp.src=''; }
   campGoStep(1);
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'block';
   document.getElementById('campView-generating').style.display = 'none';
-}
-
-// ── Subtítulos: estado y helpers ──
-let _subPanelOpen = true;
-
-function campToggleSubPanel() {
-  _subPanelOpen = !_subPanelOpen;
-  document.getElementById('campSubBody').style.display = _subPanelOpen ? 'block' : 'none';
-  document.getElementById('campSubChevron').style.transform = _subPanelOpen ? '' : 'rotate(-90deg)';
-}
-
-const _subtitleState = { bold: true, italic: false, position: 'bottom', mode: 'block' };
-
-const SUBTITLE_PRESETS = {
-  tiktok:    { font: 'Arial Black', size: 28, color: '#ffffff', outline: '#000000', outlineW: 3, bold: true,  italic: false },
-  netflix:   { font: 'Helvetica',   size: 24, color: '#ffffff', outline: '#000000', outlineW: 4, bold: true,  italic: false },
-  bold:      { font: 'Impact',      size: 36, color: '#FFD700', outline: '#000000', outlineW: 4, bold: false, italic: false },
-  minimal:   { font: 'Helvetica',   size: 20, color: '#ffffff', outline: '#000000', outlineW: 1, bold: false, italic: false },
-  highlight: { font: 'Arial Black', size: 28, color: '#ffffff', outline: '#000000', outlineW: 3, bold: true,  italic: false }
-};
-
-function campToggleSubtitles() {
-  _subtitleState.enabled = !(_subtitleState.enabled !== false);
-  const on = _subtitleState.enabled !== false;
-  const badge = document.getElementById('campSubStatusBadge');
-  if (badge) { badge.textContent = on ? 'ON' : 'OFF'; badge.style.background = on ? '#fff' : '#444'; badge.style.color = on ? '#000' : '#aaa'; }
-  document.getElementById('campSubToggle').style.background = on ? '#fff' : '#444';
-  document.getElementById('campSubThumb').style.left = on ? '20px' : '3px';
-  document.getElementById('campSubOptions').style.opacity = on ? '1' : '0.35';
-  document.getElementById('campSubOptions').style.pointerEvents = on ? '' : 'none';
-}
-
-function campSyncColorFromHex(colorId, hexId) {
-  const hex = document.getElementById(hexId).value;
-  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-    document.getElementById(colorId).value = hex;
-    campSubtitlePreview();
-  }
-}
-
-function campApplyPreset(name) {
-  const p = SUBTITLE_PRESETS[name];
-  if (!p) return;
-  document.getElementById('campSubFont').value = p.font;
-  document.getElementById('campSubSize').value = p.size;
-  document.getElementById('campSubSizeVal').textContent = p.size;
-  document.getElementById('campSubColor').value = p.color;
-  document.getElementById('campSubColorHex').value = p.color;
-  document.getElementById('campSubOutlineColor').value = p.outline;
-  document.getElementById('campSubOutlineHex').value = p.outline;
-  document.getElementById('campSubOutlineWidth').value = p.outlineW;
-  document.getElementById('campSubBorderVal').textContent = p.outlineW;
-  _subtitleState.bold = p.bold;
-  _subtitleState.italic = p.italic;
-  const boldBtn = document.getElementById('campSubBoldBtn');
-  const italicBtn = document.getElementById('campSubItalicBtn');
-  boldBtn.style.border = p.bold ? '1px solid #fff' : '1px solid var(--border)';
-  boldBtn.style.background = p.bold ? 'var(--hover)' : 'var(--card2)';
-  boldBtn.style.color = p.bold ? '#fff' : 'var(--text2)';
-  italicBtn.style.border = p.italic ? '1px solid #fff' : '1px solid var(--border)';
-  italicBtn.style.background = p.italic ? 'var(--hover)' : 'var(--card2)';
-  italicBtn.style.color = p.italic ? '#fff' : 'var(--text2)';
-  campSubtitlePreview();
-}
-
-function campToggleBold() {
-  _subtitleState.bold = !_subtitleState.bold;
-  const btn = document.getElementById('campSubBoldBtn');
-  btn.style.border = _subtitleState.bold ? '1px solid #fff' : '1px solid var(--border)';
-  btn.style.background = _subtitleState.bold ? 'var(--hover)' : 'var(--card2)';
-  btn.style.color = _subtitleState.bold ? '#fff' : 'var(--text2)';
-  campSubtitlePreview();
-}
-
-function campToggleItalic() {
-  _subtitleState.italic = !_subtitleState.italic;
-  const btn = document.getElementById('campSubItalicBtn');
-  btn.style.border = _subtitleState.italic ? '1px solid #fff' : '1px solid var(--border)';
-  btn.style.background = _subtitleState.italic ? 'var(--hover)' : 'var(--card2)';
-  btn.style.color = _subtitleState.italic ? '#fff' : 'var(--text2)';
-  campSubtitlePreview();
-}
-
-function campSetPosition(pos) {
-  _subtitleState.position = pos;
-  ['top','center','bottom'].forEach(p => {
-    const btn = document.getElementById('campSubPos' + p.charAt(0).toUpperCase() + p.slice(1));
-    if (!btn) return;
-    btn.style.border = p === pos ? '1px solid #fff' : '1px solid var(--border)';
-    btn.style.background = p === pos ? 'var(--hover)' : 'var(--card2)';
-    btn.style.color = p === pos ? '#fff' : 'var(--text2)';
-  });
-  const preview = document.getElementById('campSubPreviewText');
-  if (preview) {
-    preview.parentElement.style.alignItems = pos === 'top' ? 'flex-start' : pos === 'center' ? 'center' : 'flex-end';
-  }
-}
-
-function campSetSubMode(mode) {
-  _subtitleState.mode = mode;
-  ['block','word'].forEach(m => {
-    const btn = document.getElementById('campSubMode' + m.charAt(0).toUpperCase() + m.slice(1));
-    if (!btn) return;
-    btn.style.border = m === mode ? '1px solid #fff' : '1px solid var(--border)';
-    btn.style.background = m === mode ? 'var(--hover)' : 'var(--card2)';
-    btn.style.color = m === mode ? '#fff' : 'var(--text2)';
-  });
-  const highlightRow = document.getElementById('campSubHighlightRow');
-  if (highlightRow) highlightRow.style.display = mode === 'word' ? 'block' : 'none';
-}
-
-function campSubtitlePreview() {
-  const el = document.getElementById('campSubPreviewText');
-  const box = document.getElementById('campSubPreviewBox');
-  if (!el) return;
-  const font = document.getElementById('campSubFont')?.value || 'Arial Black';
-  const size = parseInt(document.getElementById('campSubSize')?.value || 26);
-  const color = document.getElementById('campSubColor')?.value || '#ffffff';
-  const outlineColor = document.getElementById('campSubOutlineColor')?.value || '#000000';
-  const outlineW = parseInt(document.getElementById('campSubOutlineWidth')?.value || 3);
-  const pos = _subtitleState.position || 'bottom';
-
-  // preview is 120px wide ≈ 1080px video → scale factor ~0.111
-  const previewSize = Math.max(7, Math.round(size * 0.42));
-  el.style.fontFamily = font;
-  el.style.fontSize = previewSize + 'px';
-  el.style.color = color;
-  el.style.fontWeight = _subtitleState.bold ? '900' : '400';
-  el.style.fontStyle = _subtitleState.italic ? 'italic' : 'normal';
-
-  // Position in preview
-  if (box) {
-    box.style.top = pos === 'top' ? '8%' : pos === 'center' ? '44%' : 'auto';
-    box.style.bottom = pos === 'bottom' ? '8%' : 'auto';
-    box.style.transform = pos === 'center' ? 'translateY(-50%)' : 'none';
-  }
-
-  const o = Math.max(1, Math.round(outlineW * 0.5));
-  const oc = outlineColor;
-  el.style.textShadow = outlineW === 0 ? 'none'
-    : `-${o}px -${o}px 0 ${oc},${o}px -${o}px 0 ${oc},-${o}px ${o}px 0 ${oc},${o}px ${o}px 0 ${oc}`;
-}
-
-function campGetSubtitleStyle() {
-  if (_subtitleState.enabled === false) return null;
-  const enabled = !(document.getElementById('campSubToggle')?.style.background === 'rgb(51, 51, 51)');
-  if (!enabled) return null;
-
-  const hexToASS = hex => {
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    return `&H00${b.toString(16).padStart(2,'0').toUpperCase()}${g.toString(16).padStart(2,'0').toUpperCase()}${r.toString(16).padStart(2,'0').toUpperCase()}`;
-  };
-
-  const color = document.getElementById('campSubColor')?.value || '#ffffff';
-  const outlineColor = document.getElementById('campSubOutlineColor')?.value || '#000000';
-
-  return {
-    fontFamily: document.getElementById('campSubFont')?.value || 'Arial Black',
-    fontSize: parseInt(document.getElementById('campSubSize')?.value || 26),
-    fontColor: hexToASS(color),
-    outlineColor: hexToASS(outlineColor),
-    outlineWidth: parseInt(document.getElementById('campSubOutlineWidth')?.value || 3),
-    position: _subtitleState.position || 'bottom',
-    bold: _subtitleState.bold,
-    italic: _subtitleState.italic,
-    mode: _subtitleState.mode || 'block',
-    wordsPerBlock: _subtitleState.mode === 'word' ? 1 : 4
-  };
-}
-
-async function campAssemble() {
-  if (!_camp.campaignId) { showToast('Error: no hay campaña activa'); return; }
-  
-  const btn = document.getElementById('campAssembleBtn');
-  btn.disabled = true; btn.textContent = 'Ensamblando...';
-  document.getElementById('campAssembleStatus').style.display = 'block';
-  const subtitleStyle = campGetSubtitleStyle();
-  document.getElementById('campAssembleMsg').textContent = subtitleStyle
-    ? 'Ensamblando audio + video + subtítulos... Esto puede tardar un minuto.'
-    : 'Ensamblando audio + video... Esto puede tardar un minuto.';
-  document.getElementById('campFinalVideo').style.display = 'none';
-
-  try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/assemble', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId,
-        userId: _currentUser.userId,
-        subtitleStyle
-      })
-    });
-
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Error ensamblando');
-
-    console.log('Video final:', data.finalVideoUrl);
-    
-    document.getElementById('campAssembleStatus').style.display = 'none';
-    document.getElementById('campFinalVideo').style.display = 'block';
-    document.getElementById('campFinalPlayer').src = data.finalVideoUrl;
-    document.getElementById('campFinalDownload').href = data.finalVideoUrl;
-    
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 6-6"/></svg> Video ensamblado`;
-    showToast('Video final listo');
-
-  } catch (e) {
-    console.error('Error ensamblando:', e);
-    showToast('Error: ' + e.message);
-    document.getElementById('campAssembleMsg').textContent = 'Error: ' + e.message;
-    btn.disabled = false;
-    btn.textContent = 'Ensamblar video final';
-  }
 }
 
 function campBackToList() {
@@ -3783,21 +3373,6 @@ function campGoStep(n) {
   const el = document.getElementById('campStep-' + n);
   if(el) el.classList.add('active');
   _camp.step = n;
-  
-  // Adaptar paso 2 según modo
-  if (n === 2) {
-    const prodSection = document.getElementById('campProductUploadSection');
-    if (prodSection) prodSection.style.display = 'block';
-    const title = document.getElementById('campStep2Title');
-    const sub = document.getElementById('campStep2Sub');
-    if (_camp.videoMode === 'talking') {
-      if (title) title.textContent = 'Fotos del avatar y el producto';
-      if (sub) sub.textContent = 'Subí la foto de la persona que va a hablar en el video. La foto del producto es opcional.';
-    } else {
-      if (title) title.textContent = 'Fotos del avatar y el producto';
-      if (sub) sub.textContent = 'Subí la foto de la persona que va a protagonizar el video y una foto del producto.';
-    }
-  }
 }
 
 function campSetScriptMode(mode) {
@@ -3825,13 +3400,7 @@ async function campGenerateScript() {
       showToast('Guión generado. Revisalo y editalo si querés.');
     }
   } catch(e){ showToast('Error generando el guión'); }
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2l1.5 3.5L12 7l-3.5 1.5L7 12l-1.5-3.5L2 7l3.5-1.5z"/></svg> Generar guión con IA`; btn.disabled = false;
-}
-
-function campSelectVideoMode(mode) {
-  _camp.videoMode = mode;
-  document.getElementById('campVideoModeTalking').classList.toggle('selected', mode === 'talking');
-  document.getElementById('campVideoModeVoiceover').classList.toggle('selected', mode === 'voiceover');
+  btn.textContent = '✦ Generar guión con IA'; btn.disabled = false;
 }
 
 function campStep1Next() {
@@ -3854,9 +3423,6 @@ function campPhotoSelected(e) {
   if(!file) return;
   if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
 
-  // Resetear el input para permitir re-selección del mismo archivo
-  e.target.value = '';
-
   // Mostrar preview local inmediatamente
   const reader = new FileReader();
   reader.onload = (ev) => {
@@ -3867,9 +3433,9 @@ function campPhotoSelected(e) {
   };
   reader.readAsDataURL(file);
 
+  // Subir a Supabase Storage en segundo plano
   _camp.photoUrl = null;
   _camp.photoUploading = true;
-  showToast('Subiendo foto del avatar...');
   campUploadPhoto(file);
 }
 
@@ -3907,7 +3473,6 @@ async function campUploadPhoto(file) {
     _camp.photoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
     _camp.photoUploading = false;
     console.log('Foto subida OK:', _camp.photoUrl);
-    showToast('Foto del avatar subida ✓');
   } catch(err) {
     console.error('Error en upload:', err);
     showToast('Error subiendo la foto.');
@@ -3921,78 +3486,10 @@ function campStep2Next() {
     return;
   }
   if(_camp.photoUploading){
-    showToast('Esperá, la foto del avatar se está subiendo...');
+    showToast('Esperá, la foto se está subiendo...');
     return;
   }
-  // Producto solo requerido en modo voiceover
-  if (_camp.videoMode === 'voiceover') {
-    if(!_camp.productPhotoUrl && !_camp.productPhotoUploading){
-      showToast('Subí una foto del producto primero');
-      return;
-    }
-    if(_camp.productPhotoUploading){
-      showToast('Esperá, la foto del producto se está subiendo...');
-      return;
-    }
-  }
-  // Actualizar UI del paso 3 según modo
-  document.getElementById('campVoiceSection').style.display = _camp.videoMode === 'voiceover' ? 'block' : 'none';
-  document.getElementById('campAccentSection').style.display = _camp.videoMode === 'talking' ? 'block' : 'none';
-  document.getElementById('campGenderSection').style.display = _camp.videoMode === 'talking' ? 'block' : 'none';
   campGoStep(3);
-}
-
-function campProductPhotoSelected(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  if(file.size > 5 * 1024 * 1024){ showToast('La foto es muy grande (máx. 5MB)'); return; }
-  e.target.value = '';
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const preview = document.getElementById('campProductPreview');
-    if(preview) preview.src = ev.target.result;
-    const zone = document.getElementById('campUploadZoneProduct');
-    if(zone) zone.classList.add('has-file');
-  };
-  reader.readAsDataURL(file);
-  _camp.productPhotoUrl = null;
-  _camp.productPhotoUploading = true;
-  showToast('Subiendo foto del producto...');
-  campUploadProductPhoto(file);
-}
-
-async function campUploadProductPhoto(file) {
-  try {
-    const { data: { session } } = await supa.auth.getSession();
-    if(!session) { showToast('Error: no hay sesión activa'); _camp.productPhotoUploading = false; return; }
-    const ext = file.name.split('.').pop() || 'jpg';
-    const fileName = 'products/' + session.user.id + '/' + Date.now() + '.' + ext;
-    const uploadResp = await fetch(
-      SUPA_URL + '/storage/v1/object/campaign-photos/' + fileName,
-      { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'true' }, body: file }
-    );
-    if(!uploadResp.ok) {
-      const err = await uploadResp.text();
-      console.error('Error subiendo foto producto:', err);
-      showToast('Error subiendo la foto del producto. Intentá de nuevo.');
-      _camp.productPhotoUploading = false;
-      return;
-    }
-    _camp.productPhotoUrl = SUPA_URL + '/storage/v1/object/public/campaign-photos/' + fileName;
-    _camp.productPhotoUploading = false;
-    console.log('Foto producto subida:', _camp.productPhotoUrl);
-    showToast('Foto del producto subida ✓');
-  } catch(err) {
-    console.error('Error upload producto:', err);
-    showToast('Error subiendo la foto del producto.');
-    _camp.productPhotoUploading = false;
-  }
-}
-
-function campSelectVoice(voice, btn) {
-  _camp.voice = voice;
-  document.querySelectorAll('#campVoiceOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
 }
 
 function campSelectAccent(accent, btn) {
@@ -4015,279 +3512,75 @@ function campSelectAspect(aspect, btn) {
 
 function campStep3Next() {
   campGoStep(4);
-  if (_camp.videoMode === 'talking') {
-    campLoadChunksTalking();
-  } else {
-    campLoadAudioAndClips();
-  }
+  campLoadChunks();
 }
 
-// Modo "talking": chunking programático como antes (hooks + body)
-async function campLoadChunksTalking() {
-  document.getElementById('campAudioLoading').style.display = 'block';
-  document.getElementById('campClipsReady').style.display = 'none';
-  document.getElementById('campAudioLoadingMsg').textContent = 'Dividiendo el guión en clips...';
-
+async function campLoadChunks() {
+  document.getElementById('campChunksLoading').style.display = 'block';
+  document.getElementById('campChunksReady').style.display = 'none';
   try {
     const resp = await fetch(BACKEND_URL + '/api/campaign/chunk-script', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ script: _camp.script })
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Error del servidor');
-
+    if(!resp.ok) throw new Error(data.error || 'Error del servidor');
+    
     _camp.hooks = data.hooks || [];
     _camp.bodyChunks = data.bodyChunks || [];
     _camp.corrections = data.corrections || [];
-    _camp.chunks = [..._camp.hooks, ..._camp.bodyChunks].map((c, i) => ({
-      ...c, index: i, variantIndex: Math.floor(i / 4)
-    }));
-
-    // Convertir a formato audioClips para reutilizar el render
-    _camp.audioClips = _camp.chunks.map((c, i) => ({
+    
+    // Construir chunks combinados: hook[0] + bodyChunks para el primer creativo
+    const firstHook = _camp.hooks.length > 0 ? [_camp.hooks[0]] : [];
+    _camp.chunks = [...firstHook, ..._camp.bodyChunks].map((c, i) => ({
+      ...c,
       index: i,
-      start: 0, end: c.estimatedSeconds || 10,
-      duration: c.estimatedSeconds || 10,
-      text: c.text,
-      phrases: [{ text: c.text, start: 0, end: c.estimatedSeconds || 10 }]
+      variantIndex: Math.floor(i / 4),
+      estimatedSeconds: Math.max(4, Math.round(c.text.length / 15))
     }));
-
-    // No hay prompts visuales en modo talking — el prompt es el master prompt + chunk
-    _camp.visualPrompts = _camp.chunks.map((c, i) => ({
-      clipIndex: i,
-      prompt: campBuildMasterPrompt().replace('[CHUNK]', c.text)
-    }));
-
-    campRenderTalkingClips();
-  } catch (e) {
-    showToast('Error: ' + e.message);
-    document.getElementById('campAudioLoading').style.display = 'none';
+    
+    campRenderChunks(data);
+  } catch(e){
+    showToast('Error dividiendo el guión: ' + e.message);
+    document.getElementById('campChunksLoading').style.display = 'none';
   }
 }
 
-function campRenderTalkingClips() {
-  document.getElementById('campAudioLoading').style.display = 'none';
-  document.getElementById('campClipsReady').style.display = 'block';
-
-  // Ocultar audio player en modo talking
-  const audioSection = document.getElementById('campAudioPlayer');
-  if (audioSection) audioSection.parentElement.style.display = 'none';
-
-  document.getElementById('campAudioClipCount') && (document.getElementById('campAudioClipCount').textContent = _camp.chunks.length);
-
-  const list = document.getElementById('campClipsList');
+function campRenderChunks(data) {
+  document.getElementById('campChunksLoading').style.display = 'none';
+  document.getElementById('campChunksReady').style.display = 'block';
+  const list = document.getElementById('campChunksList');
   list.innerHTML = '';
-
-  function autoResize(ta) {
-    ta.style.height = 'auto';
-    ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
-  }
-
+  
   _camp.chunks.forEach((chunk, i) => {
-    const label = 'Clip ' + (i + 1);
-    const vp = _camp.visualPrompts.find(p => p.clipIndex === i);
-
+    const isHook = i === 0 && _camp.hooks.length > 0;
     const item = document.createElement('div');
     item.className = 'camp-chunk-item';
-    item.innerHTML = '<div class="camp-chunk-num">' + (i + 1) + '</div>' +
-      '<div style="flex:1;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-          '<span style="font-size:12px;font-weight:600;color:var(--text1);">' + label + '</span>' +
-          '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">~' + (chunk.estimatedSeconds || 10) + 's · ' + chunk.text.length + ' chars</span>' +
-        '</div>' +
-        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">' + chunk.text + '</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-          '<span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;">Prompt</span>' +
-        '</div>' +
-        '<textarea class="camp-chunk-text" data-index="' + i + '" id="campPromptTA-' + i + '">' + (vp ? vp.prompt : '') + '</textarea>' +
-      '</div>';
-
-    const ta = item.querySelector('textarea');
-    setTimeout(() => autoResize(ta), 0);
-    ta.addEventListener('input', (e) => {
-      const vpIdx = _camp.visualPrompts.findIndex(p => p.clipIndex === i);
-      if (vpIdx >= 0) _camp.visualPrompts[vpIdx].prompt = e.target.value;
-      autoResize(e.target);
+    item.innerHTML = '<div class="camp-chunk-num">' + (isHook ? 'H' : (i + 1)) + '</div><div style="flex:1;"><textarea class="camp-chunk-text" rows="2" data-index="' + i + '">' + chunk.text + '</textarea><div class="camp-chunk-variant">Variante ' + (chunk.variantIndex+1) + ' · ~' + chunk.estimatedSeconds + 's' + (isHook ? ' · Hook' : '') + '</div></div><div class="camp-chunk-dur">' + chunk.estimatedSeconds + 's</div>';
+    item.querySelector('textarea').addEventListener('input', (e) => {
+      _camp.chunks[i].text = e.target.value;
+      // Recalcular duración al editar
+      _camp.chunks[i].estimatedSeconds = Math.max(4, Math.round(e.target.value.length / 15));
+      item.querySelector('.camp-chunk-dur').textContent = _camp.chunks[i].estimatedSeconds + 's';
     });
     list.appendChild(item);
   });
-
-  // Costo
-  const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
-  const rate = rateMap[_camp.resolution] || 93.5;
-  const clipsCost = _camp.chunks.reduce((acc, c) => acc + Math.round((c.estimatedSeconds || 10) * rate), 0);
+  
+  // Calcular costo total
+  const rate = _camp.resolution === '720p' ? 115 : 52;
+  const clipsCost = _camp.chunks.reduce((acc, c) => acc + (c.estimatedSeconds * rate), 0);
   const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
   const variantCost = 48 * totalVariants;
-  const totalCost = Math.round(clipsCost + variantCost);
+  const totalCost = clipsCost + variantCost;
+  
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.chunks.length;
-}
-
-async function campLoadAudioAndClips() {
-  document.getElementById('campAudioLoading').style.display = 'block';
-  document.getElementById('campClipsReady').style.display = 'none';
-  document.getElementById('campAudioLoadingMsg').textContent = 'Generando audio con IA de voz...';
-
-  try {
-    // Paso 1: Crear campaña primero (necesitamos el ID)
-    if (!_camp.campaignId) {
-      const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: _currentUser.userId, title: _camp.title, script: _camp.script,
-          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
-        })
-      });
-      const createData = await createResp.json();
-      if (!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
-      _camp.campaignId = createData.campaign.id;
-    }
-
-    // Paso 2: Generar audio con timestamps
-    document.getElementById('campAudioLoadingMsg').textContent = 'Generando audio con IA de voz...';
-    const audioResp = await fetch(BACKEND_URL + '/api/campaign/generate-audio-with-timestamps', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId, script: _camp.script,
-        voice: _camp.voice, userId: _currentUser.userId
-      })
-    });
-    const audioData = await audioResp.json();
-    if (!audioResp.ok) {
-      if (audioResp.status === 402) { showToast('No tenés créditos suficientes para el audio.'); return; }
-      throw new Error(audioData.error || 'Error generando audio');
-    }
-
-    _camp.audioUrl = audioData.audioUrl;
-    _camp.audioDuration = audioData.totalDuration;
-    _camp.audioClips = audioData.clips;
-
-    await refreshCredits();
-
-    // Paso 3: Generar prompts visuales con Claude
-    document.getElementById('campAudioLoadingMsg').textContent = 'Creando escenas visuales sincronizadas...';
-    const promptResp = await fetch(BACKEND_URL + '/api/campaign/generate-visual-prompts', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        clips: _camp.audioClips,
-        avatarImageUrl: _camp.photoUrl,
-        productImageUrl: _camp.productPhotoUrl,
-        aspectRatio: _camp.aspectRatio
-      })
-    });
-    const promptData = await promptResp.json();
-    if (!promptResp.ok) throw new Error(promptData.error || 'Error generando prompts');
-
-    _camp.visualPrompts = promptData.visualPrompts;
-
-    // Mostrar resultado
-    campRenderAudioClips();
-
-  } catch (e) {
-    showToast('Error: ' + e.message);
-    document.getElementById('campAudioLoading').style.display = 'none';
+  document.getElementById('campTotalVariants').textContent = totalVariants;
+  
+  // Mostrar hooks disponibles
+  if(_camp.hooks.length > 1) {
+    document.getElementById('campTotalClips').textContent = _camp.chunks.length + ' (creativo 1 de ' + _camp.hooks.length + ')';
   }
-}
-
-function campRenderAudioClips() {
-  document.getElementById('campAudioLoading').style.display = 'none';
-  document.getElementById('campClipsReady').style.display = 'block';
-
-  // Audio player
-  const player = document.getElementById('campAudioPlayer');
-  if (player && _camp.audioUrl) player.src = _camp.audioUrl;
-  document.getElementById('campAudioDuration').textContent = _camp.audioDuration.toFixed(1);
-  document.getElementById('campAudioClipCount').textContent = _camp.audioClips.length;
-
-  // Renderizar clips
-  const list = document.getElementById('campClipsList');
-  list.innerHTML = '';
-
-  function autoResize(ta) {
-    ta.style.height = 'auto';
-    ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
-  }
-
-  _camp.audioClips.forEach((clip, i) => {
-    const vp = _camp.visualPrompts.find(p => p.clipIndex === i);
-    const item = document.createElement('div');
-    item.className = 'camp-chunk-item';
-
-    item.innerHTML = '<div class="camp-chunk-num">' + (i + 1) + '</div>' +
-      '<div style="flex:1;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-          '<span style="font-size:12px;font-weight:600;color:var(--text1);">Clip ' + (i + 1) + '</span>' +
-          '<span class="camp-chunk-dur-badge" style="font-size:11px;color:var(--text3);background:var(--card2);padding:2px 8px;border-radius:12px;">' + clip.start.toFixed(1) + 's - ' + clip.end.toFixed(1) + 's · ' + clip.duration.toFixed(1) + 's</span>' +
-        '</div>' +
-        '<div style="font-size:12px;color:var(--text2);margin-bottom:8px;padding:8px 10px;background:var(--card2);border-radius:6px;line-height:1.5;">' + clip.text + '</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-          '<span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;">Prompt visual</span>' +
-          '<button class="btn-ghost-sm" onclick="campRegenPrompt(' + i + ')" style="font-size:11px;padding:3px 10px;" id="campRegenBtn-' + i + '">Regenerar</button>' +
-        '</div>' +
-        '<textarea class="camp-chunk-text" data-index="' + i + '" id="campPromptTA-' + i + '">' + (vp ? vp.prompt : '') + '</textarea>' +
-      '</div>';
-
-    const ta = item.querySelector('textarea');
-    setTimeout(() => autoResize(ta), 0);
-    ta.addEventListener('input', (e) => {
-      const vpIdx = _camp.visualPrompts.findIndex(p => p.clipIndex === i);
-      if (vpIdx >= 0) _camp.visualPrompts[vpIdx].prompt = e.target.value;
-      autoResize(e.target);
-    });
-
-    list.appendChild(item);
-  });
-
-  campUpdateCostSummaryV2();
-}
-
-async function campRegenPrompt(clipIndex) {
-  const btn = document.getElementById('campRegenBtn-' + clipIndex);
-  const ta = document.getElementById('campPromptTA-' + clipIndex);
-  if (!btn || !ta) return;
-
-  const clip = _camp.audioClips[clipIndex];
-  const currentPrompt = ta.value;
-  btn.textContent = '⏳ Generando...'; btn.disabled = true;
-
-  try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/regenerate-prompt', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        clip,
-        avatarImageUrl: _camp.photoUrl,
-        productImageUrl: _camp.productPhotoUrl,
-        aspectRatio: _camp.aspectRatio,
-        currentPrompt
-      })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Error');
-
-    ta.value = data.prompt;
-    ta.style.height = 'auto';
-    ta.style.height = Math.max(80, ta.scrollHeight) + 'px';
-
-    const vpIdx = _camp.visualPrompts.findIndex(p => p.clipIndex === clipIndex);
-    if (vpIdx >= 0) _camp.visualPrompts[vpIdx].prompt = data.prompt;
-    else _camp.visualPrompts.push({ clipIndex, prompt: data.prompt });
-
-    showToast('Prompt regenerado ✓');
-  } catch (e) {
-    showToast('Error: ' + e.message);
-  }
-  btn.textContent = 'Regenerar'; btn.disabled = false;
-}
-
-function campUpdateCostSummaryV2() {
-  const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
-  const rate = rateMap[_camp.resolution] || 93.5;
-  const clipsCost = _camp.audioClips.reduce((acc, c) => acc + Math.round(Math.min(15, Math.ceil(c.duration)) * rate), 0);
-  const audioCost = Math.round(_camp.script.length * 0.2);
-  const totalCost = Math.round(clipsCost + audioCost);
-
-  document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
-  document.getElementById('campTotalClips').textContent = _camp.audioClips.length;
 }
 
 function campSelectMode(mode) {
@@ -4296,34 +3589,21 @@ function campSelectMode(mode) {
   document.getElementById('campModeAuto').classList.toggle('selected', mode === 'auto');
 }
 
-async function campLaunchV2() {
-  if (_camp.videoMode === 'talking') {
-    await campLaunchTalking();
-  } else {
-    await campLaunchVoiceover();
-  }
-}
-
-// Modo "talking": variantes + clips UGC (avatar habla)
-async function campLaunchTalking() {
-  if (!_camp.chunks.length) { showToast('Esperá a que se carguen los clips'); return; }
+async function campLaunch() {
+  if(!_camp.chunks.length){ showToast('Esperá a que se carguen los chunks'); return; }
   const btn = document.getElementById('campLaunchBtn');
   btn.textContent = 'Creando campaña...'; btn.disabled = true;
-
   try {
-    // Crear campaña si no existe
-    if (!_camp.campaignId) {
-      const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: _currentUser.userId, title: _camp.title, script: _camp.script,
-          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
-        })
-      });
-      const createData = await createResp.json();
-      if (!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
-      _camp.campaignId = createData.campaign.id;
-    }
+    const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: _currentUser.userId, title: _camp.title, script: _camp.script,
+        clipDuration: _camp.clipDuration, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
+      })
+    });
+    const createData = await createResp.json();
+    if(!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
+    _camp.campaignId = createData.campaign.id;
 
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
@@ -4335,7 +3615,6 @@ async function campLaunchTalking() {
     document.getElementById('campGenProgressBar').style.width = '0%';
     campRenderClipsGrid();
 
-    // Generar variantes del avatar
     const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
     const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -4345,116 +3624,13 @@ async function campLaunchTalking() {
       })
     });
     const varData = await varResp.json();
-    if (!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
+    if(!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
     showToast('Variantes encoladas. Esperando resultados...');
     campStartPolling();
-  } catch (e) {
+  } catch(e){
     showToast('Error: ' + e.message);
-    btn.innerHTML = `Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`; btn.disabled = false;
+    btn.textContent = '✦ Empezar generación'; btn.disabled = false;
   }
-}
-
-// Modo "voiceover": clips mudos con multi_reference
-async function campLaunchVoiceover() {
-  if (!_camp.audioClips.length) { showToast('Esperá a que se genere el audio'); return; }
-  if (!_camp.visualPrompts.length) { showToast('Esperá a que se generen los prompts'); return; }
-
-  const btn = document.getElementById('campLaunchBtn');
-  btn.textContent = 'Generando clips...'; btn.disabled = true;
-
-  try {
-    document.getElementById('campView-wizard').style.display = 'none';
-    document.getElementById('campView-generating').style.display = 'block';
-    document.getElementById('campGenCampaignTitle').textContent = _camp.title;
-    document.getElementById('campGenStatusTitle').textContent = 'Generando clips de video...';
-    document.getElementById('campGenStatusSub').textContent = 'Los clips se generan sin audio. Después se ensambla todo.';
-    document.getElementById('campReviewControls').style.display = 'none';
-    document.getElementById('campAllDoneControls').style.display = 'none';
-    document.getElementById('campGenProgressBar').style.width = '0%';
-
-    // Renderizar grid con cantidad de clips de audio
-    _camp.chunks = _camp.audioClips.map((c, i) => ({
-      index: i, text: c.text,
-      estimatedSeconds: Math.min(15, Math.ceil(c.duration)),
-      variantIndex: 0
-    }));
-    campRenderClipsGrid();
-
-    // Iniciar polling para detectar cuando los clips terminan
-    campStartPolling();
-
-    // Generar clips directamente (sin variantes, usamos las fotos originales)
-    _camp.clipsLaunched = false;
-    await campStartClipGenerationV2();
-
-  } catch (e) {
-    showToast('Error: ' + e.message);
-    btn.innerHTML = `Empezar generación <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`; btn.disabled = false;
-  }
-}
-
-async function campStartClipGenerationV2() {
-  if (_camp.clipsLaunched) return;
-  _camp.clipsLaunched = true;
-
-  if (_camp.genMode === 'auto') {
-    document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
-    for (let i = 0; i < _camp.audioClips.length; i++) {
-      await campGenerateOneClipV2(i);
-      if (i < _camp.audioClips.length - 1) await new Promise(r => setTimeout(r, 2000));
-    }
-  } else {
-    _camp.currentClipIndex = 0;
-    document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
-    await campGenerateOneClipV2(0);
-  }
-}
-
-async function campGenerateOneClipV2(index) {
-  if (_camp.clipEnqueued[index]) return;
-
-  const clip = _camp.audioClips[index];
-  const vp = _camp.visualPrompts.find(p => p.clipIndex === index);
-  if (!clip || !vp) return;
-
-  _camp.clipEnqueued[index] = true;
-  campUpdateClipCard(index, 'generating', null);
-
-  try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId,
-        clipIndex: index,
-        visualPrompt: vp.prompt,
-        avatarImageUrl: _camp.photoUrl,
-        productImageUrl: _camp.productPhotoUrl,
-        clipDuration: Math.min(15, Math.ceil(clip.duration)),
-        resolution: _camp.resolution,
-        aspectRatio: _camp.aspectRatio,
-        userId: _currentUser.userId
-      })
-    });
-
-    if (resp.status === 409) return;
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      console.error('Error generando clip v2', index, err);
-      _camp.clipEnqueued[index] = false;
-      campUpdateClipCard(index, 'failed', null);
-      if (resp.status === 402) showToast('No tenés créditos suficientes.');
-    }
-  } catch (e) {
-    console.error('Error clip v2', index, e);
-    _camp.clipEnqueued[index] = false;
-    campUpdateClipCard(index, 'failed', null);
-  }
-}
-
-// Mantener campLaunch original para compatibilidad con campañas viejas
-async function campLaunch() {
-  // Redirigir al flujo v2
-  await campLaunchV2();
 }
 
 function campRenderClipsGrid() {
@@ -4493,35 +3669,28 @@ async function campUpdateGeneratingView(data) {
   const variantsDone = variants.filter(v => v.status === 'completed').length;
   const variantsTotal = variants.length;
   const clipsDone = clips.filter(c => c.status === 'completed').length;
-  const clipsTotal = _camp.chunks.length || _camp.audioClips.length || clips.length;
+  const clipsTotal = _camp.chunks.length;
 
   variants.forEach(v => {
     if(v.status === 'completed' && v.image_url) _camp.variantsMap[v.variant_index] = v.image_url;
   });
 
-  // Si hay variantes pendientes, mostrar progreso de variantes
   if(variantsTotal > 0 && variantsDone < variantsTotal) {
     document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar... (' + variantsDone + '/' + variantsTotal + ')';
     document.getElementById('campGenProgressBar').style.width = Math.round((variantsDone / variantsTotal) * 30) + '%';
     return;
   }
 
-  // Si hay variantes listas y no hay clips todavía, iniciar generación de clips
   if(variantsDone === variantsTotal && variantsTotal > 0 && clips.length === 0) {
     document.getElementById('campGenStatusTitle').textContent = 'Variantes listas. Iniciando generación de clips...';
-    if (_camp.videoMode === 'talking') {
-      await campStartClipGeneration();
-    } else {
-      await campStartClipGenerationV2();
-    }
+    await campStartClipGeneration();
     return;
   }
 
-  // Actualizar cards de clips
   clips.forEach(clip => campUpdateClipCard(clip.clip_index, clip.status, clip.video_url));
 
-  const totalSteps = Math.max(variantsTotal, 1) + clipsTotal;
-  const doneSoFar = (variantsTotal > 0 ? variantsDone : 1) + clipsDone;
+  const totalSteps = variantsTotal + clipsTotal;
+  const doneSoFar = variantsDone + clipsDone;
   const pct = totalSteps > 0 ? Math.round((doneSoFar / totalSteps) * 100) : 0;
   document.getElementById('campGenProgressBar').style.width = pct + '%';
 
@@ -4556,7 +3725,7 @@ function campUpdateClipCard(index, status, videoUrl) {
   if(status === 'generating') {
     card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-spinner"></div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
   } else if(status === 'completed' && videoUrl) {
-    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
+    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
   } else if(status === 'failed') {
     card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>';
   } else if(status === 'pending') {
@@ -4565,6 +3734,9 @@ function campUpdateClipCard(index, status, videoUrl) {
 }
 
 async function campStartClipGeneration() {
+  // ============================================
+  // ANTI-LOOP: si ya se llamó, no hacer nada
+  // ============================================
   if(_camp.clipsLaunched) {
     console.log('ANTI-LOOP: campStartClipGeneration ya fue llamada. Ignorando.');
     return;
@@ -4572,21 +3744,25 @@ async function campStartClipGeneration() {
   _camp.clipsLaunched = true;
 
   if(_camp.genMode === 'auto') {
+    // Modo automático: generar SECUENCIALMENTE (no Promise.all)
     document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
     for(let i = 0; i < _camp.chunks.length; i++) {
       await campGenerateOneClip(i);
+      // Esperar 2 seg entre cada encolado para no saturar Enhancor
       if(i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 2000));
     }
   } else {
+    // Modo revisión: generar solo el primero
     document.getElementById('campGenStatusTitle').textContent = 'Generando clip 1...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
     _camp.currentClipIndex = 0;
     await campGenerateOneClip(0);
   }
 }
 
 async function campGenerateOneClip(index) {
+  // ============================================
+  // ANTI-LOOP: si este clip ya fue encolado, no volver a encolar
+  // ============================================
   if(_camp.clipEnqueued[index]) {
     console.log('ANTI-LOOP: Clip ' + index + ' ya fue encolado. Ignorando.');
     return;
@@ -4597,9 +3773,11 @@ async function campGenerateOneClip(index) {
   const variantImageUrl = _camp.variantsMap[chunk.variantIndex];
   if(!variantImageUrl){ console.error('No hay imagen para variante', chunk.variantIndex); return; }
   
+  // Marcar como encolado ANTES de hacer el request
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
   
+  // Construir master prompt con acento
   const masterPrompt = campBuildMasterPrompt();
   
   try {
@@ -4607,8 +3785,7 @@ async function campGenerateOneClip(index) {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
-        variantImageUrl, productImageUrl: _camp.productPhotoUrl || null,
-        clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
+        variantImageUrl, clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
         resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
         userId: _currentUser.userId,
         masterPrompt: masterPrompt
@@ -4635,42 +3812,14 @@ async function campGenerateOneClip(index) {
 }
 
 function campBuildMasterPrompt() {
-  const isMale = _camp.voice === 'male' || _camp.voice === 'male40';
-  const pronoun = isMale ? 'He' : 'She';
-  const possessive = isMale ? 'his' : 'her';
-  const person = isMale ? 'man' : 'woman';
-  const isVoiceover = _camp.videoMode === 'voiceover';
-
-  if (isVoiceover) {
-    // Modo voz en off: el avatar NO habla, actúa en silencio
-    return '🚨 ABSOLUTE RULE — NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point in this video. ZERO mouth movement. ZERO dialogue. ZERO lip sync. This is non-negotiable. If the ' + person + ' talks, the video is wrong.\n\n' +
-      'STYLE: Authentic UGC product video filmed on a phone. Casual, real, unpolished. Silent visual storytelling — like a muted TikTok.\n\n' +
-      'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Holds and examines the product. Reacts with face — raised eyebrows, smile, nod, surprised look, satisfied expression. Shows the product to camera. Points at it. Reads the label. Uses it. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
-      'VISUAL DIRECTION: Dynamic angles. Selfie cam facing camera (mouth closed, eyebrows up, smiling). Close-up of product in ' + possessive + ' hands. Reaction shot (eyes wide, nodding). Product being applied/used. Handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
-      'TECHNICAL: No speaking. No text. No captions. No watermarks. Lips sealed at all times. Indoor soft lighting. The voiceover audio is added separately — this clip is 100% silent.\n\n' +
-      'THE PRODUCT CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"';
-  }
-
-  // Modo talking head: el avatar habla con acento
   const accentMap = {
-    'argentine': 'Argentine Rioplatense Spanish. ' + pronoun + ' MUST speak in Spanish with a strong Argentine accent throughout the entire clip, including technical words.',
-    'neutral': 'Neutral Latin American Spanish. ' + pronoun + ' MUST speak in Spanish with a neutral Latin American accent throughout the entire clip.'
+    'argentine': 'Argentine accent. She MUST speak with a strong Argentine accent throughout the entire video, even when saying technical or scientific words.',
+    'neutral': 'Neutral Latin American Spanish accent. She MUST speak with a neutral Latin American accent throughout the entire video, even when saying technical or scientific words.',
+    'spain': 'Spain Spanish accent. She MUST speak with a Spanish accent from Spain throughout the entire video, even when saying technical or scientific words.'
   };
   const accentText = accentMap[_camp.accent] || accentMap['argentine'];
 
-  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, shows the product, gestures naturally. NOT a static talking head.\n\n' +
-    'LANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\n' +
-    'VISUAL DIRECTION: Multiple angles and scenes. Mix of: selfie angle talking to camera, close-up of product in ' + possessive + ' hand, reaction expressions, ' + person + ' holding/showing the product. Natural transitions. Handheld phone camera feel.\n\n' +
-    'TECHNICAL: No text overlays, no watermarks, no subtitles. Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
-    'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
-    pronoun + ' SAYS EXACTLY IN SPANISH: "[CHUNK]"';
-}
-
-// Permite al usuario en modo talking elegir género para el prompt
-function campDetectGender() {
-  // Si hay selector de voz activo, usar eso
-  if (_camp.voice === 'male' || _camp.voice === 'male40') return 'male';
-  return 'female';
+  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend.\n\nLANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\nTECHNICAL: No text overlays, no watermarks, no subtitles, no captions, no background music, no sound effects, no filters, no transitions. Only her voice and ambient room sound. Vertical format 9:16. Indoor natural soft lighting.\n\nPERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. No acting, no exaggeration. Genuine delivery.\n\nSHE SAYS EXACTLY: "[CHUNK]"';
 }
 
 function campShowReviewControls(index) {
@@ -4681,113 +3830,31 @@ function campShowReviewControls(index) {
 
 async function campApproveClip() {
   _camp.currentClipIndex++;
-  if(_camp.currentClipIndex >= _camp.audioClips.length){
+  if(_camp.currentClipIndex >= _camp.chunks.length){
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'block';
     clearInterval(_camp.pollingInterval); _camp.pollingInterval = null;
     return;
   }
   document.getElementById('campReviewControls').style.display = 'none';
-  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex + 1) + '...';
-  await campGenerateOneClipV2(_camp.currentClipIndex);
+  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex+1) + '...';
+  await campGenerateOneClip(_camp.currentClipIndex);
 }
 
 async function campRegenCurrentClip() {
   _camp.clipEnqueued[_camp.currentClipIndex] = false;
+  await campGenerateOneClip(_camp.currentClipIndex);
   document.getElementById('campReviewControls').style.display = 'none';
-  
-  if (_camp.videoMode === 'talking') {
-    await campGenerateOneClip(_camp.currentClipIndex);
-  } else {
-    await campRegenOneClipV2(_camp.currentClipIndex);
-  }
 }
 
 async function campRegenClip(index) {
+  // Resetear el flag para permitir regeneración manual
   _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
-  
-  if (_camp.videoMode === 'talking') {
-    await campGenerateOneClip(index);
-  } else {
-    await campRegenOneClipV2(index);
-  }
-}
-
-// Regenerar un clip en modo voiceover — usa endpoint directo que no requiere audioClips en memoria
-async function campRegenOneClipV2(index) {
-  if (_camp.clipEnqueued[index]) return;
-  
-  // Si tenemos los datos en memoria, usar campGenerateOneClipV2
-  const clip = _camp.audioClips && _camp.audioClips[index];
-  const vp = _camp.visualPrompts && _camp.visualPrompts.find(p => p.clipIndex === index);
-  
-  if (clip && vp) {
-    await campGenerateOneClipV2(index);
-    return;
-  }
-  
-  // Si no hay datos en memoria, obtener del estado de la campaña y regenerar con los datos del clip existente
-  if (!_camp.campaignId) { showToast('Error: no hay campaña activa'); return; }
-  
-  _camp.clipEnqueued[index] = true;
-  campUpdateClipCard(index, 'generating', null);
-  
-  try {
-    // Obtener estado de la campaña para recuperar datos del clip
-    const statusResp = await fetch(BACKEND_URL + '/api/campaign/status', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ campaignId: _camp.campaignId, userId: _currentUser.userId })
-    });
-    const statusData = await statusResp.json();
-    
-    // Buscar el clip existente para tomar su text_chunk como base del prompt
-    const existingClip = statusData.clips ? statusData.clips.find(c => c.clip_index === index) : null;
-    const textChunk = existingClip ? existingClip.text_chunk : '';
-    
-    // Generar un prompt visual nuevo con Claude
-    const promptText = textChunk || 'UGC style video, woman showing product to camera, natural indoor lighting';
-    
-    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId,
-        clipIndex: index,
-        visualPrompt: promptText,
-        avatarImageUrl: _camp.photoUrl,
-        productImageUrl: _camp.productPhotoUrl,
-        clipDuration: 12,
-        resolution: _camp.resolution || '480p',
-        aspectRatio: _camp.aspectRatio || '9:16',
-        userId: _currentUser.userId
-      })
-    });
-    
-    if (resp.status === 409) {
-      // Clip existe con status generating/completed — forzar reset en backend
-      showToast('El clip está en proceso. Esperá a que termine.');
-      _camp.clipEnqueued[index] = false;
-      return;
-    }
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      console.error('Error regenerando clip v2', index, err);
-      _camp.clipEnqueued[index] = false;
-      campUpdateClipCard(index, 'failed', null);
-      if (resp.status === 402) showToast('No tenés créditos suficientes.');
-    }
-  } catch (e) {
-    console.error('Error regen clip v2', index, e);
-    _camp.clipEnqueued[index] = false;
-    campUpdateClipCard(index, 'failed', null);
-  }
+  await campGenerateOneClip(index);
 }
 
 async function campLoadList() {
-  // Esperar hasta que _currentUser esté disponible (máx 5 segundos)
-  if(!_currentUser) {
-    for(let i = 0; i < 25 && !_currentUser; i++) await new Promise(r => setTimeout(r, 200));
-  }
   if(!_currentUser) return;
   const container = document.getElementById('campListContainer');
   if(!container) return;
@@ -4799,7 +3866,7 @@ async function campLoadList() {
     const data = await resp.json();
     const campaigns = data.campaigns || [];
     if(!campaigns.length){
-      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button></div>';
+      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon">🎬</div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button></div>';
       return;
     }
     const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
@@ -4845,7 +3912,7 @@ async function campOpenDetail(campaignId, title) {
       card.id = 'campClip-' + clip.clip_index;
       
       if(clip.status === 'completed' && clip.video_url) {
-        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar</a>';
+        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a>';
       } else if(clip.status === 'failed') {
         card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
       } else {
@@ -4944,7 +4011,7 @@ function openCreditsModal() {
     if (subEl) subEl.textContent = `Plan ${planInfo.label}: ${planInfo.topup_credits.toLocaleString('es-AR')} créditos extra por $${planInfo.topup_price}. No caducan.`;
     if (creditsEl) creditsEl.textContent = planInfo.topup_credits.toLocaleString('es-AR') + ' créditos';
     if (priceEl) priceEl.textContent = '$' + planInfo.topup_price;
-    if (continueBtn) continueBtn.innerHTML = `Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8M8 4l3 3-3 3"/></svg>`;
+    if (continueBtn) continueBtn.textContent = 'Continuar →';
   }
   document.getElementById('creditsModal').classList.add('open');
 }
@@ -5172,7 +4239,7 @@ async function runGeneration(){
 
   try {
     // --- Paso 1: Mostrar prompt del usuario tal cual ---
-    msgEl.textContent = 'Preparando tu video...';
+    msgEl.textContent = '✦ Preparando tu video...';
     await setBar(30, 800);
 
     // El prompt va tal cual, sin modificar
@@ -5181,7 +4248,7 @@ async function runGeneration(){
     document.getElementById('promptResultText').textContent = generatedPrompt;
 
     // --- Paso 2: Enviar a generar video ---
-    msgEl.textContent = 'Enviando a Seedance 2.0...';
+    msgEl.textContent = '✦ Enviando a Seedance 2.0...';
     await setBar(50, 600);
 
     const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
@@ -5200,7 +4267,7 @@ async function runGeneration(){
     if (genRes.status === 402) {
       const errData = await genRes.json().catch(() => ({}));
       bar.style.width = '0%';
-      msgEl.textContent = 'Sin créditos suficientes';
+      msgEl.textContent = '✦ Sin créditos suficientes';
       msgEl.style.color = '#f59e0b';
       showNoCreditsModal({
         cost: errData.cost || 0,
@@ -5208,7 +4275,7 @@ async function runGeneration(){
         plan: errData.plan || 'none'
       });
       // Botón para volver al paso 2
-      nxt.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 7H3M6 4L3 7l3 3"/></svg> Volver`;
+      nxt.textContent = '← Volver';
       nxt.onclick = () => { goGenStep(2); };
       nxt.style.display = 'inline-flex';
       return;
@@ -5222,11 +4289,11 @@ async function runGeneration(){
     refreshCredits();
 
     // --- Paso 3: Video encolado, avisar al usuario y redirigir al historial ---
-    msgEl.textContent = 'Video encolado correctamente';
+    msgEl.textContent = '✦ Video encolado correctamente';
     await setBar(100, 600);
 
     // Mostrar mensaje y redirigir a historial en 3 segundos
-    msgEl.textContent = 'Tu video se está generando (5-10 min). Podés cerrar esta pestaña.';
+    msgEl.textContent = '✦ Tu video se está generando (5-10 min). Podés cerrar esta pestaña.';
     msgEl.style.color = '#22c55e';
     pbox.style.display = 'block';
     document.getElementById('promptResultText').textContent = generatedPrompt;
@@ -5240,7 +4307,7 @@ async function runGeneration(){
   } catch(err) {
     console.error('runGeneration error:', err);
     bar.style.width = '0%';
-    msgEl.textContent = err.message || 'Ocurrió un error. Intentá de nuevo.';
+    msgEl.textContent = '✦ ' + (err.message || 'Ocurrió un error. Intentá de nuevo.');
     msgEl.style.color = '#ff4d4d';
     setTimeout(()=>{ msgEl.style.color = ''; }, 6000);
     // Mostrar botón de reintentar
@@ -5314,10 +4381,10 @@ function statusBadge(status){
     COMPLETED: ['✅','#22c55e'],
     FAILED:    ['❌','#ef4444'],
     IN_PROGRESS:['⚙️','#f59e0b'],
-    IN_QUEUE:  ['','#f59e0b'],
-    PENDING:   ['','#f59e0b'],
+    IN_QUEUE:  ['🕐','#f59e0b'],
+    PENDING:   ['🕐','#f59e0b'],
   };
-  const [icon, color] = map[status] || ['','#888'];
+  const [icon, color] = map[status] || ['🕐','#888'];
   return `<span style="font-size:11px;color:${color};font-weight:600;">${icon} ${status}</span>`;
 }
 
@@ -5366,7 +4433,7 @@ function renderHistory(){
       const safeUrl = escAttr(v.video_url);
       const safeActor = escAttr(v.actor || titleText);
       const downloadFn = isImage ? 'downloadImageFile' : 'downloadVideo';
-      const downloadLabel = isImage ? 'Descargar imagen' : 'Descargar MP4';
+      const downloadLabel = isImage ? '⬇ Descargar imagen' : '⬇ Descargar MP4';
       const openModalFn = isImage ? 'openImageModal' : 'openVideoModal';
 
       // Thumb depende del tipo
@@ -5402,11 +4469,11 @@ function renderHistory(){
           </div>
           <div class="a-hist-prompt">${prompt || '<span style="color:#666;">Sin prompt</span>'}</div>
           <div class="a-hist-specs">
-            <span class="a-hist-spec">${isImage ? (modelLabel(v.model) || 'Imagen') : 'Video'}</span>
-            ${dur && !isImage ? `<span class="a-hist-spec">${dur}</span>` : ''}
-            <span class="a-hist-spec">${ratio}</span>
-            <span class="a-hist-spec">${res}</span>
-            <span class="a-hist-spec">${timeAgo(v.created_at)}</span>
+            <span class="a-hist-spec">${isImage ? '🖼' : '🎬'} ${isImage ? (modelLabel(v.model) || 'Imagen') : 'Video'}</span>
+            ${dur && !isImage ? `<span class="a-hist-spec">⏱ ${dur}</span>` : ''}
+            <span class="a-hist-spec">📐 ${ratio}</span>
+            <span class="a-hist-spec">⚙ ${res}</span>
+            <span class="a-hist-spec">🕐 ${timeAgo(v.created_at)}</span>
           </div>
           ${completed ? `
             <div class="a-hist-actions">
@@ -5451,7 +4518,7 @@ function renderHistory(){
         </div>
         <span class="a-hist-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
         ${completed
-          ? `<button class="btn-ghost-sm" onclick="${downloadFn}('${safeUrl}','${safeTitle}')">Descargar</button>`
+          ? `<button class="btn-ghost-sm" onclick="${downloadFn}('${safeUrl}','${safeTitle}')">⬇ Descargar</button>`
           : ''
         }
       </div>`;
@@ -5750,7 +4817,7 @@ async function generateImage(){
   }, 800);
 
   try {
-    msgEl.textContent = 'Preparando tu imagen...';
+    msgEl.textContent = '✦ Preparando tu imagen...';
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
@@ -5769,7 +4836,7 @@ async function generateImage(){
       clearInterval(progInterval);
       const errData = await response.json().catch(() => ({}));
       if (bar) bar.style.width = '0%';
-      msgEl.textContent = 'Sin créditos suficientes';
+      msgEl.textContent = '✦ Sin créditos suficientes';
       msgEl.style.color = '#f59e0b';
       showNoCreditsModal({
         cost: errData.cost || 0,
@@ -5803,7 +4870,7 @@ async function generateImage(){
     // Refrescar contador de créditos en el sidebar después de descontar
     refreshCredits();
 
-    msgEl.textContent = 'Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
+    msgEl.textContent = '✦ Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
 
     // Función auxiliar de polling — chequea Supabase por la fila con el request_id.
     // IMPORTANTE: la implementación custom de supa NO soporta .limit(); por eso
@@ -5903,7 +4970,7 @@ function openVideoModal(url, actor){
     modal.innerHTML = `
       <video id="videoModalPlayer" controls autoplay style="max-height:80vh;max-width:90vw;border-radius:12px;"></video>
       <div style="display:flex;gap:12px;">
-        <button class="btn-w" id="videoModalDl" style="font-size:14px;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7M4 7l3 3 3-3M3 11h8"/></svg> Descargar MP4</button>
+        <button class="btn-w" id="videoModalDl" style="font-size:14px;">⬇ Descargar MP4</button>
         <button class="btn-outline" onclick="closeVideoModal()" style="border-radius:8px;font-size:14px;">✕ Cerrar</button>
       </div>`;
     document.body.appendChild(modal);
