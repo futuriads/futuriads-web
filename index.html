@@ -236,6 +236,18 @@ html.pre-landing #app { display: none !important; }
   transition: border-color 0.2s;
 }
 .camp-chunk-text:focus { border-color: var(--accent); }
+
+/* Subtitle panel */
+.sub-label { font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text2);text-transform:uppercase; }
+.sub-select { width:100%;padding:7px 10px;background:var(--hover);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none; }
+.sub-preset-btn { padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
+.sub-preset-btn:hover { border-color:rgba(255,255,255,.35);color:#fff; }
+.sub-pos-btn { flex:1;padding:6px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s; }
+.sub-pos-active { border-color:#fff!important;color:#fff!important; }
+.sub-style-btn { width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s; }
+.sub-style-active { border-color:#fff!important;color:#fff!important; }
+.sub-mode-btn { flex:1;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
+.sub-mode-active { border-color:#fff!important;color:#fff!important; }
 .camp-clips-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 12px; margin-bottom: 24px;
@@ -2613,129 +2625,146 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Revisá los clips arriba. Configurá los subtítulos y ensamblá el video final.</div>
 
           <!-- CONFIGURACIÓN DE SUBTÍTULOS -->
-          <div id="campSubPanel" style="margin-bottom:20px;">
+          <div style="margin-bottom:20px;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
 
-            <!-- Header con toggle -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <!-- Header accordion -->
+            <div onclick="campToggleSubPanel()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--card2);user-select:none;">
               <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:18px;">🔤</span>
-                <span style="font-size:14px;font-weight:700;color:var(--text);">Subtítulos</span>
+                <span style="font-size:15px;">🔤</span>
+                <span style="font-size:13px;font-weight:700;">Subtítulos</span>
+                <span id="campSubStatusBadge" style="font-size:11px;padding:2px 10px;border-radius:99px;background:#fff;color:#000;font-weight:700;">ON</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span id="campSubLabel" style="font-size:12px;color:var(--text2);">Activados</span>
-                <div id="campSubToggle" onclick="campToggleSubtitles()" style="width:44px;height:24px;border-radius:999px;background:#fff;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;">
-                  <div id="campSubThumb" style="position:absolute;top:3px;left:22px;width:18px;height:18px;border-radius:50%;background:#000;transition:left 0.2s;"></div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div id="campSubToggle" onclick="event.stopPropagation();campToggleSubtitles()" style="width:40px;height:22px;border-radius:99px;background:#fff;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;">
+                  <div id="campSubThumb" style="position:absolute;top:3px;left:20px;width:16px;height:16px;border-radius:50%;background:#000;transition:left 0.2s;"></div>
                 </div>
+                <span id="campSubChevron" style="color:var(--text2);font-size:12px;transition:transform 0.2s;">▼</span>
               </div>
             </div>
 
-            <div id="campSubOptions">
+            <!-- Body colapsable -->
+            <div id="campSubBody" style="padding:16px 18px;display:block;">
+              <div id="campSubOptions">
 
-              <!-- PRESETS RÁPIDOS -->
-              <div style="margin-bottom:16px;">
-                <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:8px;">Presets</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button onclick="campApplyPreset('tiktok')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='var(--border)'">TikTok</button>
-                  <button onclick="campApplyPreset('netflix')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='var(--border)'">Netflix</button>
-                  <button onclick="campApplyPreset('bold')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='var(--border)'">Bold</button>
-                  <button onclick="campApplyPreset('minimal')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='var(--border)'">Minimal</button>
-                  <button onclick="campApplyPreset('highlight')" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='var(--border)'">Highlight</button>
-                </div>
-              </div>
-
-              <!-- GRID CONTROLES -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-
-                <!-- Fuente -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Fuente</div>
-                  <select id="campSubFont" onchange="campSubtitlePreview()" style="width:100%;padding:8px 10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;">
-                    <option value="Arial">Arial</option>
-                    <option value="Arial Black" selected>Arial Black</option>
-                    <option value="Impact">Impact</option>
-                    <option value="Helvetica">Helvetica</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Trebuchet MS">Trebuchet MS</option>
-                  </select>
-                </div>
-
-                <!-- Tamaño -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Tamaño <span id="campSubSizeVal" style="color:var(--text);font-weight:400;">26</span></div>
-                  <input type="range" id="campSubSize" min="14" max="52" value="26" oninput="document.getElementById('campSubSizeVal').textContent=this.value;campSubtitlePreview();" style="width:100%;margin-top:10px;accent-color:#fff;">
-                </div>
-
-                <!-- Color texto -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Color del texto</div>
-                  <div style="display:flex;align-items:center;gap:8px;">
-                    <input type="color" id="campSubColor" value="#ffffff" oninput="document.getElementById('campSubColorHex').textContent=this.value;campSubtitlePreview();" style="width:38px;height:38px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px;">
-                    <input type="text" id="campSubColorHex" value="#ffffff" maxlength="7" oninput="campSyncColorFromHex('campSubColor','campSubColorHex');" style="flex:1;padding:7px 8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
+                <!-- Fila 1: Presets -->
+                <div style="margin-bottom:14px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text2);text-transform:uppercase;margin-bottom:7px;">Preset rápido</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button onclick="campApplyPreset('tiktok')"    class="sub-preset-btn">TikTok</button>
+                    <button onclick="campApplyPreset('netflix')"   class="sub-preset-btn">Netflix</button>
+                    <button onclick="campApplyPreset('bold')"      class="sub-preset-btn">Bold</button>
+                    <button onclick="campApplyPreset('minimal')"   class="sub-preset-btn">Minimal</button>
+                    <button onclick="campApplyPreset('highlight')" class="sub-preset-btn">Highlight</button>
                   </div>
                 </div>
 
-                <!-- Color borde -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Color del borde</div>
-                  <div style="display:flex;align-items:center;gap:8px;">
-                    <input type="color" id="campSubOutlineColor" value="#000000" oninput="document.getElementById('campSubOutlineHex').textContent=this.value;campSubtitlePreview();" style="width:38px;height:38px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px;">
-                    <input type="text" id="campSubOutlineHex" value="#000000" maxlength="7" oninput="campSyncColorFromHex('campSubOutlineColor','campSubOutlineHex');" style="flex:1;padding:7px 8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
+                <!-- Fila 2: Fuente + Tamaño -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                  <div>
+                    <div class="sub-label">Fuente</div>
+                    <select id="campSubFont" onchange="campSubtitlePreview()" class="sub-select">
+                      <option value="Arial">Arial</option>
+                      <option value="Arial Black" selected>Arial Black</option>
+                      <option value="Impact">Impact</option>
+                      <option value="Helvetica">Helvetica</option>
+                      <option value="Georgia">Georgia</option>
+                      <option value="Verdana">Verdana</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div class="sub-label">Tamaño <span id="campSubSizeVal" style="color:var(--text);font-weight:600;">26</span></div>
+                    <input type="range" id="campSubSize" min="14" max="52" value="26"
+                      oninput="document.getElementById('campSubSizeVal').textContent=this.value;campSubtitlePreview();"
+                      style="width:100%;margin-top:12px;accent-color:#fff;">
                   </div>
                 </div>
 
-                <!-- Grosor borde -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Borde <span id="campSubBorderVal" style="color:var(--text);font-weight:400;">3</span></div>
-                  <input type="range" id="campSubOutlineWidth" min="0" max="8" value="3" oninput="document.getElementById('campSubBorderVal').textContent=this.value;campSubtitlePreview();" style="width:100%;margin-top:10px;accent-color:#fff;">
-                </div>
-
-                <!-- Posición -->
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Posición</div>
-                  <div style="display:flex;gap:6px;">
-                    <button id="campSubPosTop" onclick="campSetPosition('top')" style="flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer;">Arriba</button>
-                    <button id="campSubPosCenter" onclick="campSetPosition('center')" style="flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer;">Centro</button>
-                    <button id="campSubPosBottom" onclick="campSetPosition('bottom')" style="flex:1;padding:8px 4px;border-radius:8px;border:1px solid #fff;background:var(--hover);color:#fff;font-size:11px;cursor:pointer;">Abajo</button>
+                <!-- Fila 3: Colores -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                  <div>
+                    <div class="sub-label">Color texto</div>
+                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
+                      <input type="color" id="campSubColor" value="#ffffff"
+                        oninput="document.getElementById('campSubColorHex').value=this.value;campSubtitlePreview();"
+                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
+                      <input type="text" id="campSubColorHex" value="#ffffff" maxlength="7"
+                        oninput="campSyncColorFromHex('campSubColor','campSubColorHex');"
+                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
+                    </div>
+                  </div>
+                  <div>
+                    <div class="sub-label">Color borde</div>
+                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
+                      <input type="color" id="campSubOutlineColor" value="#000000"
+                        oninput="document.getElementById('campSubOutlineHex').value=this.value;campSubtitlePreview();"
+                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
+                      <input type="text" id="campSubOutlineHex" value="#000000" maxlength="7"
+                        oninput="campSyncColorFromHex('campSubOutlineColor','campSubOutlineHex');"
+                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- FILA: Bold / Italic / Modo -->
-              <div style="display:grid;grid-template-columns:auto auto 1fr;gap:8px;align-items:end;margin-bottom:16px;">
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Estilo</div>
-                  <div style="display:flex;gap:6px;">
-                    <button id="campSubBoldBtn" onclick="campToggleBold()" style="width:38px;height:38px;border-radius:8px;border:1px solid #fff;background:var(--hover);color:#fff;font-size:14px;font-weight:900;cursor:pointer;">B</button>
-                    <button id="campSubItalicBtn" onclick="campToggleItalic()" style="width:38px;height:38px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:14px;font-style:italic;cursor:pointer;">I</button>
+                <!-- Fila 4: Borde + Posición -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                  <div>
+                    <div class="sub-label">Borde <span id="campSubBorderVal" style="color:var(--text);font-weight:600;">3</span></div>
+                    <input type="range" id="campSubOutlineWidth" min="0" max="8" value="3"
+                      oninput="document.getElementById('campSubBorderVal').textContent=this.value;campSubtitlePreview();"
+                      style="width:100%;margin-top:12px;accent-color:#fff;">
+                  </div>
+                  <div>
+                    <div class="sub-label">Posición</div>
+                    <div style="display:flex;gap:5px;margin-top:4px;">
+                      <button id="campSubPosTop"    onclick="campSetPosition('top')"    class="sub-pos-btn">↑</button>
+                      <button id="campSubPosCenter" onclick="campSetPosition('center')" class="sub-pos-btn">↕</button>
+                      <button id="campSubPosBottom" onclick="campSetPosition('bottom')" class="sub-pos-btn sub-pos-active">↓</button>
+                    </div>
                   </div>
                 </div>
-                <div style="width:1px;"></div>
-                <div>
-                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Modo de aparición</div>
-                  <div style="display:flex;gap:6px;">
-                    <button id="campSubModeBlock" onclick="campSetSubMode('block')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #fff;background:var(--hover);color:#fff;font-size:12px;cursor:pointer;">Bloque</button>
-                    <button id="campSubModeWord" onclick="campSetSubMode('word')" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;cursor:pointer;">Palabra x palabra</button>
+
+                <!-- Fila 5: Estilo + Modo -->
+                <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin-bottom:14px;">
+                  <div>
+                    <div class="sub-label">Estilo</div>
+                    <div style="display:flex;gap:5px;margin-top:4px;">
+                      <button id="campSubBoldBtn"   onclick="campToggleBold()"   class="sub-style-btn sub-style-active" style="font-weight:900;">B</button>
+                      <button id="campSubItalicBtn" onclick="campToggleItalic()" class="sub-style-btn" style="font-style:italic;">I</button>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="sub-label">Modo</div>
+                    <div style="display:flex;gap:5px;margin-top:4px;">
+                      <button id="campSubModeBlock" onclick="campSetSubMode('block')" class="sub-mode-btn sub-mode-active">Bloque</button>
+                      <button id="campSubModeWord"  onclick="campSetSubMode('word')"  class="sub-mode-btn">Palabra x palabra</button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- FILA: Color de resaltado (highlight word) -->
-              <div id="campSubHighlightRow" style="margin-bottom:16px;display:none;">
-                <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Color de palabra activa</div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <input type="color" id="campSubHighlightColor" value="#FFD700" oninput="document.getElementById('campSubHighlightHex').textContent=this.value;campSubtitlePreview();" style="width:38px;height:38px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px;">
-                  <input type="text" id="campSubHighlightHex" value="#FFD700" maxlength="7" oninput="campSyncColorFromHex('campSubHighlightColor','campSubHighlightHex');" style="width:90px;padding:7px 8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                  <span style="font-size:12px;color:var(--text2);">Color que resalta la palabra actual en modo palabra x palabra</span>
+                <!-- Color highlight (solo word mode) -->
+                <div id="campSubHighlightRow" style="display:none;margin-bottom:14px;">
+                  <div class="sub-label">Color palabra activa</div>
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
+                    <input type="color" id="campSubHighlightColor" value="#FFD700"
+                      oninput="document.getElementById('campSubHighlightHex').value=this.value;campSubtitlePreview();"
+                      style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;">
+                    <input type="text" id="campSubHighlightHex" value="#FFD700" maxlength="7"
+                      oninput="campSyncColorFromHex('campSubHighlightColor','campSubHighlightHex');"
+                      style="width:90px;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
+                    <span style="font-size:11px;color:var(--text2);">Resalta la palabra que se está diciendo</span>
+                  </div>
                 </div>
-              </div>
 
-              <!-- PREVIEW -->
-              <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:8px;">Preview</div>
-              <div style="background:#000;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:9/5;display:flex;align-items:flex-end;justify-content:center;padding:16px;">
-                <!-- Simulated video background -->
-                <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);opacity:0.7;"></div>
-                <div id="campSubPreviewText" style="position:relative;z-index:1;font-family:'Arial Black';font-size:22px;font-weight:900;color:#fff;text-align:center;text-shadow:-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,3px 3px 0 #000;line-height:1.3;max-width:90%;padding:4px 8px;">Así van a verse tus subtítulos</div>
+                <!-- Preview 9:16 compacto -->
+                <div class="sub-label" style="margin-bottom:6px;">Preview</div>
+                <div style="display:flex;justify-content:center;">
+                  <div style="position:relative;width:120px;border-radius:10px;overflow:hidden;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a2e,#0f3460);flex-shrink:0;">
+                    <div id="campSubPreviewBox" style="position:absolute;bottom:12%;left:0;right:0;display:flex;justify-content:center;padding:0 8px;">
+                      <span id="campSubPreviewText" style="font-family:'Arial Black';font-size:11px;font-weight:900;color:#fff;text-align:center;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000;line-height:1.3;">Así van a verse tus subtítulos</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -3502,6 +3531,14 @@ function campStartNew() {
 }
 
 // ── Subtítulos: estado y helpers ──
+let _subPanelOpen = true;
+
+function campToggleSubPanel() {
+  _subPanelOpen = !_subPanelOpen;
+  document.getElementById('campSubBody').style.display = _subPanelOpen ? 'block' : 'none';
+  document.getElementById('campSubChevron').style.transform = _subPanelOpen ? '' : 'rotate(-90deg)';
+}
+
 const _subtitleState = { bold: true, italic: false, position: 'bottom', mode: 'block' };
 
 const SUBTITLE_PRESETS = {
@@ -3515,9 +3552,10 @@ const SUBTITLE_PRESETS = {
 function campToggleSubtitles() {
   _subtitleState.enabled = !(_subtitleState.enabled !== false);
   const on = _subtitleState.enabled !== false;
-  document.getElementById('campSubLabel').textContent = on ? 'Activados' : 'Desactivados';
-  document.getElementById('campSubToggle').style.background = on ? '#fff' : '#333';
-  document.getElementById('campSubThumb').style.left = on ? '22px' : '3px';
+  const badge = document.getElementById('campSubStatusBadge');
+  if (badge) { badge.textContent = on ? 'ON' : 'OFF'; badge.style.background = on ? '#fff' : '#444'; badge.style.color = on ? '#000' : '#aaa'; }
+  document.getElementById('campSubToggle').style.background = on ? '#fff' : '#444';
+  document.getElementById('campSubThumb').style.left = on ? '20px' : '3px';
   document.getElementById('campSubOptions').style.opacity = on ? '1' : '0.35';
   document.getElementById('campSubOptions').style.pointerEvents = on ? '' : 'none';
 }
@@ -3603,26 +3641,34 @@ function campSetSubMode(mode) {
 
 function campSubtitlePreview() {
   const el = document.getElementById('campSubPreviewText');
+  const box = document.getElementById('campSubPreviewBox');
   if (!el) return;
   const font = document.getElementById('campSubFont')?.value || 'Arial Black';
   const size = parseInt(document.getElementById('campSubSize')?.value || 26);
   const color = document.getElementById('campSubColor')?.value || '#ffffff';
   const outlineColor = document.getElementById('campSubOutlineColor')?.value || '#000000';
   const outlineW = parseInt(document.getElementById('campSubOutlineWidth')?.value || 3);
+  const pos = _subtitleState.position || 'bottom';
 
+  // preview is 120px wide ≈ 1080px video → scale factor ~0.111
+  const previewSize = Math.max(7, Math.round(size * 0.42));
   el.style.fontFamily = font;
-  el.style.fontSize = Math.round(size * 0.85) + 'px';
+  el.style.fontSize = previewSize + 'px';
   el.style.color = color;
   el.style.fontWeight = _subtitleState.bold ? '900' : '400';
   el.style.fontStyle = _subtitleState.italic ? 'italic' : 'normal';
 
-  if (outlineW === 0) {
-    el.style.textShadow = 'none';
-  } else {
-    const o = outlineW;
-    const oc = outlineColor;
-    el.style.textShadow = `-${o}px -${o}px 0 ${oc}, ${o}px -${o}px 0 ${oc}, -${o}px ${o}px 0 ${oc}, ${o}px ${o}px 0 ${oc}, 0 ${o}px 0 ${oc}, 0 -${o}px 0 ${oc}, ${o}px 0 0 ${oc}, -${o}px 0 0 ${oc}`;
+  // Position in preview
+  if (box) {
+    box.style.top = pos === 'top' ? '8%' : pos === 'center' ? '44%' : 'auto';
+    box.style.bottom = pos === 'bottom' ? '8%' : 'auto';
+    box.style.transform = pos === 'center' ? 'translateY(-50%)' : 'none';
   }
+
+  const o = Math.max(1, Math.round(outlineW * 0.5));
+  const oc = outlineColor;
+  el.style.textShadow = outlineW === 0 ? 'none'
+    : `-${o}px -${o}px 0 ${oc},${o}px -${o}px 0 ${oc},-${o}px ${o}px 0 ${oc},${o}px ${o}px 0 ${oc}`;
 }
 
 function campGetSubtitleStyle() {
