@@ -419,9 +419,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center;
   text-decoration: none; margin-right: auto;
 }
-.l-logo-img {
-  height: 32px; width: auto; display: block;
+.l-logo-wordmark {
+  font-size: 17px; font-weight: 800; color: #fff;
+  letter-spacing: -0.5px; line-height: 1;
 }
+.l-logo-img { height: 32px; width: auto; display: block; }
 .l-nav-links {
   display: flex; align-items: center; gap: 2px;
   margin: 0 16px;
@@ -458,7 +460,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
   padding: 100px 40px 60px;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1a1a 0%, #080808 70%);
+  background: #080808;
 }
 .l-hero-center {
   display: flex; flex-direction: column; align-items: center;
@@ -467,24 +469,23 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   margin: 0 auto;
 }
 .l-hero-headline {
-  font-size: clamp(48px, 7vw, 100px);
-  font-weight: 900; line-height: 1.0;
-  letter-spacing: -3px; margin: 0 0 24px 0;
+  font-size: clamp(52px, 7.5vw, 108px);
+  font-weight: 900; line-height: 0.95;
+  letter-spacing: -4px; margin: 0 0 28px 0;
   color: #ffffff; text-align: center;
   width: 100%;
 }
 .l-hero-headline .hl-line2 {
   display: block;
-  font-family: 'Inter', -apple-system, sans-serif;
   font-style: italic;
-  font-weight: 200;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: -2px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -3px;
 }
 .l-hero-sub {
   font-size: 16px; color: var(--text2);
-  max-width: 400px; line-height: 1.7;
-  margin-bottom: 36px;
+  max-width: 480px; line-height: 1.65;
+  margin-bottom: 40px; font-size: 17px; color: rgba(255,255,255,0.55);
 }
 .l-hero-btns {
   display: flex; align-items: center; gap: 10px;
@@ -585,9 +586,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-section-title {
   max-width: 100%; width: auto !important;
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 800; letter-spacing: -2px; line-height: 1.1;
-  margin-bottom: 14px;
+  font-size: clamp(36px, 4.5vw, 60px);
+  font-weight: 900; letter-spacing: -2.5px; line-height: 1.05;
+  margin-bottom: 16px;
+}
+.l-section-title em {
+  font-style: italic; font-weight: 300;
+  color: rgba(255,255,255,0.55);
 }
 .l-section-sub {
   font-size: 16px; color: var(--text2); max-width: 480px;
@@ -701,13 +706,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   max-width: 720px; margin: 0 auto;
 }
 .l-pricing-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 40px 32px;
+  background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 40px 36px;
   display: flex; flex-direction: column;
   transition: border-color 0.2s;
 }
 .l-pricing-card.featured {
-  background: var(--card2); border-color: rgba(255,255,255,0.18);
+  background: #111; border-color: rgba(255,255,255,0.15);
 }
 .l-pricing-popular {
   display: inline-flex; align-items: center; justify-content: center;
@@ -719,9 +724,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .l-pricing-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
 .l-pricing-price {
-  font-size: 48px; font-weight: 900; letter-spacing: -3px; margin-bottom: 2px;
+  font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 4px;
+  display: flex; align-items: baseline; gap: 8px;
 }
-.l-pricing-price span { font-size: 16px; font-weight: 400; color: var(--text2); letter-spacing: 0; }
+.l-pricing-price span { font-size: 16px; font-weight: 500; color: var(--text2); letter-spacing: 0; }
 .l-pricing-period { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
 .l-pricing-hr { height: 1px; background: var(--border); margin-bottom: 24px; }
 .l-pricing-list {
@@ -826,9 +832,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-sidebar-logo {
   display: flex; align-items: center; text-decoration: none;
 }
-.a-logo-img {
-  height: 32px; width: auto; display: block;
+.a-logo-wordmark {
+  font-size: 16px; font-weight: 800; color: #fff;
+  letter-spacing: -0.4px; line-height: 1;
 }
+.a-logo-img { height: 32px; width: auto; display: block; }
 .a-nav {
   flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
   overflow-y: auto;
@@ -844,8 +852,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-nav-item:hover { background: var(--hover); color: var(--text); }
 .a-nav-item.active {
-  background: var(--card2); color: #fff;
-  border-left-color: #fff;
+  background: rgba(255,255,255,0.08); color: #fff;
+  border-left-color: transparent;
+  font-weight: 600;
 }
 .a-nav-item svg { flex-shrink: 0; }
 .a-sidebar.collapsed .a-nav-item { justify-content: center; padding: 10px 0; }
@@ -869,6 +878,15 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%       { opacity: 0.2; transform: scale(0.7); }
 }
+
+/* Nav group labels */
+.a-nav-group-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+  padding: 8px 12px 4px; margin-top: 4px;
+}
+.a-sidebar.collapsed .a-nav-group-label { display: none; }
+
 /* Widget de créditos en el sidebar */
 .a-credits-widget {
   margin: 0 16px 12px;
@@ -951,7 +969,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   cursor: default;
 }
 .a-credits-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text2); text-transform: uppercase; }
-.a-credits-val { font-size: 13px; color: var(--text2); }
+.a-credits-val { font-size: 14px; font-weight: 700; color: var(--text); }
 .a-credits-add {
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--hover); border: 1px solid var(--border);
@@ -1642,9 +1660,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- Navbar -->
   <nav class="l-nav" id="lNav">
-<a class="l-nav-logo" href="#">
-    <img src="/logo.png" alt="Futuriads" class="l-logo-img" />
-</a>
+<a class="l-nav-logo" href="#"><span class="l-logo-wordmark">Futuriads</span></a>
     <div class="l-nav-links">
       <a class="l-nav-link" href="#features">Características</a>
       <a class="l-nav-link" href="#how">Cómo funciona</a>
@@ -1659,19 +1675,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Hero -->
   <section class="l-hero" id="heroSection">
     <div class="l-hero-cards" id="heroCards">
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="UGC"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="REEL"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="ADS"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="9:16"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="HD"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card" data-label="UGC"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline></video></div>
     </div>
     <div class="l-hero-center">
       <h1 class="l-hero-headline">
         Creá anuncios
         <span class="hl-line2">que venden de verdad</span>
       </h1>
-      <p class="l-hero-sub">Escribí tu script, elegí un actor IA y generá un video listo para Meta, TikTok e Instagram en minutos.</p>
+      <p class="l-hero-sub">Escribí tu script, elegí un actor IA y obtené un video listo para Meta, TikTok e Instagram en minutos — sin filmar, sin editar.</p>
       <div class="l-hero-btns">
         <button class="btn-w" onclick="goToApp()">Empezar ahora</button>
         <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
@@ -1702,22 +1718,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- How it works -->
   <section class="l-section l-section-alt l-section-center" id="how">
-    <div class="l-section-label">Cómo funciona</div>
+    <div class="l-section-label"><span class="l-label-line"></span>Cómo funciona<span class="l-label-line"></span></div>
     <h2 class="l-section-title">Tres pasos y tu anuncio <em>está listo</em></h2>
     <p class="l-section-sub">Sin equipos de producción. Sin demoras. Solo resultados.</p>
     <div class="l-steps">
       <div class="l-step">
-        <div class="l-step-num">01</div>
+        <div class="l-step-num"><em>01</em></div>
         <div class="l-step-title">Elegí tu actor</div>
         <p class="l-step-desc">Seleccioná uno de nuestros actores IA con personalidades y estilos únicos, adaptados a tu producto.</p>
       </div>
       <div class="l-step">
-        <div class="l-step-num">02</div>
+        <div class="l-step-num"><em>02</em></div>
         <div class="l-step-title">Escribí tu script</div>
         <p class="l-step-desc">Describí tu producto o dejá que la IA genere el guión por vos según el tono y duración que necesitás.</p>
       </div>
       <div class="l-step">
-        <div class="l-step-num">03</div>
+        <div class="l-step-num"><em>03</em></div>
         <div class="l-step-title">Descargá tu video</div>
         <p class="l-step-desc">En minutos tenés un MP4 listo para publicar en Meta, TikTok o Instagram con audio sincronizado.</p>
       </div>
@@ -1727,7 +1743,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Features -->
   <section class="l-section" id="features">
     <div class="l-section-center" style="margin-bottom:56px;">
-      <div class="l-section-label">Features</div>
+      <div class="l-section-label"><span class="l-label-line"></span>Features<span class="l-label-line"></span></div>
       <h2 class="l-section-title">Creá mejores anuncios <em>con IA</em></h2>
       <p class="l-section-sub">Todo lo que necesitás para escalar tus campañas sin escalar tu equipo.</p>
     </div>
@@ -1773,7 +1789,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Testimonials -->
   <section class="l-section l-section-alt">
     <div class="l-section-center" style="margin-bottom:52px;">
-      <div class="l-section-label">Testimonios</div>
+      <div class="l-section-label"><span class="l-label-line"></span>Testimonios<span class="l-label-line"></span></div>
       <h2 class="l-section-title">Recomendado por <em>emprendedores</em></h2>
       <p class="l-section-sub">Dueños de e-commerce que ya generan anuncios con Futuriads</p>
     </div>
@@ -1798,7 +1814,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- Pricing -->
   <section class="l-section l-section-center" id="pricing">
-    <div class="l-section-label">Precios</div>
+    <div class="l-section-label"><span class="l-label-line"></span>Precios<span class="l-label-line"></span></div>
     <h2 class="l-section-title">Simple, <em>sin sorpresas</em></h2>
     <p class="l-section-sub" style="padding: 22px">Pagás solo lo que usás. Cancelás cuando querés.</p>
     <div class="l-pricing-grid">
@@ -1884,14 +1900,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Sidebar -->
   <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
-<a class="a-sidebar-logo" href="#" onclick="return false;">
-    <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
-</a>
+<a class="a-sidebar-logo" href="#" onclick="return false;"><span class="a-logo-wordmark">Futuriads</span></a>
       <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>
       </button>
     </div>
     <nav class="a-nav">
+      <div class="a-nav-group-label">ESPACIO</div>
       <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')" data-tooltip="Dashboard">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1.5"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1.5"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.5"/></svg>
         <span class="a-nav-label">Dashboard</span>
@@ -1909,6 +1924,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="10" rx="2"/><path d="M7 5.5l4 2-4 2V5.5z" fill="currentColor" stroke="none"/></svg>
         <span class="a-nav-label">Campañas</span>
       </div>
+      <div class="a-nav-group-label" style="margin-top:8px;">GENERAL</div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
@@ -1940,11 +1956,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div class="a-dash-header">
         <div>
           <div class="a-dash-greeting" id="dashGreeting">¡Hola!</div>
-          <div class="a-dash-sub">¿Qué estás creando hoy?</div>
+          <div class="a-dash-sub" id="dashSub">¿Qué estás creando hoy?</div>
         </div>
         <div class="a-credits-badge">
-          <span class="a-credits-label">Créditos</span>
-          <span class="a-credits-val">1.500</span>
+          <span class="a-credits-label">CRÉDITOS</span>
+          <span class="a-credits-val" id="dashCreditsVal">—</span>
           <div class="a-credits-add" onclick="openModal()" title="Recargar créditos">+</div>
         </div>
       </div>
@@ -1952,14 +1968,17 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div class="a-metrics">
         <div class="a-metric">
           <div class="a-metric-label">VIDEOS ESTE MES</div>
+          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="3" width="10" height="8" rx="1.5"/><path d="M5 3V1M9 3V1M5 11v2M9 11v2"/></svg></div>
           <div class="a-metric-val">3</div>
         </div>
         <div class="a-metric">
           <div class="a-metric-label">VIDEOS RESTANTES</div>
+          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1.5"/></svg></div>
           <div class="a-metric-val" style="color:var(--text2);">12</div>
         </div>
         <div class="a-metric">
-          <div class="a-metric-label">PLAN ACTIVO</div>
+          <div class="a-metric-label">CAMPAÑAS ACTIVAS</div>
+          <div class="a-metric-icon"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="9" rx="2"/><path d="M6 5.5l3.5 2L6 9V5.5z" fill="currentColor" stroke="none"/></svg></div>
           <div class="a-metric-badge" style="margin-top: 8px; font-size: 22px">Standard</div>
         </div>
       </div>
@@ -2142,13 +2161,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <!-- ---- NUEVO VIDEO ---- -->
     <div class="screen" id="screen-nuevo">
       <div class="a-step-ind" id="stepInd">
-        <div class="a-step-dot active" id="sd0"></div>
+        <div class="a-step-dot active" id="sd0">1</div>
         <div class="a-step-line" id="sc0"></div>
-        <div class="a-step-dot" id="sd1"></div>
+        <div class="a-step-dot" id="sd1">2</div>
         <div class="a-step-line" id="sc1"></div>
-        <div class="a-step-dot" id="sd2"></div>
+        <div class="a-step-dot" id="sd2">3</div>
         <div class="a-step-line" id="sc2"></div>
-        <div class="a-step-dot" id="sd3"></div>
+        <div class="a-step-dot" id="sd3">4</div>
         <span class="a-step-lbl" id="stepLabel">Elegí tu actor</span>
       </div>
 
@@ -2273,11 +2292,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
     <!-- ---- NUEVA IMAGEN ---- -->
     <div class="screen" id="screen-nueva-imagen">
       <div class="a-step-ind" style="display:flex;align-items:center;gap:8px;margin-bottom:36px;">
-        <div class="a-step-dot active" id="img-sd0"></div>
+        <div class="a-step-dot active" id="img-sd0">1</div>
         <div class="a-step-conn" id="img-sc0"></div>
-        <div class="a-step-dot" id="img-sd1"></div>
+        <div class="a-step-dot" id="img-sd1">2</div>
         <div class="a-step-conn" id="img-sc1"></div>
-        <div class="a-step-dot" id="img-sd2"></div>
+        <div class="a-step-dot" id="img-sd2">3</div>
         <span style="margin-left:14px;font-size:12px;color:var(--text2);" id="imgStepLabel">Tu prompt</span>
       </div>
 
@@ -3364,6 +3383,8 @@ function updateCreditsUI(me) {
   const planInfo = getPlanInfo(plan);
 
   // Widget del sidebar
+  const dashCreditsVal = document.getElementById('dashCreditsVal');
+  if (dashCreditsVal) dashCreditsVal.textContent = total.toLocaleString('es-AR');
   const widgetAmount = document.getElementById('creditsWidgetAmount');
   const widgetSub = document.getElementById('creditsWidgetSub');
   if (widgetAmount) {
@@ -3442,7 +3463,11 @@ function updateProfileUI(profile, email) {
 
   // Dashboard greeting
   const dashGreeting = document.getElementById('dashGreeting');
-  if (dashGreeting) dashGreeting.textContent = '¡Hola, ' + firstName + '!';
+  if (dashGreeting) {
+      const hour = new Date().getHours();
+      const saludo = hour < 12 ? 'Buenos días' : hour < 19 ? 'Buenas tardes' : 'Buenas noches';
+      dashGreeting.textContent = saludo + ', ' + firstName + '.';
+    }
 
   // Profile page (datos personales)
   const profileAvatar = document.getElementById('profileAvatar');
