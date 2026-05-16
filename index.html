@@ -4669,14 +4669,93 @@ async function campApproveClip() {
 
 async function campRegenCurrentClip() {
   _camp.clipEnqueued[_camp.currentClipIndex] = false;
-  await campGenerateOneClipV2(_camp.currentClipIndex);
   document.getElementById('campReviewControls').style.display = 'none';
+  
+  if (_camp.videoMode === 'talking') {
+    await campGenerateOneClip(_camp.currentClipIndex);
+  } else {
+    await campRegenOneClipV2(_camp.currentClipIndex);
+  }
 }
 
 async function campRegenClip(index) {
   _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
-  await campGenerateOneClipV2(index);
+  
+  if (_camp.videoMode === 'talking') {
+    await campGenerateOneClip(index);
+  } else {
+    await campRegenOneClipV2(index);
+  }
+}
+
+// Regenerar un clip en modo voiceover — usa endpoint directo que no requiere audioClips en memoria
+async function campRegenOneClipV2(index) {
+  if (_camp.clipEnqueued[index]) return;
+  
+  // Si tenemos los datos en memoria, usar campGenerateOneClipV2
+  const clip = _camp.audioClips && _camp.audioClips[index];
+  const vp = _camp.visualPrompts && _camp.visualPrompts.find(p => p.clipIndex === index);
+  
+  if (clip && vp) {
+    await campGenerateOneClipV2(index);
+    return;
+  }
+  
+  // Si no hay datos en memoria, obtener del estado de la campaña y regenerar con los datos del clip existente
+  if (!_camp.campaignId) { showToast('Error: no hay campaña activa'); return; }
+  
+  _camp.clipEnqueued[index] = true;
+  campUpdateClipCard(index, 'generating', null);
+  
+  try {
+    // Obtener estado de la campaña para recuperar datos del clip
+    const statusResp = await fetch(BACKEND_URL + '/api/campaign/status', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaignId: _camp.campaignId, userId: _currentUser.userId })
+    });
+    const statusData = await statusResp.json();
+    
+    // Buscar el clip existente para tomar su text_chunk como base del prompt
+    const existingClip = statusData.clips ? statusData.clips.find(c => c.clip_index === index) : null;
+    const textChunk = existingClip ? existingClip.text_chunk : '';
+    
+    // Generar un prompt visual nuevo con Claude
+    const promptText = textChunk || 'UGC style video, woman showing product to camera, natural indoor lighting';
+    
+    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        clipIndex: index,
+        visualPrompt: promptText,
+        avatarImageUrl: _camp.photoUrl,
+        productImageUrl: _camp.productPhotoUrl,
+        clipDuration: 12,
+        resolution: _camp.resolution || '480p',
+        aspectRatio: _camp.aspectRatio || '9:16',
+        userId: _currentUser.userId
+      })
+    });
+    
+    if (resp.status === 409) {
+      // Clip existe con status generating/completed — forzar reset en backend
+      showToast('El clip está en proceso. Esperá a que termine.');
+      _camp.clipEnqueued[index] = false;
+      return;
+    }
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      console.error('Error regenerando clip v2', index, err);
+      _camp.clipEnqueued[index] = false;
+      campUpdateClipCard(index, 'failed', null);
+      if (resp.status === 402) showToast('No tenés créditos suficientes.');
+    }
+  } catch (e) {
+    console.error('Error regen clip v2', index, e);
+    _camp.clipEnqueued[index] = false;
+    campUpdateClipCard(index, 'failed', null);
+  }
 }
 
 async function campLoadList() {
