@@ -4540,12 +4540,23 @@ async function confirmAndGenerate() {
       const aspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value || '1:1';
       const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
 
+      // Verificar que todas las refs terminaron de subir
+      const stillUploading = _dashRefs.some(r => r.uploading);
+      if (stillUploading) {
+        showToast('Esperá a que terminen de subir las imágenes de referencia');
+        resetGcmButtons(confirmBtn, cancelBtn);
+        statusEl.style.display = 'none';
+        return;
+      }
+
+      const refUrls = _dashRefs.filter(r => r.publicUrl).map(r => r.publicUrl);
+
       statusMsg.textContent = 'Enviando a ' + (model === 'gpt-image-2' ? 'GPT Image 2' : 'Nano Banana 2') + '...';
       const genRes = await fetch(BACKEND_URL + '/api/generate-image', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model, prompt, aspectRatio: aspect, resolution: quality, userId,
-          inputImages: _dashRefs.length > 0 ? _dashRefs.map(r => r.base64) : undefined
+          inputImages: refUrls.length > 0 ? refUrls : undefined
         })
       });
 
@@ -4647,26 +4658,53 @@ function resetGcmButtons(confirmBtn, cancelBtn) {
 function startFromDashboard() {
   openGenConfirmModal();
 }
-let _dashRefs = []; // Array de { file, base64 }
+let _dashRefs = []; // Array de { dataUrl, publicUrl, uploading }
 
-function handleDashRefUpload(event) {
+async function handleDashRefUpload(event) {
   const files = Array.from(event.target.files);
-  if (!files.length) return;
-  const maxTotal = 14;
-  const remaining = maxTotal - _dashRefs.length;
-  const toAdd = files.slice(0, remaining);
-
-  toAdd.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target.result.split(',')[1];
-      _dashRefs.push({ file, base64, dataUrl: e.target.result });
-      renderDashRefs();
-    };
-    reader.readAsDataURL(file);
-  });
-  // Limpiar el input para permitir volver a seleccionar los mismos archivos
   event.target.value = '';
+  if (!files.length) return;
+
+  const remaining = 14 - _dashRefs.length;
+  const toAdd = files.slice(0, remaining);
+  if (!toAdd.length) { showToast('Máximo 14 imágenes de referencia'); return; }
+
+  // Verificar sesión para poder subir
+  const { data: sess } = await supa.auth.getSession();
+  if (!sess?.session) { showToast('Tenés que iniciar sesión para subir imágenes'); return; }
+  const userId = sess.session.user.id;
+  const accessToken = sess.session.access_token;
+
+  for (const file of toAdd) {
+    // Preview inmediato mientras sube
+    const dataUrl = await new Promise(res => {
+      const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file);
+    });
+    const idx = _dashRefs.length;
+    _dashRefs.push({ dataUrl, publicUrl: null, uploading: true });
+    renderDashRefs();
+
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      });
+      if (!uploadRes.ok) throw new Error('Upload falló');
+      _dashRefs[idx].publicUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+      _dashRefs[idx].uploading = false;
+    } catch(e) {
+      _dashRefs.splice(idx, 1);
+      showToast(`No se pudo subir "${file.name}"`);
+    }
+    renderDashRefs();
+  }
 }
 
 function renderDashRefs() {
@@ -4678,19 +4716,27 @@ function renderDashRefs() {
   list.innerHTML = '';
   _dashRefs.forEach((ref, i) => {
     const thumb = document.createElement('div');
-    thumb.className = 'img-ref-thumb';
     thumb.style.cssText = 'position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
-    thumb.innerHTML = `
-      <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />
-      <button onclick="removeDashRef(${i})" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:#fff;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>
-    `;
+    if (ref.uploading) {
+      thumb.innerHTML = `
+        <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;opacity:0.4;" />
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" style="animation:spin 1s linear infinite;"><circle cx="7" cy="7" r="5.5" stroke-dasharray="22" stroke-dashoffset="8"/></svg>
+        </div>`;
+    } else {
+      thumb.innerHTML = `
+        <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />
+        <button onclick="removeDashRef(${i})" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:#fff;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>`;
+    }
     list.appendChild(thumb);
   });
 
   const hasRefs = _dashRefs.length > 0;
   if (preview) preview.style.display = hasRefs ? 'block' : 'none';
   if (btn) btn.classList.toggle('has-refs', hasRefs);
-  if (btn) btn.title = hasRefs ? `${_dashRefs.length} imagen${_dashRefs.length > 1 ? 'es' : ''} de referencia` : 'Agregar imagen de referencia';
+  if (btn) btn.title = hasRefs
+    ? `${_dashRefs.length} imagen${_dashRefs.length > 1 ? 'es' : ''} de referencia`
+    : 'Agregar imagen de referencia';
 }
 
 function removeDashRef(i) {
