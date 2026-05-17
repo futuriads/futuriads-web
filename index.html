@@ -4066,7 +4066,6 @@ function showScreen(name, instant){
   try { localStorage.setItem('futuriads_lastScreen', name); } catch(e) {}
 
   if (instant) {
-    // Modo instantáneo (para el boot tras refresh): sin animación
     document.querySelectorAll('.screen').forEach(s => {
       s.classList.remove('active');
       s.style.display = 'none';
@@ -4087,11 +4086,15 @@ function showScreen(name, instant){
       setTimeout(()=>{s.classList.remove('active');s.style.display='none';},200);
     });
     document.querySelectorAll('.a-nav-item').forEach(n=>n.classList.remove('active'));
-    document.getElementById('nav-'+name).classList.add('active');
+    // Solo activar el nav-item si existe (algunas pantallas no tienen nav item visible)
+    const navEl = document.getElementById('nav-'+name);
+    if (navEl) navEl.classList.add('active');
     setTimeout(()=>{
       const sc=document.getElementById('screen-'+name);
-      sc.style.display='block';
-      requestAnimationFrame(()=>{sc.classList.add('active');sc.style.opacity='1';});
+      if (sc) {
+        sc.style.display='block';
+        requestAnimationFrame(()=>{sc.classList.add('active');sc.style.opacity='1';});
+      }
     },210);
   }
 
