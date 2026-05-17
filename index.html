@@ -2180,13 +2180,91 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
           </div>
           <button class="a-gen-btn" onclick="startFromDashboard()">Generar</button>
-          <button class="a-ref-btn" onclick="document.getElementById('dashRefInput').click()" title="Agregar imagen de referencia">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><circle cx="5.5" cy="5.5" r="1.2"/><path d="m1.5 11 3.5-3.5L9 11l2-2 2.5 2.5"/></svg>
-          </button>
+          <!-- Selector de modo (solo video) -->
+          <div id="videoModeSelector" style="display:flex;align-items:center;gap:6px;margin-left:6px;">
+            <span style="font-size:11px;color:var(--text3);white-space:nowrap;">Modo</span>
+            <div class="custom-select" id="cs-video-mode" style="min-width:140px;">
+              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-video-mode')" style="font-size:12px;padding:6px 10px;">
+                <span>Solo prompt</span>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+              </div>
+              <div class="custom-select-dropdown" style="min-width:180px;">
+                <div class="custom-select-option selected" data-value="text" onclick="selectVideoMode(this)">Solo prompt</div>
+                <div class="custom-select-option" data-value="multi_reference" onclick="selectVideoMode(this)">Con imágenes</div>
+                <div class="custom-select-option" data-value="ugc_actor" onclick="selectVideoMode(this)">Con actor</div>
+                <div class="custom-select-option" data-value="ugc_both" onclick="selectVideoMode(this)">Actor + producto</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Modal de confirmación de generación -->
-  <div class="modal-overlay" id="genConfirmModal" style="display:none;align-items:center;justify-content:center;opacity:1;pointer-events:all;" onclick="if(event.target===this)closeGenConfirmModal()">
+        <!-- Panel de uploads según modo seleccionado (solo video) -->
+        <div id="videoModePanel" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+
+          <!-- Con imágenes: multi_reference, hasta 9 -->
+          <div id="modePanel-multi_reference" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="font-size:11px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text3);">Imágenes de referencia <span style="font-weight:400;">(máx. 9)</span></div>
+              <div id="multiRefCount" style="font-size:11px;color:var(--text3);">0 / 9</div>
+            </div>
+            <div id="multiRefGrid" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <button onclick="document.getElementById('multiRefInput').click()" id="multiRefAddBtn"
+                style="width:52px;height:52px;border-radius:8px;border:1.5px dashed var(--border);background:var(--hover);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <input type="file" id="multiRefInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleMultiRefUpload(event)" />
+          </div>
+
+          <!-- Con actor: ugc_actor -->
+          <div id="modePanel-ugc_actor" style="display:none;">
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Actor</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <div class="dash-actor selected" data-actor="Facu" onclick="selectDashActor(this)" style="width:44px;height:44px;border-radius:8px;border:1.5px solid #fff;overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+              <div class="dash-actor" data-actor="Sofi" onclick="selectDashActor(this)" style="width:44px;height:44px;border-radius:8px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+              <div class="dash-actor" data-actor="Paula" onclick="selectDashActor(this)" style="width:44px;height:44px;border-radius:8px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+              <div class="dash-actor" data-actor="José" onclick="selectDashActor(this)" style="width:44px;height:44px;border-radius:8px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+              <div id="dashCustomActor" onclick="document.getElementById('dashActorInput').click()"
+                style="width:44px;height:44px;border-radius:8px;border:1.5px dashed var(--border);background:var(--hover);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative;" title="Mi propio avatar">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>
+              </div>
+              <input type="file" id="dashActorInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleDashActorUpload(event)" />
+            </div>
+          </div>
+
+          <!-- Actor + producto: ugc_both -->
+          <div id="modePanel-ugc_both" style="display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div>
+                <div style="font-size:11px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Actor</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;" id="dashActorPicker2">
+                  <div class="dash-actor2 selected" data-actor="Facu" onclick="selectDashActor2(this)" style="width:38px;height:38px;border-radius:7px;border:1.5px solid #fff;overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+                  <div class="dash-actor2" data-actor="Sofi" onclick="selectDashActor2(this)" style="width:38px;height:38px;border-radius:7px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+                  <div class="dash-actor2" data-actor="Paula" onclick="selectDashActor2(this)" style="width:38px;height:38px;border-radius:7px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+                  <div class="dash-actor2" data-actor="José" onclick="selectDashActor2(this)" style="width:38px;height:38px;border-radius:7px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;"><img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;height:100%;object-fit:cover;" /></div>
+                  <div id="dashCustomActor2" onclick="document.getElementById('dashActorInput2').click()"
+                    style="width:38px;height:38px;border-radius:7px;border:1.5px dashed var(--border);background:var(--hover);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative;" title="Mi propio avatar">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>
+                  </div>
+                  <input type="file" id="dashActorInput2" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleDashActorUpload2(event)" />
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text3);">Producto <span style="font-weight:400;">(máx. 9)</span></div>
+                  <div id="bothProductCount" style="font-size:11px;color:var(--text3);">0 / 9</div>
+                </div>
+                <div id="bothProductGrid" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                  <button onclick="document.getElementById('bothProductInput').click()" id="bothProductAddBtn"
+                    style="width:44px;height:44px;border-radius:8px;border:1.5px dashed var(--border);background:var(--hover);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <input type="file" id="bothProductInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleBothProductUpload(event)" />
+              </div>
+            </div>
+          </div>
+        </div> style="display:none;align-items:center;justify-content:center;opacity:1;pointer-events:all;" onclick="if(event.target===this)closeGenConfirmModal()">
     <div class="modal-box" style="max-width:480px;width:100%;padding:28px 28px 24px;">
       <!-- Header -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -2311,12 +2389,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       </div>
     </div>
   </div>
-        <!-- Input oculto para imagen de referencia del dashboard -->
-        <input type="file" id="dashRefInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleDashRefUpload(event)" />
-        <div id="dashRefPreview" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Imágenes de referencia</div>
-          <div id="dashRefList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-        </div>
       </div>
 
       <!-- Métricas rápidas de historial -->
@@ -4693,24 +4765,34 @@ async function confirmAndGenerate() {
 
       const genBody = { script: prompt, duration: dur, aspectRatio: aspect, resolution: res, userId };
 
-      // Actor: si eligió uno predeterminado de la grilla
-      if (_gcmActor && _gcmActor !== '__custom__') genBody.avatar = _gcmActor;
-
-      // Avatar personalizado: URL de Supabase (actúa como influencer)
-      if (_gcmAvatarUrl) genBody.customAvatarUrl = _gcmAvatarUrl;
-
-      // Imagen de producto
-      if (_gcmProductUrl) genBody.referenceImage = _gcmProductUrl;
-
-      // Bloquear si hay algo subiendo
-      const avatarUploading = document.getElementById('gcmAvatarStatus')?.textContent === 'Subiendo...';
-      const productUploading = document.getElementById('gcmProductStatus')?.textContent === 'Subiendo...';
-      if (avatarUploading || productUploading) {
+      // Verificar que no haya imágenes subiendo
+      const uploading = _vMultiRefs.some(r => r.uploading) || _vProducts.some(r => r.uploading);
+      if (uploading) {
         showToast('Esperá a que terminen de subir las imágenes');
         resetGcmButtons(confirmBtn, cancelBtn);
         statusEl.style.display = 'none';
         return;
       }
+
+      // Según el modo seleccionado en el gen-box, armar el payload
+      if (_vMode === 'multi_reference') {
+        // Solo imágenes de referencia (hasta 9)
+        const urls = _vMultiRefs.filter(r => r.publicUrl).map(r => r.publicUrl);
+        if (urls.length) genBody.multiReferenceImages = urls;
+
+      } else if (_vMode === 'ugc_actor') {
+        // Actor (predeterminado o personalizado)
+        if (_vActorCustomUrl) genBody.customAvatarUrl = _vActorCustomUrl;
+        else if (_vActorName) genBody.avatar = _vActorName;
+
+      } else if (_vMode === 'ugc_both') {
+        // Actor + productos
+        if (_vActor2CustomUrl) genBody.customAvatarUrl = _vActor2CustomUrl;
+        else if (_vActor2Name) genBody.avatar = _vActor2Name;
+        const productUrls = _vProducts.filter(r => r.publicUrl).map(r => r.publicUrl);
+        if (productUrls.length) genBody.productImages = productUrls;
+      }
+      // Si _vMode === 'text': no se agregan imágenes
 
       statusMsg.textContent = 'Enviando a Seedance 2.0...';
       const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
@@ -4848,94 +4930,185 @@ function resetGcmButtons(confirmBtn, cancelBtn) {
   if (cancelBtn) cancelBtn.style.display = '';
 }
 
-// startFromDashboard ahora abre el modal directamente
+// startFromDashboard: lee el modo del gen-box y abre el modal de confirmación
 function startFromDashboard() {
+  const prompt = document.getElementById('genTextarea')?.value?.trim() || '';
+  if (!prompt) { showToast('Escribí un prompt antes de generar'); return; }
   openGenConfirmModal();
 }
-let _dashRefs = []; // Array de { dataUrl, publicUrl, uploading }
+/* ================================================================
+   NUEVO SISTEMA DE MODOS DE VIDEO EN EL GEN-BOX DEL DASHBOARD
+   ================================================================ */
 
-async function handleDashRefUpload(event) {
-  const files = Array.from(event.target.files);
-  event.target.value = '';
-  if (!files.length) return;
+let _vMode = 'text';
+let _vMultiRefs = [];
+let _vActorName = 'Facu';
+let _vActorCustomUrl = null;
+let _vActor2Name = 'Facu';
+let _vActor2CustomUrl = null;
+let _vProducts = [];
 
-  const remaining = 14 - _dashRefs.length;
-  const toAdd = files.slice(0, remaining);
-  if (!toAdd.length) { showToast('Máximo 14 imágenes de referencia'); return; }
+function switchGenTab(tab) {
+  const isVideo = tab === 'video';
+  document.getElementById('tabVideo').classList.toggle('active', isVideo);
+  document.getElementById('tabImage').classList.toggle('active', !isVideo);
+  document.getElementById('videoOpts').classList.toggle('active', isVideo);
+  document.getElementById('imageOpts').classList.toggle('active', !isVideo);
+  const modeSelector = document.getElementById('videoModeSelector');
+  if (modeSelector) modeSelector.style.display = isVideo ? 'flex' : 'none';
+  const modePanel = document.getElementById('videoModePanel');
+  if (modePanel && !isVideo) modePanel.style.display = 'none';
+}
 
-  // Verificar sesión para poder subir
+function selectVideoMode(optionEl) {
+  const select = document.getElementById('cs-video-mode');
+  select.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+  optionEl.classList.add('selected');
+  select.querySelector('.custom-select-trigger span').textContent = optionEl.textContent;
+  select.classList.remove('open');
+  _vMode = optionEl.dataset.value;
+  const panel = document.getElementById('videoModePanel');
+  ['multi_reference','ugc_actor','ugc_both'].forEach(m => {
+    const el = document.getElementById('modePanel-' + m);
+    if (el) el.style.display = 'none';
+  });
+  if (_vMode === 'text') { panel.style.display = 'none'; }
+  else { panel.style.display = 'block'; const sub = document.getElementById('modePanel-' + _vMode); if (sub) sub.style.display = 'block'; }
+}
+
+async function handleMultiRefUpload(event) {
+  const files = Array.from(event.target.files); event.target.value = '';
+  const remaining = 9 - _vMultiRefs.length;
+  if (!remaining) { showToast('Máximo 9 imágenes'); return; }
   const { data: sess } = await supa.auth.getSession();
-  if (!sess?.session) { showToast('Tenés que iniciar sesión para subir imágenes'); return; }
-  const userId = sess.session.user.id;
-  const accessToken = sess.session.access_token;
-
-  for (const file of toAdd) {
-    // Preview inmediato mientras sube
-    const dataUrl = await new Promise(res => {
-      const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file);
-    });
-    const idx = _dashRefs.length;
-    _dashRefs.push({ dataUrl, publicUrl: null, uploading: true });
-    renderDashRefs();
-
-    try {
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
-      const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': file.type || 'application/octet-stream',
-          'x-upsert': 'true'
-        },
-        body: file
-      });
-      if (!uploadRes.ok) throw new Error('Upload falló');
-      _dashRefs[idx].publicUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
-      _dashRefs[idx].uploading = false;
-    } catch(e) {
-      _dashRefs.splice(idx, 1);
-      showToast(`No se pudo subir "${file.name}"`);
-    }
-    renderDashRefs();
+  const userId = sess?.session?.user?.id; const token = sess?.session?.access_token;
+  for (const file of files.slice(0, remaining)) {
+    const dataUrl = await readFileAsDataUrl(file);
+    const idx = _vMultiRefs.length;
+    _vMultiRefs.push({ dataUrl, publicUrl: null, uploading: true }); renderMultiRefGrid();
+    try { const url = await uploadToStorage(file, userId, token, 'ref'); _vMultiRefs[idx].publicUrl = url; _vMultiRefs[idx].uploading = false; }
+    catch(e) { _vMultiRefs.splice(idx, 1); showToast('Error subiendo imagen'); }
+    renderMultiRefGrid();
   }
 }
 
-function renderDashRefs() {
-  const list = document.getElementById('dashRefList');
-  const preview = document.getElementById('dashRefPreview');
-  const btn = document.querySelector('.a-ref-btn');
-  if (!list) return;
-
-  list.innerHTML = '';
-  _dashRefs.forEach((ref, i) => {
-    const thumb = document.createElement('div');
-    thumb.style.cssText = 'position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
-    if (ref.uploading) {
-      thumb.innerHTML = `
-        <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;opacity:0.4;" />
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" style="animation:spin 1s linear infinite;"><circle cx="7" cy="7" r="5.5" stroke-dasharray="22" stroke-dashoffset="8"/></svg>
-        </div>`;
-    } else {
-      thumb.innerHTML = `
-        <img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;" />
-        <button onclick="removeDashRef(${i})" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:#fff;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>`;
-    }
-    list.appendChild(thumb);
-  });
-
-  const hasRefs = _dashRefs.length > 0;
-  if (preview) preview.style.display = hasRefs ? 'block' : 'none';
-  if (btn) btn.classList.toggle('has-refs', hasRefs);
-  if (btn) btn.title = hasRefs
-    ? `${_dashRefs.length} imagen${_dashRefs.length > 1 ? 'es' : ''} de referencia`
-    : 'Agregar imagen de referencia';
+function renderMultiRefGrid() {
+  const grid = document.getElementById('multiRefGrid'); const countEl = document.getElementById('multiRefCount'); const addBtn = document.getElementById('multiRefAddBtn');
+  if (!grid) return;
+  grid.querySelectorAll('.vref-thumb').forEach(el => el.remove());
+  _vMultiRefs.forEach((ref, i) => { grid.insertBefore(makeThumb(ref, () => { _vMultiRefs.splice(i, 1); renderMultiRefGrid(); }), grid.firstChild); });
+  const count = _vMultiRefs.length;
+  if (countEl) countEl.textContent = `${count} / 9`;
+  if (addBtn) addBtn.style.display = count >= 9 ? 'none' : 'flex';
 }
 
-function removeDashRef(i) {
-  _dashRefs.splice(i, 1);
-  renderDashRefs();
+function selectDashActor(el) {
+  document.querySelectorAll('.dash-actor').forEach(a => a.style.borderColor = 'var(--border)');
+  el.style.borderColor = '#fff'; _vActorName = el.dataset.actor; _vActorCustomUrl = null;
+  const slot = document.getElementById('dashCustomActor');
+  if (slot) { slot.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>'; slot.style.borderColor = 'var(--border)'; }
+}
+
+async function handleDashActorUpload(event) {
+  const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+  const { data: sess } = await supa.auth.getSession();
+  const dataUrl = await readFileAsDataUrl(file);
+  const slot = document.getElementById('dashCustomActor');
+  if (slot) { slot.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;" />`; slot.style.borderColor = '#fff'; }
+  document.querySelectorAll('.dash-actor').forEach(a => a.style.borderColor = 'var(--border)');
+  try {
+    const url = await uploadToStorage(file, sess?.session?.user?.id, sess?.session?.access_token, 'avatar');
+    _vActorCustomUrl = url; _vActorName = null;
+    if (slot) slot.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;" /><button onclick="clearDashCustomActor();event.stopPropagation();" style="position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>`;
+  } catch(e) { showToast('Error subiendo avatar'); _vActorCustomUrl = null; }
+}
+
+function clearDashCustomActor() {
+  _vActorCustomUrl = null; _vActorName = 'Facu';
+  const slot = document.getElementById('dashCustomActor');
+  if (slot) { slot.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>'; slot.style.borderColor = 'var(--border)'; }
+  const first = document.querySelector('.dash-actor'); if (first) { first.style.borderColor = '#fff'; _vActorName = first.dataset.actor; }
+}
+
+function selectDashActor2(el) {
+  document.querySelectorAll('.dash-actor2').forEach(a => a.style.borderColor = 'var(--border)');
+  el.style.borderColor = '#fff'; _vActor2Name = el.dataset.actor; _vActor2CustomUrl = null;
+  const slot = document.getElementById('dashCustomActor2');
+  if (slot) { slot.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>'; slot.style.borderColor = 'var(--border)'; }
+}
+
+async function handleDashActorUpload2(event) {
+  const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+  const { data: sess } = await supa.auth.getSession();
+  const dataUrl = await readFileAsDataUrl(file);
+  const slot = document.getElementById('dashCustomActor2');
+  if (slot) { slot.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;" />`; slot.style.borderColor = '#fff'; }
+  document.querySelectorAll('.dash-actor2').forEach(a => a.style.borderColor = 'var(--border)');
+  try {
+    const url = await uploadToStorage(file, sess?.session?.user?.id, sess?.session?.access_token, 'avatar2');
+    _vActor2CustomUrl = url; _vActor2Name = null;
+    if (slot) slot.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;" /><button onclick="clearDashCustomActor2();event.stopPropagation();" style="position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>`;
+  } catch(e) { showToast('Error subiendo avatar'); _vActor2CustomUrl = null; }
+}
+
+function clearDashCustomActor2() {
+  _vActor2CustomUrl = null; _vActor2Name = 'Facu';
+  const slot = document.getElementById('dashCustomActor2');
+  if (slot) { slot.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M7 2v10M2 7h10" stroke-linecap="round"/></svg>'; slot.style.borderColor = 'var(--border)'; }
+  const first = document.querySelector('.dash-actor2'); if (first) { first.style.borderColor = '#fff'; _vActor2Name = first.dataset.actor; }
+}
+
+async function handleBothProductUpload(event) {
+  const files = Array.from(event.target.files); event.target.value = '';
+  const remaining = 9 - _vProducts.length;
+  if (!remaining) { showToast('Máximo 9 imágenes de producto'); return; }
+  const { data: sess } = await supa.auth.getSession();
+  const userId = sess?.session?.user?.id; const token = sess?.session?.access_token;
+  for (const file of files.slice(0, remaining)) {
+    const dataUrl = await readFileAsDataUrl(file);
+    const idx = _vProducts.length;
+    _vProducts.push({ dataUrl, publicUrl: null, uploading: true }); renderBothProductGrid();
+    try { const url = await uploadToStorage(file, userId, token, 'product'); _vProducts[idx].publicUrl = url; _vProducts[idx].uploading = false; }
+    catch(e) { _vProducts.splice(idx, 1); showToast('Error subiendo imagen'); }
+    renderBothProductGrid();
+  }
+}
+
+function renderBothProductGrid() {
+  const grid = document.getElementById('bothProductGrid'); const countEl = document.getElementById('bothProductCount'); const addBtn = document.getElementById('bothProductAddBtn');
+  if (!grid) return;
+  grid.querySelectorAll('.vref-thumb').forEach(el => el.remove());
+  _vProducts.forEach((ref, i) => { grid.insertBefore(makeThumb(ref, () => { _vProducts.splice(i, 1); renderBothProductGrid(); }), grid.firstChild); });
+  const count = _vProducts.length;
+  if (countEl) countEl.textContent = `${count} / 9`;
+  if (addBtn) addBtn.style.display = count >= 9 ? 'none' : 'flex';
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
+}
+
+async function uploadToStorage(file, userId, token, prefix) {
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `${userId}/${Date.now()}_${prefix}.${ext}`;
+  const res = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
+    method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' }, body: file
+  });
+  if (!res.ok) throw new Error('Upload falló');
+  return `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+}
+
+function makeThumb(ref, onRemove) {
+  const div = document.createElement('div');
+  div.className = 'vref-thumb';
+  div.style.cssText = 'position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
+  if (ref.uploading) {
+    div.innerHTML = `<img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;opacity:0.4;" /><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" style="animation:spin 1s linear infinite;"><circle cx="7" cy="7" r="5.5" stroke-dasharray="22" stroke-dashoffset="8"/></svg></div>`;
+  } else {
+    const removeStr = `event.stopPropagation();(${onRemove.toString()})()`;
+    div.innerHTML = `<img src="${ref.dataUrl}" style="width:100%;height:100%;object-fit:cover;" /><button onclick="${removeStr}" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>`;
+  }
+  return div;
 }
 
 /* ---- Dashboard → flujo de generación ---- */
