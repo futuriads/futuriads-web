@@ -4634,9 +4634,8 @@ async function confirmAndGenerate() {
         return;
       }
       if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
-      requestId = (await genRes.json()).requestId;
-
-    } else {
+      const videoData = await genRes.json();
+      requestId = videoData.requestId;
       const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
       const aspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value || '1:1';
       const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
@@ -4670,9 +4669,8 @@ async function confirmAndGenerate() {
         return;
       }
       if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
-      requestId = (await genRes.json()).requestId;
-
-      // Limpiar refs del dashboard
+      const imageData = await genRes.json();
+      requestId = imageData.requestId;
       _dashRefs = []; renderDashRefs();
     }
 
