@@ -231,8 +231,9 @@ html.pre-landing #app { display: none !important; }
 .camp-prog-dot.done { background: rgba(255,255,255,0.35); }
 .camp-upload-zone {
   border: 2px dashed var(--border); border-radius: var(--r-lg);
-  padding: 48px; text-align: center; cursor: pointer;
+  padding: 32px 20px; text-align: center; cursor: pointer;
   transition: border-color 0.2s, background 0.2s; position: relative;
+  min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .camp-upload-zone:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
 .camp-upload-zone.has-file { border-style: solid; border-color: rgba(255,255,255,0.2); }
@@ -2612,8 +2613,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <!-- Producto -->
               <div>
                 <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Foto del producto <span style="font-weight:400;color:var(--text3);">(opcional)</span></div>
-                <input type="file" id="campProductInput" accept="image/*" style="display:none;" onchange="campProductSelected(event)">
-                <div class="camp-upload-zone" id="campProductZone" onclick="document.getElementById('campProductInput').click()">
+                <input type="file" id="campProductFileInput" accept="image/*" style="display:none;" onchange="campProductSelected(event)">
+                <div class="camp-upload-zone" id="campProductZone" onclick="document.getElementById('campProductFileInput').click()">
                   <div class="camp-upload-icon">🛍️</div>
                   <div class="camp-upload-label">Subí la foto del producto</div>
                   <div class="camp-upload-sub">JPG o PNG · fondo limpio recomendado</div>
@@ -3699,6 +3700,7 @@ function campStartNew() {
   const prodZone = document.getElementById('campProductZone'); if(prodZone) prodZone.classList.remove('has-file');
   const prodPrev = document.getElementById('campProductPreview'); if(prodPrev){ prodPrev.src=''; }
   const campPhoto = document.getElementById('campPhotoInput'); if(campPhoto) campPhoto.value = '';
+  const campProdFile = document.getElementById('campProductFileInput'); if(campProdFile) campProdFile.value = '';
   campGoStep(1);
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'block';
