@@ -229,7 +229,14 @@ html.pre-landing #app { display: none !important; }
 .camp-prog-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); transition: background 0.3s; }
 .camp-prog-dot.active { background: #fff; }
 .camp-prog-dot.done { background: rgba(255,255,255,0.35); }
-.camp-upload-zone {
+.camp-voice-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 16px;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+}
+.camp-voice-card:hover { border-color: rgba(255,255,255,0.2); background: var(--hover); }
+.camp-voice-card.selected { border-color: #fff; background: var(--card2); }
   border: 2px dashed var(--border); border-radius: var(--r-lg);
   padding: 32px 20px; text-align: center; cursor: pointer;
   transition: border-color 0.2s, background 0.2s; position: relative;
@@ -2639,36 +2646,59 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
           </div>
 
-          <!-- PASO 3: Configuración -->
+          <!-- PASO 3: Voz y configuración -->
           <div class="camp-wizard-step" id="campStep-3">
             <div class="camp-step-header">
               <div class="camp-step-num">Paso 3 de 4</div>
-              <div class="camp-step-title">Configuración</div>
-              <div class="camp-step-sub">Ajustá los parámetros de generación de los clips.</div>
+              <div class="camp-step-title">Voz y formato</div>
+              <div class="camp-step-sub">Elegí la voz en off y la calidad del video.</div>
             </div>
-            <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
-              <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">🇦🇷 Rioplatense</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">🌎 Neutro latinoamericano</button>
-                <button class="camp-option-btn" onclick="campSelectAccent('spain', this)">🇪🇸 Español de España</button>
+
+            <!-- Voz -->
+            <div style="margin-bottom:24px;">
+              <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz en off</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="campVoiceOptions">
+                <div class="camp-voice-card selected" data-voice="female" onclick="campSelectVoice('female', this)">
+                  <div style="font-size:15px;margin-bottom:4px;">👩</div>
+                  <div style="font-size:13px;font-weight:600;">Femenina</div>
+                  <div style="font-size:11px;color:var(--text2);">Joven · Natural</div>
+                </div>
+                <div class="camp-voice-card" data-voice="male" onclick="campSelectVoice('male', this)">
+                  <div style="font-size:15px;margin-bottom:4px;">👨</div>
+                  <div style="font-size:13px;font-weight:600;">Masculina</div>
+                  <div style="font-size:11px;color:var(--text2);">Joven · Natural</div>
+                </div>
+                <div class="camp-voice-card" data-voice="female40" onclick="campSelectVoice('female40', this)">
+                  <div style="font-size:15px;margin-bottom:4px;">👩‍💼</div>
+                  <div style="font-size:13px;font-weight:600;">Femenina madura</div>
+                  <div style="font-size:11px;color:var(--text2);">35-45 · Confiable</div>
+                </div>
+                <div class="camp-voice-card" data-voice="male40" onclick="campSelectVoice('male40', this)">
+                  <div style="font-size:15px;margin-bottom:4px;">👨‍💼</div>
+                  <div style="font-size:13px;font-weight:600;">Masculina madura</div>
+                  <div style="font-size:11px;color:var(--text2);">35-45 · Serio</div>
+                </div>
               </div>
-              <div style="font-size:12px;color:var(--text3);">El acento del avatar al hablar en el video. La duración de cada clip se calcula automáticamente.</div>
             </div>
+
+            <!-- Resolución -->
             <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
+              <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
               <div class="camp-options-row" id="campResOptions">
-                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 52 cr/seg</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 115 cr/seg</span></button>
+                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· más rápido</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· mejor calidad</span></button>
               </div>
             </div>
+
+            <!-- Formato -->
             <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Formato</div>
+              <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Formato</div>
               <div class="camp-options-row" id="campAspectOptions">
                 <button class="camp-option-btn selected" onclick="campSelectAspect('9:16', this)">9:16 · Vertical (Reels)</button>
                 <button class="camp-option-btn" onclick="campSelectAspect('1:1', this)">1:1 · Cuadrado</button>
               </div>
             </div>
+
             <div class="camp-nav-row">
               <div style="display:flex;align-items:center;gap:12px;">
                 <div class="camp-progress">
@@ -3671,6 +3701,7 @@ const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
   productUrl: null, productUploading: false,
+  voice: 'female',
   clipDuration: 8, resolution: '480p',
   aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
@@ -3685,6 +3716,7 @@ function campStartNew() {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
     productUrl: null, productUploading: false,
+    voice: 'female',
     clipDuration: 8, resolution: '480p',
     aspectRatio: '9:16', genMode: 'review', accent: 'argentine',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
@@ -3882,6 +3914,12 @@ function campStep2Next() {
   campGoStep(3);
 }
 
+function campSelectVoice(voice, el) {
+  _camp.voice = voice;
+  document.querySelectorAll('.camp-voice-card').forEach(c => c.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+}
+
 function campSelectAccent(accent, btn) {
   _camp.accent = accent;
   document.querySelectorAll('#campAccentOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
@@ -3982,8 +4020,10 @@ function campSelectMode(mode) {
 async function campLaunch() {
   if(!_camp.chunks.length){ showToast('Esperá a que se carguen los chunks'); return; }
   const btn = document.getElementById('campLaunchBtn');
-  btn.textContent = 'Creando campaña...'; btn.disabled = true;
+  btn.textContent = 'Creando anuncio...'; btn.disabled = true;
+
   try {
+    // 1. Crear campaña en DB
     const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -3992,35 +4032,95 @@ async function campLaunch() {
       })
     });
     const createData = await createResp.json();
-    if(!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
+    if(!createResp.ok) throw new Error(createData.error || 'Error creando el anuncio');
     _camp.campaignId = createData.campaign.id;
 
+    // Mostrar vista de generación
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
     document.getElementById('campGenCampaignTitle').textContent = _camp.title;
-    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
+    document.getElementById('campGenStatusTitle').textContent = 'Generando audio con voz en off...';
+    document.getElementById('campGenStatusSub').textContent = 'ElevenLabs está sintetizando la voz. Esto tarda pocos segundos.';
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'none';
-    document.getElementById('campGenProgressBar').style.width = '0%';
+    document.getElementById('campGenProgressBar').style.width = '5%';
     campRenderClipsGrid();
 
-    const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
-    const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
+    // 2. Generar audio con ElevenLabs (timestamps reales)
+    const audioResp = await fetch(BACKEND_URL + '/api/campaign/generate-audio-with-timestamps', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        campaignId: _camp.campaignId, photoUrl: _camp.photoUrl,
-        productUrl: _camp.productUrl || null,
-        totalVariants, userId: _currentUser.userId
+        campaignId: _camp.campaignId,
+        script: _camp.script,
+        voice: _camp.voice || 'female',
+        userId: _currentUser.userId
       })
     });
-    const varData = await varResp.json();
-    if(!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
-    showToast('Variantes encoladas. Esperando resultados...');
+    const audioData = await audioResp.json();
+    if(!audioResp.ok) throw new Error(audioData.error || 'Error generando audio');
+
+    const clips = audioData.clips;
+    _camp.audioUrl = audioData.audioUrl;
+    _camp.clips = clips;
+
+    document.getElementById('campGenStatusTitle').textContent = 'Generando prompts visuales...';
+    document.getElementById('campGenStatusSub').textContent = `Audio listo (${clips.length} clips). Claude está creando los prompts visuales.`;
+    document.getElementById('campGenProgressBar').style.width = '25%';
+
+    // 3. Generar prompts visuales con Claude (sincronizados con el audio)
+    const promptsResp = await fetch(BACKEND_URL + '/api/campaign/generate-visual-prompts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clips,
+        avatarImageUrl: _camp.photoUrl,
+        productImageUrl: _camp.productUrl || null,
+        aspectRatio: _camp.aspectRatio || '9:16'
+      })
+    });
+    const promptsData = await promptsResp.json();
+    if(!promptsResp.ok) throw new Error(promptsData.error || 'Error generando prompts visuales');
+
+    _camp.visualPrompts = promptsData.visualPrompts;
+
+    document.getElementById('campGenStatusTitle').textContent = 'Generando clips de video...';
+    document.getElementById('campGenStatusSub').textContent = `${clips.length} clips en cola. Los videos se generan en paralelo con Seedance 2.0.`;
+    document.getElementById('campGenProgressBar').style.width = '40%';
+
+    // 4. Encolar todos los clips con generate-clip-v2 (video mudo + multi_reference)
+    for(let i = 0; i < clips.length; i++) {
+      const clip = clips[i];
+      const visualPrompt = _camp.visualPrompts[i]?.prompt || clip.text;
+      const clipDur = Math.max(4, Math.min(15, Math.ceil(clip.duration)));
+
+      const clipResp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaignId: _camp.campaignId,
+          clipIndex: i,
+          visualPrompt,
+          avatarImageUrl: _camp.photoUrl,
+          productImageUrl: _camp.productUrl || null,
+          clipDuration: clipDur,
+          resolution: _camp.resolution || '480p',
+          aspectRatio: _camp.aspectRatio || '9:16',
+          userId: _currentUser.userId
+        })
+      });
+      if(clipResp.status === 409) { console.log(`Clip ${i} ya existe, saltando`); continue; }
+      if(!clipResp.ok) {
+        const err = await clipResp.json().catch(() => ({}));
+        if(err.error !== 'INSUFFICIENT_CREDITS') console.warn(`Clip ${i} falló: ${err.error}`);
+      }
+    }
+
+    showToast('Clips encolados. Esperando resultados...');
     campStartPolling();
-  } catch(e){
+
+  } catch(e) {
     showToast('Error: ' + e.message);
-    btn.textContent = '✦ Empezar generación'; btn.disabled = false;
+    btn.textContent = 'Empezar generación'; btn.disabled = false;
+    document.getElementById('campView-wizard').style.display = 'block';
+    document.getElementById('campView-generating').style.display = 'none';
   }
 }
 
