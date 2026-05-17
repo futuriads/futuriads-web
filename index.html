@@ -2198,8 +2198,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
       <!-- Selector de actor (solo para video) -->
       <div id="gcmActorSection" style="display:none;margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Elegí tu actor</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;" id="gcmActorGrid">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Actor (opcional)</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;" id="gcmActorGrid">
+          <div class="gcm-actor" data-actor="" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid #fff;overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <div style="width:100%;aspect-ratio:1;background:var(--hover);display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.3"><circle cx="11" cy="9" r="4"/><path d="M3 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/><line x1="8" y1="8" x2="14" y2="14" stroke="rgba(255,255,255,0.25)"/><line x1="14" y1="8" x2="8" y2="14" stroke="rgba(255,255,255,0.25)"/></svg>
+            </div>
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:#fff;">Ninguno</div>
+          </div>
           <div class="gcm-actor" data-actor="Facu" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
             <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
             <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Facu</div>
@@ -4361,7 +4367,7 @@ function openGenConfirmModal() {
 
   const isVideo = document.getElementById('tabVideo').classList.contains('active');
   _gcmMode = isVideo ? 'video' : 'image';
-  _gcmActor = null;
+  _gcmActor = null; // null = sin actor
 
   // Resetear estado del modal
   document.getElementById('gcmStatus').style.display = 'none';
@@ -4376,10 +4382,11 @@ function openGenConfirmModal() {
 
   // Mostrar/ocultar selector de actor
   document.getElementById('gcmActorSection').style.display = isVideo ? 'block' : 'none';
-  // Limpiar selección anterior de actores
+  // Seleccionar "Ninguno" por defecto
   document.querySelectorAll('.gcm-actor').forEach(el => {
-    el.style.borderColor = 'var(--border)';
-    el.querySelector('div').style.color = 'var(--text2)';
+    const isNone = el.dataset.actor === '';
+    el.style.borderColor = isNone ? '#fff' : 'var(--border)';
+    el.querySelector('div').style.color = isNone ? '#fff' : 'var(--text2)';
   });
 
   // Resumen de config
@@ -4440,7 +4447,7 @@ function selectGcmActor(el) {
   });
   el.style.borderColor = '#fff';
   el.querySelector('div').style.color = '#fff';
-  _gcmActor = el.dataset.actor;
+  _gcmActor = el.dataset.actor || null; // '' → null (sin actor)
   document.getElementById('gcmActorError').style.display = 'none';
 }
 
@@ -4466,11 +4473,6 @@ function downloadGcmVideo() {
 }
 
 async function confirmAndGenerate() {
-  if (_gcmMode === 'video' && !_gcmActor) {
-    document.getElementById('gcmActorError').style.display = 'block';
-    return;
-  }
-
   const prompt = document.getElementById('genTextarea')?.value?.trim() || '';
   const confirmBtn = document.getElementById('gcmConfirmBtn');
   const cancelBtn = confirmBtn.previousElementSibling;
@@ -4516,10 +4518,13 @@ async function confirmAndGenerate() {
       const aspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent || '9:16';
       const res = document.querySelector('#cs-res .custom-select-option.selected')?.textContent || '1080p';
 
+      const genBody = { script: prompt, duration: dur, aspectRatio: aspect, resolution: res, userId };
+      if (_gcmActor) genBody.avatar = _gcmActor;
+
       statusMsg.textContent = 'Enviando a Seedance 2.0...';
       const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ script: prompt, avatar: _gcmActor, duration: dur, aspectRatio: aspect, resolution: res, userId })
+        body: JSON.stringify(genBody)
       });
 
       if (genRes.status === 402) {
