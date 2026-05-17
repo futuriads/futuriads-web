@@ -2268,133 +2268,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         </div><!-- /videoModePanel -->
       </div><!-- /a-gen-box -->
 
-      <!-- Modal de confirmación de generación -->
-      <div class="modal-overlay" id="genConfirmModal" style="display:none;align-items:center;justify-content:center;opacity:1;pointer-events:all;" onclick="if(event.target===this)closeGenConfirmModal()">
-    <div class="modal-box" style="max-width:480px;width:100%;padding:28px 28px 24px;">
-      <!-- Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div id="gcmTitle" style="font-size:16px;font-weight:700;">Confirmar generación</div>
-        <button onclick="closeGenConfirmModal()" style="background:transparent;border:none;cursor:pointer;color:var(--text3);padding:4px;">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l12 12M13 1L1 13"/></svg>
-        </button>
-      </div>
-
-      <!-- Selector de actor (solo para video) -->
-      <div id="gcmActorSection" style="display:none;margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Actor (opcional)</div>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;" id="gcmActorGrid">
-          <div class="gcm-actor" data-actor="" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid #fff;overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
-            <div style="width:100%;aspect-ratio:1;background:var(--hover);display:flex;align-items:center;justify-content:center;">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.3"><circle cx="11" cy="9" r="4"/><path d="M3 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/><line x1="8" y1="8" x2="14" y2="14" stroke="rgba(255,255,255,0.25)"/><line x1="14" y1="8" x2="8" y2="14" stroke="rgba(255,255,255,0.25)"/></svg>
-            </div>
-            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:#fff;">Ninguno</div>
-          </div>
-          <div class="gcm-actor" data-actor="Facu" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
-            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
-            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Facu</div>
-          </div>
-          <div class="gcm-actor" data-actor="Sofi" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
-            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
-            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Sofi</div>
-          </div>
-          <div class="gcm-actor" data-actor="Paula" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
-            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
-            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Paula</div>
-          </div>
-          <div class="gcm-actor" data-actor="José" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
-            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
-            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">José</div>
-          </div>
-        </div>
-        <div id="gcmActorError" style="display:none;font-size:12px;color:#f87171;margin-top:6px;">Seleccioná un actor para continuar.</div>
-      </div>
-
-      <!-- Slots de imagen: avatar personalizado + producto -->
-      <div id="gcmRefSection" style="display:none;margin-bottom:20px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
-          <!-- Avatar personalizado -->
-          <div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Avatar personalizado</div>
-            <div id="gcmAvatarSlot" onclick="document.getElementById('gcmAvatarInput').click()"
-              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><circle cx="10" cy="8" r="4"/><path d="M2 19c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
-              <span style="font-size:11px;color:var(--text3);">Subir avatar</span>
-            </div>
-            <input type="file" id="gcmAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'avatar')" />
-            <div id="gcmAvatarStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
-          </div>
-
-          <!-- Imagen de producto -->
-          <div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Imagen de producto</div>
-            <div id="gcmProductSlot" onclick="document.getElementById('gcmProductInput').click()"
-              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><rect x="2" y="2" width="16" height="16" rx="2"/><circle cx="7" cy="7" r="1.5"/><path d="m2 14 5-5 3 3 2.5-2.5 5.5 5.5"/></svg>
-              <span style="font-size:11px;color:var(--text3);">Subir producto</span>
-            </div>
-            <input type="file" id="gcmProductInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'product')" />
-            <div id="gcmProductStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
-          </div>
-
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px;">Ambos campos son opcionales. Si subís un avatar propio se usará en lugar de los predeterminados.</div>
-      </div>
-      <div style="background:var(--hover);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
-        <div id="gcmConfig" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
-      </div>
-
-      <!-- Costo -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div style="font-size:13px;color:var(--text2);">Costo estimado</div>
-        <div id="gcmCost" style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">
-          <span style="font-size:13px;color:var(--text3);font-weight:400;">cargando...</span>
-        </div>
-      </div>
-
-      <!-- Botones -->
-      <div style="display:flex;gap:8px;">
-        <button onclick="closeGenConfirmModal()" style="flex:1;padding:11px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;">Cancelar</button>
-        <button id="gcmConfirmBtn" onclick="confirmAndGenerate()" style="flex:2;padding:11px;border-radius:var(--r-sm);background:#fff;border:none;color:#080808;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;">Generar</button>
-      </div>
-
-      <!-- Estado de generación (aparece después de confirmar) -->
-      <div id="gcmStatus" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <div id="gcmStatusDot" style="width:7px;height:7px;border-radius:50%;background:#facc15;flex-shrink:0;animation:pulse 1.5s ease-in-out infinite;"></div>
-          <div id="gcmStatusMsg" style="font-size:13px;color:var(--text2);">Enviando...</div>
-        </div>
-        <div style="background:var(--border);border-radius:999px;height:3px;overflow:hidden;">
-          <div id="gcmProgressBar" style="height:100%;background:#fff;width:0%;transition:width 0.4s ease;border-radius:999px;"></div>
-        </div>
-
-        <!-- Resultado: imagen -->
-        <div id="gcmResultImage" style="display:none;margin-top:16px;">
-          <img id="gcmResultImg" src="" alt="" style="width:100%;border-radius:10px;display:block;max-height:420px;object-fit:contain;background:#0a0a0a;" />
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button onclick="downloadGcmImage()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar imagen</button>
-            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
-          </div>
-        </div>
-
-        <!-- Resultado: video -->
-        <div id="gcmResultVideo" style="display:none;margin-top:16px;">
-          <video id="gcmResultVid" src="" controls playsinline style="width:100%;border-radius:10px;display:block;max-height:420px;background:#0a0a0a;"></video>
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button onclick="downloadGcmVideo()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar video</button>
-            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
-          </div>
-        </div>
-
-        <!-- Timeout: si tarda más de lo esperado -->
-        <div id="gcmDoneMsg" style="display:none;margin-top:12px;font-size:13px;color:var(--text2);text-align:center;">
-          Esto está tardando más de lo esperado. Podés cerrar este modal — tu creación aparecerá en
-          <span style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="closeGenConfirmModal();showScreen('historial')">Historial</span> cuando esté lista.
-        </div>
-      </div><!-- /gcmStatus -->
-    </div><!-- /modal-box -->
-  </div><!-- /genConfirmModal -->
-
       <!-- Métricas rápidas de historial -->
       <div class="a-section-row" style="margin-top:4px;">
         <div class="a-section-title">Recientes</div>
@@ -2919,6 +2792,134 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         </div>
       </div>
     </div>
+
+
+  <!-- Modal de confirmación de generación (global) -->
+      <div class="modal-overlay" id="genConfirmModal" style="display:none;align-items:center;justify-content:center;opacity:1;pointer-events:all;" onclick="if(event.target===this)closeGenConfirmModal()">
+    <div class="modal-box" style="max-width:480px;width:100%;padding:28px 28px 24px;">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div id="gcmTitle" style="font-size:16px;font-weight:700;">Confirmar generación</div>
+        <button onclick="closeGenConfirmModal()" style="background:transparent;border:none;cursor:pointer;color:var(--text3);padding:4px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l12 12M13 1L1 13"/></svg>
+        </button>
+      </div>
+
+      <!-- Selector de actor (solo para video) -->
+      <div id="gcmActorSection" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Actor (opcional)</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;" id="gcmActorGrid">
+          <div class="gcm-actor" data-actor="" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid #fff;overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <div style="width:100%;aspect-ratio:1;background:var(--hover);display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.3"><circle cx="11" cy="9" r="4"/><path d="M3 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/><line x1="8" y1="8" x2="14" y2="14" stroke="rgba(255,255,255,0.25)"/><line x1="14" y1="8" x2="8" y2="14" stroke="rgba(255,255,255,0.25)"/></svg>
+            </div>
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:#fff;">Ninguno</div>
+          </div>
+          <div class="gcm-actor" data-actor="Facu" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Facu</div>
+          </div>
+          <div class="gcm-actor" data-actor="Sofi" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Sofi</div>
+          </div>
+          <div class="gcm-actor" data-actor="Paula" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Paula</div>
+          </div>
+          <div class="gcm-actor" data-actor="José" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">José</div>
+          </div>
+        </div>
+        <div id="gcmActorError" style="display:none;font-size:12px;color:#f87171;margin-top:6px;">Seleccioná un actor para continuar.</div>
+      </div>
+
+      <!-- Slots de imagen: avatar personalizado + producto -->
+      <div id="gcmRefSection" style="display:none;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+          <!-- Avatar personalizado -->
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Avatar personalizado</div>
+            <div id="gcmAvatarSlot" onclick="document.getElementById('gcmAvatarInput').click()"
+              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><circle cx="10" cy="8" r="4"/><path d="M2 19c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+              <span style="font-size:11px;color:var(--text3);">Subir avatar</span>
+            </div>
+            <input type="file" id="gcmAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'avatar')" />
+            <div id="gcmAvatarStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
+          </div>
+
+          <!-- Imagen de producto -->
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Imagen de producto</div>
+            <div id="gcmProductSlot" onclick="document.getElementById('gcmProductInput').click()"
+              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><rect x="2" y="2" width="16" height="16" rx="2"/><circle cx="7" cy="7" r="1.5"/><path d="m2 14 5-5 3 3 2.5-2.5 5.5 5.5"/></svg>
+              <span style="font-size:11px;color:var(--text3);">Subir producto</span>
+            </div>
+            <input type="file" id="gcmProductInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'product')" />
+            <div id="gcmProductStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
+          </div>
+
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;">Ambos campos son opcionales. Si subís un avatar propio se usará en lugar de los predeterminados.</div>
+      </div>
+      <div style="background:var(--hover);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+        <div id="gcmConfig" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
+      </div>
+
+      <!-- Costo -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--text2);">Costo estimado</div>
+        <div id="gcmCost" style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">
+          <span style="font-size:13px;color:var(--text3);font-weight:400;">cargando...</span>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeGenConfirmModal()" style="flex:1;padding:11px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;">Cancelar</button>
+        <button id="gcmConfirmBtn" onclick="confirmAndGenerate()" style="flex:2;padding:11px;border-radius:var(--r-sm);background:#fff;border:none;color:#080808;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;">Generar</button>
+      </div>
+
+      <!-- Estado de generación (aparece después de confirmar) -->
+      <div id="gcmStatus" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div id="gcmStatusDot" style="width:7px;height:7px;border-radius:50%;background:#facc15;flex-shrink:0;animation:pulse 1.5s ease-in-out infinite;"></div>
+          <div id="gcmStatusMsg" style="font-size:13px;color:var(--text2);">Enviando...</div>
+        </div>
+        <div style="background:var(--border);border-radius:999px;height:3px;overflow:hidden;">
+          <div id="gcmProgressBar" style="height:100%;background:#fff;width:0%;transition:width 0.4s ease;border-radius:999px;"></div>
+        </div>
+
+        <!-- Resultado: imagen -->
+        <div id="gcmResultImage" style="display:none;margin-top:16px;">
+          <img id="gcmResultImg" src="" alt="" style="width:100%;border-radius:10px;display:block;max-height:420px;object-fit:contain;background:#0a0a0a;" />
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="downloadGcmImage()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar imagen</button>
+            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
+          </div>
+        </div>
+
+        <!-- Resultado: video -->
+        <div id="gcmResultVideo" style="display:none;margin-top:16px;">
+          <video id="gcmResultVid" src="" controls playsinline style="width:100%;border-radius:10px;display:block;max-height:420px;background:#0a0a0a;"></video>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="downloadGcmVideo()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar video</button>
+            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
+          </div>
+        </div>
+
+        <!-- Timeout: si tarda más de lo esperado -->
+        <div id="gcmDoneMsg" style="display:none;margin-top:12px;font-size:13px;color:var(--text2);text-align:center;">
+          Esto está tardando más de lo esperado. Podés cerrar este modal — tu creación aparecerá en
+          <span style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="closeGenConfirmModal();showScreen('historial')">Historial</span> cuando esté lista.
+        </div>
+      </div><!-- /gcmStatus -->
+    </div><!-- /modal-box -->
+  </div><!-- /genConfirmModal -->
 
   </main>
 </div><!-- /app -->
