@@ -2226,7 +2226,23 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="gcmActorError" style="display:none;font-size:12px;color:#f87171;margin-top:6px;">Seleccioná un actor para continuar.</div>
       </div>
 
-      <!-- Resumen de configuración -->
+      <!-- Imagen de referencia (solo video) -->
+      <div id="gcmRefSection" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Imagen de referencia (opcional)</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="gcmRefThumb" style="display:none;position:relative;width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;">
+            <img id="gcmRefImg" src="" style="width:100%;height:100%;object-fit:cover;" />
+            <button onclick="removeGcmRef()" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>
+          </div>
+          <button id="gcmRefBtn" onclick="document.getElementById('gcmRefInput').click()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;transition:border-color 0.15s,color 0.15s;">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="11" height="11" rx="1.5"/><circle cx="4.5" cy="4.5" r="1"/><path d="m1 9 3-3 2.5 2.5 1.5-1.5 3 3"/></svg>
+            Subir imagen
+          </button>
+          <div id="gcmRefStatus" style="font-size:11px;color:var(--text3);"></div>
+        </div>
+        <input type="file" id="gcmRefInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmRefUpload(event)" />
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;">Seedance usará esta imagen como referencia visual del video.</div>
+      </div>
       <div style="background:var(--hover);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
         <div id="gcmConfig" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
       </div>
@@ -4380,8 +4396,14 @@ function openGenConfirmModal() {
   // Título
   document.getElementById('gcmTitle').textContent = isVideo ? 'Confirmar video' : 'Confirmar imagen';
 
-  // Mostrar/ocultar selector de actor
+  // Mostrar/ocultar selector de actor y ref
   document.getElementById('gcmActorSection').style.display = isVideo ? 'block' : 'none';
+  document.getElementById('gcmRefSection').style.display = isVideo ? 'block' : 'none';
+  // Resetear imagen de referencia
+  _gcmRefUrl = null;
+  document.getElementById('gcmRefThumb').style.display = 'none';
+  document.getElementById('gcmRefStatus').textContent = '';
+  document.getElementById('gcmRefInput').value = '';
   // Seleccionar "Ninguno" por defecto
   document.querySelectorAll('.gcm-actor').forEach(el => {
     const isNone = el.dataset.actor === '';
@@ -4456,7 +4478,61 @@ function closeGenConfirmModal() {
   if (_gcmPollInterval) { clearInterval(_gcmPollInterval); _gcmPollInterval = null; }
 }
 
-let _gcmPollInterval = null;
+let _gcmRefUrl = null; // URL pública de la imagen de referencia para video
+
+async function handleGcmRefUpload(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  const statusEl = document.getElementById('gcmRefStatus');
+  const thumbEl = document.getElementById('gcmRefThumb');
+  const imgEl = document.getElementById('gcmRefImg');
+
+  // Preview inmediato
+  const dataUrl = await new Promise(res => {
+    const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file);
+  });
+  imgEl.src = dataUrl;
+  thumbEl.style.display = 'block';
+  statusEl.textContent = 'Subiendo...';
+  _gcmRefUrl = null;
+
+  // Subir a Supabase Storage
+  try {
+    const { data: sess } = await supa.auth.getSession();
+    if (!sess?.session) { statusEl.textContent = 'Error: no hay sesión'; return; }
+    const userId = sess.session.user.id;
+    const accessToken = sess.session.access_token;
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${userId}/${Date.now()}_ref.${ext}`;
+    const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+    if (!uploadRes.ok) throw new Error('Upload falló');
+    _gcmRefUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+    statusEl.textContent = 'Lista';
+    statusEl.style.color = '#4ade80';
+  } catch(e) {
+    statusEl.textContent = 'Error al subir';
+    statusEl.style.color = '#f87171';
+    thumbEl.style.display = 'none';
+    _gcmRefUrl = null;
+  }
+}
+
+function removeGcmRef() {
+  _gcmRefUrl = null;
+  document.getElementById('gcmRefThumb').style.display = 'none';
+  document.getElementById('gcmRefStatus').textContent = '';
+  document.getElementById('gcmRefInput').value = '';
+}
 let _gcmResultUrl = null;
 
 function downloadGcmImage() {
@@ -4520,6 +4596,15 @@ async function confirmAndGenerate() {
 
       const genBody = { script: prompt, duration: dur, aspectRatio: aspect, resolution: res, userId };
       if (_gcmActor) genBody.avatar = _gcmActor;
+      if (_gcmRefUrl) genBody.referenceImage = _gcmRefUrl;
+
+      // Si hay imagen de ref subiendo todavía, esperar
+      if (document.getElementById('gcmRefStatus')?.textContent === 'Subiendo...') {
+        showToast('Esperá a que termine de subir la imagen de referencia');
+        resetGcmButtons(confirmBtn, cancelBtn);
+        statusEl.style.display = 'none';
+        return;
+      }
 
       statusMsg.textContent = 'Enviando a Seedance 2.0...';
       const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
