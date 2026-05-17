@@ -4546,6 +4546,7 @@ function removeGcmRef() {
   document.getElementById('gcmRefStatus').textContent = '';
   document.getElementById('gcmRefInput').value = '';
 }
+let _gcmPollInterval = null;
 let _gcmResultUrl = null;
 
 function downloadGcmImage() {
