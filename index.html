@@ -120,45 +120,75 @@ html.pre-landing #app { display: none !important; }
    APP — CAMPAÑAS
    ============================================== */
 .camp-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
 }
 .camp-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; }
-.camp-list { display: flex; flex-direction: column; gap: 12px; max-width: 860px; }
+
+/* Vista lista (default) */
+.camp-list { display: flex; flex-direction: column; gap: 8px; max-width: 900px; }
+
+/* Vista grid */
+.camp-list.camp-list-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px; max-width: 900px;
+}
+
 .camp-card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 18px 22px;
-  display: flex; align-items: center; gap: 16px;
-  cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+  border-radius: var(--r-lg); padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: border-color 0.2s;
 }
-.camp-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
-.camp-card-icon {
-  width: 44px; height: 44px; border-radius: var(--r-md);
-  background: var(--hover); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: var(--text2);
+.camp-card:hover { border-color: rgba(255,255,255,0.2); }
+
+/* En grid: layout vertical */
+.camp-list-grid .camp-card {
+  flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px;
 }
+
 .camp-card-info { flex: 1; min-width: 0; }
-.camp-card-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.camp-card-meta { font-size: 12px; color: var(--text2); }
-.camp-card-status {
-  font-size: 11px; font-weight: 600; padding: 4px 12px;
-  border-radius: 999px; flex-shrink: 0;
+.camp-card-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.camp-card-meta { font-size: 11px; color: var(--text2); }
+
+/* Acciones de la card: botón Ver + Archivar */
+.camp-card-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.camp-list-grid .camp-card-actions { width: 100%; justify-content: flex-end; }
+
+.camp-btn-ver {
+  font-size: 12px; font-weight: 600; padding: 5px 14px;
+  background: #fff; color: #080808; border: none; border-radius: var(--r-pill);
+  cursor: pointer; transition: opacity 0.15s; font-family: inherit;
+  white-space: nowrap;
 }
-.camp-card-status.draft { background: rgba(255,255,255,0.06); color: #888; border: 1px solid rgba(255,255,255,0.1); }
-.camp-card-status.generating_clips,
-.camp-card-status.generating_variants { background: rgba(234,179,8,0.12); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
-.camp-card-status.clips_ready,
-.camp-card-status.variants_ready { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
-.camp-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
-.camp-card-status.failed { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+.camp-btn-ver:hover { opacity: 0.85; }
+
+.camp-btn-archivar {
+  font-size: 11px; font-weight: 500; padding: 5px 10px;
+  background: transparent; color: rgba(239,68,68,0.7);
+  border: 1px solid rgba(239,68,68,0.25); border-radius: var(--r-pill);
+  cursor: pointer; transition: background 0.15s, color 0.15s; font-family: inherit;
+  white-space: nowrap;
+}
+.camp-btn-archivar:hover { background: rgba(239,68,68,0.08); color: #f87171; border-color: rgba(239,68,68,0.4); }
+
+/* Archivados: badge de estado tenue */
+.camp-card-archived { opacity: 0.5; }
+.camp-btn-desarchivar {
+  font-size: 11px; font-weight: 500; padding: 5px 10px;
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--border); border-radius: var(--r-pill);
+  cursor: pointer; transition: background 0.15s; font-family: inherit;
+}
+.camp-btn-desarchivar:hover { background: var(--hover); color: #fff; }
+
 .camp-empty {
   text-align: center; padding: 64px 40px;
   background: var(--card); border: 1px dashed var(--border);
-  border-radius: var(--r-xl); max-width: 860px;
+  border-radius: var(--r-xl); max-width: 900px;
 }
-.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
-.camp-empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+.camp-empty-icon { font-size: 36px; margin-bottom: 14px; opacity: 0.3; }
+.camp-empty-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.camp-empty-sub { font-size: 13px; color: var(--text2); margin-bottom: 22px; }
 .camp-wizard { max-width: 720px; }
 .camp-wizard-step { display: none; }
 .camp-wizard-step.active { display: block; }
@@ -2410,15 +2440,31 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: lista de campañas -->
       <div id="campView-list">
         <div class="camp-header">
-          <div class="camp-title">Campañas</div>
-          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;">✦ Nueva campaña</button>
+          <div class="camp-title">Anuncios</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <!-- Toggle vista grid / lista -->
+            <div style="display:flex;gap:3px;background:var(--hover);border-radius:var(--r-sm);padding:3px;">
+              <button id="campViewBtnList" onclick="setCampView('list')" title="Vista lista"
+                style="width:30px;height:28px;border-radius:6px;background:var(--card2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;transition:background 0.15s;">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3h11M1 6.5h11M1 10h11" stroke-linecap="round"/></svg>
+              </button>
+              <button id="campViewBtnGrid" onclick="setCampView('grid')" title="Vista grid"
+                style="width:30px;height:28px;border-radius:6px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:background 0.15s;">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="7.5" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx="1"/></svg>
+              </button>
+            </div>
+            <!-- Ver archivados -->
+            <button id="campArchivedBtn" onclick="toggleCampArchived()" class="btn-outline" style="font-size:12px;padding:7px 14px;border-radius:var(--r-sm);">Archivados</button>
+            <!-- Nuevo anuncio -->
+            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:9px 18px;">Nuevo anuncio</button>
+          </div>
         </div>
         <div id="campListContainer">
           <div class="camp-empty">
             <div class="camp-empty-icon">🎬</div>
-            <div class="camp-empty-title">Todavía no tenés campañas</div>
+            <div class="camp-empty-title">Todavía no tenés anuncios</div>
             <div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div>
-            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button>
+            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primer anuncio</button>
           </div>
         </div>
       </div>
@@ -2427,7 +2473,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <div id="campView-wizard" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
           <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;">← Volver</button>
-          <div style="font-size:13px;color:var(--text2);">Nueva campaña</div>
+          <div style="font-size:13px;color:var(--text2);">Nuevo anuncio</div>
         </div>
 
         <div class="camp-wizard">
@@ -2587,7 +2633,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
       <!-- Vista: generación en curso -->
       <div id="campView-generating" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()">← Mis campañas</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()">← Mis anuncios</button>
           <div style="font-size:13px;color:var(--text2);" id="campGenCampaignTitle">—</div>
         </div>
         <div style="margin-bottom:24px;">
@@ -2608,7 +2654,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="campAllDoneControls" style="display:none;margin-top:16px;">
           <div style="font-size:15px;font-weight:700;margin-bottom:6px;">✓ Todos los clips generados</div>
           <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Revisá los clips arriba. El ensamblado automático estará disponible próximamente.</div>
-          <button class="btn-w" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis campañas</button>
+          <button class="btn-w" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">← Volver a mis anuncios</button>
         </div>
       </div><!-- /campView-generating -->
 
@@ -3861,6 +3907,44 @@ async function campRegenClip(index) {
   await campGenerateOneClip(index);
 }
 
+// Estado de la vista de campañas
+let _campView = 'list';       // 'list' | 'grid'
+let _campShowArchived = false; // mostrar archivados o no
+let _campArchived = new Set(JSON.parse(localStorage.getItem('futuriads_archived') || '[]'));
+
+function setCampView(mode) {
+  _campView = mode;
+  document.getElementById('campViewBtnList').style.background = mode === 'list' ? 'var(--card2)' : 'transparent';
+  document.getElementById('campViewBtnList').style.color = mode === 'list' ? '#fff' : 'var(--text2)';
+  document.getElementById('campViewBtnGrid').style.background = mode === 'grid' ? 'var(--card2)' : 'transparent';
+  document.getElementById('campViewBtnGrid').style.color = mode === 'grid' ? '#fff' : 'var(--text2)';
+  campLoadList();
+}
+
+function toggleCampArchived() {
+  _campShowArchived = !_campShowArchived;
+  const btn = document.getElementById('campArchivedBtn');
+  if (btn) {
+    btn.textContent = _campShowArchived ? 'Ocultar archivados' : 'Archivados';
+    btn.style.background = _campShowArchived ? 'var(--hover)' : '';
+  }
+  campLoadList();
+}
+
+function campArchive(id, e) {
+  e.stopPropagation();
+  _campArchived.add(id);
+  localStorage.setItem('futuriads_archived', JSON.stringify([..._campArchived]));
+  campLoadList();
+}
+
+function campUnarchive(id, e) {
+  e.stopPropagation();
+  _campArchived.delete(id);
+  localStorage.setItem('futuriads_archived', JSON.stringify([..._campArchived]));
+  campLoadList();
+}
+
 async function campLoadList() {
   if(!_currentUser) return;
   const container = document.getElementById('campListContainer');
@@ -3871,14 +3955,49 @@ async function campLoadList() {
       body: JSON.stringify({ userId: _currentUser.userId })
     });
     const data = await resp.json();
-    const campaigns = data.campaigns || [];
-    if(!campaigns.length){
-      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-icon">🎬</div><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">✦ Crear mi primera campaña</button></div>';
+    let campaigns = data.campaigns || [];
+
+    // Filtrar archivados según el toggle
+    const active = campaigns.filter(c => !_campArchived.has(c.id));
+    const archived = campaigns.filter(c => _campArchived.has(c.id));
+    const visible = _campShowArchived ? archived : active;
+
+    if(!visible.length){
+      const msg = _campShowArchived
+        ? 'No tenés anuncios archivados.'
+        : 'No tenés anuncios activos.';
+      const sub = _campShowArchived
+        ? ''
+        : 'Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.';
+      container.innerHTML = `<div class="camp-empty">
+        <div class="camp-empty-icon">🎬</div>
+        <div class="camp-empty-title">${msg}</div>
+        ${sub ? `<div class="camp-empty-sub">${sub}</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primer anuncio</button>` : ''}
+      </div>`;
       return;
     }
-    const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
-    container.innerHTML = '<div class="camp-list">' + campaigns.map(c => '<div class="camp-card" onclick="campOpenDetail(\'' + c.id + '\',\'' + c.title.replace(/'/g, "\\'") + '\')"><div class="camp-card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="16" height="12" rx="2"/><path d="M7 7l5 2-5 2V7z" fill="currentColor" stroke="none"/></svg></div><div class="camp-card-info"><div class="camp-card-title">' + c.title + '</div><div class="camp-card-meta">' + new Date(c.created_at).toLocaleDateString('es-AR') + ' · ' + c.resolution + '</div></div><div class="camp-card-status ' + c.status + '">' + (statusLabels[c.status] || c.status) + '</div></div>').join('') + '</div>';
-  } catch(e){ console.error('Error cargando campañas:', e); }
+
+    const gridClass = _campView === 'grid' ? 'camp-list camp-list-grid' : 'camp-list';
+
+    container.innerHTML = `<div class="${gridClass}">` + visible.map(c => {
+      const isArchived = _campArchived.has(c.id);
+      const date = new Date(c.created_at).toLocaleDateString('es-AR');
+      const safetitle = c.title.replace(/'/g, "\\'");
+      const archiveBtn = isArchived
+        ? `<button class="camp-btn-desarchivar" onclick="campUnarchive('${c.id}',event)">Desarchivar</button>`
+        : `<button class="camp-btn-archivar" onclick="campArchive('${c.id}',event)">Archivar</button>`;
+      return `<div class="camp-card${isArchived ? ' camp-card-archived' : ''}">
+        <div class="camp-card-info">
+          <div class="camp-card-title">${c.title}</div>
+          <div class="camp-card-meta">${date} · ${c.resolution}</div>
+        </div>
+        <div class="camp-card-actions">
+          ${archiveBtn}
+          <button class="camp-btn-ver" onclick="campOpenDetail('${c.id}','${safetitle}')">Ver</button>
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  } catch(e){ console.error('Error cargando anuncios:', e); }
 }
 
 async function campOpenDetail(campaignId, title) {
