@@ -4399,11 +4399,24 @@ function openGenConfirmModal() {
   // Mostrar/ocultar selector de actor y ref
   document.getElementById('gcmActorSection').style.display = isVideo ? 'block' : 'none';
   document.getElementById('gcmRefSection').style.display = isVideo ? 'block' : 'none';
-  // Resetear imagen de referencia
+  // Resetear imagen de referencia del modal
   _gcmRefUrl = null;
   document.getElementById('gcmRefThumb').style.display = 'none';
   document.getElementById('gcmRefStatus').textContent = '';
+  document.getElementById('gcmRefStatus').style.color = '';
   document.getElementById('gcmRefInput').value = '';
+
+  // Si hay una imagen subida desde el gen-box, pre-cargarla
+  if (isVideo && _dashRefs.length > 0 && _dashRefs[0].publicUrl) {
+    const ref = _dashRefs[0];
+    _gcmRefUrl = ref.publicUrl;
+    const imgEl = document.getElementById('gcmRefImg');
+    const thumbEl = document.getElementById('gcmRefThumb');
+    if (imgEl) imgEl.src = ref.dataUrl;
+    if (thumbEl) thumbEl.style.display = 'block';
+    document.getElementById('gcmRefStatus').textContent = 'Lista';
+    document.getElementById('gcmRefStatus').style.color = '#4ade80';
+  }
   // Seleccionar "Ninguno" por defecto
   document.querySelectorAll('.gcm-actor').forEach(el => {
     const isNone = el.dataset.actor === '';
