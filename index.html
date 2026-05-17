@@ -2181,9 +2181,78 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           </button>
         </div>
 
+        <!-- Modal de confirmación de generación -->
+  <div class="modal-overlay" id="genConfirmModal" style="display:none;align-items:center;justify-content:center;opacity:1;pointer-events:all;" onclick="if(event.target===this)closeGenConfirmModal()">
+    <div class="modal-box" style="max-width:480px;width:100%;padding:28px 28px 24px;">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div id="gcmTitle" style="font-size:16px;font-weight:700;">Confirmar generación</div>
+        <button onclick="closeGenConfirmModal()" style="background:transparent;border:none;cursor:pointer;color:var(--text3);padding:4px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l12 12M13 1L1 13"/></svg>
+        </button>
+      </div>
+
+      <!-- Selector de actor (solo para video) -->
+      <div id="gcmActorSection" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Elegí tu actor</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;" id="gcmActorGrid">
+          <div class="gcm-actor" data-actor="Facu" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Facu</div>
+          </div>
+          <div class="gcm-actor" data-actor="Sofi" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Sofi</div>
+          </div>
+          <div class="gcm-actor" data-actor="Paula" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Paula</div>
+          </div>
+          <div class="gcm-actor" data-actor="José" onclick="selectGcmActor(this)" style="border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;">
+            <img src="https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+            <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">José</div>
+          </div>
+        </div>
+        <div id="gcmActorError" style="display:none;font-size:12px;color:#f87171;margin-top:6px;">Seleccioná un actor para continuar.</div>
+      </div>
+
+      <!-- Resumen de configuración -->
+      <div style="background:var(--hover);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+        <div id="gcmConfig" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
+      </div>
+
+      <!-- Costo -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--text2);">Costo estimado</div>
+        <div id="gcmCost" style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">
+          <span style="font-size:13px;color:var(--text3);font-weight:400;">cargando...</span>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeGenConfirmModal()" style="flex:1;padding:11px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;">Cancelar</button>
+        <button id="gcmConfirmBtn" onclick="confirmAndGenerate()" style="flex:2;padding:11px;border-radius:var(--r-sm);background:#fff;border:none;color:#080808;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;">Generar</button>
+      </div>
+
+      <!-- Estado de generación (aparece después de confirmar) -->
+      <div id="gcmStatus" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div id="gcmStatusDot" style="width:7px;height:7px;border-radius:50%;background:#facc15;flex-shrink:0;animation:pulse 1.5s ease-in-out infinite;"></div>
+          <div id="gcmStatusMsg" style="font-size:13px;color:var(--text2);">Enviando...</div>
+        </div>
+        <div style="background:var(--border);border-radius:999px;height:3px;overflow:hidden;">
+          <div id="gcmProgressBar" style="height:100%;background:#fff;width:0%;transition:width 0.4s ease;border-radius:999px;"></div>
+        </div>
+        <div id="gcmDoneMsg" style="display:none;margin-top:14px;font-size:13px;color:var(--text2);">
+          Tu creación está en proceso. Podés ver el resultado en
+          <span style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="closeGenConfirmModal();showScreen('historial')">Historial</span>.
+        </div>
+      </div>
+    </div>
+  </div>
         <!-- Input oculto para imagen de referencia del dashboard -->
         <input type="file" id="dashRefInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleDashRefUpload(event)" />
-        <!-- Preview de imágenes de referencia seleccionadas -->
         <div id="dashRefPreview" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
           <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Imágenes de referencia</div>
           <div id="dashRefList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
@@ -4196,7 +4265,213 @@ function switchGenTab(tab){
       : 'Describí la imagen que querés generar...';
 }
 
-/* ---- Imágenes de referencia del dashboard ---- */
+/* ---- Modal de confirmación de generación ---- */
+let _gcmMode = 'video'; // 'video' | 'image'
+let _gcmActor = null;
+
+function openGenConfirmModal() {
+  const prompt = document.getElementById('genTextarea')?.value?.trim() || '';
+  if (!prompt) { showToast('Escribí un prompt antes de generar'); return; }
+
+  const isVideo = document.getElementById('tabVideo').classList.contains('active');
+  _gcmMode = isVideo ? 'video' : 'image';
+  _gcmActor = null;
+
+  // Resetear estado del modal
+  document.getElementById('gcmStatus').style.display = 'none';
+  document.getElementById('gcmDoneMsg').style.display = 'none';
+  document.getElementById('gcmProgressBar').style.width = '0%';
+  document.getElementById('gcmConfirmBtn').disabled = false;
+  document.getElementById('gcmConfirmBtn').style.opacity = '1';
+  document.getElementById('gcmActorError').style.display = 'none';
+
+  // Título
+  document.getElementById('gcmTitle').textContent = isVideo ? 'Confirmar video' : 'Confirmar imagen';
+
+  // Mostrar/ocultar selector de actor
+  document.getElementById('gcmActorSection').style.display = isVideo ? 'block' : 'none';
+  // Limpiar selección anterior de actores
+  document.querySelectorAll('.gcm-actor').forEach(el => {
+    el.style.borderColor = 'var(--border)';
+    el.querySelector('div').style.color = 'var(--text2)';
+  });
+
+  // Resumen de config
+  let configLines = [];
+  if (isVideo) {
+    const model = document.querySelector('#cs-model .custom-select-option.selected')?.textContent || 'Seedance 2.0';
+    const dur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent || '15s';
+    const aspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent || '9:16';
+    const res = document.querySelector('#cs-res .custom-select-option.selected')?.textContent || '1080p';
+    configLines = [`Modelo: ${model}`, `Duración: ${dur}`, `Aspecto: ${aspect}`, `Resolución: ${res}`];
+  } else {
+    const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.textContent || 'GPT Image 2';
+    const aspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.textContent || '1:1';
+    const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
+    configLines = [`Modelo: ${model}`, `Aspecto: ${aspect}`, `Calidad: ${quality}`];
+  }
+  document.getElementById('gcmConfig').innerHTML = configLines.join('<br>');
+
+  // Mostrar modal
+  const modal = document.getElementById('genConfirmModal');
+  modal.style.display = 'flex';
+
+  // Pedir quote al backend
+  document.getElementById('gcmCost').innerHTML = '<span style="font-size:13px;color:var(--text3);font-weight:400;">calculando...</span>';
+  fetchGenQuote(isVideo);
+}
+
+async function fetchGenQuote(isVideo) {
+  try {
+    let body;
+    if (isVideo) {
+      const dur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.replace(/[^0-9]/g,'') || '15';
+      const res = document.querySelector('#cs-res .custom-select-option.selected')?.textContent || '1080p';
+      body = { kind: 'video', duration: dur, resolution: res };
+    } else {
+      const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
+      const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
+      body = { kind: 'image', model, resolution: quality };
+    }
+    const resp = await fetch(BACKEND_URL + '/api/quote', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    if (data.cost !== undefined) {
+      document.getElementById('gcmCost').innerHTML =
+        `<strong>${data.cost.toLocaleString('es-AR')}</strong> <span style="font-size:13px;color:var(--text3);font-weight:400;">créditos</span>`;
+    }
+  } catch(e) {
+    document.getElementById('gcmCost').innerHTML = '<span style="font-size:13px;color:var(--text3);">No disponible</span>';
+  }
+}
+
+function selectGcmActor(el) {
+  document.querySelectorAll('.gcm-actor').forEach(a => {
+    a.style.borderColor = 'var(--border)';
+    a.querySelector('div').style.color = 'var(--text2)';
+  });
+  el.style.borderColor = '#fff';
+  el.querySelector('div').style.color = '#fff';
+  _gcmActor = el.dataset.actor;
+  document.getElementById('gcmActorError').style.display = 'none';
+}
+
+function closeGenConfirmModal() {
+  document.getElementById('genConfirmModal').style.display = 'none';
+}
+
+async function confirmAndGenerate() {
+  if (_gcmMode === 'video' && !_gcmActor) {
+    document.getElementById('gcmActorError').style.display = 'block';
+    return;
+  }
+
+  const prompt = document.getElementById('genTextarea')?.value?.trim() || '';
+  const confirmBtn = document.getElementById('gcmConfirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.style.opacity = '0.5';
+
+  // Mostrar barra de progreso
+  const statusEl = document.getElementById('gcmStatus');
+  const statusMsg = document.getElementById('gcmStatusMsg');
+  const progressBar = document.getElementById('gcmProgressBar');
+  statusEl.style.display = 'block';
+
+  // Obtener userId
+  let userId = null;
+  try {
+    const { data: sess } = await supa.auth.getSession();
+    userId = sess?.session?.user?.id || null;
+  } catch(e) {}
+
+  // Animación de progreso
+  let prog = 0;
+  const progInterval = setInterval(() => {
+    prog = Math.min(prog + Math.random() * 6, 88);
+    progressBar.style.width = prog + '%';
+  }, 600);
+
+  try {
+    if (_gcmMode === 'video') {
+      const dur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.replace(/[^0-9]/g,'') || '15';
+      const aspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent || '9:16';
+      const res = document.querySelector('#cs-res .custom-select-option.selected')?.textContent || '1080p';
+
+      statusMsg.textContent = 'Enviando a Seedance 2.0...';
+      const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ script: prompt, avatar: _gcmActor, duration: dur, aspectRatio: aspect, resolution: res, userId })
+      });
+
+      if (genRes.status === 402) {
+        clearInterval(progInterval);
+        const errData = await genRes.json().catch(() => ({}));
+        statusMsg.textContent = 'Sin créditos suficientes';
+        document.getElementById('gcmStatusDot').style.background = '#f87171';
+        progressBar.style.width = '0%';
+        showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
+        confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+        return;
+      }
+      if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
+
+    } else {
+      const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
+      const aspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value || '1:1';
+      const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
+
+      statusMsg.textContent = 'Enviando a ' + (model === 'gpt-image-2' ? 'GPT Image 2' : 'Nano Banana 2') + '...';
+      const genRes = await fetch(BACKEND_URL + '/api/generate-image', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model, prompt, aspectRatio: aspect, resolution: quality, userId,
+          inputImages: _dashRefs.length > 0 ? _dashRefs.map(r => r.base64) : undefined
+        })
+      });
+
+      if (genRes.status === 402) {
+        clearInterval(progInterval);
+        const errData = await genRes.json().catch(() => ({}));
+        statusMsg.textContent = 'Sin créditos suficientes';
+        document.getElementById('gcmStatusDot').style.background = '#f87171';
+        progressBar.style.width = '0%';
+        showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
+        confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+        return;
+      }
+      if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
+
+      // Limpiar refs del dashboard
+      _dashRefs = []; renderDashRefs();
+    }
+
+    // Éxito
+    clearInterval(progInterval);
+    progressBar.style.width = '100%';
+    document.getElementById('gcmStatusDot').style.background = '#4ade80';
+    document.getElementById('gcmStatusDot').style.animation = 'none';
+    statusMsg.textContent = 'Generación en proceso';
+    document.getElementById('gcmDoneMsg').style.display = 'block';
+
+    // Limpiar prompt y refrescar créditos
+    document.getElementById('genTextarea').value = '';
+    refreshCredits();
+
+  } catch(e) {
+    clearInterval(progInterval);
+    progressBar.style.width = '0%';
+    statusMsg.textContent = 'Error: ' + e.message;
+    document.getElementById('gcmStatusDot').style.background = '#f87171';
+    confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+  }
+}
+
+// startFromDashboard ahora abre el modal directamente
+function startFromDashboard() {
+  openGenConfirmModal();
+}
 let _dashRefs = []; // Array de { file, base64 }
 
 function handleDashRefUpload(event) {
@@ -4249,88 +4524,7 @@ function removeDashRef(i) {
 }
 
 /* ---- Dashboard → flujo de generación ---- */
-function startFromDashboard(){
-  // Detectar si el usuario está en tab "video" o "imagen"
-  const isVideo = document.getElementById('tabVideo').classList.contains('active');
 
-  // Tomar el prompt que escribió en el dashboard
-  const dashPrompt = document.getElementById('genTextarea')?.value?.trim() || '';
-
-  // Si está en "Crear imagen", redirigir a la pantalla de Nueva imagen
-  if (!isVideo) {
-    showScreen('nueva-imagen');
-    resetImageGenerator();
-    if (dashPrompt) {
-      const promptEl = document.getElementById('imgPromptInput');
-      if (promptEl) promptEl.value = dashPrompt;
-    }
-    // Sincronizar modelo, aspect ratio y calidad elegidos en el dashboard
-    const dashImgModel = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value;
-    const dashImgAspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value;
-    const dashImgQuality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.dataset.value;
-
-    if (dashImgModel && (dashImgModel === 'gpt-image-2' || dashImgModel === 'nano-banana-2')) {
-      imgSelectedModel = dashImgModel;
-      // Reflejar visualmente en las cards
-      document.querySelectorAll('.img-model-card').forEach(c => {
-        c.classList.toggle('selected', c.dataset.model === dashImgModel);
-      });
-    }
-    if (dashImgAspect) imgSelectedRatio = dashImgAspect;
-    if (dashImgQuality) imgSelectedRes = dashImgQuality;
-    rebuildRatioDropdown();
-    rebuildResDropdown();
-
-    if (dashPrompt) document.getElementById('genTextarea').value = '';
-
-    // Pasar imágenes de referencia del dashboard a la pantalla de imagen
-    if (_dashRefs.length > 0 && typeof imgRefs !== 'undefined') {
-      imgRefs = _dashRefs.map(r => ({ file: r.file, base64: r.base64 }));
-      renderImgRefs();
-      _dashRefs = [];
-      renderDashRefs();
-    }
-    return;
-  }
-
-  // Sincronizar las preferencias del dashboard (duración, aspect, resolución)
-  // con los custom-selects del Step 2 antes de mostrar el flujo
-  const dashDur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim();
-  const dashAspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent?.trim();
-  const dashRes = document.querySelector('#cs-res .custom-select-option.selected')?.textContent?.trim();
-
-  const setStep2Selection = (selectId, dataValue) => {
-    if (!dataValue) return;
-    const el = document.getElementById(selectId);
-    if (!el) return;
-    const opt = el.querySelector(`.custom-select-option[data-value="${dataValue}"]`);
-    if (!opt) return;
-    el.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
-    const span = el.querySelector('.custom-select-trigger span');
-    if (span) span.textContent = opt.textContent;
-  };
-
-  // Mapear "5s" -> "5", "10s" -> "10", "15s" -> "15"
-  if (dashDur) {
-    const num = dashDur.replace(/[^0-9]/g,'');
-    if (num) setStep2Selection('cs-step2-dur', num);
-  }
-  if (dashAspect) setStep2Selection('cs-step2-ratio', dashAspect);
-  if (dashRes) setStep2Selection('cs-step2-res', dashRes);
-
-  // Pre-cargar el prompt en el textarea del Step 2 (si lo escribió en el dashboard)
-  const scriptInput = document.getElementById('scriptInput');
-  if (scriptInput && dashPrompt) scriptInput.value = dashPrompt;
-
-  // Navegar a "Nuevo video" en el Step 1 (selección de actor)
-  showScreen('nuevo');
-  resetSelectedActor();
-  goGenStep(1);
-
-  // Limpiar el textarea del dashboard para la próxima visita
-  if (dashPrompt) document.getElementById('genTextarea').value = '';
-}
 
 // Helper: limpiar selección de actor sin tocar el prompt ya cargado
 function resetSelectedActor(){
