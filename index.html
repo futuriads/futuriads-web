@@ -2244,9 +2244,29 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div style="background:var(--border);border-radius:999px;height:3px;overflow:hidden;">
           <div id="gcmProgressBar" style="height:100%;background:#fff;width:0%;transition:width 0.4s ease;border-radius:999px;"></div>
         </div>
-        <div id="gcmDoneMsg" style="display:none;margin-top:14px;font-size:13px;color:var(--text2);">
-          Tu creación está en proceso. Podés ver el resultado en
-          <span style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="closeGenConfirmModal();showScreen('historial')">Historial</span>.
+
+        <!-- Resultado: imagen -->
+        <div id="gcmResultImage" style="display:none;margin-top:16px;">
+          <img id="gcmResultImg" src="" alt="" style="width:100%;border-radius:10px;display:block;max-height:420px;object-fit:contain;background:#0a0a0a;" />
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="downloadGcmImage()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar imagen</button>
+            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
+          </div>
+        </div>
+
+        <!-- Resultado: video -->
+        <div id="gcmResultVideo" style="display:none;margin-top:16px;">
+          <video id="gcmResultVid" src="" controls playsinline style="width:100%;border-radius:10px;display:block;max-height:420px;background:#0a0a0a;"></video>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="downloadGcmVideo()" style="flex:1;padding:9px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">Descargar video</button>
+            <button onclick="closeGenConfirmModal();showScreen('historial')" style="flex:1;padding:9px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;">Ver en historial</button>
+          </div>
+        </div>
+
+        <!-- Timeout: si tarda más de lo esperado -->
+        <div id="gcmDoneMsg" style="display:none;margin-top:12px;font-size:13px;color:var(--text2);text-align:center;">
+          Esto está tardando más de lo esperado. Podés cerrar este modal — tu creación aparecerá en
+          <span style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline;" onclick="closeGenConfirmModal();showScreen('historial')">Historial</span> cuando esté lista.
         </div>
       </div>
     </div>
@@ -4360,6 +4380,23 @@ function selectGcmActor(el) {
 
 function closeGenConfirmModal() {
   document.getElementById('genConfirmModal').style.display = 'none';
+  if (_gcmPollInterval) { clearInterval(_gcmPollInterval); _gcmPollInterval = null; }
+}
+
+let _gcmPollInterval = null;
+let _gcmResultUrl = null;
+
+function downloadGcmImage() {
+  if (!_gcmResultUrl) return;
+  const a = document.createElement('a');
+  a.href = _gcmResultUrl; a.download = 'futuriads-imagen.png'; a.target = '_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function downloadGcmVideo() {
+  if (!_gcmResultUrl) return;
+  const a = document.createElement('a');
+  a.href = _gcmResultUrl; a.download = 'futuriads-video.mp4'; a.target = '_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 async function confirmAndGenerate() {
@@ -4370,14 +4407,26 @@ async function confirmAndGenerate() {
 
   const prompt = document.getElementById('genTextarea')?.value?.trim() || '';
   const confirmBtn = document.getElementById('gcmConfirmBtn');
+  const cancelBtn = confirmBtn.previousElementSibling;
   confirmBtn.disabled = true;
   confirmBtn.style.opacity = '0.5';
+  cancelBtn.style.display = 'none';
+
+  // Resetear resultado anterior
+  document.getElementById('gcmResultImage').style.display = 'none';
+  document.getElementById('gcmResultVideo').style.display = 'none';
+  document.getElementById('gcmDoneMsg').style.display = 'none';
+  document.getElementById('gcmStatusDot').style.background = '#facc15';
+  document.getElementById('gcmStatusDot').style.animation = 'pulse 1.5s ease-in-out infinite';
+  _gcmResultUrl = null;
+  if (_gcmPollInterval) { clearInterval(_gcmPollInterval); _gcmPollInterval = null; }
 
   // Mostrar barra de progreso
   const statusEl = document.getElementById('gcmStatus');
   const statusMsg = document.getElementById('gcmStatusMsg');
   const progressBar = document.getElementById('gcmProgressBar');
   statusEl.style.display = 'block';
+  progressBar.style.width = '0%';
 
   // Obtener userId
   let userId = null;
@@ -4386,12 +4435,14 @@ async function confirmAndGenerate() {
     userId = sess?.session?.user?.id || null;
   } catch(e) {}
 
-  // Animación de progreso
+  // Animación de progreso mientras genera
   let prog = 0;
   const progInterval = setInterval(() => {
-    prog = Math.min(prog + Math.random() * 6, 88);
+    prog = Math.min(prog + Math.random() * 3, 85);
     progressBar.style.width = prog + '%';
-  }, 600);
+  }, 800);
+
+  let requestId = null;
 
   try {
     if (_gcmMode === 'video') {
@@ -4408,14 +4459,13 @@ async function confirmAndGenerate() {
       if (genRes.status === 402) {
         clearInterval(progInterval);
         const errData = await genRes.json().catch(() => ({}));
-        statusMsg.textContent = 'Sin créditos suficientes';
-        document.getElementById('gcmStatusDot').style.background = '#f87171';
-        progressBar.style.width = '0%';
+        setGcmError('Sin créditos suficientes');
         showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
-        confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+        resetGcmButtons(confirmBtn, cancelBtn);
         return;
       }
       if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
+      requestId = (await genRes.json()).requestId;
 
     } else {
       const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
@@ -4434,38 +4484,92 @@ async function confirmAndGenerate() {
       if (genRes.status === 402) {
         clearInterval(progInterval);
         const errData = await genRes.json().catch(() => ({}));
-        statusMsg.textContent = 'Sin créditos suficientes';
-        document.getElementById('gcmStatusDot').style.background = '#f87171';
-        progressBar.style.width = '0%';
+        setGcmError('Sin créditos suficientes');
         showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
-        confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+        resetGcmButtons(confirmBtn, cancelBtn);
         return;
       }
       if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
+      requestId = (await genRes.json()).requestId;
 
       // Limpiar refs del dashboard
       _dashRefs = []; renderDashRefs();
     }
 
-    // Éxito
-    clearInterval(progInterval);
-    progressBar.style.width = '100%';
-    document.getElementById('gcmStatusDot').style.background = '#4ade80';
-    document.getElementById('gcmStatusDot').style.animation = 'none';
-    statusMsg.textContent = 'Generación en proceso';
-    document.getElementById('gcmDoneMsg').style.display = 'block';
-
-    // Limpiar prompt y refrescar créditos
-    document.getElementById('genTextarea').value = '';
+    // Generación encolada — ahora polleamos Supabase
+    statusMsg.textContent = 'Generando... esto puede tardar entre 15 segundos y unos minutos';
     refreshCredits();
+    document.getElementById('genTextarea').value = '';
+
+    let pollCount = 0;
+    const MAX_POLLS = 120; // 10 min
+
+    const checkOnce = async () => {
+      try {
+        const { data: rows } = await supa.from('videos').select('*').eq('request_id', requestId);
+        if (!rows || !rows.length) return;
+        const row = rows[0];
+
+        if (row.status === 'COMPLETED' && row.video_url) {
+          clearInterval(progInterval);
+          clearInterval(_gcmPollInterval); _gcmPollInterval = null;
+          _gcmResultUrl = row.video_url;
+          progressBar.style.width = '100%';
+          document.getElementById('gcmStatusDot').style.background = '#4ade80';
+          document.getElementById('gcmStatusDot').style.animation = 'none';
+          statusMsg.textContent = 'Listo';
+
+          if (_gcmMode === 'image') {
+            const imgEl = document.getElementById('gcmResultImg');
+            imgEl.src = row.video_url;
+            document.getElementById('gcmResultImage').style.display = 'block';
+          } else {
+            const vidEl = document.getElementById('gcmResultVid');
+            vidEl.src = row.video_url;
+            document.getElementById('gcmResultVideo').style.display = 'block';
+          }
+
+        } else if (row.status === 'FAILED') {
+          clearInterval(progInterval);
+          clearInterval(_gcmPollInterval); _gcmPollInterval = null;
+          setGcmError('La generación falló. Intentá de nuevo.');
+          resetGcmButtons(confirmBtn, cancelBtn);
+        }
+      } catch(e) { /* silencioso */ }
+    };
+
+    // Primer check a los 4 segundos, luego cada 5
+    setTimeout(checkOnce, 4000);
+    _gcmPollInterval = setInterval(async () => {
+      pollCount++;
+      if (pollCount > MAX_POLLS) {
+        clearInterval(progInterval);
+        clearInterval(_gcmPollInterval); _gcmPollInterval = null;
+        statusMsg.textContent = 'Sigue en proceso...';
+        document.getElementById('gcmDoneMsg').style.display = 'block';
+        return;
+      }
+      await checkOnce();
+    }, 5000);
 
   } catch(e) {
     clearInterval(progInterval);
-    progressBar.style.width = '0%';
-    statusMsg.textContent = 'Error: ' + e.message;
-    document.getElementById('gcmStatusDot').style.background = '#f87171';
-    confirmBtn.disabled = false; confirmBtn.style.opacity = '1';
+    setGcmError('Error: ' + e.message);
+    resetGcmButtons(confirmBtn, cancelBtn);
   }
+}
+
+function setGcmError(msg) {
+  document.getElementById('gcmStatusMsg').textContent = msg;
+  document.getElementById('gcmStatusDot').style.background = '#f87171';
+  document.getElementById('gcmStatusDot').style.animation = 'none';
+  document.getElementById('gcmProgressBar').style.width = '0%';
+}
+
+function resetGcmButtons(confirmBtn, cancelBtn) {
+  confirmBtn.disabled = false;
+  confirmBtn.style.opacity = '1';
+  if (cancelBtn) cancelBtn.style.display = '';
 }
 
 // startFromDashboard ahora abre el modal directamente
