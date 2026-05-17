@@ -2226,22 +2226,36 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div id="gcmActorError" style="display:none;font-size:12px;color:#f87171;margin-top:6px;">Seleccioná un actor para continuar.</div>
       </div>
 
-      <!-- Imagen de referencia (solo video) -->
+      <!-- Slots de imagen: avatar personalizado + producto -->
       <div id="gcmRefSection" style="display:none;margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Imagen de referencia (opcional)</div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div id="gcmRefThumb" style="display:none;position:relative;width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;">
-            <img id="gcmRefImg" src="" style="width:100%;height:100%;object-fit:cover;" />
-            <button onclick="removeGcmRef()" style="position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+          <!-- Avatar personalizado -->
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Avatar personalizado</div>
+            <div id="gcmAvatarSlot" onclick="document.getElementById('gcmAvatarInput').click()"
+              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><circle cx="10" cy="8" r="4"/><path d="M2 19c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+              <span style="font-size:11px;color:var(--text3);">Subir avatar</span>
+            </div>
+            <input type="file" id="gcmAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'avatar')" />
+            <div id="gcmAvatarStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
           </div>
-          <button id="gcmRefBtn" onclick="document.getElementById('gcmRefInput').click()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--r-sm);background:var(--hover);border:1px solid var(--border);color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;transition:border-color 0.15s,color 0.15s;">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="11" height="11" rx="1.5"/><circle cx="4.5" cy="4.5" r="1"/><path d="m1 9 3-3 2.5 2.5 1.5-1.5 3 3"/></svg>
-            Subir imagen
-          </button>
-          <div id="gcmRefStatus" style="font-size:11px;color:var(--text3);"></div>
+
+          <!-- Imagen de producto -->
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Imagen de producto</div>
+            <div id="gcmProductSlot" onclick="document.getElementById('gcmProductInput').click()"
+              style="width:100%;aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--hover);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.15s;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><rect x="2" y="2" width="16" height="16" rx="2"/><circle cx="7" cy="7" r="1.5"/><path d="m2 14 5-5 3 3 2.5-2.5 5.5 5.5"/></svg>
+              <span style="font-size:11px;color:var(--text3);">Subir producto</span>
+            </div>
+            <input type="file" id="gcmProductInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmSlotUpload(event,'product')" />
+            <div id="gcmProductStatus" style="font-size:10px;color:var(--text3);margin-top:4px;text-align:center;"></div>
+          </div>
+
         </div>
-        <input type="file" id="gcmRefInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleGcmRefUpload(event)" />
-        <div style="font-size:11px;color:var(--text3);margin-top:6px;">Seedance usará esta imagen como referencia visual del video.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;">Ambos campos son opcionales. Si subís un avatar propio se usará en lugar de los predeterminados.</div>
       </div>
       <div style="background:var(--hover);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
         <div id="gcmConfig" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
@@ -4399,30 +4413,46 @@ function openGenConfirmModal() {
   // Mostrar/ocultar selector de actor y ref
   document.getElementById('gcmActorSection').style.display = isVideo ? 'block' : 'none';
   document.getElementById('gcmRefSection').style.display = isVideo ? 'block' : 'none';
-  // Resetear imagen de referencia del modal
-  _gcmRefUrl = null;
-  document.getElementById('gcmRefThumb').style.display = 'none';
-  document.getElementById('gcmRefStatus').textContent = '';
-  document.getElementById('gcmRefStatus').style.color = '';
-  document.getElementById('gcmRefInput').value = '';
 
-  // Si hay una imagen subida desde el gen-box, pre-cargarla
+  // Resetear slots
+  _gcmAvatarUrl = null; _gcmProductUrl = null;
+  const avatarSlotEl = document.getElementById('gcmAvatarSlot');
+  const productSlotEl = document.getElementById('gcmProductSlot');
+  if (avatarSlotEl) restoreEmptySlot(avatarSlotEl, 'avatar');
+  if (productSlotEl) restoreEmptySlot(productSlotEl, 'product');
+  const avatarStatEl = document.getElementById('gcmAvatarStatus');
+  const productStatEl = document.getElementById('gcmProductStatus');
+  if (avatarStatEl) avatarStatEl.textContent = '';
+  if (productStatEl) productStatEl.textContent = '';
+  // Remover card de avatar personalizado si quedó de antes
+  const prevCustom = document.querySelector('#gcmActorGrid [data-actor="__custom__"]');
+  if (prevCustom) prevCustom.remove();
+
+  // Pre-cargar desde _dashRefs: primera → producto, segunda → avatar personalizado
   if (isVideo && _dashRefs.length > 0 && _dashRefs[0].publicUrl) {
-    const ref = _dashRefs[0];
-    _gcmRefUrl = ref.publicUrl;
-    const imgEl = document.getElementById('gcmRefImg');
-    const thumbEl = document.getElementById('gcmRefThumb');
-    if (imgEl) imgEl.src = ref.dataUrl;
-    if (thumbEl) thumbEl.style.display = 'block';
-    document.getElementById('gcmRefStatus').textContent = 'Lista';
-    document.getElementById('gcmRefStatus').style.color = '#4ade80';
+    const prod = _dashRefs[0];
+    if (productSlotEl) {
+      productSlotEl.innerHTML = `<img src="${prod.dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" /><button onclick="removeGcmSlot('product');event.stopPropagation();" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>`;
+      productSlotEl.style.border = '1.5px solid rgba(255,255,255,0.2)';
+    }
+    _gcmProductUrl = prod.publicUrl;
+    if (productStatEl) { productStatEl.textContent = 'Lista'; productStatEl.style.color = '#4ade80'; }
   }
-  // Seleccionar "Ninguno" por defecto
-  document.querySelectorAll('.gcm-actor').forEach(el => {
-    const isNone = el.dataset.actor === '';
-    el.style.borderColor = isNone ? '#fff' : 'var(--border)';
-    el.querySelector('div').style.color = isNone ? '#fff' : 'var(--text2)';
-  });
+  if (isVideo && _dashRefs.length > 1 && _dashRefs[1].publicUrl) {
+    const av = _dashRefs[1];
+    _gcmAvatarUrl = av.publicUrl;
+    updateGcmCustomAvatarCard(av.dataUrl);
+    if (avatarStatEl) { avatarStatEl.textContent = 'Lista'; avatarStatEl.style.color = '#4ade80'; }
+  }
+
+  // Seleccionar "Ninguno" por defecto (si no hay avatar personalizado pre-cargado)
+  if (!_gcmAvatarUrl) {
+    document.querySelectorAll('.gcm-actor').forEach(el => {
+      const isNone = el.dataset.actor === '';
+      el.style.borderColor = isNone ? '#fff' : 'var(--border)';
+      el.querySelector('div').style.color = isNone ? '#fff' : 'var(--text2)';
+    });
+  }
 
   // Resumen de config
   let configLines = [];
@@ -4491,60 +4521,113 @@ function closeGenConfirmModal() {
   if (_gcmPollInterval) { clearInterval(_gcmPollInterval); _gcmPollInterval = null; }
 }
 
-let _gcmRefUrl = null; // URL pública de la imagen de referencia para video
+let _gcmAvatarUrl = null;  // URL pública del avatar personalizado
+let _gcmProductUrl = null; // URL pública del producto
 
-async function handleGcmRefUpload(event) {
+async function handleGcmSlotUpload(event, slot) {
   const file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
 
-  const statusEl = document.getElementById('gcmRefStatus');
-  const thumbEl = document.getElementById('gcmRefThumb');
-  const imgEl = document.getElementById('gcmRefImg');
+  const slotEl  = document.getElementById(slot === 'avatar' ? 'gcmAvatarSlot'   : 'gcmProductSlot');
+  const statEl  = document.getElementById(slot === 'avatar' ? 'gcmAvatarStatus' : 'gcmProductStatus');
 
   // Preview inmediato
   const dataUrl = await new Promise(res => {
     const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file);
   });
-  imgEl.src = dataUrl;
-  thumbEl.style.display = 'block';
-  statusEl.textContent = 'Subiendo...';
-  _gcmRefUrl = null;
+
+  // Mostrar preview en el slot
+  slotEl.innerHTML = `
+    <img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+    <button onclick="removeGcmSlot('${slot}');event.stopPropagation();"
+      style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">✕</button>
+  `;
+  slotEl.style.border = '1.5px solid rgba(255,255,255,0.2)';
+  statEl.textContent = 'Subiendo...';
+  statEl.style.color = 'var(--text3)';
+
+  if (slot === 'avatar') _gcmAvatarUrl = null;
+  else _gcmProductUrl = null;
+
+  // Si es avatar personalizado, actualizar la grilla de actores (agregar/reemplazar card)
+  if (slot === 'avatar') updateGcmCustomAvatarCard(dataUrl);
 
   // Subir a Supabase Storage
   try {
     const { data: sess } = await supa.auth.getSession();
-    if (!sess?.session) { statusEl.textContent = 'Error: no hay sesión'; return; }
+    if (!sess?.session) { statEl.textContent = 'Error: sesión'; return; }
     const userId = sess.session.user.id;
-    const accessToken = sess.session.access_token;
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const path = `${userId}/${Date.now()}_ref.${ext}`;
+    const token  = sess.session.access_token;
+    const ext    = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path   = `${userId}/${Date.now()}_${slot}.${ext}`;
+
     const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + accessToken,
-        'Content-Type': file.type || 'application/octet-stream',
-        'x-upsert': 'true'
-      },
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' },
       body: file
     });
     if (!uploadRes.ok) throw new Error('Upload falló');
-    _gcmRefUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
-    statusEl.textContent = 'Lista';
-    statusEl.style.color = '#4ade80';
+
+    const publicUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+    if (slot === 'avatar') _gcmAvatarUrl = publicUrl;
+    else _gcmProductUrl = publicUrl;
+
+    statEl.textContent = 'Lista';
+    statEl.style.color = '#4ade80';
   } catch(e) {
-    statusEl.textContent = 'Error al subir';
-    statusEl.style.color = '#f87171';
-    thumbEl.style.display = 'none';
-    _gcmRefUrl = null;
+    statEl.textContent = 'Error al subir';
+    statEl.style.color = '#f87171';
+    if (slot === 'avatar') { _gcmAvatarUrl = null; updateGcmCustomAvatarCard(null); }
+    else _gcmProductUrl = null;
+    // Restaurar slot vacío
+    restoreEmptySlot(slotEl, slot);
   }
 }
 
-function removeGcmRef() {
-  _gcmRefUrl = null;
-  document.getElementById('gcmRefThumb').style.display = 'none';
-  document.getElementById('gcmRefStatus').textContent = '';
-  document.getElementById('gcmRefInput').value = '';
+function restoreEmptySlot(slotEl, slot) {
+  const icon = slot === 'avatar'
+    ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><circle cx="10" cy="8" r="4"/><path d="M2 19c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span style="font-size:11px;color:var(--text3);">Subir avatar</span>`
+    : `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"><rect x="2" y="2" width="16" height="16" rx="2"/><circle cx="7" cy="7" r="1.5"/><path d="m2 14 5-5 3 3 2.5-2.5 5.5 5.5"/></svg><span style="font-size:11px;color:var(--text3);">Subir producto</span>`;
+  slotEl.innerHTML = icon;
+  slotEl.style.border = '1.5px dashed var(--border)';
+}
+
+function removeGcmSlot(slot) {
+  const slotEl = document.getElementById(slot === 'avatar' ? 'gcmAvatarSlot' : 'gcmProductSlot');
+  const statEl = document.getElementById(slot === 'avatar' ? 'gcmAvatarStatus' : 'gcmProductStatus');
+  if (slot === 'avatar') { _gcmAvatarUrl = null; updateGcmCustomAvatarCard(null); }
+  else _gcmProductUrl = null;
+  statEl.textContent = '';
+  restoreEmptySlot(slotEl, slot);
+}
+
+// Agrega o quita la card de avatar personalizado en la grilla de actores del modal
+function updateGcmCustomAvatarCard(dataUrl) {
+  const grid = document.getElementById('gcmActorGrid');
+  if (!grid) return;
+  let customCard = grid.querySelector('[data-actor="__custom__"]');
+
+  if (!dataUrl) {
+    if (customCard) customCard.remove();
+    return;
+  }
+
+  if (!customCard) {
+    customCard = document.createElement('div');
+    customCard.className = 'gcm-actor';
+    customCard.dataset.actor = '__custom__';
+    customCard.style.cssText = 'border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:border-color 0.15s;';
+    customCard.onclick = () => selectGcmActor(customCard);
+    grid.appendChild(customCard);
+  }
+
+  customCard.innerHTML = `
+    <img src="${dataUrl}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" />
+    <div style="font-size:11px;font-weight:600;text-align:center;padding:5px 4px;color:var(--text2);">Mi avatar</div>
+  `;
+  // Seleccionarlo automáticamente
+  selectGcmActor(customCard);
 }
 let _gcmPollInterval = null;
 let _gcmResultUrl = null;
@@ -4609,12 +4692,21 @@ async function confirmAndGenerate() {
       const res = document.querySelector('#cs-res .custom-select-option.selected')?.textContent || '1080p';
 
       const genBody = { script: prompt, duration: dur, aspectRatio: aspect, resolution: res, userId };
-      if (_gcmActor) genBody.avatar = _gcmActor;
-      if (_gcmRefUrl) genBody.referenceImage = _gcmRefUrl;
 
-      // Si hay imagen de ref subiendo todavía, esperar
-      if (document.getElementById('gcmRefStatus')?.textContent === 'Subiendo...') {
-        showToast('Esperá a que termine de subir la imagen de referencia');
+      // Actor: si eligió uno predeterminado de la grilla
+      if (_gcmActor && _gcmActor !== '__custom__') genBody.avatar = _gcmActor;
+
+      // Avatar personalizado: URL de Supabase (actúa como influencer)
+      if (_gcmAvatarUrl) genBody.customAvatarUrl = _gcmAvatarUrl;
+
+      // Imagen de producto
+      if (_gcmProductUrl) genBody.referenceImage = _gcmProductUrl;
+
+      // Bloquear si hay algo subiendo
+      const avatarUploading = document.getElementById('gcmAvatarStatus')?.textContent === 'Subiendo...';
+      const productUploading = document.getElementById('gcmProductStatus')?.textContent === 'Subiendo...';
+      if (avatarUploading || productUploading) {
+        showToast('Esperá a que terminen de subir las imágenes');
         resetGcmButtons(confirmBtn, cancelBtn);
         statusEl.style.display = 'none';
         return;
