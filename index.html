@@ -4636,6 +4636,8 @@ async function confirmAndGenerate() {
       if (!genRes.ok) throw new Error((await genRes.json().catch(() => ({}))).error || `Error ${genRes.status}`);
       const videoData = await genRes.json();
       requestId = videoData.requestId;
+
+    } else {
       const model = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
       const aspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value || '1:1';
       const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.textContent || '2K';
