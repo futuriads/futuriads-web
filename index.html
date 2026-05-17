@@ -2786,13 +2786,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <div class="a-profile-card-title">Mi plan</div>
           <div class="a-plan-row">
             <div class="a-metric-badge" id="profilePlan">—</div>
-            <div class="a-plan-price" id="profilePlanPrice">$0<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span></div>
+            <div style="font-size:11px;color:var(--text3);padding:4px 8px;background:var(--hover);border-radius:var(--r-pill);border:1px solid var(--border);">Acceso anticipado</div>
           </div>
           <div class="a-plan-videos-text">Cargando...</div>
           <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
           <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -3424,7 +3423,6 @@ function updateCreditsUI(me) {
   const profilePlan = document.getElementById('profilePlan');
   const profilePlanPrice = document.getElementById('profilePlanPrice');
   if (profilePlan) profilePlan.textContent = planInfo.label;
-  if (profilePlanPrice) profilePlanPrice.innerHTML = planInfo.price + '<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span>';
 
   const planVideosText = document.querySelector('.a-plan-videos-text');
   const planBarFill = document.querySelector('.a-plan-bar-fill');
