@@ -824,10 +824,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-sidebar-toggle:hover { background: var(--hover); color: var(--text); }
 .a-sidebar-logo {
-  display: flex; align-items: center; text-decoration: none;
-}
-.a-logo-img {
-  height: 32px; width: auto; display: block;
+  display: flex; align-items: center;
+  font-size: 17px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.5px; pointer-events: none; user-select: none;
+  flex: 1;
 }
 .a-nav {
   flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
@@ -895,6 +895,65 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   font-size: 10px; color: var(--text2); margin-top: 2px;
 }
 .a-sidebar.collapsed .a-credits-widget { display: none; }
+
+/* Popover de planes */
+.credits-popover {
+  position: absolute;
+  left: calc(100% + 10px);
+  bottom: 0;
+  width: 280px;
+  background: #111;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  z-index: 9999;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.credits-popover.open {
+  opacity: 1; pointer-events: all;
+  transform: translateX(0);
+}
+.credits-popover-title {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  margin-bottom: 12px;
+}
+.credits-plan-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 10px; border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  transition: background 0.12s;
+}
+.credits-plan-row:last-of-type { margin-bottom: 0; }
+.credits-plan-row.current-plan {
+  border-color: rgba(255,255,255,0.25);
+  background: var(--card2);
+}
+.credits-plan-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.credits-plan-detail { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.credits-plan-price { font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.credits-plan-badge {
+  font-size: 9px; font-weight: 700; color: #fff;
+  background: rgba(255,255,255,0.12); border-radius: 4px;
+  padding: 2px 5px; text-transform: uppercase; letter-spacing: .4px;
+  margin-left: 6px;
+}
+.credits-popover-divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 12px 0;
+}
+.credits-topup-btn {
+  width: 100%; padding: 10px; border-radius: 8px;
+  background: #fff; color: #000;
+  font-size: 13px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.credits-topup-btn:hover { opacity: 0.85; }
+.credits-topup-btn:disabled { opacity: 0.4; cursor: default; }
 
 /* Resumen de créditos arriba de cada pantalla de generación */
 .a-credits-quote {
@@ -1888,9 +1947,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   <!-- Sidebar -->
   <aside class="a-sidebar" id="appSidebar">
     <div class="a-sidebar-top">
-<a class="a-sidebar-logo" href="#" onclick="return false;">
-    <img src="/logo.png" alt="Futuriads" class="a-logo-img" />
-</a>
+<span class="a-sidebar-logo">Futuriads</span>
       <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>
       </button>
@@ -1909,10 +1966,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-nav-label">Historial</span>
       </div>
     </nav>
-    <div class="a-credits-widget" id="creditsWidget" onclick="showScreen('perfil')">
+    <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)" style="position:relative;">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
       <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
+      <!-- Popover de planes -->
+      <div class="credits-popover" id="creditsPopover">
+        <div class="credits-popover-title">Planes disponibles</div>
+        <div id="creditsPopoverPlans">
+          <!-- generado por JS -->
+        </div>
+        <hr class="credits-popover-divider">
+        <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
+      </div>
     </div>
     <div class="a-sidebar-bottom a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil" style="cursor:pointer; border-radius:0;">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
@@ -4809,6 +4875,62 @@ function showToast(msg){
 
 /* ---- Credits modal (recarga / topup) ---- */
 function openModal(){ openCreditsModal(); }
+
+/* ---- Credits popover (sidebar widget) ---- */
+function toggleCreditsPopover(e) {
+  e.stopPropagation();
+  const popover = document.getElementById('creditsPopover');
+  const isOpen = popover.classList.contains('open');
+  // Cerrar si ya está abierto
+  if (isOpen) { popover.classList.remove('open'); return; }
+
+  // Construir contenido de planes
+  const currentPlan = (_currentUser && _currentUser.plan) || 'none';
+  const allPlans = [
+    { key: 'starter', label: 'Starter',  price: '$19/mes', credits: '15.000 créditos' },
+    { key: 'growth',  label: 'Growth',   price: '$49/mes', credits: '50.000 créditos' },
+    { key: 'scale',   label: 'Scale',    price: '$129/mes', credits: '150.000 créditos' }
+  ];
+  const plansContainer = document.getElementById('creditsPopoverPlans');
+  plansContainer.innerHTML = allPlans.map(p => {
+    const isCurrent = p.key === currentPlan;
+    return `<div class="credits-plan-row${isCurrent ? ' current-plan' : ''}">
+      <div>
+        <div class="credits-plan-name">${p.label}${isCurrent ? '<span class="credits-plan-badge">Tu plan</span>' : ''}</div>
+        <div class="credits-plan-detail">${p.credits}</div>
+      </div>
+      <div class="credits-plan-price">${p.price}</div>
+    </div>`;
+  }).join('');
+
+  // Estado del botón de recarga
+  const topupBtn = document.getElementById('creditsPopoverTopupBtn');
+  if (currentPlan === 'none') {
+    topupBtn.textContent = 'Elegir un plan';
+  } else {
+    const planInfo = getPlanInfo(currentPlan);
+    topupBtn.textContent = `Recargar ${planInfo.topup_credits.toLocaleString('es-AR')} créditos — $${planInfo.topup_price}`;
+  }
+
+  popover.classList.add('open');
+}
+
+function creditsPopoverTopup(e) {
+  e.stopPropagation();
+  document.getElementById('creditsPopover').classList.remove('open');
+  const plan = (_currentUser && _currentUser.plan) || 'none';
+  if (plan === 'none') {
+    showScreen('perfil');
+  } else {
+    openCreditsModal();
+  }
+}
+
+// Cerrar el popover al hacer click fuera
+document.addEventListener('click', function() {
+  const popover = document.getElementById('creditsPopover');
+  if (popover) popover.classList.remove('open');
+});
 
 function openCreditsModal() {
   // Llenamos el modal con los datos reales del plan del usuario
