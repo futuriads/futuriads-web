@@ -800,23 +800,39 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
    APP — SIDEBAR
    ============================================== */
 .a-sidebar {
-  width: 240px; flex-shrink: 0;
+  width: 200px; flex-shrink: 0;
   background: #0a0a0a;
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   height: 100vh; overflow: hidden;
-  transition: width 0.25s ease;
+  position: relative;
+  /* sin transition: el resize drag es instantáneo */
 }
-.a-sidebar.collapsed { width: 64px; }
+.a-sidebar.collapsed { width: 52px; }
 .a-sidebar-top {
-  padding: 20px 16px 16px;
+  padding: 18px 14px 14px;
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 56px;
 }
-.a-sidebar.collapsed .a-sidebar-top { padding: 20px 12px 16px; justify-content: center; }
+.a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; justify-content: center; }
 .a-sidebar.collapsed .a-sidebar-logo { display: none; }
+
+/* Handle de resize en el borde derecho */
+.a-sidebar-resize {
+  position: absolute; top: 0; right: -3px;
+  width: 6px; height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  background: transparent;
+}
+.a-sidebar-resize:hover,
+.a-sidebar-resize.dragging {
+  background: rgba(255,255,255,0.08);
+}
+
 .a-sidebar-toggle {
-  width: 32px; height: 32px; flex-shrink: 0;
+  width: 28px; height: 28px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: none; cursor: pointer;
   color: var(--text2); border-radius: var(--r-sm);
@@ -896,11 +912,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-sidebar.collapsed .a-credits-widget { display: none; }
 
-/* Popover de planes */
+/* Popover de planes — posición fija, calculada por JS */
 .credits-popover {
-  position: absolute;
-  left: calc(100% + 10px);
-  bottom: 0;
+  position: fixed;
   width: 280px;
   background: #111;
   border: 1px solid var(--border);
@@ -1946,11 +1960,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
   <!-- Sidebar -->
   <aside class="a-sidebar" id="appSidebar">
+    <!-- Handle de resize -->
+    <div class="a-sidebar-resize" id="sidebarResizeHandle"></div>
     <div class="a-sidebar-top">
-<span class="a-sidebar-logo">Futuriads</span>
-      <button class="a-sidebar-toggle" onclick="toggleSidebar()" aria-label="Colapsar menú">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>
-      </button>
+      <span class="a-sidebar-logo">Futuriads</span>
     </div>
     <nav class="a-nav">
       <div class="a-nav-item active" id="nav-dashboard" onclick="showScreen('dashboard')" data-tooltip="Dashboard">
@@ -1966,19 +1979,17 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-nav-label">Historial</span>
       </div>
     </nav>
-    <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)" style="position:relative;">
+    <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
       <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
-      <!-- Popover de planes -->
-      <div class="credits-popover" id="creditsPopover">
-        <div class="credits-popover-title">Planes disponibles</div>
-        <div id="creditsPopoverPlans">
-          <!-- generado por JS -->
-        </div>
-        <hr class="credits-popover-divider">
-        <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
-      </div>
+    </div>
+    <!-- Popover de planes — fuera del widget para evitar clipping -->
+    <div class="credits-popover" id="creditsPopover">
+      <div class="credits-popover-title">Planes disponibles</div>
+      <div id="creditsPopoverPlans"></div>
+      <hr class="credits-popover-divider">
+      <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
     </div>
     <div class="a-sidebar-bottom a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil" style="cursor:pointer; border-radius:0;">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
@@ -4880,15 +4891,21 @@ function openModal(){ openCreditsModal(); }
 function toggleCreditsPopover(e) {
   e.stopPropagation();
   const popover = document.getElementById('creditsPopover');
-  const isOpen = popover.classList.contains('open');
-  // Cerrar si ya está abierto
+  const widget  = document.getElementById('creditsWidget');
+  const isOpen  = popover.classList.contains('open');
   if (isOpen) { popover.classList.remove('open'); return; }
+
+  // Posicionar el popover a la derecha del widget usando coordenadas fijas
+  const rect = widget.getBoundingClientRect();
+  popover.style.left   = (rect.right + 10) + 'px';
+  popover.style.bottom = (window.innerHeight - rect.bottom) + 'px';
+  popover.style.top    = 'auto';
 
   // Construir contenido de planes
   const currentPlan = (_currentUser && _currentUser.plan) || 'none';
   const allPlans = [
-    { key: 'starter', label: 'Starter',  price: '$19/mes', credits: '15.000 créditos' },
-    { key: 'growth',  label: 'Growth',   price: '$49/mes', credits: '50.000 créditos' },
+    { key: 'starter', label: 'Starter',  price: '$19/mes',  credits: '15.000 créditos' },
+    { key: 'growth',  label: 'Growth',   price: '$49/mes',  credits: '50.000 créditos' },
     { key: 'scale',   label: 'Scale',    price: '$129/mes', credits: '150.000 créditos' }
   ];
   const plansContainer = document.getElementById('creditsPopoverPlans');
@@ -4903,7 +4920,7 @@ function toggleCreditsPopover(e) {
     </div>`;
   }).join('');
 
-  // Estado del botón de recarga
+  // Botón de recarga
   const topupBtn = document.getElementById('creditsPopoverTopupBtn');
   if (currentPlan === 'none') {
     topupBtn.textContent = 'Elegir un plan';
@@ -6028,12 +6045,69 @@ async function submitSignup() {
   }
 }
 
-// Sidebar collapse toggle
-function toggleSidebar() {
-  var sidebar = document.getElementById('appSidebar');
-  if (!sidebar) return;
-  sidebar.classList.toggle('collapsed');
-}
+// Sidebar resize drag
+(function() {
+  const SIDEBAR_MIN = 52;   // colapso total (solo íconos)
+  const SIDEBAR_MAX = 320;  // máximo razonable
+  const SIDEBAR_SNAP_COLLAPSED = 80; // si queda < 80px al soltar, colapsa a 52
+
+  const sidebar  = document.getElementById('appSidebar');
+  const handle   = document.getElementById('sidebarResizeHandle');
+  if (!sidebar || !handle) return;
+
+  // Restaurar ancho guardado
+  const savedWidth = parseInt(localStorage.getItem('sidebarWidth'), 10);
+  if (savedWidth && savedWidth >= SIDEBAR_MIN && savedWidth <= SIDEBAR_MAX) {
+    sidebar.style.width = savedWidth + 'px';
+    if (savedWidth <= SIDEBAR_SNAP_COLLAPSED) applyCollapsed(true);
+    else applyCollapsed(false);
+  }
+
+  function applyCollapsed(yes) {
+    if (yes) sidebar.classList.add('collapsed');
+    else sidebar.classList.remove('collapsed');
+  }
+
+  let dragging = false;
+  let startX   = 0;
+  let startW   = 0;
+
+  handle.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    dragging = true;
+    startX   = e.clientX;
+    startW   = sidebar.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.cursor    = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    const delta  = e.clientX - startX;
+    const newW   = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, startW + delta));
+    sidebar.style.width = newW + 'px';
+    applyCollapsed(newW <= SIDEBAR_SNAP_COLLAPSED);
+  });
+
+  document.addEventListener('mouseup', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor     = '';
+    document.body.style.userSelect = '';
+    // Snap a colapso si quedó muy angosto
+    const finalW = sidebar.offsetWidth;
+    if (finalW <= SIDEBAR_SNAP_COLLAPSED) {
+      sidebar.style.width = SIDEBAR_MIN + 'px';
+      applyCollapsed(true);
+      localStorage.setItem('sidebarWidth', SIDEBAR_MIN);
+    } else {
+      applyCollapsed(false);
+      localStorage.setItem('sidebarWidth', finalW);
+    }
+  });
+})();
 </script>
 
 
