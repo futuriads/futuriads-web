@@ -810,21 +810,21 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-sidebar.collapsed { width: 52px; }
 .a-sidebar-top {
+  position: relative;
   padding: 18px 14px 14px;
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
   min-height: 56px;
-  overflow: hidden;
+  flex-shrink: 0;
 }
 .a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; }
 
-/* Logo: ancho fijo, fade out/in — no depende del ancho del sidebar */
+/* Logo: posición absoluta fija, no depende del ancho del sidebar */
 .a-sidebar-logo {
-  display: flex; align-items: center;
+  position: absolute;
+  left: 14px; top: 18px;
   font-size: 17px; font-weight: 800; color: var(--text);
   letter-spacing: -0.5px; pointer-events: none; user-select: none;
-  width: 140px; flex-shrink: 0;
-  white-space: nowrap; overflow: hidden;
+  white-space: nowrap;
   opacity: 1;
   transition: opacity 0.25s ease;
 }
