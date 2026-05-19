@@ -1107,16 +1107,73 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   background: var(--card2); color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
+/* Textarea altura fija para que el cuadro no cambie de tamaño entre tabs */
 .a-gen-textarea {
   width: 100%; background: var(--hover);
   border: 1px solid transparent; border-radius: var(--r-md);
   padding: 16px; resize: none;
   font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #fff;
-  line-height: 1.65; min-height: 100px; outline: none;
+  line-height: 1.65; height: 100px; outline: none;
   transition: border-color 0.2s; margin-bottom: 16px;
+  box-sizing: border-box;
 }
 .a-gen-textarea:focus { border-color: rgba(255,255,255,0.2); }
 .a-gen-textarea::placeholder { color: var(--text3); }
+
+/* Zona de referencia de imágenes — altura fija para que ambos tabs midan igual */
+.a-gen-ref-zone {
+  margin-bottom: 16px;
+  min-height: 94px; /* reserva espacio aunque esté oculto */
+}
+/* Selector de modo de referencia */
+.a-ref-mode-row {
+  display: flex; gap: 8px; margin-bottom: 12px;
+}
+.a-ref-mode-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.a-ref-mode-btn:hover { background: var(--hover); color: var(--text); }
+.a-ref-mode-btn.active {
+  background: var(--card2); color: #fff; border-color: rgba(255,255,255,0.2);
+}
+/* Uploads de imágenes */
+.a-ref-uploads {
+  display: flex; gap: 10px;
+}
+.a-ref-upload {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; padding: 10px;
+  border: 1px dashed var(--border); border-radius: var(--r-sm);
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  font-size: 11px; color: var(--text2); text-align: center;
+  position: relative; overflow: hidden; min-height: 62px;
+}
+.a-ref-upload:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
+.a-ref-upload.has-image { border-style: solid; border-color: rgba(255,255,255,0.2); }
+.a-ref-upload input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.a-ref-upload-preview {
+  width: 100%; height: 100%; position: absolute; inset: 0;
+  object-fit: cover; border-radius: calc(var(--r-sm) - 1px); pointer-events: none;
+}
+.a-ref-upload-label {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  pointer-events: none; z-index: 1;
+}
+.a-ref-upload-clear {
+  position: absolute; top: 4px; right: 4px; z-index: 2;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); color: #fff;
+  font-size: 10px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; line-height: 1;
+}
+
 .a-gen-row {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible;
 }
@@ -2078,7 +2135,44 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
           <button class="a-gen-tab active" id="tabVideo" onclick="switchGenTab('video')">Crear video</button>
           <button class="a-gen-tab" id="tabImage" onclick="switchGenTab('image')">Crear imagen</button>
         </div>
+
         <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
+
+        <!-- Zona de referencia — solo visible en tab video -->
+        <div class="a-gen-ref-zone" id="videoRefZone">
+          <div class="a-ref-mode-row">
+            <button class="a-ref-mode-btn active" id="refBtn-none" onclick="setRefMode('none')">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M4.5 6.5h4" stroke-linecap="round"/></svg>
+              Sin referencia
+            </button>
+            <button class="a-ref-mode-btn" id="refBtn-avatar" onclick="setRefMode('avatar')">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="5" r="2.2"/><path d="M2 12c0-2.5 2-4 4.5-4S11 9.5 11 12" stroke-linecap="round"/></svg>
+              Con avatar
+            </button>
+            <button class="a-ref-mode-btn" id="refBtn-multi" onclick="setRefMode('multi')">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4.5" cy="4.5" r="2"/><path d="M1.5 11c0-2 1.5-3 3-3s3 1 3 3" stroke-linecap="round"/><circle cx="9.5" cy="5" r="1.8"/><path d="M7.5 11c0-1.5 1-2.5 2-2.5" stroke-linecap="round"/></svg>
+              Avatar + producto
+            </button>
+          </div>
+          <!-- Uploads: se muestran según el modo -->
+          <div class="a-ref-uploads" id="refUploads" style="display:none;">
+            <div class="a-ref-upload" id="refUploadAvatar">
+              <input type="file" accept="image/*" onchange="handleRefUpload('avatar', this)">
+              <div class="a-ref-upload-label">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 14c0-3 2.5-4.5 5.5-4.5S13.5 11 13.5 14" stroke-linecap="round"/></svg>
+                <span>Avatar</span>
+              </div>
+            </div>
+            <div class="a-ref-upload" id="refUploadProduct" style="display:none;">
+              <input type="file" accept="image/*" onchange="handleRefUpload('product', this)">
+              <div class="a-ref-upload-label">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="2.5"/><path d="M5 8h6M8 5v6" stroke-linecap="round"/></svg>
+                <span>Producto</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="a-gen-row">
           <div class="a-gen-opts active" id="videoOpts">
             <div class="custom-select" id="cs-model">
@@ -5110,15 +5204,100 @@ document.getElementById('noCreditsModal').addEventListener('click', function(e){
 });
 
 /* ---- Gen tab ---- */
+// Estado de referencia del gen box dashboard
+let _dashRefMode = 'none'; // 'none' | 'avatar' | 'multi'
+let _dashRefAvatarFile = null;
+let _dashRefProductFile = null;
+let _dashRefAvatarB64 = null;
+let _dashRefProductB64 = null;
+
 function switchGenTab(tab){
-  document.getElementById('tabVideo').classList.toggle('active',tab==='video');
-  document.getElementById('tabImage').classList.toggle('active',tab==='image');
-  document.getElementById('videoOpts').classList.toggle('active',tab==='video');
-  document.getElementById('imageOpts').classList.toggle('active',tab==='image');
-  document.getElementById('genTextarea').placeholder=
+  document.getElementById('tabVideo').classList.toggle('active', tab==='video');
+  document.getElementById('tabImage').classList.toggle('active', tab==='image');
+  document.getElementById('videoOpts').classList.toggle('active', tab==='video');
+  document.getElementById('imageOpts').classList.toggle('active', tab==='image');
+  // La ref zone solo en video; en imagen queda oculta pero ocupa el mismo min-height
+  const refZone = document.getElementById('videoRefZone');
+  if (refZone) refZone.style.visibility = tab==='video' ? 'visible' : 'hidden';
+  document.getElementById('genTextarea').placeholder =
     tab==='video'
       ? 'Empezá a escribir lo que querés que diga el actor en el video...'
       : 'Describí la imagen que querés generar...';
+}
+
+function setRefMode(mode) {
+  _dashRefMode = mode;
+  // Botones activos
+  ['none','avatar','multi'].forEach(m => {
+    document.getElementById('refBtn-' + m).classList.toggle('active', m === mode);
+  });
+  const uploads = document.getElementById('refUploads');
+  const productUpload = document.getElementById('refUploadProduct');
+  if (mode === 'none') {
+    uploads.style.display = 'none';
+  } else if (mode === 'avatar') {
+    uploads.style.display = 'flex';
+    productUpload.style.display = 'none';
+  } else { // multi
+    uploads.style.display = 'flex';
+    productUpload.style.display = 'flex';
+  }
+}
+
+function handleRefUpload(type, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const container = type === 'avatar'
+    ? document.getElementById('refUploadAvatar')
+    : document.getElementById('refUploadProduct');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result; // data:image/...;base64,...
+    if (type === 'avatar') { _dashRefAvatarFile = file; _dashRefAvatarB64 = b64; }
+    else                   { _dashRefProductFile = file; _dashRefProductB64 = b64; }
+
+    // Mostrar preview
+    let preview = container.querySelector('.a-ref-upload-preview');
+    if (!preview) {
+      preview = document.createElement('img');
+      preview.className = 'a-ref-upload-preview';
+      container.appendChild(preview);
+    }
+    preview.src = b64;
+    container.classList.add('has-image');
+
+    // Botón de limpiar
+    if (!container.querySelector('.a-ref-upload-clear')) {
+      const btn = document.createElement('button');
+      btn.className = 'a-ref-upload-clear';
+      btn.textContent = '✕';
+      btn.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); clearRefUpload(type); };
+      container.appendChild(btn);
+    }
+    // Ocultar el label
+    const label = container.querySelector('.a-ref-upload-label');
+    if (label) label.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearRefUpload(type) {
+  const container = type === 'avatar'
+    ? document.getElementById('refUploadAvatar')
+    : document.getElementById('refUploadProduct');
+  if (type === 'avatar') { _dashRefAvatarFile = null; _dashRefAvatarB64 = null; }
+  else                   { _dashRefProductFile = null; _dashRefProductB64 = null; }
+  container.classList.remove('has-image');
+  const preview = container.querySelector('.a-ref-upload-preview');
+  if (preview) preview.remove();
+  const clearBtn = container.querySelector('.a-ref-upload-clear');
+  if (clearBtn) clearBtn.remove();
+  const label = container.querySelector('.a-ref-upload-label');
+  if (label) label.style.display = '';
+  // Limpiar el input file
+  const fileInput = container.querySelector('input[type=file]');
+  if (fileInput) fileInput.value = '';
 }
 
 /* ---- Dashboard → flujo de generación ---- */
@@ -5192,6 +5371,13 @@ function startFromDashboard(){
   showScreen('nuevo');
   resetSelectedActor();
   goGenStep(1);
+
+  // Pasar modo de referencia e imágenes al flujo de video
+  if (typeof _dashRefMode !== 'undefined') {
+    window._pendingRefMode    = _dashRefMode;
+    window._pendingAvatarB64  = _dashRefAvatarB64;
+    window._pendingProductB64 = _dashRefProductB64;
+  }
 
   // Limpiar el textarea del dashboard para la próxima visita
   if (dashPrompt) document.getElementById('genTextarea').value = '';
