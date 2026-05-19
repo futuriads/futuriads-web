@@ -818,18 +818,18 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; }
 
-/* Logo: fade out/in con opacity+pointer-events, sin cambiar layout */
+/* Logo: ancho fijo, fade out/in — no depende del ancho del sidebar */
 .a-sidebar-logo {
   display: flex; align-items: center;
   font-size: 17px; font-weight: 800; color: var(--text);
   letter-spacing: -0.5px; pointer-events: none; user-select: none;
-  flex: 1; white-space: nowrap; overflow: hidden;
+  width: 140px; flex-shrink: 0;
+  white-space: nowrap; overflow: hidden;
   opacity: 1;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 .a-sidebar.collapsed .a-sidebar-logo {
   opacity: 0;
-  pointer-events: none;
 }
 
 /* Nav items: padding y gap fijos, los íconos no se mueven nunca */
@@ -881,21 +881,29 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%       { opacity: 0.2; transform: scale(0.7); }
 }
-/* Widget de créditos: fade out/in como el logo, sin cambiar tamaño */
+/* Widget de créditos: ancho fijo, fuera del flujo — no se mueve con el sidebar */
 .a-credits-widget {
-  margin: 0 16px 12px;
+  position: absolute;
+  bottom: 70px; /* encima del sidebar-bottom */
+  left: 16px;
+  width: 168px; /* ancho fijo, independiente del sidebar */
   padding: 12px 14px;
   background: var(--card2);
   border: 1px solid var(--border);
   border-radius: var(--r-sm, 10px);
   cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, opacity 0.2s ease;
+  transition: background .15s ease, border-color .15s ease, opacity 0.25s ease;
   opacity: 1;
+  z-index: 2;
 }
 .a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
 .a-sidebar.collapsed .a-credits-widget {
   opacity: 0;
   pointer-events: none;
+}
+/* Spacer para que el nav no quede tapado por el widget absoluto */
+.a-credits-widget-spacer {
+  height: 90px; flex-shrink: 0;
 }
 .a-credits-widget-label {
   font-size: 11px; color: var(--text2);
@@ -1996,6 +2004,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <span class="a-nav-label">Historial</span>
       </div>
     </nav>
+    <div class="a-credits-widget-spacer"></div>
     <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
