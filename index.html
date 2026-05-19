@@ -814,40 +814,28 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 8px;
   min-height: 56px;
+  overflow: hidden;
 }
-.a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; justify-content: center; }
-.a-sidebar.collapsed .a-sidebar-logo { display: none; }
+.a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; }
 
-/* Handle de resize en el borde derecho */
-.a-sidebar-resize {
-  position: absolute; top: 0; right: -3px;
-  width: 6px; height: 100%;
-  cursor: col-resize;
-  z-index: 100;
-  background: transparent;
-}
-.a-sidebar-resize:hover,
-.a-sidebar-resize.dragging {
-  background: rgba(255,255,255,0.08);
-}
-
-.a-sidebar-toggle {
-  width: 28px; height: 28px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; cursor: pointer;
-  color: var(--text2); border-radius: var(--r-sm);
-  transition: background 0.15s, color 0.15s;
-}
-.a-sidebar-toggle:hover { background: var(--hover); color: var(--text); }
+/* Logo: fade out/in con opacity+pointer-events, sin cambiar layout */
 .a-sidebar-logo {
   display: flex; align-items: center;
   font-size: 17px; font-weight: 800; color: var(--text);
   letter-spacing: -0.5px; pointer-events: none; user-select: none;
-  flex: 1;
+  flex: 1; white-space: nowrap; overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
+.a-sidebar.collapsed .a-sidebar-logo {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Nav items: padding y gap fijos, los íconos no se mueven nunca */
 .a-nav {
   flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
-  overflow-y: auto;
+  overflow-y: auto; overflow-x: hidden;
 }
 .a-nav-item {
   display: flex; align-items: center; gap: 10px;
@@ -864,12 +852,20 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-left-color: #fff;
 }
 .a-nav-item svg { flex-shrink: 0; }
-.a-sidebar.collapsed .a-nav-item { justify-content: center; padding: 10px 0; }
-.a-sidebar.collapsed .a-nav-item .a-nav-label,
+
+/* Labels: fade out/in, sin tocar el layout ni los íconos */
+.a-nav-label {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  overflow: hidden;
+}
+.a-sidebar.collapsed .a-nav-label { opacity: 0; pointer-events: none; }
 .a-sidebar.collapsed .a-nav-item .a-nav-pulse { display: none; }
+
+/* Tooltip al colapsar */
 .a-sidebar.collapsed .a-nav-item[data-tooltip]:hover::after {
   content: attr(data-tooltip);
-  position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
   background: #1a1a1a; color: #fff;
   padding: 6px 10px; border-radius: var(--r-sm);
   font-size: 12px; font-weight: 500; white-space: nowrap;
@@ -885,7 +881,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%       { opacity: 0.2; transform: scale(0.7); }
 }
-/* Widget de créditos en el sidebar */
+/* Widget de créditos: fade out/in como el logo, sin cambiar tamaño */
 .a-credits-widget {
   margin: 0 16px 12px;
   padding: 12px 14px;
@@ -893,9 +889,14 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border: 1px solid var(--border);
   border-radius: var(--r-sm, 10px);
   cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
+  transition: background .15s ease, border-color .15s ease, opacity 0.2s ease;
+  opacity: 1;
 }
 .a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
+.a-sidebar.collapsed .a-credits-widget {
+  opacity: 0;
+  pointer-events: none;
+}
 .a-credits-widget-label {
   font-size: 11px; color: var(--text2);
   text-transform: uppercase; letter-spacing: .5px;
@@ -910,7 +911,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-credits-widget-sub {
   font-size: 10px; color: var(--text2); margin-top: 2px;
 }
-.a-sidebar.collapsed .a-credits-widget { display: none; }
+
+/* Handle de resize en el borde derecho */
+.a-sidebar-resize {
+  position: absolute; top: 0; right: -3px;
+  width: 6px; height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  background: transparent;
+}
+.a-sidebar-resize:hover,
+.a-sidebar-resize.dragging {
+  background: rgba(255,255,255,0.08);
+}
 
 /* Popover de planes — posición fija, calculada por JS */
 .credits-popover {
@@ -988,15 +1001,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-radius: 0 !important;
 }
 .a-sidebar-bottom:hover, .a-sidebar-bottom.active { background: var(--hover) !important; color: var(--text); border-left-color: transparent !important; }
-.a-sidebar.collapsed .a-sidebar-bottom { padding: 14px 12px; justify-content: center; }
-.a-sidebar.collapsed .a-user-info { display: none; }
+/* Sin cambiar padding ni justify — el avatar no se mueve */
+.a-user-info {
+  flex: 1; min-width: 0;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.a-sidebar.collapsed .a-user-info { opacity: 0; pointer-events: none; }
 .a-user-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   background: var(--card2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
 }
-.a-user-info { flex: 1; min-width: 0; }
 .a-user-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .a-user-plan { font-size: 11px; color: var(--text2); }
 
