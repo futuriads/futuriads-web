@@ -1223,8 +1223,141 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-gen-opts { display: none; }
 .a-gen-opts.active { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible; }
 
-/* Available models section */
-.a-section-row {
+/* ---- Dashboard bottom grid ---- */
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  margin-top: 16px;
+}
+/* Card base compartida */
+.dash-tips-card, .dash-recent-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.dash-tips-header, .dash-recent-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dash-tips-title {
+  font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px;
+}
+.dash-tips-more {
+  font-size: 12px; color: var(--text2); background: none; border: none;
+  cursor: pointer; transition: color 0.15s;
+}
+.dash-tips-more:hover { color: var(--text); }
+
+/* Cuerpo de consejos: lista + video */
+.dash-tips-body {
+  display: grid; grid-template-columns: 1fr 200px; gap: 16px; flex: 1;
+}
+.dash-tips-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+/* Tip individual */
+.dash-tip-item {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.dash-tip-icon {
+  width: 32px; height: 32px; flex-shrink: 0;
+  background: var(--card2); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2);
+}
+.dash-tip-text { flex: 1; }
+.dash-tip-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.dash-tip-sub { font-size: 11px; color: var(--text2); line-height: 1.4; }
+/* Skeleton */
+.dash-tip-skeleton {
+  height: 44px; border-radius: 8px;
+  background: linear-gradient(90deg, var(--card2) 25%, var(--hover) 50%, var(--card2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+/* Video tutorial */
+.dash-tips-video {
+  border-radius: 10px; overflow: hidden;
+  background: var(--card2); min-height: 140px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Borradores recientes */
+.dash-recent-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.dash-recent-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px; border-radius: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.dash-recent-item:hover { background: var(--hover); }
+.dash-recent-thumb {
+  width: 52px; height: 52px; flex-shrink: 0;
+  border-radius: 8px; overflow: hidden; background: var(--card2);
+}
+.dash-recent-thumb img, .dash-recent-thumb video {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.dash-recent-info { flex: 1; min-width: 0; }
+.dash-recent-name {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dash-recent-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.dash-recent-badge {
+  font-size: 10px; font-weight: 600; padding: 3px 8px;
+  border-radius: 20px; background: rgba(34,197,94,0.15); color: #22c55e;
+  white-space: nowrap;
+}
+.dash-recent-more { color: var(--text2); font-size: 16px; cursor: pointer; padding: 4px; }
+
+/* Botón Ver inspiración */
+.dash-inspo-btn {
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--r-pill); padding: 6px 14px;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.dash-inspo-btn:hover { background: var(--hover); color: var(--text); }
+
+/* Modal inspiración */
+.inspo-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  z-index: 10000; display: flex; align-items: center; justify-content: center;
+}
+.inspo-modal {
+  background: #111; border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px;
+  width: 720px; max-width: 95vw; max-height: 85vh;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+}
+.inspo-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.inspo-modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.inspo-modal-close {
+  background: none; border: none; color: var(--text2);
+  font-size: 18px; cursor: pointer; padding: 4px;
+}
+.inspo-modal-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.inspo-card {
+  border-radius: 10px; overflow: hidden;
+  background: var(--card2); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color 0.15s;
+}
+.inspo-card:hover { border-color: rgba(255,255,255,0.25); }
+.inspo-card img {
+  width: 100%; aspect-ratio: 9/16; object-fit: cover; display: block;
+}
+.inspo-card-label {
+  font-size: 11px; color: var(--text2); padding: 8px 10px;
+}
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px;
 }
@@ -2155,9 +2288,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
       <!-- Generation box -->
       <div class="a-gen-box">
-        <div class="a-gen-toggle">
-          <button class="a-gen-tab active" id="tabVideo" onclick="switchGenTab('video')">Crear video</button>
-          <button class="a-gen-tab" id="tabImage" onclick="switchGenTab('image')">Crear imagen</button>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+          <div class="a-gen-toggle" style="margin-bottom:0;">
+            <button class="a-gen-tab active" id="tabVideo" onclick="switchGenTab('video')">Crear video</button>
+            <button class="a-gen-tab" id="tabImage" onclick="switchGenTab('image')">Crear imagen</button>
+          </div>
+          <button class="dash-inspo-btn" onclick="openInspoModal()">Ver inspiración</button>
         </div>
 
         <div id="genBoxInner" style="display:flex; flex-direction:column; flex:1; min-height:0;">
@@ -2308,85 +2444,65 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         </div><!-- /genBoxInner -->
       </div>
 
-      <!-- Available video models -->
-      <div class="a-section-row">
-        <div class="a-section-title">Modelos de video disponibles</div>
-        <span class="a-see-all">Ver todos</span>
-      </div>
-      <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('Seedance 2.0', 'VIDEO', '5-15s', '9:16', '720p')">
-          <div class="a-model-thumb">
-            <video src="/models/seedance-preview.mp4" autoplay loop muted playsinline poster="/models/seedance-preview.jpg"></video>
-            <div class="a-model-menu">⋯</div>
+      <!-- Dashboard bottom: dos columnas -->
+      <div class="dash-bottom-grid">
+
+        <!-- Columna izquierda: Consejos -->
+        <div class="dash-tips-card">
+          <div class="dash-tips-header">
+            <div class="dash-tips-title">Consejos para mejores anuncios</div>
+            <button class="dash-tips-more" onclick="showScreen('historial')">Ver más consejos</button>
           </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Seedance 2.0</div>
-            <div class="a-model-sub">Alta calidad · Rápido</div>
+          <div class="dash-tips-body">
+            <div class="dash-tips-list" id="dashTipsList">
+              <!-- Tips generados por IA -->
+              <div class="dash-tip-skeleton"></div>
+              <div class="dash-tip-skeleton"></div>
+              <div class="dash-tip-skeleton"></div>
+            </div>
+            <div class="dash-tips-video">
+              <video src="/videos/tutorial.mp4" poster="/videos/tutorial-poster.jpg"
+                controls playsinline
+                style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: Borradores recientes -->
+        <div class="dash-recent-card">
+          <div class="dash-recent-header">
+            <div class="dash-tips-title">Borradores recientes</div>
+            <button class="dash-tips-more" onclick="showScreen('historial')">Ver todos</button>
+          </div>
+          <div class="dash-recent-list" id="dashRecentList">
+            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;"></div>
+            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;"></div>
+            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Ver inspiración -->
+      <div class="inspo-modal-backdrop" id="inspoModal" onclick="closeInspoModal()" style="display:none;">
+        <div class="inspo-modal" onclick="event.stopPropagation()">
+          <div class="inspo-modal-header">
+            <div class="inspo-modal-title">Galería de inspiración</div>
+            <button class="inspo-modal-close" onclick="closeInspoModal()">✕</button>
+          </div>
+          <div class="inspo-modal-grid" id="inspoGrid">
+            <!-- hardcodeados -->
+            <div class="inspo-card"><img src="/inspo/inspo-1.jpg" alt=""><div class="inspo-card-label">Skincare · UGC</div></div>
+            <div class="inspo-card"><img src="/inspo/inspo-2.jpg" alt=""><div class="inspo-card-label">Suplementos · Demo</div></div>
+            <div class="inspo-card"><img src="/inspo/inspo-3.jpg" alt=""><div class="inspo-card-label">Moda · Lifestyle</div></div>
+            <div class="inspo-card"><img src="/inspo/inspo-4.jpg" alt=""><div class="inspo-card-label">Tech · Unboxing</div></div>
+            <div class="inspo-card"><img src="/inspo/inspo-5.jpg" alt=""><div class="inspo-card-label">Hogar · Antes/después</div></div>
+            <div class="inspo-card"><img src="/inspo/inspo-6.jpg" alt=""><div class="inspo-card-label">Fitness · Testimonial</div></div>
           </div>
         </div>
       </div>
 
-      <!-- Available image models -->
-      <div class="a-section-row">
-        <div class="a-section-title">Modelos de imagen disponibles</div>
-        <span class="a-see-all">Ver todos</span>
-      </div>
-      <div class="a-models-grid">
-        <div class="a-model-card" onclick="openDrawer('GPT Images 2', 'IMAGEN', '—', '1:1', 'HD')">
-          <div class="a-model-thumb">
-            <img src="/models/gpt-images-preview.jpg" alt="GPT Images 2" />
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">GPT Images 2</div>
-            <div class="a-model-sub">Fotorrealista · Versátil</div>
-          </div>
-        </div>
-        <div class="a-model-card" onclick="openDrawer('Nano Banana Pro', 'IMAGEN', '—', '1:1', 'HD')">
-          <div class="a-model-thumb">
-            <img src="/models/nano-banana-preview.jpg" alt="Nano Banana Pro" />
-            <div class="a-model-menu">⋯</div>
-          </div>
-          <div class="a-model-info">
-            <div class="a-model-name">Nano Banana Pro</div>
-            <div class="a-model-sub">Detalle · Rápido</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recientes -->
-      <div class="a-section-row" style="margin-top:8px;">
-        <div class="a-section-title">Recientes</div>
-      </div>
-      <div class="a-recent-grid">
-        <div class="a-recent-card">
-          <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-          </div>
-          <div class="a-recent-info">
-            <div class="a-recent-name">Sofia · Lifestyle</div>
-            <div class="a-recent-meta">30s · hace 2 días</div>
-          </div>
-        </div>
-        <div class="a-recent-card">
-          <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-          </div>
-          <div class="a-recent-info">
-            <div class="a-recent-name">Facu · Casual</div>
-            <div class="a-recent-meta">15s · hace 5 días</div>
-          </div>
-        </div>
-        <div class="a-recent-card">
-          <div class="a-recent-thumb">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"><circle cx="16" cy="16" r="14"/><polygon points="13,11 22,16 13,21" fill="rgba(255,255,255,0.15)" stroke="none"/></svg>
-          </div>
-          <div class="a-recent-info">
-            <div class="a-recent-name">Paula · Dinámica</div>
-            <div class="a-recent-meta">60s · hace 8 días</div>
-          </div>
-        </div>
-      </div>
     </div><!-- /dashboard -->
 
     <!-- ---- NUEVO VIDEO ---- -->
@@ -3363,6 +3479,7 @@ async function loadHistory() {
   }
   renderHistory();
   updateDashMetrics();
+  loadDashRecent();
 }
 
 function updateDashMetrics() {
@@ -3624,6 +3741,9 @@ async function loadProfile() {
       _currentUser = { ...me, userId, email: userEmail };
       updateProfileUI(me, userEmail);
     }
+    // Cargar historial (para borradores recientes y métricas) y tips de IA
+    loadHistory();
+    loadDashTips();
   } catch (e) {
     console.error('Error en loadProfile:', e);
   }
@@ -5124,7 +5244,90 @@ function showToast(msg){
 /* ---- Credits modal (recarga / topup) ---- */
 function openModal(){ openCreditsModal(); }
 
-/* ---- Credits popover (sidebar widget) ---- */
+/* ---- Dashboard bottom: tips IA + borradores recientes ---- */
+
+async function loadDashTips() {
+  const el = document.getElementById('dashTipsList');
+  if (!el) return;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        system: 'Sos un experto en marketing de performance y UGC (User Generated Content) para ecommerce en Latinoamérica. Respondé SOLO con JSON válido, sin texto extra, sin markdown, sin backticks.',
+        messages: [{
+          role: 'user',
+          content: 'Dame exactamente 3 consejos cortos y concretos para crear mejores anuncios de video UGC en Instagram y TikTok. Respondé SOLO con este JSON: [{"title":"...","sub":"..."},{"title":"...","sub":"..."},{"title":"...","sub":"..."}]. Cada title máximo 5 palabras, cada sub máximo 10 palabras.'
+        }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.find(b => b.type === 'text')?.text || '[]';
+    const tips = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const icons = [
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v12M2 8h12" stroke-linecap="round"/></svg>',
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 5v4l2 2" stroke-linecap="round"/></svg>',
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M6 7h4M6 10h2" stroke-linecap="round"/></svg>'
+    ];
+    el.innerHTML = tips.map((t, i) => `
+      <div class="dash-tip-item">
+        <div class="dash-tip-icon">${icons[i] || icons[0]}</div>
+        <div class="dash-tip-text">
+          <div class="dash-tip-title">${t.title}</div>
+          <div class="dash-tip-sub">${t.sub}</div>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    // Fallback hardcodeado si falla la API
+    el.innerHTML = `
+      <div class="dash-tip-item"><div class="dash-tip-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v12M2 8h12" stroke-linecap="round"/></svg></div><div class="dash-tip-text"><div class="dash-tip-title">Sé claro y directo</div><div class="dash-tip-sub">Los mensajes simples tienen 23% más de retención.</div></div></div>
+      <div class="dash-tip-item"><div class="dash-tip-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 5v4l2 2" stroke-linecap="round"/></svg></div><div class="dash-tip-text"><div class="dash-tip-title">Usá un gancho en los primeros 3 segundos</div><div class="dash-tip-sub">Los videos con gancho inicial tienen 2x más conversiones.</div></div></div>
+      <div class="dash-tip-item"><div class="dash-tip-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M6 7h4M6 10h2" stroke-linecap="round"/></svg></div><div class="dash-tip-text"><div class="dash-tip-title">Mostrá el producto en uso</div><div class="dash-tip-sub">Aumenta la confianza y reduce objeciones.</div></div></div>`;
+  }
+}
+
+function loadDashRecent() {
+  const el = document.getElementById('dashRecentList');
+  if (!el) return;
+  const recent = (historyData || []).slice(0, 3);
+  if (!recent.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:20px 0;text-align:center;">Todavía no generaste ningún anuncio.</div>';
+    return;
+  }
+  el.innerHTML = recent.map(v => {
+    const isImage = v.type === 'image';
+    const thumb = v.video_url
+      ? (isImage
+          ? `<img src="${v.video_url}" alt="" onerror="this.style.display='none'">`
+          : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`)
+      : '';
+    const label = v.actor || (isImage ? 'Imagen' : 'Video');
+    const model = v.model ? v.model.replace(/-/g,' ') : '';
+    const spec = [v.duration ? v.duration+'s' : '', v.aspect_ratio || '', model].filter(Boolean).join(' · ');
+    const ago = timeAgo(v.created_at);
+    return `
+      <div class="dash-recent-item" onclick="showScreen('historial')">
+        <div class="dash-recent-thumb">${thumb}</div>
+        <div class="dash-recent-info">
+          <div class="dash-recent-name">${label}</div>
+          <div class="dash-recent-meta">${spec}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <span class="dash-recent-badge">Listo</span>
+          <span style="font-size:10px;color:var(--text2);">${ago}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openInspoModal() {
+  document.getElementById('inspoModal').style.display = 'flex';
+}
+function closeInspoModal() {
+  document.getElementById('inspoModal').style.display = 'none';
+}
 function toggleCreditsPopover(e) {
   e.stopPropagation();
   const popover = document.getElementById('creditsPopover');
