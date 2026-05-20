@@ -2748,16 +2748,6 @@ body, #app { background: #07050f; }
     </div>
   </aside>
 
-  <!-- Modal de planes/créditos — fuera del sidebar, centrado en pantalla -->
-  <div class="credits-popover" id="creditsPopover" onclick="closeCreditsPopoverOnBackdrop(event)">
-    <div class="credits-popover-inner">
-      <div class="credits-popover-title">Planes disponibles</div>
-      <div id="creditsPopoverPlans"></div>
-      <hr class="credits-popover-divider">
-      <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
-    </div>
-  </div>
-
   <!-- Main -->
   <main class="a-main">
 
@@ -7479,6 +7469,15 @@ localStorage.removeItem('sidebarWidth');
       <div id="authErrorSignup" style="color:#ff5555;font-size:13px;margin-bottom:14px;display:none;"></div>
       <button onclick="submitSignup()" style="width:100%;background:#fff;color:#080808;border:none;border-radius:999px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">Crear cuenta</button>
     </div>
+  </div>
+</div>
+<!-- Modal créditos — centrado en pantalla, fuera de todo layout -->
+<div class="credits-popover" id="creditsPopover" onclick="closeCreditsPopoverOnBackdrop(event)">
+  <div class="credits-popover-inner">
+    <div class="credits-popover-title">Planes disponibles</div>
+    <div id="creditsPopoverPlans"></div>
+    <hr class="credits-popover-divider">
+    <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
   </div>
 </div>
 </body>
