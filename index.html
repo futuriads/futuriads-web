@@ -322,16 +322,18 @@ html.pre-landing #app { display: none !important; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #080808;
-  --bg2:      #0f0f0f;
-  --card:     #111111;
-  --card2:    #161616;
-  --hover:    #1a1a1a;
-  --border:   #1e1e1e;
-  --border2:  rgba(255,255,255,0.1);
+  --bg:       #07050f;
+  --bg2:      #0c0816;
+  --card:     rgba(255,255,255,0.03);
+  --card2:    rgba(255,255,255,0.06);
+  --hover:    rgba(255,255,255,0.07);
+  --border:   rgba(255,255,255,0.08);
+  --border2:  rgba(255,255,255,0.12);
   --text:     #ffffff;
-  --text2:    #888888;
-  --text3:    #444444;
+  --text2:    #9e9aad;
+  --text3:    #4a4560;
+  --accent:   #7c3aed;
+  --accent2:  #a78bfa;
   --r-sm:     8px;
   --r-md:     12px;
   --r-lg:     16px;
@@ -352,8 +354,9 @@ body {
 }
 
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #07050f; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
 
 em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic; }
 
@@ -1549,6 +1552,202 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px;
 }
+/* ==============================================
+   IDENTIDAD VISUAL — VIOLETA / GLASSMORPHISM
+   ============================================== */
+
+/* ── Fondo base ── */
+body, #app { background: #07050f; }
+.a-main { background: transparent; }
+
+/* ── Glows ambientales fijos ── */
+#app { position: relative; overflow: hidden; }
+#app::before {
+  content: '';
+  position: fixed; pointer-events: none; z-index: 0;
+  top: -15%; left: -5%;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(109,40,217,0.22) 0%, transparent 65%);
+  filter: blur(0px);
+}
+#app::after {
+  content: '';
+  position: fixed; pointer-events: none; z-index: 0;
+  bottom: -20%; right: -5%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(139,92,246,0.16) 0%, transparent 65%);
+  filter: blur(0px);
+}
+/* Tercer glow central */
+.a-main::before {
+  content: '';
+  position: fixed; pointer-events: none; z-index: 0;
+  top: 30%; left: 40%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(88,28,220,0.10) 0%, transparent 70%);
+}
+#app > * { position: relative; z-index: 1; }
+
+/* ── Sidebar glass ── */
+.a-sidebar {
+  background: rgba(8,5,18,0.9) !important;
+  border-right: 1px solid rgba(139,92,246,0.18) !important;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+}
+.a-sidebar-top { border-bottom: 1px solid rgba(139,92,246,0.12) !important; }
+.a-sidebar-bottom { border-top: 1px solid rgba(139,92,246,0.12) !important; }
+.a-sidebar-logo { color: #fff; }
+.a-credits-widget {
+  background: linear-gradient(135deg, rgba(109,40,217,0.18), rgba(139,92,246,0.10)) !important;
+  border: 1px solid rgba(139,92,246,0.25) !important;
+}
+.a-credits-widget:hover { background: linear-gradient(135deg, rgba(109,40,217,0.28), rgba(139,92,246,0.18)) !important; border-color: rgba(139,92,246,0.4) !important; }
+.a-nav-item.active {
+  background: linear-gradient(90deg, rgba(109,40,217,0.25), rgba(139,92,246,0.12)) !important;
+  border-left-color: var(--accent2) !important; color: #fff !important;
+}
+.a-nav-item:hover { background: rgba(139,92,246,0.1) !important; }
+.a-user-avatar { background: linear-gradient(135deg, #7c3aed, #a855f7) !important; border: none !important; }
+
+/* ── Greeting ── */
+.a-dash-greeting em {
+  background: linear-gradient(120deg, #c4b5fd 0%, #a78bfa 50%, #7c3aed 100%);
+  background-clip: text; -webkit-background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+
+/* ── Credits badge ── */
+.a-credits-badge {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(139,92,246,0.22) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* ── Metric cards ── */
+.a-metric {
+  background: rgba(255,255,255,0.025) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 32px rgba(0,0,0,0.3);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.a-metric:hover {
+  border-color: rgba(139,92,246,0.25) !important;
+  box-shadow: 0 1px 0 rgba(167,139,250,0.06) inset, 0 8px 40px rgba(109,40,217,0.2) !important;
+}
+
+/* ── Gen box ── */
+.a-gen-box {
+  background: rgba(255,255,255,0.025) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
+}
+.a-gen-textarea {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid transparent !important;
+}
+.a-gen-textarea:focus {
+  border-color: rgba(139,92,246,0.45) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.12);
+}
+.a-gen-toggle { background: rgba(255,255,255,0.04) !important; }
+.a-gen-tab.active {
+  background: rgba(109,40,217,0.35) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 8px rgba(109,40,217,0.35);
+}
+
+/* ── Botón Empezar ── */
+.a-gen-btn {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(109,40,217,0.45), 0 1px 0 rgba(255,255,255,0.1) inset;
+  border: none !important;
+}
+.a-gen-btn:hover {
+  opacity: 1 !important;
+  box-shadow: 0 6px 32px rgba(109,40,217,0.65), 0 1px 0 rgba(255,255,255,0.1) inset;
+  transform: translateY(-1px);
+}
+
+/* ── Custom selects ── */
+.custom-select-trigger {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+}
+.custom-select-trigger:hover {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(139,92,246,0.3) !important;
+}
+.custom-select-dropdown {
+  background: rgba(12,7,26,0.98) !important;
+  border: 1px solid rgba(139,92,246,0.22) !important;
+  backdrop-filter: blur(24px);
+}
+.custom-select-option:hover { background: rgba(109,40,217,0.22) !important; }
+.custom-select-option.selected { color: var(--accent2) !important; }
+
+/* ── Ref buttons ── */
+.a-ref-add-btn { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; }
+.a-ref-add-btn:hover { background: rgba(109,40,217,0.2) !important; border-color: rgba(139,92,246,0.4) !important; }
+.a-ref-add-btn.has-ref { background: rgba(109,40,217,0.3) !important; border-color: rgba(139,92,246,0.5) !important; color: var(--accent2) !important; }
+.a-ref-popover, .credits-popover {
+  background: rgba(10,6,22,0.97) !important;
+  border: 1px solid rgba(139,92,246,0.22) !important;
+  backdrop-filter: blur(24px);
+}
+
+/* ── Tips card (violeta) ── */
+.dash-tips-card {
+  background: linear-gradient(145deg, rgba(50,15,100,0.55), rgba(20,5,50,0.7)) !important;
+  border: 1px solid rgba(139,92,246,0.28) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(167,139,250,0.1) inset, 0 12px 48px rgba(88,28,220,0.15);
+}
+
+/* ── Recent card ── */
+.dash-recent-card {
+  background: rgba(255,255,255,0.02) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+}
+.dash-recent-badge { background: rgba(34,197,94,0.12) !important; color: #4ade80 !important; }
+.dash-recent-item:hover { background: rgba(139,92,246,0.07) !important; }
+
+/* ── Historial cards ── */
+.a-hist-card {
+  transition: border-color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.a-hist-card:hover {
+  border-color: rgba(139,92,246,0.3) !important;
+  box-shadow: 0 4px 28px rgba(109,40,217,0.18);
+}
+
+/* ── Modales ── */
+.inspo-modal {
+  background: rgba(10,6,22,0.97) !important;
+  border: 1px solid rgba(139,92,246,0.22) !important;
+  backdrop-filter: blur(24px);
+}
+
+/* ── Inputs focus global ── */
+.camp-textarea:focus, .camp-input:focus, .camp-chunk-text:focus {
+  border-color: rgba(139,92,246,0.4) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.1);
+}
+
+/* ── Camp cards ── */
+.camp-card { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.camp-card:hover { border-color: rgba(139,92,246,0.2) !important; }
+
+/* ── Scrollbar violeta ── */
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); }
+::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.55); }
+
+
 .a-section-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
 .a-see-all {
   font-size: 13px; color: var(--text2); cursor: pointer;
@@ -2439,6 +2638,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
     <!-- ---- DASHBOARD ---- -->
     <div class="screen active" id="screen-dashboard">
+      <!-- Glows decorativos del dashboard -->
+      <div style="position:fixed;pointer-events:none;z-index:0;top:-10%;left:10%;width:480px;height:480px;background:radial-gradient(circle,rgba(109,40,217,0.2) 0%,transparent 70%);"></div>
+      <div style="position:fixed;pointer-events:none;z-index:0;bottom:-10%;right:15%;width:420px;height:420px;background:radial-gradient(circle,rgba(147,51,234,0.14) 0%,transparent 70%);"></div>
+      <div style="position:fixed;pointer-events:none;z-index:0;top:40%;left:35%;width:360px;height:360px;background:radial-gradient(circle,rgba(88,28,220,0.08) 0%,transparent 70%);"></div>
       <div class="a-dash-header">
         <div>
           <div class="a-dash-greeting" id="dashGreeting">¡Hola!</div>
