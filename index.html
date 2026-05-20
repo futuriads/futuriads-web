@@ -973,7 +973,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
 /* Nav items: padding y gap fijos, los íconos no se mueven nunca */
 .a-nav {
-  flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
   overflow-y: auto; overflow-x: visible;
 }
 .a-nav-item {
@@ -2720,7 +2720,7 @@ body, #app { background: #07050f; }
         <span class="a-nav-label">Historial</span>
       </div>
     </nav>
-    <div class="a-credits-widget-spacer"></div>
+    <div style="flex:1;"></div>
     <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
