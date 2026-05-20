@@ -2506,12 +2506,12 @@ body, #app { background: #07050f; }
   <!-- Hero -->
   <section class="l-hero" id="heroSection">
     <div class="l-hero-cards" id="heroCards">
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline preload="auto"></video></div>
     </div>
     <div class="l-hero-center">
       <h1 class="l-hero-headline">
@@ -7398,7 +7398,13 @@ async function submitSignup() {
   }
 }
 
-// Sidebar resize drag
+// Forzar autoplay en videos del hero (algunos browsers lo bloquean)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.actor-card video').forEach(function(v) {
+    v.muted = true;
+    v.play().catch(function() {});
+  });
+});
 (function() {
   const SIDEBAR_MIN = 52;   // colapso total (solo íconos)
   const SIDEBAR_MAX = 320;  // máximo razonable
