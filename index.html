@@ -1055,64 +1055,68 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   display: flex; align-items: center; justify-content: center;
   z-index: 9999;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.2s ease;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(4px);
+  transition: opacity 0.22s ease;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .credits-popover.open {
   opacity: 1; pointer-events: all;
 }
 .credits-popover-inner {
-  width: 340px;
-  background: #111;
-  border: 1px solid rgba(139,92,246,0.22);
-  border-radius: 16px;
-  padding: 22px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.8);
-  transform: translateY(10px) scale(0.97);
-  transition: transform 0.2s ease;
+  width: 360px;
+  background: rgba(12,7,26,0.97);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(139,92,246,0.1);
+  transform: translateY(12px) scale(0.97);
+  transition: transform 0.22s ease;
 }
 .credits-popover.open .credits-popover-inner {
   transform: translateY(0) scale(1);
 }
 .credits-popover-title {
-  font-size: 13px; font-weight: 700; color: var(--text);
-  margin-bottom: 12px;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  margin-bottom: 16px; letter-spacing: -0.2px;
 }
 .credits-plan-row {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 10px; border-radius: 8px;
-  border: 1px solid var(--border);
-  margin-bottom: 6px;
-  transition: background 0.12s;
+  padding: 11px 12px; border-radius: 10px;
+  border: 1px solid rgba(139,92,246,0.15);
+  margin-bottom: 8px;
+  transition: background 0.12s, border-color 0.12s;
+  background: rgba(255,255,255,0.02);
 }
+.credits-plan-row:hover { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.25); }
 .credits-plan-row:last-of-type { margin-bottom: 0; }
 .credits-plan-row.current-plan {
-  border-color: rgba(255,255,255,0.25);
-  background: var(--card2);
+  border-color: rgba(139,92,246,0.4);
+  background: rgba(109,40,217,0.15);
 }
 .credits-plan-name { font-size: 13px; font-weight: 600; color: var(--text); }
 .credits-plan-detail { font-size: 11px; color: var(--text2); margin-top: 1px; }
-.credits-plan-price { font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.credits-plan-price { font-size: 15px; font-weight: 800; color: var(--text); white-space: nowrap; }
 .credits-plan-badge {
-  font-size: 9px; font-weight: 700; color: #fff;
-  background: rgba(255,255,255,0.12); border-radius: 4px;
-  padding: 2px 5px; text-transform: uppercase; letter-spacing: .4px;
+  font-size: 9px; font-weight: 700; color: var(--accent2);
+  background: rgba(139,92,246,0.2); border-radius: 4px;
+  padding: 2px 6px; text-transform: uppercase; letter-spacing: .4px;
   margin-left: 6px;
 }
 .credits-popover-divider {
-  border: none; border-top: 1px solid var(--border);
-  margin: 12px 0;
+  border: none; border-top: 1px solid rgba(139,92,246,0.15);
+  margin: 14px 0;
 }
 .credits-topup-btn {
-  width: 100%; padding: 10px; border-radius: 8px;
-  background: #fff; color: #000;
+  width: 100%; padding: 12px; border-radius: 10px;
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  color: #fff;
   font-size: 13px; font-weight: 700;
   border: none; cursor: pointer;
-  transition: opacity 0.15s;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4);
+  transition: box-shadow 0.15s, transform 0.15s;
 }
-.credits-topup-btn:hover { opacity: 0.85; }
-.credits-topup-btn:disabled { opacity: 0.4; cursor: default; }
+.credits-topup-btn:hover { box-shadow: 0 6px 24px rgba(109,40,217,0.6); transform: translateY(-1px); }
+.credits-topup-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
 
 /* Resumen de créditos arriba de cada pantalla de generación */
 .a-credits-quote {
@@ -2735,15 +2739,6 @@ body, #app { background: #07050f; }
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
       <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
     </div>
-    <!-- Popover de planes — fuera del widget para evitar clipping -->
-    <div class="credits-popover" id="creditsPopover" onclick="closeCreditsPopoverOnBackdrop(event)">
-      <div class="credits-popover-inner">
-        <div class="credits-popover-title">Planes disponibles</div>
-        <div id="creditsPopoverPlans"></div>
-        <hr class="credits-popover-divider">
-        <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
-      </div>
-    </div>
     <div class="a-sidebar-bottom a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil" style="cursor:pointer; border-radius:0;">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
       <div class="a-user-info">
@@ -2752,6 +2747,16 @@ body, #app { background: #07050f; }
       </div>
     </div>
   </aside>
+
+  <!-- Modal de planes/créditos — fuera del sidebar, centrado en pantalla -->
+  <div class="credits-popover" id="creditsPopover" onclick="closeCreditsPopoverOnBackdrop(event)">
+    <div class="credits-popover-inner">
+      <div class="credits-popover-title">Planes disponibles</div>
+      <div id="creditsPopoverPlans"></div>
+      <hr class="credits-popover-divider">
+      <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
+    </div>
+  </div>
 
   <!-- Main -->
   <main class="a-main">
