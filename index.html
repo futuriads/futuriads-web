@@ -2287,19 +2287,19 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
               <button class="a-ref-add-btn" id="imgRefAddBtn" onclick="toggleImgRefPopover(event)" title="Agregar imagen de referencia">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
               </button>
-              <div class="a-ref-popover" id="imgRefPopover" style="width:160px; padding:12px;">
+              <div class="a-ref-popover" id="imgRefPopover">
                 <div class="a-ref-popover-title">Imagen de referencia</div>
-                <div class="a-ref-popover-uploads" style="justify-content:center;">
-                  <div class="a-ref-popover-slot" id="imgRefSlot" style="width:100%; height:70px; aspect-ratio:unset; flex:none;">
+                <div class="a-ref-popover-uploads">
+                  <div class="a-ref-popover-slot" id="imgRefSlot">
                     <input type="file" accept="image/*" id="imgRefFile" onchange="handleDashImgRefUpload(this)" style="display:none;">
-                    <div class="a-ref-slot-empty" onclick="document.getElementById('imgRefFile').click()" style="gap:3px;">
-                      <svg width="22" height="22" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="m2 13 4-4 3 3 2-2 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="a-ref-slot-empty" onclick="document.getElementById('imgRefFile').click()">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="m2 13 4-4 3 3 2-2 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       <span class="a-ref-slot-label">Referencia</span>
-                      <span class="a-ref-slot-sub">Subir imagen</span>
+                      <span class="a-ref-slot-sub">Subir foto</span>
                     </div>
                   </div>
                 </div>
-                <div class="a-ref-popover-hint" id="imgRefPopoverHint">El modelo usará esta imagen como base o referencia visual.</div>
+                <div class="a-ref-popover-hint" id="imgRefPopoverHint">El modelo usará esta imagen como referencia visual.</div>
               </div>
             </div>
           </div><!-- /imageOpts -->
