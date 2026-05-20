@@ -1232,11 +1232,17 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 /* Card base compartida */
 .dash-tips-card, .dash-recent-card {
-  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 22px;
   display: flex; flex-direction: column; gap: 16px;
+}
+.dash-tips-card {
+  background: #1a0a2e; /* morado oscuro */
+  border-color: rgba(139,92,246,0.2);
+}
+.dash-recent-card {
+  background: var(--card);
 }
 .dash-tips-header, .dash-recent-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1250,12 +1256,12 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .dash-tips-more:hover { color: var(--text); }
 
-/* Cuerpo de consejos: lista + video lado a lado */
+/* Layout vertical: lista ocupa todo el espacio, video 16:9 abajo */
 .dash-tips-body {
-  display: grid; grid-template-columns: 1fr 160px; gap: 14px; flex: 1; align-items: start;
+  display: flex; flex-direction: column; gap: 16px; flex: 1;
 }
 .dash-tips-list {
-  display: flex; flex-direction: column; gap: 12px;
+  display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: space-evenly;
 }
 /* Tip individual */
 .dash-tip-item {
@@ -1263,9 +1269,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 .dash-tip-icon {
   width: 28px; height: 28px; flex-shrink: 0;
-  background: var(--card2); border-radius: 7px;
+  background: rgba(139,92,246,0.15); border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--text2);
+  color: rgba(167,139,250,0.8);
 }
 .dash-tip-text { flex: 1; }
 .dash-tip-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
@@ -1273,19 +1279,22 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 /* Skeleton */
 .dash-tip-skeleton {
   height: 44px; border-radius: 8px;
-  background: linear-gradient(90deg, var(--card2) 25%, var(--hover) 50%, var(--card2) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.05) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-/* Video tutorial — altura fija para no romper el layout */
+/* Video tutorial — ratio 16:9 fijo */
 .dash-tips-video {
+  width: 100%;
+  aspect-ratio: 16/9;
   border-radius: 10px; overflow: hidden;
-  background: var(--card2);
-  height: 140px;
-  display: flex; align-items: center; justify-content: center;
+  background: #0d0618;
+  flex-shrink: 0;
 }
-.dash-tips-video video { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.dash-tips-video video {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block;
+}
 
 /* Borradores recientes */
 .dash-recent-list { display: flex; flex-direction: column; gap: 6px; flex: 1; }
@@ -2495,7 +2504,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
         <div class="dash-tips-card">
           <div class="dash-tips-header">
             <div class="dash-tips-title">Consejos para mejores anuncios</div>
-            <button class="dash-tips-more" onclick="showScreen('historial')">Ver más consejos</button>
           </div>
           <div class="dash-tips-body">
             <div class="dash-tips-list" id="dashTipsList">
@@ -2506,8 +2514,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             </div>
             <div class="dash-tips-video">
               <video src="/videos/tutorial.mp4" poster="/videos/tutorial-poster.jpg"
-                controls playsinline
-                style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+                controls playsinline>
               </video>
             </div>
           </div>
