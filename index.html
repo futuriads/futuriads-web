@@ -1051,20 +1051,29 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 /* Popover de planes — posición fija, calculada por JS */
 .credits-popover {
   position: fixed;
-  width: 280px;
-  background: #111;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
   z-index: 9999;
   opacity: 0; pointer-events: none;
-  transform: translateX(-6px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.2s ease;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
 }
 .credits-popover.open {
   opacity: 1; pointer-events: all;
-  transform: translateX(0);
+}
+.credits-popover-inner {
+  width: 340px;
+  background: #111;
+  border: 1px solid rgba(139,92,246,0.22);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+  transform: translateY(10px) scale(0.97);
+  transition: transform 0.2s ease;
+}
+.credits-popover.open .credits-popover-inner {
+  transform: translateY(0) scale(1);
 }
 .credits-popover-title {
   font-size: 13px; font-weight: 700; color: var(--text);
@@ -2727,11 +2736,13 @@ body, #app { background: #07050f; }
       <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
     </div>
     <!-- Popover de planes — fuera del widget para evitar clipping -->
-    <div class="credits-popover" id="creditsPopover">
-      <div class="credits-popover-title">Planes disponibles</div>
-      <div id="creditsPopoverPlans"></div>
-      <hr class="credits-popover-divider">
-      <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
+    <div class="credits-popover" id="creditsPopover" onclick="closeCreditsPopoverOnBackdrop(event)">
+      <div class="credits-popover-inner">
+        <div class="credits-popover-title">Planes disponibles</div>
+        <div id="creditsPopoverPlans"></div>
+        <hr class="credits-popover-divider">
+        <button class="credits-topup-btn" id="creditsPopoverTopupBtn" onclick="creditsPopoverTopup(event)">Recargar créditos</button>
+      </div>
     </div>
     <div class="a-sidebar-bottom a-nav-item" id="nav-perfil" onclick="showScreen('perfil')" data-tooltip="Perfil" style="cursor:pointer; border-radius:0;">
       <div class="a-user-avatar" id="sidebarAvatar">--</div>
@@ -6003,15 +6014,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleCreditsPopover(e) {
   e.stopPropagation();
   const popover = document.getElementById('creditsPopover');
-  const widget  = document.getElementById('creditsWidget');
   const isOpen  = popover.classList.contains('open');
   if (isOpen) { popover.classList.remove('open'); return; }
-
-  // Posicionar el popover a la derecha del widget usando coordenadas fijas
-  const rect = widget.getBoundingClientRect();
-  popover.style.left   = (rect.right + 10) + 'px';
-  popover.style.bottom = (window.innerHeight - rect.bottom) + 'px';
-  popover.style.top    = 'auto';
 
   // Construir contenido de planes
   const currentPlan = (_currentUser && _currentUser.plan) || 'none';
@@ -6042,6 +6046,13 @@ function toggleCreditsPopover(e) {
   }
 
   popover.classList.add('open');
+}
+
+function closeCreditsPopoverOnBackdrop(e) {
+  // Cerrar solo si click en el backdrop, no en el inner
+  if (e.target === document.getElementById('creditsPopover')) {
+    document.getElementById('creditsPopover').classList.remove('open');
+  }
 }
 
 function creditsPopoverTopup(e) {
