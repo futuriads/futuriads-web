@@ -1229,6 +1229,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-top: 16px;
+  align-items: start; /* las cards no se estiran verticalmente entre sí */
 }
 /* Card base compartida */
 .dash-tips-card, .dash-recent-card {
@@ -1236,6 +1237,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border-radius: var(--r-lg);
   padding: 22px;
   display: flex; flex-direction: column; gap: 16px;
+  /* Altura fija: no crece ni achica cuando cambia el ancho del sidebar */
+  height: 420px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .dash-tips-card {
   background: #1a0a2e; /* morado oscuro */
@@ -1258,10 +1263,10 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
 /* Layout vertical: lista ocupa todo el espacio, video 16:9 abajo */
 .dash-tips-body {
-  display: flex; flex-direction: column; gap: 16px; flex: 1;
+  display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0;
 }
 .dash-tips-list {
-  display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: space-evenly;
+  display: flex; flex-direction: column; gap: 14px; flex-shrink: 0;
 }
 /* Tip individual */
 .dash-tip-item {
@@ -1284,13 +1289,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   animation: shimmer 1.4s infinite;
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-/* Video tutorial — ratio 16:9 fijo */
+/* Video tutorial — ocupa el espacio restante de la card fija */
 .dash-tips-video {
-  width: 100%;
-  aspect-ratio: 16/9;
+  flex: 1; min-height: 0;
   border-radius: 10px; overflow: hidden;
   background: #0d0618;
-  flex-shrink: 0;
 }
 .dash-tips-video video {
   width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block;
