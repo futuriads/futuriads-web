@@ -1263,10 +1263,20 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
 /* Layout vertical: lista ocupa todo el espacio, video 16:9 abajo */
 .dash-tips-body {
-  display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0;
+}
+.dash-tips-left {
+  display: flex; flex-direction: column; min-height: 0;
 }
 .dash-tips-list {
   display: flex; flex-direction: column; gap: 14px; flex-shrink: 0;
+}
+.dash-tips-cta {
+  flex: 1; display: flex; align-items: flex-end; padding-bottom: 4px; margin-top: 20px;
+}
+.dash-tips-cta-text {
+  font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.15);
+  line-height: 1.25; letter-spacing: -0.4px;
 }
 /* Tip individual */
 .dash-tip-item {
@@ -1289,9 +1299,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   animation: shimmer 1.4s infinite;
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-/* Video tutorial — ocupa el espacio restante de la card fija */
+/* Video tutorial — columna derecha, altura completa */
 .dash-tips-video {
-  flex: 1; min-height: 0;
+  height: 100%; min-height: 0;
   border-radius: 10px; overflow: hidden;
   background: #0d0618;
 }
@@ -2509,11 +2519,16 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
             <div class="dash-tips-title">Consejos para mejores anuncios</div>
           </div>
           <div class="dash-tips-body">
-            <div class="dash-tips-list" id="dashTipsList">
-              <!-- Tips generados por IA -->
-              <div class="dash-tip-skeleton"></div>
-              <div class="dash-tip-skeleton"></div>
-              <div class="dash-tip-skeleton"></div>
+            <div class="dash-tips-left">
+              <div class="dash-tips-list" id="dashTipsList">
+                <!-- Tips generados por IA -->
+                <div class="dash-tip-skeleton"></div>
+                <div class="dash-tip-skeleton"></div>
+                <div class="dash-tip-skeleton"></div>
+              </div>
+              <div class="dash-tips-cta">
+                <div class="dash-tips-cta-text">¿Cómo funciona<br>Futuriads?</div>
+              </div>
             </div>
             <div class="dash-tips-video">
               <video src="/videos/tutorial.mp4" poster="/videos/tutorial-poster.jpg"
