@@ -945,7 +945,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   background: #0a0a0a;
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
-  height: 100vh; overflow: hidden;
+  height: 100vh;
+  overflow-x: visible; /* popover puede salir del borde */
+  overflow-y: hidden;  /* no scrollea verticalmente */
   position: relative;
 }
 .a-sidebar-top {
@@ -972,7 +974,7 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 /* Nav items: padding y gap fijos, los íconos no se mueven nunca */
 .a-nav {
   flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 2px;
-  overflow-y: auto; overflow-x: hidden;
+  overflow-y: auto; overflow-x: visible;
 }
 .a-nav-item {
   display: flex; align-items: center; gap: 10px;
@@ -1017,40 +1019,32 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 /* Widget de créditos: ancho fijo, fuera del flujo — no se mueve con el sidebar */
 .a-credits-widget {
-  position: absolute;
-  bottom: 70px; /* encima del sidebar-bottom */
-  left: 16px;
-  width: 168px; /* ancho fijo, independiente del sidebar */
-  padding: 12px 14px;
+  margin: 0 10px 8px;
+  padding: 10px 12px;
   background: var(--card2);
   border: 1px solid var(--border);
   border-radius: var(--r-sm, 10px);
   cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, opacity 0.25s ease;
-  opacity: 1;
-  z-index: 2;
+  transition: background .15s ease, border-color .15s ease;
+  flex-shrink: 0;
 }
 .a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
-  opacity: 0;
-  pointer-events: none;
-}
-/* Spacer para que el nav no quede tapado por el widget absoluto */
-.a-credits-widget-spacer {
-  height: 90px; flex-shrink: 0;
-}
+/* Spacer ya no necesario — widget en flujo normal */
+.a-credits-widget-spacer { display: none; }
 .a-credits-widget-label {
-  font-size: 11px; color: var(--text2);
+  font-size: 10px; color: var(--text2);
   text-transform: uppercase; letter-spacing: .5px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 .a-credits-widget-amount {
-  font-size: 18px; font-weight: 800; color: var(--text);
+  font-size: 16px; font-weight: 800; color: var(--text);
   letter-spacing: -.3px;
 }
 .a-credits-widget-amount.low { color: #f59e0b; }
 .a-credits-widget-amount.empty { color: #ef4444; }
 .a-credits-widget-sub {
   font-size: 10px; color: var(--text2); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 
