@@ -2028,21 +2028,22 @@ body, #app { background: #07050f; }
 .hist-stat-val { font-size: 22px; font-weight: 800; color: #f0ecff; letter-spacing: -0.5px; }
 .hist-stat-label { font-size: 11px; color: var(--text2); margin-top: 1px; }
 
-/* Grid de cards — 4 columnas para cards más chicas */
+/* Grid de cards — 6 columnas para cards pequeñas */
 .hist-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+  padding-bottom: 120px; /* espacio para la barra fija de carpetas */
 }
 .hist-card {
   background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; overflow: hidden;
+  border-radius: 10px; overflow: hidden;
   transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   cursor: pointer; position: relative;
 }
 .hist-card:hover {
   border-color: rgba(139,92,246,0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(109,40,217,0.15);
+  box-shadow: 0 6px 20px rgba(109,40,217,0.15);
 }
 .hist-card-thumb {
   aspect-ratio: 9/16; background: #0a0612;
@@ -2051,6 +2052,91 @@ body, #app { background: #07050f; }
 .hist-card-thumb img, .hist-card-thumb video {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
+.hist-card-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.hist-card:hover .hist-card-overlay { opacity: 1; }
+.hist-card-play {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  display: flex; align-items: center; justify-content: center;
+}
+.hist-card-info { padding: 8px 10px; }
+.hist-card-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-card-prompt {
+  font-size: 10px; color: var(--text2); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 5px;
+}
+.hist-card-footer {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 3px;
+}
+.hist-card-specs { display: flex; gap: 3px; flex-wrap: wrap; }
+.hist-card-spec {
+  font-size: 9px; padding: 2px 6px; border-radius: 999px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text2);
+}
+.hist-card-status {
+  font-size: 9px; font-weight: 700; padding: 2px 7px;
+  border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.hist-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; }
+.hist-card-status.pending   { background: rgba(234,179,8,0.12); color: #facc15; }
+.hist-card-status.failed    { background: rgba(239,68,68,0.12); color: #f87171; }
+.hist-card.is-image .hist-card-thumb { aspect-ratio: 1/1; }
+
+/* ---- Barra de carpetas FIJA abajo (solo en historial) ---- */
+.hist-folders-bar {
+  position: fixed; bottom: 0; left: 160px; right: 0; /* left = ancho del sidebar */
+  z-index: 200;
+  background: rgba(7,5,15,0.97);
+  border-top: 1px solid rgba(139,92,246,0.18);
+  backdrop-filter: blur(20px);
+  padding: 16px 48px;
+  display: flex; gap: 0;
+  /* oculta por defecto, solo visible en historial */
+  display: none;
+}
+.hist-folders-bar.visible { display: flex; }
+/* Mitad izquierda */
+.hist-folders-left {
+  width: 260px; flex-shrink: 0;
+  padding-right: 28px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  display: flex; flex-direction: column; justify-content: center; gap: 6px;
+}
+.hist-folders-left-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.hist-folders-left-sub { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.hist-folders-create-btn {
+  margin-top: 8px; align-self: flex-start;
+  background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 8px; padding: 7px 14px;
+  font-size: 12px; font-weight: 600; color: var(--accent2);
+  cursor: pointer; transition: background 0.15s;
+}
+.hist-folders-create-btn:hover { background: rgba(109,40,217,0.35); }
+/* Mitad derecha — lista de carpetas */
+.hist-folders-right {
+  flex: 1; padding-left: 28px;
+  display: flex; align-items: center; gap: 10px; overflow-x: auto;
+}
+.hist-folder-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 8px 14px; flex-shrink: 0;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  min-width: 120px;
+}
+.hist-folder-pill:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.08); }
+.hist-folder-pill-icon { color: var(--accent2); flex-shrink: 0; }
+.hist-folder-pill-info { min-width: 0; }
+.hist-folder-pill-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+.hist-folder-pill-count { font-size: 10px; color: var(--text2); }
+.hist-folders-empty { font-size: 12px; color: var(--text3); padding: 4px 0; }
 .hist-card-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
@@ -2125,45 +2211,10 @@ body, #app { background: #07050f; }
 .a-hist-status.pending { background: rgba(234,179,8,0.12); color: #facc15; }
 .a-hist-status.failed { background: rgba(239,68,68,0.12); color: #f87171; }
 
-@media (max-width: 1300px) { .hist-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 1100px) { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 720px)  { .hist-grid { grid-template-columns: 1fr; } }
-
-/* ---- Sección de carpetas ---- */
-.hist-folders-section {
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-}
-.hist-folders-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px;
-}
-.hist-folders-title { font-size: 16px; font-weight: 700; color: var(--text); }
-.hist-folders-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-}
-.hist-folder-card {
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 14px 16px;
-  cursor: pointer; transition: border-color 0.15s, background 0.15s;
-}
-.hist-folder-card:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.06); }
-.hist-folder-card.new-folder {
-  border-style: dashed; justify-content: center; gap: 8px;
-  color: var(--text2); flex-direction: column;
-}
-.hist-folder-card.new-folder:hover { color: var(--text); border-color: rgba(139,92,246,0.35); }
-.hist-folder-icon {
-  width: 36px; height: 36px; flex-shrink: 0; border-radius: 9px;
-  background: rgba(109,40,217,0.15); border: 1px solid rgba(139,92,246,0.2);
-  display: flex; align-items: center; justify-content: center; color: var(--accent2);
-}
-.hist-folder-info { flex: 1; min-width: 0; }
-.hist-folder-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hist-folder-count { font-size: 11px; color: var(--text2); margin-top: 2px; }
+@media (max-width: 1400px) { .hist-grid { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 1100px) { .hist-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 800px)  { .hist-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 500px)  { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* ==============================================
    APP — GENERATOR STEPS
@@ -3872,20 +3923,9 @@ body, #app { background: #07050f; }
       <!-- Stats bar -->
       <div class="hist-stats-bar" id="histStatsBar"></div>
 
-      <!-- Contenido -->
+      <!-- Contenido scrolleable -->
       <div id="histContent"></div>
-
-      <!-- Carpetas -->
-      <div class="hist-folders-section" id="histFoldersSection">
-        <div class="hist-folders-header">
-          <div class="hist-folders-title">Organiza tu historial</div>
-          <button class="hist-view-btn" style="width:auto;padding:0 14px;font-size:12px;" onclick="createFolder()">+ Nueva carpeta</button>
-        </div>
-        <div class="hist-folders-grid" id="histFoldersGrid">
-          <!-- Generado por JS -->
-        </div>
-      </div>
-    </div>
+    </div><!-- /screen-historial -->
 
     <!-- ---- PERFIL ---- -->
     <div class="screen" id="screen-perfil">
@@ -3923,6 +3963,21 @@ body, #app { background: #07050f; }
     </div>
 
   </main>
+
+  <!-- Barra de carpetas fija — solo visible en historial -->
+  <div class="hist-folders-bar" id="histFoldersBar">
+    <!-- Mitad izquierda -->
+    <div class="hist-folders-left">
+      <div class="hist-folders-left-title">Carpetas recientes</div>
+      <div class="hist-folders-left-sub">Creá carpetas para mantener tus mejores creaciones organizadas.</div>
+      <button class="hist-folders-create-btn" onclick="createFolder()">Crear carpeta</button>
+    </div>
+    <!-- Mitad derecha — carpetas creadas -->
+    <div class="hist-folders-right" id="histFoldersRight">
+      <span class="hist-folders-empty">Todavía no creaste ninguna carpeta.</span>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
@@ -5934,7 +5989,8 @@ function showScreen(name, instant){
     },210);
   }
 
-  if(name==='historial') { loadHistory(); loadFolders(); }
+  if(name==='historial') { loadHistory(); loadFolders(); toggleFoldersBar(true); }
+  else { toggleFoldersBar(false); }
   if(name==='campanas'){ campLoadList(); document.getElementById('campView-list').style.display='block'; document.getElementById('campView-wizard').style.display='none'; document.getElementById('campView-generating').style.display='none'; }
   if(name==='nueva-imagen') {
     rebuildRatioDropdown();
@@ -5957,22 +6013,22 @@ function openModal(){ openCreditsModal(); }
 
 /* ---- Carpetas del historial ---- */
 function loadFolders() {
-  const grid = document.getElementById('histFoldersGrid');
-  if (!grid) return;
+  const right = document.getElementById('histFoldersRight');
+  if (!right) return;
   const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
-  const folderSVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 4.5A1.5 1.5 0 013 3h3.5l1.5 1.5H13A1.5 1.5 0 0114.5 6v5A1.5 1.5 0 0113 12.5H3A1.5 1.5 0 011.5 11V4.5z"/></svg>`;
-  grid.innerHTML = folders.map((f, i) => `
-    <div class="hist-folder-card" onclick="openFolder(${i})">
-      <div class="hist-folder-icon">${folderSVG}</div>
-      <div class="hist-folder-info">
-        <div class="hist-folder-name">${f.name}</div>
-        <div class="hist-folder-count">${f.items} elemento${f.items !== 1 ? 's' : ''}</div>
+  const folderSVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 3.5A1.5 1.5 0 012.5 2h3l1.5 1.5H12A1.5 1.5 0 0113.5 5v5A1.5 1.5 0 0112 11.5H2.5A1.5 1.5 0 011 10V3.5z"/></svg>`;
+  if (!folders.length) {
+    right.innerHTML = '<span class="hist-folders-empty">Todavía no creaste ninguna carpeta.</span>';
+    return;
+  }
+  right.innerHTML = folders.map((f, i) => `
+    <div class="hist-folder-pill" onclick="openFolder(${i})">
+      <div class="hist-folder-pill-icon">${folderSVG}</div>
+      <div class="hist-folder-pill-info">
+        <div class="hist-folder-pill-name">${f.name}</div>
+        <div class="hist-folder-pill-count">${f.items} elemento${f.items !== 1 ? 's' : ''}</div>
       </div>
-    </div>`).join('') +
-    `<div class="hist-folder-card new-folder" onclick="createFolder()">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 4v12M4 10h12" stroke-linecap="round"/></svg>
-      <span style="font-size:12px;font-weight:500;">Crear carpeta</span>
-    </div>`;
+    </div>`).join('');
 }
 
 function createFolder() {
@@ -5988,8 +6044,12 @@ function openFolder(idx) {
   const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
   const folder = folders[idx];
   if (!folder) return;
-  // Por ahora muestra un toast — cuando haya backend se filtrará el historial
   showToast(`Carpeta "${folder.name}" — próximamente podés agregar creaciones acá`);
+}
+
+function toggleFoldersBar(show) {
+  const bar = document.getElementById('histFoldersBar');
+  if (bar) bar.classList.toggle('visible', show);
 }
 
 async function loadDashTips() {
