@@ -941,15 +941,13 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
    APP — SIDEBAR
    ============================================== */
 .a-sidebar {
-  width: 200px; flex-shrink: 0;
+  width: 160px; flex-shrink: 0;
   background: #0a0a0a;
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   height: 100vh; overflow: hidden;
   position: relative;
-  /* sin transition: el resize drag es instantáneo */
 }
-.a-sidebar.collapsed { width: 52px; }
 .a-sidebar-top {
   position: relative;
   padding: 18px 14px 14px;
@@ -957,7 +955,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   min-height: 56px;
   flex-shrink: 0;
 }
-.a-sidebar.collapsed .a-sidebar-top { padding: 18px 0 14px; }
 
 /* Logo: posición absoluta fija, no depende del ancho del sidebar */
 .a-sidebar-logo {
@@ -969,7 +966,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   opacity: 1;
   transition: opacity 0.25s ease;
 }
-.a-sidebar.collapsed .a-sidebar-logo {
   opacity: 0;
 }
 
@@ -1000,11 +996,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   transition: opacity 0.2s ease;
   overflow: hidden;
 }
-.a-sidebar.collapsed .a-nav-label { opacity: 0; pointer-events: none; }
-.a-sidebar.collapsed .a-nav-item .a-nav-pulse { display: none; }
 
 /* Tooltip al colapsar */
-.a-sidebar.collapsed .a-nav-item[data-tooltip]:hover::after {
   content: attr(data-tooltip);
   position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
   background: #1a1a1a; color: #fff;
@@ -1038,7 +1031,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   z-index: 2;
 }
 .a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
-.a-sidebar.collapsed .a-credits-widget {
   opacity: 0;
   pointer-events: none;
 }
@@ -1061,18 +1053,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   font-size: 10px; color: var(--text2); margin-top: 2px;
 }
 
-/* Handle de resize en el borde derecho */
-.a-sidebar-resize {
-  position: absolute; top: 0; right: -3px;
-  width: 6px; height: 100%;
-  cursor: col-resize;
-  z-index: 100;
-  background: transparent;
-}
-.a-sidebar-resize:hover,
-.a-sidebar-resize.dragging {
-  background: rgba(255,255,255,0.08);
-}
 
 /* Popover de planes — posición fija, calculada por JS */
 .credits-popover {
@@ -1156,7 +1136,6 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   opacity: 1;
   transition: opacity 0.2s ease;
 }
-.a-sidebar.collapsed .a-user-info { opacity: 0; pointer-events: none; }
 .a-user-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   background: var(--card2); border: 1px solid var(--border);
@@ -2730,8 +2709,6 @@ body, #app { background: #07050f; }
 
   <!-- Sidebar -->
   <aside class="a-sidebar" id="appSidebar">
-    <!-- Handle de resize -->
-    <div class="a-sidebar-resize" id="sidebarResizeHandle"></div>
     <div class="a-sidebar-top">
       <span class="a-sidebar-logo">Futuriads</span>
     </div>
@@ -7405,68 +7382,9 @@ document.addEventListener('DOMContentLoaded', function() {
     v.play().catch(function() {});
   });
 });
-(function() {
-  const SIDEBAR_MIN = 52;   // colapso total (solo íconos)
-  const SIDEBAR_MAX = 320;  // máximo razonable
-  const SIDEBAR_SNAP_COLLAPSED = 80; // si queda < 80px al soltar, colapsa a 52
+// Sidebar estático — limpiar cualquier ancho guardado de versiones anteriores
+localStorage.removeItem('sidebarWidth');
 
-  const sidebar  = document.getElementById('appSidebar');
-  const handle   = document.getElementById('sidebarResizeHandle');
-  if (!sidebar || !handle) return;
-
-  // Restaurar ancho guardado
-  const savedWidth = parseInt(localStorage.getItem('sidebarWidth'), 10);
-  if (savedWidth && savedWidth >= SIDEBAR_MIN && savedWidth <= SIDEBAR_MAX) {
-    sidebar.style.width = savedWidth + 'px';
-    if (savedWidth <= SIDEBAR_SNAP_COLLAPSED) applyCollapsed(true);
-    else applyCollapsed(false);
-  }
-
-  function applyCollapsed(yes) {
-    if (yes) sidebar.classList.add('collapsed');
-    else sidebar.classList.remove('collapsed');
-  }
-
-  let dragging = false;
-  let startX   = 0;
-  let startW   = 0;
-
-  handle.addEventListener('mousedown', function(e) {
-    e.preventDefault();
-    dragging = true;
-    startX   = e.clientX;
-    startW   = sidebar.offsetWidth;
-    handle.classList.add('dragging');
-    document.body.style.cursor    = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!dragging) return;
-    const delta  = e.clientX - startX;
-    const newW   = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, startW + delta));
-    sidebar.style.width = newW + 'px';
-    applyCollapsed(newW <= SIDEBAR_SNAP_COLLAPSED);
-  });
-
-  document.addEventListener('mouseup', function(e) {
-    if (!dragging) return;
-    dragging = false;
-    handle.classList.remove('dragging');
-    document.body.style.cursor     = '';
-    document.body.style.userSelect = '';
-    // Snap a colapso si quedó muy angosto
-    const finalW = sidebar.offsetWidth;
-    if (finalW <= SIDEBAR_SNAP_COLLAPSED) {
-      sidebar.style.width = SIDEBAR_MIN + 'px';
-      applyCollapsed(true);
-      localStorage.setItem('sidebarWidth', SIDEBAR_MIN);
-    } else {
-      applyCollapsed(false);
-      localStorage.setItem('sidebarWidth', finalW);
-    }
-  });
-})();
 </script>
 
 
