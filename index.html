@@ -1091,8 +1091,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   background: var(--card); border: 1px solid var(--border2);
   border-radius: var(--r-xl); padding: 28px;
   margin-bottom: 40px; overflow: visible; position: relative; z-index: 10;
-  /* Altura fija: toggle (52) + gap (20) + textarea (100) + gap (16) + fila opts (34) + padding (56) */
-  min-height: 278px;
+
+  height: 228px;
+  display: flex; flex-direction: column;
   box-sizing: border-box;
 }
 .a-gen-toggle {
@@ -1116,9 +1117,11 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
   border: 1px solid transparent; border-radius: var(--r-md);
   padding: 16px; resize: none;
   font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #fff;
-  line-height: 1.65; height: 100px; outline: none;
+  line-height: 1.65; outline: none;
   transition: border-color 0.2s; margin-bottom: 16px;
   box-sizing: border-box;
+  flex: 1; /* ocupa todo el espacio entre toggle y fila de opciones */
+  min-height: 0;
 }
 .a-gen-textarea:focus { border-color: rgba(255,255,255,0.2); }
 .a-gen-textarea::placeholder { color: var(--text3); }
@@ -1194,7 +1197,9 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 }
 
 .a-gen-row {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible;
+  display: flex; align-items: center; gap: 8px; overflow: visible;
+  flex-wrap: nowrap;
+  margin-top: auto;
 }
 .a-gen-select {
   background: var(--hover); border: 1px solid transparent;
