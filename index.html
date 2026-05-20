@@ -1121,57 +1121,73 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 .a-gen-textarea::placeholder { color: var(--text3); }
 
 /* Zona de referencia de imágenes — altura fija para que ambos tabs midan igual */
-.a-gen-ref-zone {
-  margin-bottom: 16px;
-  min-height: 94px; /* reserva espacio aunque esté oculto */
-}
-/* Selector de modo de referencia */
-.a-ref-mode-row {
-  display: flex; gap: 8px; margin-bottom: 12px;
-}
-.a-ref-mode-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 13px; border-radius: var(--r-sm);
-  font-size: 12px; font-weight: 500; color: var(--text2);
-  border: 1px solid var(--border); background: transparent;
+.a-gen-ref-zone { margin-bottom: 0; }
+
+/* Botón + para abrir el popover de referencia */
+.a-ref-add-btn {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: transparent; color: var(--text2);
   cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
+  flex-shrink: 0; position: relative;
 }
-.a-ref-mode-btn:hover { background: var(--hover); color: var(--text); }
-.a-ref-mode-btn.active {
-  background: var(--card2); color: #fff; border-color: rgba(255,255,255,0.2);
+.a-ref-add-btn:hover { background: var(--hover); color: var(--text); border-color: rgba(255,255,255,0.2); }
+.a-ref-add-btn.has-ref { border-color: rgba(255,255,255,0.35); color: #fff; background: var(--card2); }
+.a-ref-add-btn .ref-count {
+  position: absolute; top: -5px; right: -5px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; color: #000; font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
 }
-/* Uploads de imágenes */
-.a-ref-uploads {
-  display: flex; gap: 10px;
+/* Popover de referencia */
+.a-ref-popover {
+  position: absolute; bottom: calc(100% + 10px); left: 0;
+  width: 260px;
+  background: #111; border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  z-index: 9999;
+  opacity: 0; pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
-.a-ref-upload {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 5px; padding: 10px;
-  border: 1px dashed var(--border); border-radius: var(--r-sm);
-  cursor: pointer; transition: border-color 0.15s, background 0.15s;
-  font-size: 11px; color: var(--text2); text-align: center;
-  position: relative; overflow: hidden; min-height: 62px;
+.a-ref-popover.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+.a-ref-popover-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  margin-bottom: 12px; letter-spacing: 0.2px;
 }
-.a-ref-upload:hover { border-color: rgba(255,255,255,0.25); background: var(--hover); }
-.a-ref-upload.has-image { border-style: solid; border-color: rgba(255,255,255,0.2); }
-.a-ref-upload input[type=file] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+.a-ref-popover-uploads { display: flex; gap: 10px; }
+.a-ref-popover-slot {
+  flex: 1; border-radius: 10px; overflow: hidden;
+  position: relative; aspect-ratio: 1;
+  border: 1px dashed var(--border);
+  transition: border-color 0.15s;
 }
-.a-ref-upload-preview {
-  width: 100%; height: 100%; position: absolute; inset: 0;
-  object-fit: cover; border-radius: calc(var(--r-sm) - 1px); pointer-events: none;
+.a-ref-popover-slot.filled { border-style: solid; border-color: rgba(255,255,255,0.2); }
+.a-ref-slot-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; cursor: pointer; padding: 10px;
+  transition: background 0.15s;
 }
-.a-ref-upload-label {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  pointer-events: none; z-index: 1;
+.a-ref-slot-empty:hover { background: var(--hover); }
+.a-ref-slot-label { font-size: 12px; font-weight: 600; color: var(--text); }
+.a-ref-slot-sub { font-size: 10px; color: var(--text2); }
+.a-ref-slot-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; border-radius: 9px; pointer-events: none;
 }
-.a-ref-upload-clear {
+.a-ref-slot-clear {
   position: absolute; top: 4px; right: 4px; z-index: 2;
   width: 18px; height: 18px; border-radius: 50%;
-  background: rgba(0,0,0,0.7); color: #fff;
-  font-size: 10px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; border: none; line-height: 1;
+  background: rgba(0,0,0,0.75); color: #fff; border: none;
+  font-size: 9px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; line-height: 1;
+}
+.a-ref-popover-hint {
+  font-size: 10px; color: var(--text2); margin-top: 10px; line-height: 1.4;
 }
 
 .a-gen-row {
@@ -2138,40 +2154,8 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
 
         <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
 
-        <!-- Zona de referencia — solo visible en tab video -->
-        <div class="a-gen-ref-zone" id="videoRefZone">
-          <div class="a-ref-mode-row">
-            <button class="a-ref-mode-btn active" id="refBtn-none" onclick="setRefMode('none')">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M4.5 6.5h4" stroke-linecap="round"/></svg>
-              Sin referencia
-            </button>
-            <button class="a-ref-mode-btn" id="refBtn-avatar" onclick="setRefMode('avatar')">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="5" r="2.2"/><path d="M2 12c0-2.5 2-4 4.5-4S11 9.5 11 12" stroke-linecap="round"/></svg>
-              Con avatar
-            </button>
-            <button class="a-ref-mode-btn" id="refBtn-multi" onclick="setRefMode('multi')">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4.5" cy="4.5" r="2"/><path d="M1.5 11c0-2 1.5-3 3-3s3 1 3 3" stroke-linecap="round"/><circle cx="9.5" cy="5" r="1.8"/><path d="M7.5 11c0-1.5 1-2.5 2-2.5" stroke-linecap="round"/></svg>
-              Avatar + producto
-            </button>
-          </div>
-          <!-- Uploads: se muestran según el modo -->
-          <div class="a-ref-uploads" id="refUploads" style="display:none;">
-            <div class="a-ref-upload" id="refUploadAvatar">
-              <input type="file" accept="image/*" onchange="handleRefUpload('avatar', this)">
-              <div class="a-ref-upload-label">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 14c0-3 2.5-4.5 5.5-4.5S13.5 11 13.5 14" stroke-linecap="round"/></svg>
-                <span>Avatar</span>
-              </div>
-            </div>
-            <div class="a-ref-upload" id="refUploadProduct" style="display:none;">
-              <input type="file" accept="image/*" onchange="handleRefUpload('product', this)">
-              <div class="a-ref-upload-label">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="2.5"/><path d="M5 8h6M8 5v6" stroke-linecap="round"/></svg>
-                <span>Producto</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Zona de referencia — botón + abre popover con avatar/producto -->
+        <div class="a-gen-ref-zone" id="videoRefZone" style="min-height:0; margin-bottom:0;"></div>
 
         <div class="a-gen-row">
           <div class="a-gen-opts active" id="videoOpts">
@@ -2216,6 +2200,39 @@ em, .serif { font-family: 'Inter', -apple-system, sans-serif; font-style: italic
                 <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">720p</div>
               </div>
             </div>
+
+            <!-- Botón de imagen de referencia -->
+            <div style="position:relative;">
+              <button class="a-ref-add-btn" id="refAddBtn" onclick="toggleRefPopover(event)" title="Agregar imagen de referencia">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
+              </button>
+              <!-- Popover de upload -->
+              <div class="a-ref-popover" id="refPopover">
+                <div class="a-ref-popover-title">Imágenes de referencia</div>
+                <div class="a-ref-popover-uploads">
+                  <!-- Avatar -->
+                  <div class="a-ref-popover-slot" id="refSlotAvatar">
+                    <input type="file" accept="image/*" id="refFileAvatar" onchange="handleRefUpload('avatar',this)" style="display:none;">
+                    <div class="a-ref-slot-empty" onclick="document.getElementById('refFileAvatar').click()">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="7" r="3"/><path d="M3 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke-linecap="round"/></svg>
+                      <span class="a-ref-slot-label">Avatar</span>
+                      <span class="a-ref-slot-sub">Subir foto</span>
+                    </div>
+                  </div>
+                  <!-- Producto -->
+                  <div class="a-ref-popover-slot" id="refSlotProduct">
+                    <input type="file" accept="image/*" id="refFileProduct" onchange="handleRefUpload('product',this)" style="display:none;">
+                    <div class="a-ref-slot-empty" onclick="document.getElementById('refFileProduct').click()">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="13" height="13" rx="3"/><path d="M6 9h6M9 6v6" stroke-linecap="round"/></svg>
+                      <span class="a-ref-slot-label">Producto</span>
+                      <span class="a-ref-slot-sub">Subir foto</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="a-ref-popover-hint" id="refPopoverHint">Subí una o ambas imágenes.</div>
+              </div>
+            </div>
+
           </div>
           <div class="a-gen-opts" id="imageOpts">
             <div class="custom-select" id="cs-img-model">
@@ -5205,10 +5222,7 @@ document.getElementById('noCreditsModal').addEventListener('click', function(e){
 
 /* ---- Gen tab ---- */
 // Estado de referencia del gen box dashboard
-let _dashRefMode = 'none'; // 'none' | 'avatar' | 'multi'
-let _dashRefAvatarFile = null;
-let _dashRefProductFile = null;
-let _dashRefAvatarB64 = null;
+let _dashRefAvatarB64  = null;
 let _dashRefProductB64 = null;
 
 function switchGenTab(tab){
@@ -5216,89 +5230,114 @@ function switchGenTab(tab){
   document.getElementById('tabImage').classList.toggle('active', tab==='image');
   document.getElementById('videoOpts').classList.toggle('active', tab==='video');
   document.getElementById('imageOpts').classList.toggle('active', tab==='image');
-  // La ref zone solo en video; en imagen queda oculta pero ocupa el mismo min-height
-  const refZone = document.getElementById('videoRefZone');
-  if (refZone) refZone.style.visibility = tab==='video' ? 'visible' : 'hidden';
+  // Mostrar/ocultar el botón + de referencia según el tab
+  const refBtn = document.getElementById('refAddBtn');
+  if (refBtn) refBtn.closest('div[style*="position:relative"]').style.display = tab==='video' ? '' : 'none';
   document.getElementById('genTextarea').placeholder =
     tab==='video'
       ? 'Empezá a escribir lo que querés que diga el actor en el video...'
       : 'Describí la imagen que querés generar...';
 }
 
-function setRefMode(mode) {
-  _dashRefMode = mode;
-  // Botones activos
-  ['none','avatar','multi'].forEach(m => {
-    document.getElementById('refBtn-' + m).classList.toggle('active', m === mode);
-  });
-  const uploads = document.getElementById('refUploads');
-  const productUpload = document.getElementById('refUploadProduct');
-  if (mode === 'none') {
-    uploads.style.display = 'none';
-  } else if (mode === 'avatar') {
-    uploads.style.display = 'flex';
-    productUpload.style.display = 'none';
-  } else { // multi
-    uploads.style.display = 'flex';
-    productUpload.style.display = 'flex';
-  }
+function toggleRefPopover(e) {
+  e.stopPropagation();
+  const p = document.getElementById('refPopover');
+  p.classList.toggle('open');
 }
 
 function handleRefUpload(type, input) {
   const file = input.files[0];
   if (!file) return;
-  const container = type === 'avatar'
-    ? document.getElementById('refUploadAvatar')
-    : document.getElementById('refUploadProduct');
-
   const reader = new FileReader();
-  reader.onload = e => {
-    const b64 = e.target.result; // data:image/...;base64,...
-    if (type === 'avatar') { _dashRefAvatarFile = file; _dashRefAvatarB64 = b64; }
-    else                   { _dashRefProductFile = file; _dashRefProductB64 = b64; }
+  reader.onload = ev => {
+    const b64 = ev.target.result;
+    if (type === 'avatar')   _dashRefAvatarB64  = b64;
+    else                     _dashRefProductB64 = b64;
 
-    // Mostrar preview
-    let preview = container.querySelector('.a-ref-upload-preview');
-    if (!preview) {
-      preview = document.createElement('img');
-      preview.className = 'a-ref-upload-preview';
-      container.appendChild(preview);
+    // Mostrar preview en el slot
+    const slot = document.getElementById(type === 'avatar' ? 'refSlotAvatar' : 'refSlotProduct');
+    slot.classList.add('filled');
+    // Ocultar empty, mostrar imagen
+    const empty = slot.querySelector('.a-ref-slot-empty');
+    if (empty) empty.style.display = 'none';
+    let img = slot.querySelector('.a-ref-slot-img');
+    if (!img) {
+      img = document.createElement('img');
+      img.className = 'a-ref-slot-img';
+      slot.appendChild(img);
     }
-    preview.src = b64;
-    container.classList.add('has-image');
-
-    // Botón de limpiar
-    if (!container.querySelector('.a-ref-upload-clear')) {
+    img.src = b64;
+    // Botón quitar
+    if (!slot.querySelector('.a-ref-slot-clear')) {
       const btn = document.createElement('button');
-      btn.className = 'a-ref-upload-clear';
+      btn.className = 'a-ref-slot-clear';
       btn.textContent = '✕';
-      btn.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); clearRefUpload(type); };
-      container.appendChild(btn);
+      btn.onclick = ev2 => { ev2.stopPropagation(); clearRefSlot(type); };
+      slot.appendChild(btn);
     }
-    // Ocultar el label
-    const label = container.querySelector('.a-ref-upload-label');
-    if (label) label.style.display = 'none';
+    updateRefBtn();
+    updateRefHint();
   };
   reader.readAsDataURL(file);
 }
 
-function clearRefUpload(type) {
-  const container = type === 'avatar'
-    ? document.getElementById('refUploadAvatar')
-    : document.getElementById('refUploadProduct');
-  if (type === 'avatar') { _dashRefAvatarFile = null; _dashRefAvatarB64 = null; }
-  else                   { _dashRefProductFile = null; _dashRefProductB64 = null; }
-  container.classList.remove('has-image');
-  const preview = container.querySelector('.a-ref-upload-preview');
-  if (preview) preview.remove();
-  const clearBtn = container.querySelector('.a-ref-upload-clear');
-  if (clearBtn) clearBtn.remove();
-  const label = container.querySelector('.a-ref-upload-label');
-  if (label) label.style.display = '';
-  // Limpiar el input file
-  const fileInput = container.querySelector('input[type=file]');
+function clearRefSlot(type) {
+  if (type === 'avatar') _dashRefAvatarB64 = null;
+  else                   _dashRefProductB64 = null;
+  const slot = document.getElementById(type === 'avatar' ? 'refSlotAvatar' : 'refSlotProduct');
+  slot.classList.remove('filled');
+  const img = slot.querySelector('.a-ref-slot-img');
+  if (img) img.remove();
+  const btn = slot.querySelector('.a-ref-slot-clear');
+  if (btn) btn.remove();
+  const empty = slot.querySelector('.a-ref-slot-empty');
+  if (empty) empty.style.display = '';
+  // Reset file input
+  const fileInput = document.getElementById(type === 'avatar' ? 'refFileAvatar' : 'refFileProduct');
   if (fileInput) fileInput.value = '';
+  updateRefBtn();
+  updateRefHint();
 }
+
+function updateRefBtn() {
+  const btn = document.getElementById('refAddBtn');
+  if (!btn) return;
+  const count = (_dashRefAvatarB64 ? 1 : 0) + (_dashRefProductB64 ? 1 : 0);
+  btn.classList.toggle('has-ref', count > 0);
+  // Badge de conteo
+  let badge = btn.querySelector('.ref-count');
+  if (count > 0) {
+    if (!badge) { badge = document.createElement('span'); badge.className = 'ref-count'; btn.appendChild(badge); }
+    badge.textContent = count;
+  } else {
+    if (badge) badge.remove();
+  }
+}
+
+function updateRefHint() {
+  const hint = document.getElementById('refPopoverHint');
+  if (!hint) return;
+  const hasAvatar  = !!_dashRefAvatarB64;
+  const hasProduct = !!_dashRefProductB64;
+  if (hasAvatar && hasProduct) {
+    hint.textContent = 'Modo: Avatar + producto (Multi Reference)';
+  } else if (hasAvatar) {
+    hint.textContent = 'Modo: Solo avatar — image-to-video con tu persona.';
+  } else if (hasProduct) {
+    hint.textContent = 'Modo: Solo producto — el modelo enfocará el producto.';
+  } else {
+    hint.textContent = 'Subí una o ambas imágenes.';
+  }
+}
+
+// Cerrar el popover de referencia al hacer click fuera
+document.addEventListener('click', function(e) {
+  const popover = document.getElementById('refPopover');
+  const btn     = document.getElementById('refAddBtn');
+  if (popover && !popover.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+    popover.classList.remove('open');
+  }
+});
 
 /* ---- Dashboard → flujo de generación ---- */
 function startFromDashboard(){
@@ -5372,12 +5411,14 @@ function startFromDashboard(){
   resetSelectedActor();
   goGenStep(1);
 
-  // Pasar modo de referencia e imágenes al flujo de video
-  if (typeof _dashRefMode !== 'undefined') {
-    window._pendingRefMode    = _dashRefMode;
-    window._pendingAvatarB64  = _dashRefAvatarB64;
-    window._pendingProductB64 = _dashRefProductB64;
-  }
+  // Pasar imágenes de referencia al flujo de video
+  window._pendingAvatarB64  = _dashRefAvatarB64  || null;
+  window._pendingProductB64 = _dashRefProductB64 || null;
+  // Derivar modo automáticamente según lo que subió el usuario
+  if (_dashRefAvatarB64 && _dashRefProductB64) window._pendingRefMode = 'multi';
+  else if (_dashRefAvatarB64)                  window._pendingRefMode = 'avatar';
+  else if (_dashRefProductB64)                 window._pendingRefMode = 'product';
+  else                                         window._pendingRefMode = 'none';
 
   // Limpiar el textarea del dashboard para la próxima visita
   if (dashPrompt) document.getElementById('genTextarea').value = '';
