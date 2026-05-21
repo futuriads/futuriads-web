@@ -2162,57 +2162,97 @@ body, #app { background: #07050f; }
 .hist-breadcrumb {
   display: flex; align-items: center; gap: 6px;
   font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: #f0ecff;
-  margin-bottom: 4px;
+  margin-bottom: 4px; overflow: visible;
 }
 .hist-bc-root { cursor: pointer; transition: color 0.15s; }
 .hist-bc-root:hover { color: var(--accent2); }
 .hist-bc-sep { color: var(--text3); font-weight: 300; }
 .hist-bc-folder { color: var(--text2); font-weight: 600; font-size: 22px; }
 
-/* ---- Botón modo selección ---- */
-.hist-sel-mode-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 9px; padding: 7px 14px; color: var(--text2);
-  font-size: 12px; font-weight: 500; cursor: pointer;
-  transition: all 0.15s; white-space: nowrap;
+/* ---- Botón SELECCIONAR — flotante fijo ---- */
+.hist-sel-float {
+  position: fixed;
+  bottom: calc(90px + 24px + 16px); /* encima del dock */
+  right: 32px;
+  z-index: 8800;
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(10,6,22,0.92);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 9px 16px;
+  color: var(--text2); font-size: 12px; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: border-color 0.18s, color 0.18s, background 0.18s,
+              box-shadow 0.18s, opacity 0.22s cubic-bezier(0.16,1,0.3,1),
+              transform 0.22s cubic-bezier(0.16,1,0.3,1);
+  opacity: 0; pointer-events: none; transform: translateY(8px);
 }
-.hist-sel-mode-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); border-color: rgba(255,255,255,0.15); }
-.hist-sel-mode-btn.active { background: rgba(109,40,217,0.18); border-color: rgba(139,92,246,0.4); color: var(--accent2); }
+.hist-sel-float.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+.hist-sel-float:hover { border-color: rgba(255,255,255,0.2); color: var(--text); background: rgba(15,9,30,0.96); }
+.hist-sel-float.active {
+  border-color: rgba(139,92,246,0.5); color: var(--accent2);
+  background: rgba(109,40,217,0.15);
+  box-shadow: 0 4px 20px rgba(109,40,217,0.3);
+}
 
-/* ---- Mini botón select en cada card ---- */
-.hist-card-sel-btn {
-  position: absolute; top: 8px; right: 8px; z-index: 10;
-  width: 22px; height: 22px; border-radius: 6px;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; opacity: 0;
-  transition: opacity 0.15s, background 0.15s, border-color 0.15s, transform 0.15s;
+/* ---- Checkbox en esquina de cada card ---- */
+/* Solo visible en modo selección — animación suave */
+.hist-card-checkbox {
+  position: absolute; top: 8px; left: 8px; z-index: 10;
+  width: 18px; height: 18px; border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  opacity: 0; transform: scale(0.75);
+  transition: opacity 0.18s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1),
+              background 0.15s, border-color 0.15s;
 }
-/* Visible en modo selección activo */
-.sel-mode-active .hist-card-sel-btn { opacity: 0.6; }
-.sel-mode-active .hist-card:hover .hist-card-sel-btn { opacity: 1; transform: scale(1.08); }
-.sel-mode-active .hist-card.selected .hist-card-sel-btn {
-  opacity: 1; background: rgba(109,40,217,0.9); border-color: rgba(167,139,250,0.6);
+/* Aparece en modo selección */
+.sel-mode-active .hist-card-checkbox { opacity: 0.55; transform: scale(1); }
+.sel-mode-active .hist-card:hover .hist-card-checkbox { opacity: 0.9; }
+/* Seleccionado */
+.sel-mode-active .hist-card.selected .hist-card-checkbox {
+  opacity: 1; transform: scale(1);
+  background: #7c3aed; border-color: #a78bfa;
 }
-/* Checkmark dentro del botón */
-.hist-card-sel-btn svg { transition: opacity 0.15s; }
-.hist-card-sel-btn .check-icon { opacity: 0; }
-.hist-card-sel-btn .circle-icon { opacity: 1; }
-.hist-card.selected .hist-card-sel-btn .check-icon { opacity: 1; }
-.hist-card.selected .hist-card-sel-btn .circle-icon { opacity: 0; }
+.hist-card-checkbox-check {
+  opacity: 0; transform: scale(0.5);
+  transition: opacity 0.15s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.sel-mode-active .hist-card.selected .hist-card-checkbox-check {
+  opacity: 1; transform: scale(1);
+}
 
 /* Card en modo selección */
-.sel-mode-active .hist-card { cursor: default; }
+.sel-mode-active .hist-card { cursor: pointer; }
 .sel-mode-active .hist-card.selected {
-  border-color: rgba(139,92,246,0.6) !important;
-  background: rgba(109,40,217,0.08) !important;
-  box-shadow: 0 0 0 2px rgba(139,92,246,0.2), 0 6px 20px rgba(109,40,217,0.15) !important;
+  border-color: rgba(139,92,246,0.55) !important;
+  background: rgba(109,40,217,0.07) !important;
+  box-shadow: 0 0 0 2px rgba(139,92,246,0.18) !important;
 }
-/* Overlay dim en cards NO seleccionadas cuando hay selección activa */
-.sel-mode-active .hist-card:not(.selected) { opacity: 0.75; }
+.sel-mode-active .hist-card:not(.selected) { opacity: 0.72; }
 .sel-mode-active .hist-card:not(.selected):hover { opacity: 1; }
+
+/* ---- Overlay hover con Play — SOLO para videos ---- */
+.hist-card-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.38);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.hist-card:hover .hist-card-overlay { opacity: 1; }
+/* Para imágenes NO mostrar play button (se oculta via JS, ver renderHistory) */
+.hist-card-play {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.94);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.45);
+  transition: transform 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.hist-card:hover .hist-card-play { transform: scale(1.08); }
 
 /* ---- Dropdown sort CUSTOM ---- */
 .hist-sort-custom { position: relative; }
@@ -2224,7 +2264,7 @@ body, #app { background: #07050f; }
   transition: border-color 0.15s, background 0.15s; white-space: nowrap;
 }
 .hist-sort-trigger:hover { background: rgba(255,255,255,0.07); border-color: rgba(139,92,246,0.3); }
-.hist-sort-trigger svg { color: var(--text2); transition: transform 0.2s; flex-shrink: 0; }
+.hist-sort-trigger svg { color: var(--text2); transition: transform 0.2s ease; flex-shrink: 0; }
 .hist-sort-custom.open .hist-sort-trigger svg { transform: rotate(180deg); }
 .hist-sort-custom.open .hist-sort-trigger { border-color: rgba(139,92,246,0.4); }
 .hist-sort-dropdown {
@@ -2233,53 +2273,81 @@ body, #app { background: #07050f; }
   background: rgba(10,6,22,0.97); border: 1px solid rgba(139,92,246,0.2);
   border-radius: 12px; padding: 6px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-  backdrop-filter: blur(20px);
-  z-index: 500;
-  opacity: 0; pointer-events: none; transform: translateY(-6px);
-  transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+  backdrop-filter: blur(20px); z-index: 500;
+  opacity: 0; pointer-events: none; transform: translateY(-4px);
+  transition: opacity 0.16s cubic-bezier(0.16,1,0.3,1), transform 0.16s cubic-bezier(0.16,1,0.3,1);
 }
 .hist-sort-custom.open .hist-sort-dropdown { opacity: 1; pointer-events: all; transform: translateY(0); }
 .hist-sort-opt {
   display: flex; align-items: center; gap: 8px;
   padding: 9px 12px; border-radius: 8px;
   font-size: 13px; color: var(--text2); cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.1s, color 0.1s;
 }
 .hist-sort-opt:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 .hist-sort-opt.selected { color: var(--accent2); }
 .hist-sort-opt svg { flex-shrink: 0; }
 
-/* ---- Dock flotante mejorado ---- */
+/* ---- Dock flotante de carpetas ---- */
 .hist-folders-bar {
   position: fixed;
   bottom: 24px; left: calc(160px + 24px); right: 24px;
-  z-index: 9000; height: 90px;
+  z-index: 9000; height: 80px;
   background: rgba(10,6,22,0.92);
   border: 1px solid rgba(139,92,246,0.22);
   border-radius: 20px;
   backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-  box-shadow: 0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(139,92,246,0.07);
   display: flex; align-items: center; padding: 0 28px; gap: 0;
-  opacity: 0; pointer-events: none; transform: translateY(14px);
+  opacity: 0; pointer-events: none; transform: translateY(12px);
   transition: opacity 0.26s cubic-bezier(0.16,1,0.3,1), transform 0.26s cubic-bezier(0.16,1,0.3,1);
 }
 .hist-folders-bar.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
-.hfb-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; padding-right: 28px; border-right: 1px solid rgba(255,255,255,0.08); }
-.hfb-icon { width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.25); display: flex; align-items: center; justify-content: center; color: var(--accent2); }
+
+/* Lado izquierdo del dock */
+.hfb-left {
+  display: flex; align-items: center; gap: 13px;
+  flex-shrink: 0; padding-right: 24px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+.hfb-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(109,40,217,0.16); border: 1px solid rgba(139,92,246,0.22);
+  display: flex; align-items: center; justify-content: center; color: var(--accent2);
+}
 .hfb-title { font-size: 13px; font-weight: 700; color: var(--text); }
-.hfb-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
-.hfb-create-btn { flex-shrink: 0; background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.3); border-radius: 9px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--accent2); cursor: pointer; white-space: nowrap; transition: background 0.15s; }
-.hfb-create-btn:hover { background: rgba(109,40,217,0.35); }
-.hfb-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 7px; padding-left: 28px; min-width: 0; }
-.hfb-center-label { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
-.hfb-folders-row { display: flex; gap: 10px; overflow-x: auto; align-items: center; }
-.hfb-folders-row::-webkit-scrollbar { display: none; }
-.hfb-empty { font-size: 12px; color: var(--text3); }
-.hfb-folder-item { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 8px 14px; flex-shrink: 0; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
-.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.1); }
+.hfb-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.hfb-create-btn {
+  flex-shrink: 0;
+  background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.28);
+  border-radius: 9px; padding: 7px 14px;
+  font-size: 12px; font-weight: 600; color: var(--accent2);
+  cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.hfb-create-btn:hover { background: rgba(109,40,217,0.32); }
+
+/* Lado derecho: carpetas centradas sin label */
+.hfb-right {
+  flex: 1; display: flex; align-items: center;
+  padding-left: 24px; min-width: 0; gap: 8px; overflow-x: auto;
+}
+.hfb-right::-webkit-scrollbar { display: none; }
+.hfb-empty { font-size: 12px; color: var(--text3); padding: 0 4px; }
+.hfb-folder-item {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 9px; padding: 7px 13px; flex-shrink: 0;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.18s;
+}
+.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.09); transform: translateY(-1px); }
 .hfb-folder-item-icon { color: var(--accent2); }
 .hfb-folder-item-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
-.hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 4px; }
+.hfb-folder-item-count { font-size: 10px; color: var(--text2); }
+.hfb-folder-item.drag-over {
+  border-color: rgba(139,92,246,0.6) !important;
+  background: rgba(109,40,217,0.18) !important;
+  transform: scale(1.04);
+}
 
 /* ---- Estado vacío de carpeta ---- */
 .hist-folder-empty {
@@ -2287,130 +2355,27 @@ body, #app { background: #07050f; }
   gap: 14px; padding: 80px 40px; text-align: center;
 }
 .hist-folder-empty-icon {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: rgba(109,40,217,0.12); border: 1px solid rgba(139,92,246,0.2);
+  width: 52px; height: 52px; border-radius: 14px;
+  background: rgba(109,40,217,0.1); border: 1px solid rgba(139,92,246,0.18);
   display: flex; align-items: center; justify-content: center; color: var(--accent2);
 }
 .hist-folder-empty-title { font-size: 15px; font-weight: 700; color: var(--text); }
 .hist-folder-empty-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.6; }
 
-/* ---- Toolbar selección (ajuste dock) ---- */
-.hist-selection-bar { bottom: 128px; }
-
-/* Card seleccionada */
-.hist-card.selected {
-  border-color: rgba(139,92,246,0.6) !important;
-  background: rgba(109,40,217,0.08) !important;
-  box-shadow: 0 0 0 2px rgba(139,92,246,0.25), 0 8px 24px rgba(109,40,217,0.2) !important;
-}
-/* Checkmark en esquina */
-.hist-card-check {
-  position: absolute; top: 8px; left: 8px; z-index: 10;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(109,40,217,0.9); border: 2px solid rgba(255,255,255,0.6);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transform: scale(0.7);
-  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1);
-  pointer-events: none;
-}
-.hist-card.selected .hist-card-check { opacity: 1; transform: scale(1); }
-.hist-card:hover .hist-card-check { opacity: 0.5; transform: scale(0.85); }
-.hist-card.selected:hover .hist-card-check { opacity: 1; transform: scale(1); }
+/* ---- Toolbar selección — encima del dock ---- */
+.hist-selection-bar { bottom: 116px; }
 
 /* Drag ghost */
 .hist-drag-ghost {
   position: fixed; z-index: 10000; pointer-events: none;
   background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.4);
-  border-radius: 10px; padding: 8px 14px;
+  border-radius: 10px; padding: 7px 14px;
   font-size: 12px; font-weight: 600; color: #c4b5fd;
   backdrop-filter: blur(12px);
-  opacity: 0; transition: opacity 0.12s;
+  opacity: 0; transition: opacity 0.1s;
   white-space: nowrap;
 }
 .hist-drag-ghost.visible { opacity: 1; }
-
-/* ---- Toolbar flotante de selección ---- */
-.hist-selection-bar {
-  position: fixed; bottom: 104px;
-  left: 50%; transform: translateX(-50%) translateY(12px);
-  z-index: 8900;
-  background: rgba(12,8,24,0.95);
-  border: 1px solid rgba(139,92,246,0.3);
-  border-radius: 14px; padding: 10px 16px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.1);
-  backdrop-filter: blur(24px);
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1),
-              transform 0.22s cubic-bezier(0.16,1,0.3,1);
-  white-space: nowrap;
-}
-.hist-selection-bar.visible {
-  opacity: 1; pointer-events: all;
-  transform: translateX(-50%) translateY(0);
-}
-.hist-sel-count {
-  font-size: 12px; font-weight: 700; color: var(--accent2);
-  padding-right: 12px; border-right: 1px solid rgba(255,255,255,0.1);
-}
-.hist-sel-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: none; border: none; padding: 6px 10px; border-radius: 8px;
-  font-size: 12px; font-weight: 500; color: var(--text2);
-  cursor: pointer; transition: background 0.15s, color 0.15s;
-}
-.hist-sel-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
-.hist-sel-btn.danger:hover { background: rgba(239,68,68,0.12); color: #f87171; }
-.hist-sel-btn svg { flex-shrink: 0; }
-.hist-sel-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
-.hist-sel-deselect {
-  background: none; border: none; color: var(--text3);
-  font-size: 11px; cursor: pointer; padding: 4px 6px; border-radius: 6px;
-  transition: color 0.15s;
-}
-.hist-sel-deselect:hover { color: var(--text2); }
-
-/* ---- Carpeta con drop highlight ---- */
-.hfb-folder-item.drag-over {
-  border-color: rgba(139,92,246,0.6) !important;
-  background: rgba(109,40,217,0.18) !important;
-  transform: scale(1.03);
-  transition: all 0.15s cubic-bezier(0.16,1,0.3,1);
-}
-
-/* Modal mover a carpeta */
-.move-to-folder-modal {
-  position: fixed; inset: 0; z-index: 10001;
-  background: rgba(0,0,0,0.72); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.22s ease;
-}
-.move-to-folder-modal.open { opacity: 1; pointer-events: all; }
-.move-to-folder-inner {
-  width: 360px; max-width: 92vw;
-  background: rgba(10,6,22,0.97);
-  border: 1px solid rgba(139,92,246,0.25);
-  border-radius: 18px; padding: 24px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
-  transform: translateY(14px) scale(0.97);
-  transition: transform 0.24s cubic-bezier(0.16,1,0.3,1);
-}
-.move-to-folder-modal.open .move-to-folder-inner { transform: translateY(0) scale(1); }
-.move-folder-title { font-size: 15px; font-weight: 700; color: #f0ecff; margin-bottom: 16px; }
-.move-folder-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
-.move-folder-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
-  cursor: pointer; transition: background 0.15s, border-color 0.15s;
-}
-.move-folder-item:hover { background: rgba(109,40,217,0.12); border-color: rgba(139,92,246,0.3); }
-.move-folder-item svg { color: var(--accent2); flex-shrink: 0; }
-.move-folder-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.move-folder-item-count { font-size: 11px; color: var(--text2); margin-left: auto; }
-.move-folder-cancel { width: 100%; margin-top: 12px; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
-.move-folder-cancel:hover { background: rgba(255,255,255,0.09); }
 
 /* ---- Modal custom crear carpeta ---- */
 .folder-modal-backdrop {
@@ -4294,11 +4259,6 @@ body, #app { background: #07050f; }
           <div class="hist-sub" id="histSubLabel">Todo lo que has generado hasta ahora.</div>
         </div>
         <div class="hist-header-actions">
-          <!-- Modo selección -->
-          <button class="hist-sel-mode-btn" id="histSelModeBtn" onclick="toggleSelectionMode()" title="Seleccionar">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="2.5"/><path d="M4 7l2.5 2.5L10 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Seleccionar</span>
-          </button>
           <div class="hist-search-wrap">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5" stroke-linecap="round"/></svg>
             <input class="hist-search" id="histSearch" placeholder="Buscar..." oninput="renderHistory()">
@@ -4438,23 +4398,26 @@ body, #app { background: #07050f; }
   </div>
 </div>
 
-<!-- Barra de carpetas fija -->
+<!-- Botón flotante "Seleccionar" -->
+<button class="hist-sel-float" id="histSelFloat" onclick="toggleSelectionMode()">
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="10" height="10" rx="2.5"/><path d="M3.5 6.5l2 2 3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="histSelFloatLabel">Seleccionar</span>
+</button>
+
+<!-- Dock de carpetas -->
 <div class="hist-folders-bar" id="histFoldersBar">
   <div class="hfb-left">
     <div class="hfb-icon">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6A2 2 0 014 4h3.5l2 2H16a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 6A2 2 0 014 4h3.5l2 2H14a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
     </div>
     <div>
-      <div class="hfb-title">Crear carpeta</div>
-      <div class="hfb-sub">Organizá tus mejores creaciones.</div>
+      <div class="hfb-title">Carpetas</div>
+      <div class="hfb-sub">Organiza tus creaciones</div>
     </div>
-    <button class="hfb-create-btn" onclick="createFolder()">+ Crear carpeta</button>
+    <button class="hfb-create-btn" onclick="createFolder()">+ Nueva</button>
   </div>
-  <div class="hfb-right">
-    <div class="hfb-center-label">Carpetas recientes</div>
-    <div class="hfb-folders-row" id="histFoldersRight">
-      <span class="hfb-empty">Todavía no creaste ninguna carpeta.</span>
-    </div>
+  <div class="hfb-right" id="histFoldersRight">
+    <span class="hfb-empty">Sin carpetas aún</span>
   </div>
 </div>
 
@@ -6503,9 +6466,11 @@ let histSortVal   = 'recent';
 /* ---- Modo selección ---- */
 function toggleSelectionMode() {
   selModeActive = !selModeActive;
-  const btn = document.getElementById('histSelModeBtn');
+  const floatBtn = document.getElementById('histSelFloat');
+  const floatLabel = document.getElementById('histSelFloatLabel');
   const content = document.getElementById('histContent');
-  btn?.classList.toggle('active', selModeActive);
+  floatBtn?.classList.toggle('active', selModeActive);
+  if (floatLabel) floatLabel.textContent = selModeActive ? 'Cancelar' : 'Seleccionar';
   content?.classList.toggle('sel-mode-active', selModeActive);
   if (!selModeActive) clearSelection();
 }
@@ -6514,15 +6479,10 @@ function toggleSelectionMode() {
 function histCardClick(e, card, idx, done, openFn, url, title) {
   const id = card.dataset.id;
 
-  // El botón de selección dentro de la card
-  if (e.target.closest('.hist-card-sel-btn')) {
-    toggleSelect(id, card, idx);
-    return;
-  }
-
-  // En modo selección — todo click selecciona
+  // En modo selección — todo click selecciona/deselecciona
   if (selModeActive) {
     if (e.shiftKey && lastClickIdx !== null) {
+      e.preventDefault();
       selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
     } else {
       toggleSelect(id, card, idx);
@@ -6531,17 +6491,18 @@ function histCardClick(e, card, idx, done, openFn, url, title) {
     return;
   }
 
-  // Ctrl/Cmd → activa modo selección y selecciona
+  // Ctrl/Cmd → activa modo selección
   if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
-    if (!selModeActive) toggleSelectionMode();
+    toggleSelectionMode();
     toggleSelect(id, card, idx);
     lastClickIdx = idx;
     return;
   }
 
-  // Click normal → abrir
+  // Click normal → abrir modal
   if (done) window[openFn](url, title);
+  lastClickIdx = idx;
 }
 
 function toggleSelect(id, card, idx) {
@@ -7013,7 +6974,11 @@ function openFolder(idx) {
 
 function toggleFoldersBar(show) {
   const bar = document.getElementById('histFoldersBar');
+  const floatBtn = document.getElementById('histSelFloat');
   if (bar) bar.classList.toggle('visible', show);
+  if (floatBtn) floatBtn.classList.toggle('visible', show);
+  // Al salir del historial, limpiar selección
+  if (!show) { clearSelection(); if (selModeActive) { selModeActive = false; document.getElementById('histContent')?.classList.remove('sel-mode-active'); } }
 }
 
 function hfbHandleDrop(e) {
@@ -7982,12 +7947,14 @@ function renderHistory(){
 
       let thumb = '';
       if (done) {
+        // Overlay: videos tienen play button, imágenes solo overlay
+        const playBtn = !isImage ? `<button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')"><svg width="13" height="13" viewBox="0 0 13 13" fill="black"><polygon points="3,1 12,6.5 3,12"/></svg></button>` : '';
         if (isImage) {
           thumb = `<img src="${v.video_url}" alt="">
-            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openImageModal('${safeUrl}','${safeTitle}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
+            <div class="hist-card-overlay" onclick="event.stopPropagation();openImageModal('${safeUrl}','${safeTitle}')"></div>`;
         } else {
           thumb = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
-            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
+            <div class="hist-card-overlay">${playBtn}</div>`;
         }
       } else {
         thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
@@ -8002,12 +7969,10 @@ function renderHistory(){
         ondragstart="histDragStart(event,this)"
         ondragend="histDragEnd(event)">
         <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">
-          <!-- Botón select premium -->
-          <button class="hist-card-sel-btn" onclick="event.stopPropagation();toggleSelect('${v.id}',this.closest('.hist-card'),${data.indexOf(v)})" title="Seleccionar">
-            <svg class="check-icon" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>
-            <svg class="circle-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><circle cx="4" cy="4" r="3"/></svg>
-          </button>
-          <div class="hist-card-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div>
+          <!-- Checkbox minimalista — solo visible en modo selección -->
+          <div class="hist-card-checkbox">
+            <svg class="hist-card-checkbox-check" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 3.5,6.5 7.5,2"/></svg>
+          </div>
           ${thumb}
         </div>
         <div class="hist-card-info">
