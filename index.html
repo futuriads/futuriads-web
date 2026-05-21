@@ -2237,22 +2237,42 @@ body, #app { background: #07050f; }
 .sel-mode-active .hist-card:not(.selected):hover { opacity: 1; }
 
 /* ---- Overlay hover con Play — SOLO para videos ---- */
+/* ---- Overlay y botón Play premium ---- */
 .hist-card-overlay {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,0.38);
+  background: rgba(0,0,0,0.32);
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.2s ease;
+  opacity: 0; transition: opacity 0.22s ease;
+  /* En modo selección el overlay no interfiere */
 }
 .hist-card:hover .hist-card-overlay { opacity: 1; }
-/* Para imágenes NO mostrar play button (se oculta via JS, ver renderHistory) */
+/* En modo selección desactivamos el overlay para no confundir */
+.sel-mode-active .hist-card-overlay { pointer-events: none; opacity: 0 !important; }
+
+/* Botón play — solo para videos, glassmorphism premium */
 .hist-card-play {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(255,255,255,0.94);
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.88);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(15,10,30,0.72);
+  border: 1px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.45);
-  transition: transform 0.18s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.08) inset;
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1),
+              background 0.18s ease,
+              border-color 0.18s ease,
+              box-shadow 0.18s ease;
+  cursor: pointer;
 }
-.hist-card:hover .hist-card-play { transform: scale(1.08); }
+.hist-card:hover .hist-card-play {
+  transform: translate(-50%, -50%) scale(1);
+  background: rgba(20,12,40,0.85);
+  border-color: rgba(255,255,255,0.32);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.1) inset;
+}
+.hist-card-play svg { margin-left: 2px; } /* compensar óptico del triángulo */
 
 /* ---- Dropdown sort CUSTOM ---- */
 .hist-sort-custom { position: relative; }
@@ -2363,7 +2383,50 @@ body, #app { background: #07050f; }
 .hist-folder-empty-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.6; }
 
 /* ---- Toolbar selección — encima del dock ---- */
-.hist-selection-bar { bottom: 116px; }
+/* ---- Toolbar de selección — floating premium ---- */
+.hist-selection-bar {
+  position: fixed;
+  bottom: 116px;
+  left: 50%; transform: translateX(-50%) translateY(10px);
+  z-index: 8900;
+  background: rgba(10,6,22,0.94);
+  border: 1px solid rgba(139,92,246,0.28);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex; align-items: center; gap: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1),
+              transform 0.22s cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap;
+}
+.hist-selection-bar.visible {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.hist-sel-count {
+  font-size: 12px; font-weight: 700; color: var(--accent2);
+  padding: 4px 10px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  margin-right: 4px;
+}
+.hist-sel-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 7px 11px; border-radius: 9px;
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: background 0.14s, color 0.14s;
+}
+.hist-sel-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.hist-sel-btn.danger:hover { background: rgba(239,68,68,0.1); color: #f87171; }
+.hist-sel-btn svg { flex-shrink: 0; }
+.hist-sel-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+.hist-sel-deselect {
+  background: none; border: none; color: var(--text3);
+  font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 7px;
+  margin-left: 2px; transition: color 0.14s;
+}
+.hist-sel-deselect:hover { color: var(--text2); }
 
 /* Drag ghost */
 .hist-drag-ghost {
@@ -6479,19 +6542,21 @@ function toggleSelectionMode() {
 function histCardClick(e, card, idx, done, openFn, url, title) {
   const id = card.dataset.id;
 
-  // En modo selección — todo click selecciona/deselecciona
+  // --- MODO SELECCIÓN ACTIVO ---
   if (selModeActive) {
+    // Nunca abrir modal en modo selección
+    e.stopPropagation();
     if (e.shiftKey && lastClickIdx !== null) {
-      e.preventDefault();
       selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
     } else {
       toggleSelect(id, card, idx);
+      lastClickIdx = idx;
     }
-    lastClickIdx = idx;
     return;
   }
 
-  // Ctrl/Cmd → activa modo selección
+  // --- MODO NORMAL ---
+  // Ctrl/Cmd → activa modo selección directamente
   if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
     toggleSelectionMode();
@@ -6500,9 +6565,10 @@ function histCardClick(e, card, idx, done, openFn, url, title) {
     return;
   }
 
-  // Click normal → abrir modal
-  if (done) window[openFn](url, title);
-  lastClickIdx = idx;
+  // Click normal → abrir modal según tipo
+  if (done) {
+    window[openFn](url, title);
+  }
 }
 
 function toggleSelect(id, card, idx) {
@@ -7947,14 +8013,18 @@ function renderHistory(){
 
       let thumb = '';
       if (done) {
-        // Overlay: videos tienen play button, imágenes solo overlay
-        const playBtn = !isImage ? `<button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')"><svg width="13" height="13" viewBox="0 0 13 13" fill="black"><polygon points="3,1 12,6.5 3,12"/></svg></button>` : '';
         if (isImage) {
+          // Imágenes: overlay sin play, click en cualquier parte abre modal
           thumb = `<img src="${v.video_url}" alt="">
-            <div class="hist-card-overlay" onclick="event.stopPropagation();openImageModal('${safeUrl}','${safeTitle}')"></div>`;
+            <div class="hist-card-overlay" style="cursor:zoom-in;"></div>`;
         } else {
+          // Videos: overlay con play button glassmorphism centrado
           thumb = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
-            <div class="hist-card-overlay">${playBtn}</div>`;
+            <div class="hist-card-overlay">
+              <button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><polygon points="3,1 13,7 3,13"/></svg>
+              </button>
+            </div>`;
         }
       } else {
         thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
