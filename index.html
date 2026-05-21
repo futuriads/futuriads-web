@@ -2158,6 +2158,123 @@ body, #app { background: #07050f; }
 @media (max-width: 1000px) { .hist-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 700px)  { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
 
+/* ---- Sistema de selección premium ---- */
+
+/* Card seleccionada */
+.hist-card.selected {
+  border-color: rgba(139,92,246,0.6) !important;
+  background: rgba(109,40,217,0.08) !important;
+  box-shadow: 0 0 0 2px rgba(139,92,246,0.25), 0 8px 24px rgba(109,40,217,0.2) !important;
+}
+/* Checkmark en esquina */
+.hist-card-check {
+  position: absolute; top: 8px; left: 8px; z-index: 10;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(109,40,217,0.9); border: 2px solid rgba(255,255,255,0.6);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0.7);
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.hist-card.selected .hist-card-check { opacity: 1; transform: scale(1); }
+.hist-card:hover .hist-card-check { opacity: 0.5; transform: scale(0.85); }
+.hist-card.selected:hover .hist-card-check { opacity: 1; transform: scale(1); }
+
+/* Drag ghost */
+.hist-drag-ghost {
+  position: fixed; z-index: 10000; pointer-events: none;
+  background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 12px; font-weight: 600; color: #c4b5fd;
+  backdrop-filter: blur(12px);
+  opacity: 0; transition: opacity 0.12s;
+  white-space: nowrap;
+}
+.hist-drag-ghost.visible { opacity: 1; }
+
+/* ---- Toolbar flotante de selección ---- */
+.hist-selection-bar {
+  position: fixed; bottom: 104px;
+  left: 50%; transform: translateX(-50%) translateY(12px);
+  z-index: 8900;
+  background: rgba(12,8,24,0.95);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 14px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.1);
+  backdrop-filter: blur(24px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1),
+              transform 0.22s cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap;
+}
+.hist-selection-bar.visible {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.hist-sel-count {
+  font-size: 12px; font-weight: 700; color: var(--accent2);
+  padding-right: 12px; border-right: 1px solid rgba(255,255,255,0.1);
+}
+.hist-sel-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 6px 10px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.hist-sel-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+.hist-sel-btn.danger:hover { background: rgba(239,68,68,0.12); color: #f87171; }
+.hist-sel-btn svg { flex-shrink: 0; }
+.hist-sel-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
+.hist-sel-deselect {
+  background: none; border: none; color: var(--text3);
+  font-size: 11px; cursor: pointer; padding: 4px 6px; border-radius: 6px;
+  transition: color 0.15s;
+}
+.hist-sel-deselect:hover { color: var(--text2); }
+
+/* ---- Carpeta con drop highlight ---- */
+.hfb-folder-item.drag-over {
+  border-color: rgba(139,92,246,0.6) !important;
+  background: rgba(109,40,217,0.18) !important;
+  transform: scale(1.03);
+  transition: all 0.15s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* Modal mover a carpeta */
+.move-to-folder-modal {
+  position: fixed; inset: 0; z-index: 10001;
+  background: rgba(0,0,0,0.72); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.move-to-folder-modal.open { opacity: 1; pointer-events: all; }
+.move-to-folder-inner {
+  width: 360px; max-width: 92vw;
+  background: rgba(10,6,22,0.97);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 18px; padding: 24px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  transform: translateY(14px) scale(0.97);
+  transition: transform 0.24s cubic-bezier(0.16,1,0.3,1);
+}
+.move-to-folder-modal.open .move-to-folder-inner { transform: translateY(0) scale(1); }
+.move-folder-title { font-size: 15px; font-weight: 700; color: #f0ecff; margin-bottom: 16px; }
+.move-folder-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
+.move-folder-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.move-folder-item:hover { background: rgba(109,40,217,0.12); border-color: rgba(139,92,246,0.3); }
+.move-folder-item svg { color: var(--accent2); flex-shrink: 0; }
+.move-folder-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.move-folder-item-count { font-size: 11px; color: var(--text2); margin-left: auto; }
+.move-folder-cancel { width: 100%; margin-top: 12px; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.move-folder-cancel:hover { background: rgba(255,255,255,0.09); }
+
 /* ---- Modal custom crear carpeta ---- */
 .folder-modal-backdrop {
   position: fixed; inset: 0; z-index: 10000;
@@ -4112,6 +4229,39 @@ body, #app { background: #07050f; }
   </main>
 
 </div><!-- /app -->
+
+<!-- Toolbar flotante de selección -->
+<div class="hist-selection-bar" id="histSelectionBar">
+  <span class="hist-sel-count" id="histSelCount">0 seleccionados</span>
+  <button class="hist-sel-btn" onclick="selMoveToFolder()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 3A1.5 1.5 0 012.5 1.5h2.8l1.4 1.4H11A1.5 1.5 0 0112.5 4.5v5A1.5 1.5 0 0111 11H2.5A1.5 1.5 0 011 9.5V3z"/></svg>
+    Mover a carpeta
+  </button>
+  <div class="hist-sel-divider"></div>
+  <button class="hist-sel-btn" onclick="selDownload()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6.5 1v8M3.5 6.5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11h11" stroke-linecap="round"/></svg>
+    Descargar
+  </button>
+  <div class="hist-sel-divider"></div>
+  <button class="hist-sel-btn danger" onclick="selDelete()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 3h10M4.5 3V2h4v1M5 3l.5 7h3l.5-7" stroke-linecap="round"/></svg>
+    Eliminar
+  </button>
+  <div class="hist-sel-divider"></div>
+  <button class="hist-sel-deselect" onclick="clearSelection()">✕ Deseleccionar</button>
+</div>
+
+<!-- Modal mover a carpeta -->
+<div class="move-to-folder-modal" id="moveToFolderModal" onclick="closeMoveToFolderModal(event)">
+  <div class="move-to-folder-inner">
+    <div class="move-folder-title">Mover a carpeta</div>
+    <div class="move-folder-list" id="moveFolderList"></div>
+    <button class="move-folder-cancel" onclick="closeMoveToFolderModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Drag ghost -->
+<div class="hist-drag-ghost" id="histDragGhost"></div>
 
 <!-- Modal custom crear carpeta -->
 <div class="folder-modal-backdrop" id="folderModal" onclick="closeFolderModal(event)">
@@ -6183,7 +6333,207 @@ function showToast(msg){
 /* ---- Credits modal (recarga / topup) ---- */
 function openModal(){ openCreditsModal(); }
 
-/* ---- Carpetas del historial ---- */
+/* ================================================================
+   SISTEMA DE SELECCIÓN, DRAG & DROP Y CARPETAS — PREMIUM
+   ================================================================ */
+
+let selectedIds   = new Set();  // IDs de items seleccionados
+let lastClickIdx  = null;       // Para Shift+Click range
+let isDragging    = false;
+
+// ---- Click en card con soporte Ctrl / Shift ----
+function histCardClick(e, card, idx, done, openFn, url, title) {
+  const id = card.dataset.id;
+
+  // Si Ctrl/Cmd → toggle selección
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    toggleSelect(id, card);
+    lastClickIdx = idx;
+    return;
+  }
+
+  // Si Shift y hay un último click → seleccionar rango
+  if (e.shiftKey && lastClickIdx !== null) {
+    e.preventDefault();
+    selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
+    return;
+  }
+
+  // Click normal — si hay selección activa, toggle; si no, abrir modal
+  if (selectedIds.size > 0) {
+    toggleSelect(id, card);
+    lastClickIdx = idx;
+    return;
+  }
+
+  // Sin selección activa → abrir el item
+  if (done) window[openFn](url, title);
+  lastClickIdx = idx;
+}
+
+function toggleSelect(id, card) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selectedIds.add(id);
+    card.classList.add('selected');
+  }
+  updateSelectionBar();
+}
+
+function selectRange(fromIdx, toIdx) {
+  const cards = document.querySelectorAll('.hist-card');
+  cards.forEach((card, i) => {
+    if (i >= fromIdx && i <= toIdx) {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    }
+  });
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  document.querySelectorAll('.hist-card.selected').forEach(c => c.classList.remove('selected'));
+  lastClickIdx = null;
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar   = document.getElementById('histSelectionBar');
+  const count = document.getElementById('histSelCount');
+  if (!bar) return;
+  const n = selectedIds.size;
+  if (n > 0) {
+    count.textContent = `${n} seleccionado${n !== 1 ? 's' : ''}`;
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+// ---- Ctrl+A ----
+document.addEventListener('keydown', function(e) {
+  const onHistorial = document.getElementById('screen-historial')?.classList.contains('active');
+  if (!onHistorial) return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+    e.preventDefault();
+    document.querySelectorAll('.hist-card').forEach(card => {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    });
+    updateSelectionBar();
+  }
+  if (e.key === 'Escape') clearSelection();
+  if (e.key === 'Delete' && selectedIds.size > 0) selDelete();
+});
+
+// ---- Drag & Drop ----
+function histDragStart(e, card) {
+  if (!selectedIds.has(card.dataset.id)) {
+    // Si no está seleccionado, seleccionarlo solo
+    clearSelection();
+    selectedIds.add(card.dataset.id);
+    card.classList.add('selected');
+    updateSelectionBar();
+  }
+  isDragging = true;
+  const n = selectedIds.size;
+  const ghost = document.getElementById('histDragGhost');
+  ghost.textContent = `${n} archivo${n !== 1 ? 's' : ''}`;
+  ghost.classList.add('visible');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setDragImage(new Image(), 0, 0); // ghost custom
+  document.addEventListener('dragover', moveDragGhost);
+}
+
+function histDragEnd(e) {
+  isDragging = false;
+  const ghost = document.getElementById('histDragGhost');
+  ghost.classList.remove('visible');
+  document.removeEventListener('dragover', moveDragGhost);
+  document.querySelectorAll('.hfb-folder-item.drag-over').forEach(f => f.classList.remove('drag-over'));
+}
+
+function moveDragGhost(e) {
+  const ghost = document.getElementById('histDragGhost');
+  ghost.style.left  = (e.clientX + 14) + 'px';
+  ghost.style.top   = (e.clientY - 10) + 'px';
+}
+
+// Drop en carpeta del dock
+function hfbFolderDragOver(e, el) {
+  if (!isDragging) return;
+  e.preventDefault();
+  el.classList.add('drag-over');
+}
+function hfbFolderDragLeave(el) { el.classList.remove('drag-over'); }
+function hfbFolderDrop(e, idx) {
+  e.preventDefault();
+  document.querySelectorAll('.hfb-folder-item.drag-over').forEach(f => f.classList.remove('drag-over'));
+  moveSelectedToFolder(idx);
+}
+
+// ---- Acciones de la toolbar ----
+function selMoveToFolder() {
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  if (!folders.length) { createFolder(); return; }
+  const list = document.getElementById('moveFolderList');
+  const folderSVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 3.5A1.5 1.5 0 012.5 2h3l1.5 1.5H12A1.5 1.5 0 0113.5 5v5A1.5 1.5 0 0112 11.5H2.5A1.5 1.5 0 011 10V3.5z"/></svg>`;
+  list.innerHTML = folders.map((f, i) => `
+    <div class="move-folder-item" onclick="moveSelectedToFolder(${i})">
+      ${folderSVG}
+      <span class="move-folder-item-name">${f.name}</span>
+      <span class="move-folder-item-count">${f.items} elementos</span>
+    </div>`).join('');
+  document.getElementById('moveToFolderModal').classList.add('open');
+}
+
+function closeMoveToFolderModal(e) {
+  if (e && e.target !== document.getElementById('moveToFolderModal')) return;
+  document.getElementById('moveToFolderModal').classList.remove('open');
+}
+
+function moveSelectedToFolder(folderIdx) {
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  if (!folders[folderIdx]) return;
+  const n = selectedIds.size;
+  folders[folderIdx].items = (folders[folderIdx].items || 0) + n;
+  localStorage.setItem('hist_folders', JSON.stringify(folders));
+  document.getElementById('moveToFolderModal').classList.remove('open');
+  showToast(`${n} archivo${n !== 1 ? 's' : ''} movido${n !== 1 ? 's' : ''} a "${folders[folderIdx].name}"`);
+  clearSelection();
+  loadFolders();
+}
+
+async function selDelete() {
+  if (!selectedIds.size) return;
+  const n = selectedIds.size;
+  if (!confirm(`¿Eliminar ${n} creación${n !== 1 ? 'es' : ''}?`)) return;
+  try {
+    const ids = [...selectedIds];
+    await supa.from('videos').delete().in('id', ids);
+    historyData = historyData.filter(v => !selectedIds.has(v.id));
+    clearSelection();
+    renderHistory();
+    updateDashMetrics();
+    showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
+  } catch (e) { showToast('Error al eliminar'); }
+}
+
+function selDownload() {
+  const items = historyData.filter(v => selectedIds.has(v.id) && v.video_url);
+  items.forEach(v => {
+    const a = document.createElement('a');
+    a.href = v.video_url; a.download = `futuriads-${v.id}.${v.type==='image'?'jpg':'mp4'}`;
+    a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+  showToast(`Descargando ${items.length} archivo${items.length !== 1 ? 's' : ''}...`);
+}
+
+/* ================================================================ */
 function loadFolders() {
   const right = document.getElementById('histFoldersRight');
   if (!right) return;
@@ -6194,7 +6544,10 @@ function loadFolders() {
     return;
   }
   right.innerHTML = folders.map((f, i) => `
-    <div class="hfb-folder-item" onclick="openFolder(${i})">
+    <div class="hfb-folder-item" onclick="openFolder(${i})"
+      ondragover="event.preventDefault();hfbFolderDragOver(event,this)"
+      ondragleave="hfbFolderDragLeave(this)"
+      ondrop="hfbFolderDrop(event,${i})">
       <div class="hfb-folder-item-icon">${folderSVG}</div>
       <div>
         <div class="hfb-folder-item-name">${f.name}</div>
@@ -7216,8 +7569,18 @@ function renderHistory(){
         thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
       }
 
-      return `<div class="hist-card${isImage?' is-image':''}" onclick="${done?`${openFn}('${safeUrl}','${safeTitle}')`:''}" >
-        <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">${thumb}</div>
+      return `<div class="hist-card${isImage?' is-image':''}" 
+        data-id="${v.id}" data-idx="${data.indexOf(v)}"
+        data-url="${safeUrl}" data-title="${safeTitle}"
+        data-is-image="${isImage}" data-dl-fn="${dlFn}"
+        onclick="histCardClick(event,this,${data.indexOf(v)},${done},'${openFn}','${safeUrl}','${safeTitle}')"
+        draggable="true"
+        ondragstart="histDragStart(event,this)"
+        ondragend="histDragEnd(event)">
+        <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">
+          <div class="hist-card-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div>
+          ${thumb}
+        </div>
         <div class="hist-card-info">
           <div class="hist-card-header">
             <div class="hist-card-name">${title}</div>
