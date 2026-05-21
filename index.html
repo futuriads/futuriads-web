@@ -2158,7 +2158,144 @@ body, #app { background: #07050f; }
 @media (max-width: 1000px) { .hist-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 700px)  { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
 
-/* ---- Sistema de selección premium ---- */
+/* ---- Breadcrumb ---- */
+.hist-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: #f0ecff;
+  margin-bottom: 4px;
+}
+.hist-bc-root { cursor: pointer; transition: color 0.15s; }
+.hist-bc-root:hover { color: var(--accent2); }
+.hist-bc-sep { color: var(--text3); font-weight: 300; }
+.hist-bc-folder { color: var(--text2); font-weight: 600; font-size: 22px; }
+
+/* ---- Botón modo selección ---- */
+.hist-sel-mode-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 9px; padding: 7px 14px; color: var(--text2);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.hist-sel-mode-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); border-color: rgba(255,255,255,0.15); }
+.hist-sel-mode-btn.active { background: rgba(109,40,217,0.18); border-color: rgba(139,92,246,0.4); color: var(--accent2); }
+
+/* ---- Mini botón select en cada card ---- */
+.hist-card-sel-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  width: 22px; height: 22px; border-radius: 6px;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0;
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s, transform 0.15s;
+  backdrop-filter: blur(4px);
+}
+/* Visible en modo selección activo */
+.sel-mode-active .hist-card-sel-btn { opacity: 0.6; }
+.sel-mode-active .hist-card:hover .hist-card-sel-btn { opacity: 1; transform: scale(1.08); }
+.sel-mode-active .hist-card.selected .hist-card-sel-btn {
+  opacity: 1; background: rgba(109,40,217,0.9); border-color: rgba(167,139,250,0.6);
+}
+/* Checkmark dentro del botón */
+.hist-card-sel-btn svg { transition: opacity 0.15s; }
+.hist-card-sel-btn .check-icon { opacity: 0; }
+.hist-card-sel-btn .circle-icon { opacity: 1; }
+.hist-card.selected .hist-card-sel-btn .check-icon { opacity: 1; }
+.hist-card.selected .hist-card-sel-btn .circle-icon { opacity: 0; }
+
+/* Card en modo selección */
+.sel-mode-active .hist-card { cursor: default; }
+.sel-mode-active .hist-card.selected {
+  border-color: rgba(139,92,246,0.6) !important;
+  background: rgba(109,40,217,0.08) !important;
+  box-shadow: 0 0 0 2px rgba(139,92,246,0.2), 0 6px 20px rgba(109,40,217,0.15) !important;
+}
+/* Overlay dim en cards NO seleccionadas cuando hay selección activa */
+.sel-mode-active .hist-card:not(.selected) { opacity: 0.75; }
+.sel-mode-active .hist-card:not(.selected):hover { opacity: 1; }
+
+/* ---- Dropdown sort CUSTOM ---- */
+.hist-sort-custom { position: relative; }
+.hist-sort-trigger {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 8px 14px; color: var(--text);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s; white-space: nowrap;
+}
+.hist-sort-trigger:hover { background: rgba(255,255,255,0.07); border-color: rgba(139,92,246,0.3); }
+.hist-sort-trigger svg { color: var(--text2); transition: transform 0.2s; flex-shrink: 0; }
+.hist-sort-custom.open .hist-sort-trigger svg { transform: rotate(180deg); }
+.hist-sort-custom.open .hist-sort-trigger { border-color: rgba(139,92,246,0.4); }
+.hist-sort-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  min-width: 180px;
+  background: rgba(10,6,22,0.97); border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 12px; padding: 6px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  backdrop-filter: blur(20px);
+  z-index: 500;
+  opacity: 0; pointer-events: none; transform: translateY(-6px);
+  transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.hist-sort-custom.open .hist-sort-dropdown { opacity: 1; pointer-events: all; transform: translateY(0); }
+.hist-sort-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; color: var(--text2); cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.hist-sort-opt:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.hist-sort-opt.selected { color: var(--accent2); }
+.hist-sort-opt svg { flex-shrink: 0; }
+
+/* ---- Dock flotante mejorado ---- */
+.hist-folders-bar {
+  position: fixed;
+  bottom: 24px; left: calc(160px + 24px); right: 24px;
+  z-index: 9000; height: 90px;
+  background: rgba(10,6,22,0.92);
+  border: 1px solid rgba(139,92,246,0.22);
+  border-radius: 20px;
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08);
+  display: flex; align-items: center; padding: 0 28px; gap: 0;
+  opacity: 0; pointer-events: none; transform: translateY(14px);
+  transition: opacity 0.26s cubic-bezier(0.16,1,0.3,1), transform 0.26s cubic-bezier(0.16,1,0.3,1);
+}
+.hist-folders-bar.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+.hfb-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; padding-right: 28px; border-right: 1px solid rgba(255,255,255,0.08); }
+.hfb-icon { width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.25); display: flex; align-items: center; justify-content: center; color: var(--accent2); }
+.hfb-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.hfb-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.hfb-create-btn { flex-shrink: 0; background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.3); border-radius: 9px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--accent2); cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+.hfb-create-btn:hover { background: rgba(109,40,217,0.35); }
+.hfb-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 7px; padding-left: 28px; min-width: 0; }
+.hfb-center-label { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
+.hfb-folders-row { display: flex; gap: 10px; overflow-x: auto; align-items: center; }
+.hfb-folders-row::-webkit-scrollbar { display: none; }
+.hfb-empty { font-size: 12px; color: var(--text3); }
+.hfb-folder-item { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 8px 14px; flex-shrink: 0; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.15s; }
+.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.1); }
+.hfb-folder-item-icon { color: var(--accent2); }
+.hfb-folder-item-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 4px; }
+
+/* ---- Estado vacío de carpeta ---- */
+.hist-folder-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 80px 40px; text-align: center;
+}
+.hist-folder-empty-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: rgba(109,40,217,0.12); border: 1px solid rgba(139,92,246,0.2);
+  display: flex; align-items: center; justify-content: center; color: var(--accent2);
+}
+.hist-folder-empty-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.hist-folder-empty-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.6; }
+
+/* ---- Toolbar selección (ajuste dock) ---- */
+.hist-selection-bar { bottom: 128px; }
 
 /* Card seleccionada */
 .hist-card.selected {
@@ -4150,13 +4287,21 @@ body, #app { background: #07050f; }
       <!-- Header -->
       <div class="hist-header">
         <div>
-          <div class="hist-title">Mis creaciones</div>
-          <div class="hist-sub">Todo lo que has generado hasta ahora.</div>
+          <!-- Breadcrumb: Historial > Carpeta -->
+          <div class="hist-breadcrumb" id="histBreadcrumb">
+            <span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span>
+          </div>
+          <div class="hist-sub" id="histSubLabel">Todo lo que has generado hasta ahora.</div>
         </div>
         <div class="hist-header-actions">
+          <!-- Modo selección -->
+          <button class="hist-sel-mode-btn" id="histSelModeBtn" onclick="toggleSelectionMode()" title="Seleccionar">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="2.5"/><path d="M4 7l2.5 2.5L10 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Seleccionar</span>
+          </button>
           <div class="hist-search-wrap">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4.5"/><path d="M10 10l2.5 2.5" stroke-linecap="round"/></svg>
-            <input class="hist-search" id="histSearch" placeholder="Buscar por nombre, tipo o palabras clave..." oninput="renderHistory()">
+            <input class="hist-search" id="histSearch" placeholder="Buscar..." oninput="renderHistory()">
           </div>
           <div class="hist-view-btns">
             <button class="hist-view-btn active" id="btnGrid" onclick="setHistView('grid')" title="Grid">
@@ -4169,18 +4314,29 @@ body, #app { background: #07050f; }
         </div>
       </div>
 
-      <!-- Filtros + sort -->
+      <!-- Filtros + sort custom -->
       <div class="hist-filters-row">
         <div class="hist-filters">
           <button class="hist-filter active" data-filter="all" onclick="setHistFilter('all')">Todos</button>
           <button class="hist-filter" data-filter="video" onclick="setHistFilter('video')">Videos</button>
           <button class="hist-filter" data-filter="image" onclick="setHistFilter('image')">Imágenes</button>
         </div>
-        <div class="hist-sort-wrap">
-          <select class="hist-sort" id="histSort" onchange="renderHistory()">
-            <option value="recent">Más recientes</option>
-            <option value="oldest">Más antiguos</option>
-          </select>
+        <!-- Dropdown sort CUSTOM -->
+        <div class="hist-sort-custom" id="histSortCustom">
+          <button class="hist-sort-trigger" onclick="toggleHistSort(event)">
+            <span id="histSortLabel">Más recientes</span>
+            <svg width="10" height="10" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+          </button>
+          <div class="hist-sort-dropdown" id="histSortDropdown">
+            <div class="hist-sort-opt selected" data-val="recent" onclick="setHistSortOpt(this,'Más recientes','recent')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1v5l3 2" stroke-linecap="round"/><circle cx="6" cy="6" r="5"/></svg>
+              Más recientes
+            </div>
+            <div class="hist-sort-opt" data-val="oldest" onclick="setHistSortOpt(this,'Más antiguos','oldest')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 11V6L3 4" stroke-linecap="round"/><circle cx="6" cy="6" r="5"/></svg>
+              Más antiguos
+            </div>
+          </div>
         </div>
       </div>
 
@@ -6334,12 +6490,279 @@ function showToast(msg){
 function openModal(){ openCreditsModal(); }
 
 /* ================================================================
-   SISTEMA DE SELECCIÓN, DRAG & DROP Y CARPETAS — PREMIUM
+   SISTEMA DE SELECCIÓN, CARPETAS Y DROPDOWN — PREMIUM
    ================================================================ */
 
-let selectedIds   = new Set();  // IDs de items seleccionados
-let lastClickIdx  = null;       // Para Shift+Click range
+let selectedIds   = new Set();
+let lastClickIdx  = null;
 let isDragging    = false;
+let selModeActive = false;
+let currentFolder = null; // null = raíz, number = índice de carpeta
+let histSortVal   = 'recent';
+
+/* ---- Modo selección ---- */
+function toggleSelectionMode() {
+  selModeActive = !selModeActive;
+  const btn = document.getElementById('histSelModeBtn');
+  const content = document.getElementById('histContent');
+  btn?.classList.toggle('active', selModeActive);
+  content?.classList.toggle('sel-mode-active', selModeActive);
+  if (!selModeActive) clearSelection();
+}
+
+/* ---- Click en card ---- */
+function histCardClick(e, card, idx, done, openFn, url, title) {
+  const id = card.dataset.id;
+
+  // El botón de selección dentro de la card
+  if (e.target.closest('.hist-card-sel-btn')) {
+    toggleSelect(id, card, idx);
+    return;
+  }
+
+  // En modo selección — todo click selecciona
+  if (selModeActive) {
+    if (e.shiftKey && lastClickIdx !== null) {
+      selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
+    } else {
+      toggleSelect(id, card, idx);
+    }
+    lastClickIdx = idx;
+    return;
+  }
+
+  // Ctrl/Cmd → activa modo selección y selecciona
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    if (!selModeActive) toggleSelectionMode();
+    toggleSelect(id, card, idx);
+    lastClickIdx = idx;
+    return;
+  }
+
+  // Click normal → abrir
+  if (done) window[openFn](url, title);
+}
+
+function toggleSelect(id, card, idx) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selectedIds.add(id);
+    card.classList.add('selected');
+    if (idx !== undefined) lastClickIdx = idx;
+  }
+  updateSelectionBar();
+}
+
+function selectRange(fromIdx, toIdx) {
+  const cards = document.querySelectorAll('.hist-card');
+  cards.forEach((card, i) => {
+    if (i >= fromIdx && i <= toIdx) {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    }
+  });
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  document.querySelectorAll('.hist-card.selected').forEach(c => c.classList.remove('selected'));
+  lastClickIdx = null;
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar   = document.getElementById('histSelectionBar');
+  const count = document.getElementById('histSelCount');
+  if (!bar) return;
+  const n = selectedIds.size;
+  count.textContent = `${n} seleccionado${n !== 1 ? 's' : ''}`;
+  bar.classList.toggle('visible', n > 0);
+}
+
+/* ---- Keyboard shortcuts ---- */
+document.addEventListener('keydown', function(e) {
+  const onHistorial = document.getElementById('screen-historial')?.classList.contains('active');
+  if (!onHistorial) return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+    e.preventDefault();
+    if (!selModeActive) toggleSelectionMode();
+    document.querySelectorAll('.hist-card').forEach(card => {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    });
+    updateSelectionBar();
+  }
+  if (e.key === 'Escape') {
+    clearSelection();
+    if (selModeActive) toggleSelectionMode();
+  }
+  if (e.key === 'Delete' && selectedIds.size > 0) selDelete();
+});
+
+/* ---- Drag & Drop ---- */
+function histDragStart(e, card) {
+  if (!selModeActive) return; // drag solo en modo selección
+  if (!selectedIds.has(card.dataset.id)) {
+    clearSelection();
+    selectedIds.add(card.dataset.id);
+    card.classList.add('selected');
+    updateSelectionBar();
+  }
+  isDragging = true;
+  const n = selectedIds.size;
+  const ghost = document.getElementById('histDragGhost');
+  if (ghost) { ghost.textContent = `${n} archivo${n !== 1 ? 's' : ''}`; ghost.classList.add('visible'); }
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setDragImage(new Image(), 0, 0);
+  document.addEventListener('dragover', moveDragGhost);
+}
+
+function histDragEnd() {
+  isDragging = false;
+  const ghost = document.getElementById('histDragGhost');
+  if (ghost) ghost.classList.remove('visible');
+  document.removeEventListener('dragover', moveDragGhost);
+  document.querySelectorAll('.hfb-folder-item.drag-over').forEach(f => f.classList.remove('drag-over'));
+}
+
+function moveDragGhost(e) {
+  const ghost = document.getElementById('histDragGhost');
+  if (ghost) { ghost.style.left = (e.clientX + 14) + 'px'; ghost.style.top = (e.clientY - 10) + 'px'; }
+}
+
+function hfbFolderDragOver(e, el) { if (!isDragging) return; e.preventDefault(); el.classList.add('drag-over'); }
+function hfbFolderDragLeave(el) { el.classList.remove('drag-over'); }
+function hfbFolderDrop(e, idx) {
+  e.preventDefault();
+  document.querySelectorAll('.hfb-folder-item.drag-over').forEach(f => f.classList.remove('drag-over'));
+  moveSelectedToFolder(idx);
+}
+
+/* ---- Carpetas navegables ---- */
+function openFolder(idx) {
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  const folder = folders[idx];
+  if (!folder) return;
+  currentFolder = idx;
+
+  // Breadcrumb
+  const bc = document.getElementById('histBreadcrumb');
+  const sub = document.getElementById('histSubLabel');
+  if (bc) bc.innerHTML = `<span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span><span class="hist-bc-sep"> / </span><span class="hist-bc-folder">${folder.name}</span>`;
+  if (sub) sub.textContent = `${folder.items} elemento${folder.items !== 1 ? 's' : ''} en esta carpeta`;
+
+  // Obtener IDs guardados en la carpeta
+  const folderItems = JSON.parse(localStorage.getItem(`hist_folder_items_${idx}`) || '[]');
+  const c = document.getElementById('histContent');
+  if (!c) return;
+
+  if (!folderItems.length) {
+    c.innerHTML = `<div class="hist-folder-empty">
+      <div class="hist-folder-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 7A2 2 0 014 5h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7z"/></svg></div>
+      <div class="hist-folder-empty-title">Carpeta vacía</div>
+      <div class="hist-folder-empty-sub">Seleccioná creaciones y movelas a esta carpeta usando el botón "Mover a carpeta".</div>
+    </div>`;
+    return;
+  }
+
+  // Mostrar los items de la carpeta
+  const items = historyData.filter(v => folderItems.includes(v.id));
+  renderHistGrid(items, c);
+}
+
+function histGoRoot() {
+  currentFolder = null;
+  const bc = document.getElementById('histBreadcrumb');
+  const sub = document.getElementById('histSubLabel');
+  if (bc) bc.innerHTML = `<span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span>`;
+  if (sub) sub.textContent = 'Todo lo que has generado hasta ahora.';
+  renderHistory();
+}
+
+/* ---- Dropdown sort custom ---- */
+function toggleHistSort(e) {
+  e.stopPropagation();
+  document.getElementById('histSortCustom').classList.toggle('open');
+}
+function setHistSortOpt(el, label, val) {
+  histSortVal = val;
+  document.getElementById('histSortLabel').textContent = label;
+  document.querySelectorAll('.hist-sort-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('histSortCustom').classList.remove('open');
+  renderHistory();
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#histSortCustom')) {
+    document.getElementById('histSortCustom')?.classList.remove('open');
+  }
+});
+
+/* ---- Acciones toolbar ---- */
+function selMoveToFolder() {
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  if (!folders.length) { createFolder(); return; }
+  const list = document.getElementById('moveFolderList');
+  const svg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 3.5A1.5 1.5 0 012.5 2h3l1.5 1.5H12A1.5 1.5 0 0113.5 5v5A1.5 1.5 0 0112 11.5H2.5A1.5 1.5 0 011 10V3.5z"/></svg>`;
+  list.innerHTML = folders.map((f, i) => `
+    <div class="move-folder-item" onclick="moveSelectedToFolder(${i})">${svg}
+      <span class="move-folder-item-name">${f.name}</span>
+      <span class="move-folder-item-count">${f.items} el.</span>
+    </div>`).join('');
+  document.getElementById('moveToFolderModal').classList.add('open');
+}
+
+function closeMoveToFolderModal(e) {
+  if (e && e.target !== document.getElementById('moveToFolderModal')) return;
+  document.getElementById('moveToFolderModal').classList.remove('open');
+}
+
+function moveSelectedToFolder(folderIdx) {
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  if (!folders[folderIdx]) return;
+  const ids = [...selectedIds];
+  // Guardar IDs en la carpeta
+  const existing = JSON.parse(localStorage.getItem(`hist_folder_items_${folderIdx}`) || '[]');
+  const merged = [...new Set([...existing, ...ids])];
+  localStorage.setItem(`hist_folder_items_${folderIdx}`, JSON.stringify(merged));
+  folders[folderIdx].items = merged.length;
+  localStorage.setItem('hist_folders', JSON.stringify(folders));
+  document.getElementById('moveToFolderModal').classList.remove('open');
+  showToast(`${ids.length} archivo${ids.length !== 1 ? 's' : ''} movido${ids.length !== 1 ? 's' : ''} a "${folders[folderIdx].name}"`);
+  clearSelection();
+  if (selModeActive) toggleSelectionMode();
+  loadFolders();
+}
+
+async function selDelete() {
+  if (!selectedIds.size) return;
+  const n = selectedIds.size;
+  if (!confirm(`¿Eliminar ${n} creación${n !== 1 ? 'es' : ''}?`)) return;
+  try {
+    await supa.from('videos').delete().in('id', [...selectedIds]);
+    historyData = historyData.filter(v => !selectedIds.has(v.id));
+    clearSelection();
+    if (selModeActive) toggleSelectionMode();
+    renderHistory(); updateDashMetrics();
+    showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
+  } catch(err) { showToast('Error al eliminar'); }
+}
+
+function selDownload() {
+  const items = historyData.filter(v => selectedIds.has(v.id) && v.video_url);
+  items.forEach(v => {
+    const a = document.createElement('a');
+    a.href = v.video_url; a.download = `futuriads-${v.id}.${v.type==='image'?'jpg':'mp4'}`;
+    a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+  showToast(`Descargando ${items.length} archivo${items.length !== 1 ? 's' : ''}...`);
+}
+
+/* ================================================================ */
 
 // ---- Click en card con soporte Ctrl / Shift ----
 function histCardClick(e, card, idx, done, openFn, url, title) {
@@ -7492,7 +7915,6 @@ function statusBadge(status){
 function renderHistory(){
   const c = document.getElementById('histContent');
   const searchVal = (document.getElementById('histSearch')?.value || '').toLowerCase();
-  const sortVal   = document.getElementById('histSort')?.value || 'recent';
 
   // Filtro por tipo
   let data = historyData;
@@ -7510,7 +7932,7 @@ function renderHistory(){
   }
 
   // Ordenar
-  if (sortVal === 'oldest') data = [...data].reverse();
+  if (histSortVal === 'oldest') data = [...data].reverse();
 
   // Stats bar
   renderHistStats();
@@ -7531,7 +7953,9 @@ function renderHistory(){
   const modelLabel  = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
 
   if (histView === 'grid') {
-    c.innerHTML = '<div class="hist-grid">' + data.map(v => {
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'hist-grid' + (selModeActive ? ' sel-mode-active' : '');
+    gridDiv.innerHTML = data.map(v => {
       const isImage  = v.type === 'image';
       const done     = v.status === 'COMPLETED' && v.video_url;
       const title    = isImage ? (modelLabel(v.model) || 'Imagen') : escH(v.actor || 'Actor');
@@ -7578,6 +8002,11 @@ function renderHistory(){
         ondragstart="histDragStart(event,this)"
         ondragend="histDragEnd(event)">
         <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">
+          <!-- Botón select premium -->
+          <button class="hist-card-sel-btn" onclick="event.stopPropagation();toggleSelect('${v.id}',this.closest('.hist-card'),${data.indexOf(v)})" title="Seleccionar">
+            <svg class="check-icon" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>
+            <svg class="circle-icon" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><circle cx="4" cy="4" r="3"/></svg>
+          </button>
           <div class="hist-card-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></div>
           ${thumb}
         </div>
@@ -7594,7 +8023,9 @@ function renderHistory(){
           ${done ? `<button class="hist-card-dl" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
         </div>
       </div>`;
-    }).join('') + '</div>';
+    }).join('');
+    c.innerHTML = '';
+    c.appendChild(gridDiv);
 
   } else {
     // List view
