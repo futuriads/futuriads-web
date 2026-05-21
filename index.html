@@ -2028,80 +2028,129 @@ body, #app { background: #07050f; }
 .hist-stat-val { font-size: 22px; font-weight: 800; color: #f0ecff; letter-spacing: -0.5px; }
 .hist-stat-label { font-size: 11px; color: var(--text2); margin-top: 1px; }
 
-/* Grid de cards — 3 columnas, layout horizontal thumb + texto, estilo premium */
 .hist-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
   padding-bottom: 110px;
 }
+
+/* Card vertical — thumbnail arriba, contenido abajo */
 .hist-card {
-  background: rgba(255,255,255,0.025);
+  background: rgba(255,255,255,0.028);
   border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px; overflow: hidden;
-  transition: border-color 0.22s, transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s;
-  cursor: pointer; position: relative;
-  display: grid; grid-template-columns: 110px 1fr;
-  height: 172px; /* altura fija para consistencia total */
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.22s ease,
+              transform 0.22s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.22s ease;
 }
 .hist-card:hover {
   border-color: rgba(139,92,246,0.35);
   transform: translateY(-3px);
-  box-shadow: 0 10px 32px rgba(109,40,217,0.18);
+  box-shadow: 0 12px 36px rgba(109,40,217,0.16);
 }
-/* Thumb — altura igual a la card */
+
+/* Thumbnail — aspect-ratio 4:3, igual en todas las cards */
 .hist-card-thumb {
-  background: #080510;
-  position: relative; overflow: hidden;
-  height: 172px;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #06040e;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
 }
-.hist-card-thumb img, .hist-card-thumb video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+.hist-card-thumb img,
+.hist-card-thumb video {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
 }
+.hist-card:hover .hist-card-thumb img,
+.hist-card:hover .hist-card-thumb video { transform: scale(1.04); }
+
+/* Overlay play */
 .hist-card-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+  background: rgba(0,0,0,0.42);
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.22s;
+  opacity: 0; transition: opacity 0.22s ease;
 }
 .hist-card:hover .hist-card-overlay { opacity: 1; }
 .hist-card-play {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.95);
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.96);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
-/* Info — columna derecha */
+
+/* Contenido abajo */
 .hist-card-info {
-  padding: 13px 14px;
-  display: flex; flex-direction: column;
-  min-width: 0; height: 172px; box-sizing: border-box;
-  overflow: hidden;
+  padding: 14px 16px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+  flex: 1;
+}
+
+/* Fila 1: nombre + badge */
+.hist-card-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
 .hist-card-name {
-  font-size: 13px; font-weight: 700; color: var(--text);
+  font-size: 13px; font-weight: 700; color: #f0ecff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 4px; flex-shrink: 0;
-}
-.hist-card-prompt {
-  font-size: 11px; color: var(--text2); line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-  overflow: hidden; flex: 1;
-}
-.hist-card-specs {
-  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; flex-shrink: 0;
-}
-.hist-card-spec {
-  font-size: 10px; padding: 2px 7px; border-radius: 999px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text2);
+  flex: 1; min-width: 0;
 }
 .hist-card-status {
-  font-size: 10px; font-weight: 700; padding: 2px 8px;
-  border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 999px; letter-spacing: 0.2px; flex-shrink: 0;
 }
 .hist-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; }
 .hist-card-status.pending   { background: rgba(234,179,8,0.12);  color: #facc15; }
 .hist-card-status.failed    { background: rgba(239,68,68,0.12);  color: #f87171; }
-.hist-card.is-image .hist-card-thumb { background: #06040f; }
+
+/* Fila 2: descripción — máx 2 líneas */
+.hist-card-prompt {
+  font-size: 11px; color: var(--text2); line-height: 1.55; margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Fila 3: specs + tiempo */
+.hist-card-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  margin-top: auto;
+}
+.hist-card-specs { display: flex; gap: 4px; flex-wrap: wrap; }
+.hist-card-spec {
+  font-size: 9px; padding: 2px 6px; border-radius: 999px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text2); white-space: nowrap;
+}
+.hist-card-time {
+  font-size: 10px; color: var(--text3); white-space: nowrap; flex-shrink: 0;
+}
+
+/* Botón descarga — ancho completo, al fondo */
+.hist-card-dl {
+  width: 100%; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+  padding: 8px; text-align: center;
+  font-size: 11px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: background 0.15s;
+  margin-top: 6px;
+}
+.hist-card-dl:hover { background: rgba(255,255,255,0.1); }
+
+/* Pending state */
+.hist-pending-thumb {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: var(--text2);
+}
+.hist-pending-thumb span { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--text3); }
 
 @media (max-width: 1100px) { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px)  { .hist-grid { grid-template-columns: 1fr; } }
@@ -7158,16 +7207,16 @@ function renderHistory(){
       return `<div class="hist-card${isImage?' is-image':''}" onclick="${done?`${openFn}('${safeUrl}','${safeTitle}')`:''}" >
         <div class="hist-card-thumb">${thumb}</div>
         <div class="hist-card-info">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px;">
+          <div class="hist-card-header">
             <div class="hist-card-name">${title}</div>
-            <span class="hist-card-status ${statusClass(v.status)}" style="flex-shrink:0;margin-top:1px;">${statusLabel(v.status)}</span>
+            <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
           </div>
-          <div class="hist-card-prompt">${escH(v.script || '<span style="opacity:.4">Sin descripción</span>')}</div>
-          <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
-            <span style="font-size:10px;color:var(--text3);">${timeAgo(v.created_at)}</span>
-            ${done ? `<button class="btn-w" style="font-size:10px;padding:5px 11px;" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
+          <div class="hist-card-prompt">${escH(v.script || '')}</div>
+          <div class="hist-card-footer">
+            <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
+            <span class="hist-card-time">${timeAgo(v.created_at)}</span>
           </div>
+          ${done ? `<button class="hist-card-dl" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
         </div>
       </div>`;
     }).join('') + '</div>';
