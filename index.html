@@ -7198,15 +7198,10 @@ function renderHistory(){
       const ratioMap = {
         '9:16': '9/16', '16:9': '16/9', '1:1': '1/1',
         '4:5': '4/5',   '3:4': '3/4',   '2:3': '2/3',
-        '3:2': '3/2',   'auto': '3/4'
+        '3:2': '3/2',   'auto': '1/1'
       };
-      let thumbRatio;
-      if (!isImage) {
-        thumbRatio = '3/4'; // videos siempre vertical 3:4
-      } else {
-        const raw = v.aspect_ratio || '1:1';
-        thumbRatio = ratioMap[raw] || '1/1';
-      }
+      const raw = v.aspect_ratio || (isImage ? '1:1' : '9:16');
+      const thumbRatio = ratioMap[raw] || (isImage ? '1/1' : '9/16');
 
       let thumb = '';
       if (done) {
