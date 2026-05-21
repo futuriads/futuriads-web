@@ -2103,11 +2103,11 @@ body, #app { background: #07050f; }
 /* ---- Barra de carpetas FIJA abajo ---- */
 .hist-folders-bar {
   position: fixed; bottom: 0; left: 160px; right: 0;
-  z-index: 500;
+  z-index: 9000;
   background: rgba(7,5,15,0.97);
   border-top: 1px solid rgba(139,92,246,0.18);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  display: none; /* oculta por defecto */
+  display: none;
   align-items: stretch;
   height: 110px;
 }
@@ -4003,8 +4003,11 @@ body, #app { background: #07050f; }
 
   </main>
 
-  <!-- Barra de carpetas fija — solo visible en historial -->
-  <div class="hist-folders-bar" id="histFoldersBar">
+</div><!-- /app -->
+
+<!-- Barra de carpetas fija — FUERA del #app -->
+<!-- Barra de carpetas fija — solo visible en historial -->
+<div class="hist-folders-bar" id="histFoldersBar">
     <!-- Sección izquierda: ícono + texto + botón -->
     <div class="hfb-section hfb-left">
       <div class="hfb-icon">
@@ -4037,8 +4040,6 @@ body, #app { background: #07050f; }
       <input type="file" id="hfbFileInput" style="display:none;" multiple onchange="hfbHandleFiles(this.files)">
     </div>
   </div>
-
-</div><!-- /app -->
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script>
