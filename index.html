@@ -2100,69 +2100,73 @@ body, #app { background: #07050f; }
 /* Imagen — thumb cuadrado */
 .hist-card.is-image .hist-card-thumb { min-height: 180px; }
 
-/* ---- Barra de carpetas FIJA abajo ---- */
+/* ---- Floating bottom dock de carpetas ---- */
 .hist-folders-bar {
-  position: fixed; bottom: 0; left: 160px; right: 0;
+  position: fixed;
+  bottom: 24px;
+  left: calc(160px + 24px);
+  right: 24px;
   z-index: 9000;
-  height: 80px;
-  background: rgba(7,5,15,0.97);
-  border-top: 1px solid rgba(139,92,246,0.2);
-  backdrop-filter: blur(24px);
+  height: 72px;
+  background: rgba(10,6,22,0.88);
+  border: 1px solid rgba(139,92,246,0.22);
+  border-radius: 20px;
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08);
   display: none;
   align-items: center;
-  padding: 0 32px;
+  padding: 0 24px;
   gap: 0;
 }
 .hist-folders-bar.visible { display: flex; }
 
-/* Izquierda — ícono + texto + botón */
+/* Izquierda */
 .hfb-left {
-  display: flex; align-items: center; gap: 14px;
-  flex-shrink: 0; padding-right: 32px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0; padding-right: 24px;
   border-right: 1px solid rgba(255,255,255,0.08);
 }
 .hfb-icon {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
   background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.25);
   display: flex; align-items: center; justify-content: center; color: var(--accent2);
 }
-.hfb-title { font-size: 13px; font-weight: 700; color: var(--text); }
-.hfb-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.hfb-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.hfb-sub { font-size: 11px; color: var(--text2); white-space: nowrap; }
 .hfb-create-btn {
   flex-shrink: 0;
   background: rgba(109,40,217,0.2); border: 1px solid rgba(139,92,246,0.3);
-  border-radius: 8px; padding: 8px 16px;
+  border-radius: 8px; padding: 7px 14px;
   font-size: 12px; font-weight: 600; color: var(--accent2);
   cursor: pointer; white-space: nowrap;
   transition: background 0.15s;
 }
 .hfb-create-btn:hover { background: rgba(109,40,217,0.35); }
 
-/* Derecha — lista de carpetas */
+/* Derecha */
 .hfb-right {
   flex: 1; display: flex; flex-direction: column; justify-content: center;
-  gap: 6px; padding-left: 32px; min-width: 0;
+  gap: 4px; padding-left: 24px; min-width: 0;
 }
 .hfb-center-label {
   font-size: 10px; font-weight: 600; color: var(--text2);
   text-transform: uppercase; letter-spacing: 0.6px;
 }
 .hfb-folders-row {
-  display: flex; gap: 10px; overflow-x: auto;
-  align-items: center;
+  display: flex; gap: 8px; overflow-x: auto; align-items: center;
 }
 .hfb-folders-row::-webkit-scrollbar { display: none; }
 .hfb-empty { font-size: 12px; color: var(--text3); }
 .hfb-folder-item {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px; padding: 6px 12px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 5px 12px; flex-shrink: 0;
   cursor: pointer; transition: border-color 0.15s, background 0.15s;
 }
-.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.08); }
+.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.1); }
 .hfb-folder-item-icon { color: var(--accent2); }
 .hfb-folder-item-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
-.hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 4px; }
+.hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 3px; }
 .hist-card-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
