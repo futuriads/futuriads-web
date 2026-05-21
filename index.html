@@ -2056,7 +2056,7 @@ body, #app { background: #07050f; }
 /* Thumbnail — aspect-ratio 3:4 (vertical, natural para UGC 9:16) */
 .hist-card-thumb {
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 3/4; /* fallback — se sobreescribe inline por item */
   background: #06040e;
   position: relative;
   overflow: hidden;
@@ -2095,6 +2095,7 @@ body, #app { background: #07050f; }
 .hist-card-info {
   padding: 10px 12px 12px;
   display: flex; flex-direction: column; gap: 5px;
+  /* NO usar flex:1 — la card se adapta al contenido real */
 }
 
 /* Nombre + status */
@@ -7193,21 +7194,35 @@ function renderHistory(){
         modelLabel(v.model) || null
       ].filter(Boolean);
 
+      // Calcular aspect-ratio CSS según tipo y ratio guardado
+      const ratioMap = {
+        '9:16': '9/16', '16:9': '16/9', '1:1': '1/1',
+        '4:5': '4/5',   '3:4': '3/4',   '2:3': '2/3',
+        '3:2': '3/2',   'auto': '3/4'
+      };
+      let thumbRatio;
+      if (!isImage) {
+        thumbRatio = '3/4'; // videos siempre vertical 3:4
+      } else {
+        const raw = v.aspect_ratio || '1:1';
+        thumbRatio = ratioMap[raw] || '1/1';
+      }
+
       let thumb = '';
       if (done) {
         if (isImage) {
           thumb = `<img src="${v.video_url}" alt="">
-            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openImageModal('${safeUrl}','${safeTitle}')"><svg width="14" height="14" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
+            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openImageModal('${safeUrl}','${safeTitle}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
         } else {
           thumb = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
-            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')"><svg width="14" height="14" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
+            <div class="hist-card-overlay"><button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')"><svg width="12" height="12" viewBox="0 0 14 14" fill="black"><polygon points="3,1 13,7 3,13"/></svg></button></div>`;
         }
       } else {
-        thumb = `<div class="hist-pending-thumb"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;">${statusLabel(v.status)}</span></div>`;
+        thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
       }
 
       return `<div class="hist-card${isImage?' is-image':''}" onclick="${done?`${openFn}('${safeUrl}','${safeTitle}')`:''}" >
-        <div class="hist-card-thumb">${thumb}</div>
+        <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">${thumb}</div>
         <div class="hist-card-info">
           <div class="hist-card-header">
             <div class="hist-card-name">${title}</div>
