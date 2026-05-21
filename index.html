@@ -2028,79 +2028,136 @@ body, #app { background: #07050f; }
 .hist-stat-val { font-size: 22px; font-weight: 800; color: #f0ecff; letter-spacing: -0.5px; }
 .hist-stat-label { font-size: 11px; color: var(--text2); margin-top: 1px; }
 
-/* Grid de cards — 3 columnas, layout horizontal thumb + texto */
+/* Grid de cards — 3 columnas, layout horizontal thumb + texto, estilo premium */
 .hist-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  padding-bottom: 120px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  padding-bottom: 110px;
 }
 .hist-card {
   background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: 14px; overflow: hidden;
-  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition: border-color 0.22s, transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s;
   cursor: pointer; position: relative;
-  display: grid; grid-template-columns: 130px 1fr;
-  min-height: 200px;
+  display: grid; grid-template-columns: 110px 1fr;
+  height: 172px; /* altura fija para consistencia total */
 }
 .hist-card:hover {
-  border-color: rgba(139,92,246,0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(109,40,217,0.15);
+  border-color: rgba(139,92,246,0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(109,40,217,0.18);
 }
-/* Thumb — columna izquierda, alto completo */
+/* Thumb — altura igual a la card */
 .hist-card-thumb {
-  background: #0a0612;
+  background: #080510;
   position: relative; overflow: hidden;
-  height: 100%; min-height: 200px;
+  height: 172px;
 }
 .hist-card-thumb img, .hist-card-thumb video {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
 .hist-card-overlay {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.2s;
+  opacity: 0; transition: opacity 0.22s;
 }
 .hist-card:hover .hist-card-overlay { opacity: 1; }
 .hist-card-play {
   width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.95);
   display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
 /* Info — columna derecha */
 .hist-card-info {
-  padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 6px;
-  min-width: 0;
+  padding: 13px 14px;
+  display: flex; flex-direction: column;
+  min-width: 0; height: 172px; box-sizing: border-box;
+  overflow: hidden;
 }
-.hist-card-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.hist-card-name {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 4px; flex-shrink: 0;
+}
 .hist-card-prompt {
-  font-size: 12px; color: var(--text2); line-height: 1.55;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-  flex: 1;
+  font-size: 11px; color: var(--text2); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; flex: 1;
 }
-.hist-card-footer {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px;
-  margin-top: auto;
+.hist-card-specs {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; flex-shrink: 0;
 }
-.hist-card-specs { display: flex; gap: 5px; flex-wrap: wrap; }
 .hist-card-spec {
-  font-size: 10px; padding: 3px 8px; border-radius: 999px;
+  font-size: 10px; padding: 2px 7px; border-radius: 999px;
   background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text2); display: flex; align-items: center; gap: 3px;
+  color: var(--text2);
 }
 .hist-card-status {
-  font-size: 10px; font-weight: 700; padding: 3px 9px;
-  border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 999px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;
 }
 .hist-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; }
 .hist-card-status.pending   { background: rgba(234,179,8,0.12);  color: #facc15; }
 .hist-card-status.failed    { background: rgba(239,68,68,0.12);  color: #f87171; }
-/* Imagen — thumb cuadrado */
-.hist-card.is-image .hist-card-thumb { min-height: 180px; }
+.hist-card.is-image .hist-card-thumb { background: #06040f; }
 
-/* ---- Floating bottom dock de carpetas ---- */
+@media (max-width: 1100px) { .hist-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px)  { .hist-grid { grid-template-columns: 1fr; } }
+
+/* ---- Modal custom crear carpeta ---- */
+.folder-modal-backdrop {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.24s cubic-bezier(0.16,1,0.3,1);
+}
+.folder-modal-backdrop.open { opacity: 1; pointer-events: all; }
+.folder-modal {
+  width: 400px; max-width: 92vw;
+  background: rgba(10,6,22,0.97);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 20px; padding: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(139,92,246,0.1);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.26s cubic-bezier(0.16,1,0.3,1);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.folder-modal-backdrop.open .folder-modal { transform: translateY(0) scale(1); }
+.folder-modal-icon {
+  width: 44px; height: 44px; border-radius: 12px; margin-bottom: 4px;
+  background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.25);
+  display: flex; align-items: center; justify-content: center; color: var(--accent2);
+}
+.folder-modal-title { font-size: 16px; font-weight: 800; color: #f0ecff; letter-spacing: -0.3px; }
+.folder-modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+.folder-modal-input {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 12px 14px; color: var(--text);
+  font-size: 14px; outline: none; width: 100%; box-sizing: border-box;
+  transition: border-color 0.18s;
+}
+.folder-modal-input:focus { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
+.folder-modal-input::placeholder { color: var(--text3); }
+.folder-modal-btns { display: flex; gap: 8px; margin-top: 8px; }
+.folder-modal-cancel {
+  flex: 1; padding: 11px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.folder-modal-cancel:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+.folder-modal-confirm {
+  flex: 1; padding: 11px; border-radius: 10px;
+  background: linear-gradient(135deg, #6d28d9, #9333ea); border: none;
+  color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.folder-modal-confirm:hover { box-shadow: 0 6px 24px rgba(109,40,217,0.6); transform: translateY(-1px); }
 .hist-folders-bar {
   position: fixed;
   bottom: 24px;
@@ -2113,12 +2170,22 @@ body, #app { background: #07050f; }
   border-radius: 20px;
   backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
   box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08);
-  display: none;
+  display: flex;
   align-items: center;
   padding: 0 24px;
   gap: 0;
+  /* Animación — oculto por defecto */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 0.26s cubic-bezier(0.16,1,0.3,1),
+              transform 0.26s cubic-bezier(0.16,1,0.3,1);
 }
-.hist-folders-bar.visible { display: flex; }
+.hist-folders-bar.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
 
 /* Izquierda */
 .hfb-left {
@@ -3993,6 +4060,25 @@ body, #app { background: #07050f; }
   </main>
 
 </div><!-- /app -->
+
+<!-- Modal custom crear carpeta -->
+<div class="folder-modal-backdrop" id="folderModal" onclick="closeFolderModal(event)">
+  <div class="folder-modal">
+    <div class="folder-modal-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6A2 2 0 014 4h3.5l2 2H16a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+    </div>
+    <div class="folder-modal-title">Crear nueva carpeta</div>
+    <div class="folder-modal-sub">Organizá tus creaciones para encontrarlas fácilmente.</div>
+    <input class="folder-modal-input" id="folderModalInput" type="text"
+      placeholder="Ej: Skincare Ads, Verano 2025..."
+      maxlength="40"
+      onkeydown="if(event.key==='Enter')confirmCreateFolder();if(event.key==='Escape')closeFolderModal()">
+    <div class="folder-modal-btns">
+      <button class="folder-modal-cancel" onclick="closeFolderModal()">Cancelar</button>
+      <button class="folder-modal-confirm" onclick="confirmCreateFolder()">Crear carpeta</button>
+    </div>
+  </div>
+</div>
 
 <!-- Barra de carpetas fija -->
 <div class="hist-folders-bar" id="histFoldersBar">
@@ -6066,11 +6152,27 @@ function loadFolders() {
 }
 
 function createFolder() {
-  const name = prompt('Nombre de la carpeta:');
-  if (!name || !name.trim()) return;
+  const modal = document.getElementById('folderModal');
+  const input = document.getElementById('folderModalInput');
+  if (!modal) return;
+  input.value = '';
+  modal.classList.add('open');
+  setTimeout(() => input.focus(), 80);
+}
+
+function closeFolderModal(e) {
+  if (e && e.target !== document.getElementById('folderModal')) return;
+  document.getElementById('folderModal').classList.remove('open');
+}
+
+function confirmCreateFolder() {
+  const input = document.getElementById('folderModalInput');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
   const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
-  folders.push({ name: name.trim(), items: 0, created: Date.now() });
+  folders.push({ name, items: 0, created: Date.now() });
   localStorage.setItem('hist_folders', JSON.stringify(folders));
+  document.getElementById('folderModal').classList.remove('open');
   loadFolders();
 }
 
@@ -7056,14 +7158,16 @@ function renderHistory(){
       return `<div class="hist-card${isImage?' is-image':''}" onclick="${done?`${openFn}('${safeUrl}','${safeTitle}')`:''}" >
         <div class="hist-card-thumb">${thumb}</div>
         <div class="hist-card-info">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px;">
             <div class="hist-card-name">${title}</div>
-            <span class="hist-card-status ${statusClass(v.status)}" style="flex-shrink:0;">${statusLabel(v.status)}</span>
+            <span class="hist-card-status ${statusClass(v.status)}" style="flex-shrink:0;margin-top:1px;">${statusLabel(v.status)}</span>
           </div>
-          <div class="hist-card-prompt">${escH(v.script || '')}</div>
-          <div class="hist-card-specs" style="margin-bottom:6px;">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
-          <div style="font-size:10px;color:var(--text2);margin-bottom:${done?'8px':'0'};">${timeAgo(v.created_at)}</div>
-          ${done ? `<button class="btn-w" style="font-size:11px;padding:7px 14px;width:100%;" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
+          <div class="hist-card-prompt">${escH(v.script || '<span style="opacity:.4">Sin descripción</span>')}</div>
+          <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+            <span style="font-size:10px;color:var(--text3);">${timeAgo(v.created_at)}</span>
+            ${done ? `<button class="btn-w" style="font-size:10px;padding:5px 11px;" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
+          </div>
         </div>
       </div>`;
     }).join('') + '</div>';
