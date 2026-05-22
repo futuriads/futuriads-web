@@ -7002,7 +7002,11 @@ async function campOpenDetail(campaignId, title) {
     });
     if(!resp.ok) throw new Error('Error cargando campaña');
     const data = await resp.json();
-    const { clips, variants } = data;
+    const { clips, variants, campaign } = data;
+
+    // Detectar modo según si la campaña tiene audio_url (voiceover) o no (talking)
+    _camp.videoMode = (campaign && campaign.audio_url) ? 'voiceover' : 'talking';
+    _camp.title = title;
 
     // Renderizar grid de clips
     const grid = document.getElementById('campClipsGrid');
