@@ -2383,6 +2383,43 @@ body, #app { background: #07050f; }
 .hist-folder-empty-title { font-size: 15px; font-weight: 700; color: var(--text); }
 .hist-folder-empty-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.6; }
 
+/* ---- Modal vista de carpeta ---- */
+.folder-view-modal {
+  position: fixed; inset: 0; z-index: 9500;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.folder-view-modal.open { opacity: 1; pointer-events: all; }
+.folder-view-panel {
+  background: rgba(12,7,26,0.96);
+  border: 1px solid rgba(139,92,246,0.18);
+  border-radius: 20px;
+  width: 100%; max-width: 960px; max-height: 84vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,92,246,0.07);
+  transform: translateY(10px); transition: transform 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.folder-view-modal.open .folder-view-panel { transform: translateY(0); }
+.folder-view-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
+}
+.folder-view-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.folder-view-count { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.folder-view-close {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.folder-view-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.folder-view-body { overflow-y: auto; padding: 24px; flex: 1; }
+
 /* ---- Toolbar selección — encima del dock ---- */
 /* ---- Toolbar de selección — floating premium ---- */
 .hist-selection-bar {
@@ -6675,31 +6712,43 @@ function openFolder(idx) {
   const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
   const folder = folders[idx];
   if (!folder) return;
-  currentFolder = idx;
 
-  // Breadcrumb
-  const bc = document.getElementById('histBreadcrumb');
-  const sub = document.getElementById('histSubLabel');
-  if (bc) bc.innerHTML = `<span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span><span class="hist-bc-sep"> / </span><span class="hist-bc-folder">${folder.name}</span>`;
-  if (sub) sub.textContent = `${folder.items} elemento${folder.items !== 1 ? 's' : ''} en esta carpeta`;
-
-  // Obtener IDs guardados en la carpeta
   const folderItems = JSON.parse(localStorage.getItem(`hist_folder_items_${idx}`) || '[]');
-  const c = document.getElementById('histContent');
-  if (!c) return;
+  const items = historyData.filter(v => folderItems.includes(v.id));
 
-  if (!folderItems.length) {
-    c.innerHTML = `<div class="hist-folder-empty">
-      <div class="hist-folder-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 7A2 2 0 014 5h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7z"/></svg></div>
-      <div class="hist-folder-empty-title">Carpeta vacía</div>
-      <div class="hist-folder-empty-sub">Seleccioná creaciones y movelas a esta carpeta usando el botón "Mover a carpeta".</div>
-    </div>`;
-    return;
+  let modal = document.getElementById('folderViewModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'folderViewModal';
+    modal.className = 'folder-view-modal';
+    modal.onclick = (e) => { if (e.target === modal) closeFolderView(); };
+    modal.innerHTML = `
+      <div class="folder-view-panel">
+        <div class="folder-view-header">
+          <div>
+            <div class="folder-view-title" id="folderViewTitle"></div>
+            <div class="folder-view-count" id="folderViewCount"></div>
+          </div>
+          <button class="folder-view-close" onclick="closeFolderView()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>
+          </button>
+        </div>
+        <div class="folder-view-body" id="folderViewBody"></div>
+      </div>`;
+    document.body.appendChild(modal);
   }
 
-  // Mostrar los items de la carpeta
-  const items = historyData.filter(v => folderItems.includes(v.id));
-  renderHistGrid(items, c);
+  document.getElementById('folderViewTitle').textContent = folder.name;
+  document.getElementById('folderViewCount').textContent =
+    `${items.length} elemento${items.length !== 1 ? 's' : ''}`;
+
+  renderHistGrid(items, document.getElementById('folderViewBody'));
+  requestAnimationFrame(() => modal.classList.add('open'));
+}
+
+function closeFolderView() {
+  const modal = document.getElementById('folderViewModal');
+  if (modal) modal.classList.remove('open');
 }
 
 function renderHistGrid(items, c) {
