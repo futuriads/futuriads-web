@@ -7176,13 +7176,6 @@ function confirmCreateFolder() {
   loadFolders();
 }
 
-function openFolder(idx) {
-  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
-  const folder = folders[idx];
-  if (!folder) return;
-  showToast(`Carpeta "${folder.name}" — próximamente podés agregar creaciones acá`);
-}
-
 function toggleFoldersBar(show) {
   const bar = document.getElementById('histFoldersBar');
   const floatBtn = document.getElementById('histSelFloat');
