@@ -2547,8 +2547,8 @@ body, #app { background: #07050f; }
 
 /* Derecha */
 .hfb-right {
-  flex: 1; display: flex; flex-direction: column; justify-content: center;
-  gap: 4px; padding-left: 24px; min-width: 0;
+  flex: 1; display: flex; align-items: center;
+  gap: 8px; padding-left: 24px; min-width: 0; overflow-x: auto;
 }
 .hfb-center-label {
   font-size: 10px; font-weight: 600; color: var(--text2);
@@ -2571,8 +2571,8 @@ body, #app { background: #07050f; }
 .hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 3px; }
 .hist-card-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
-  display: flex; align-items: flex-end; padding: 12px;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity 0.2s;
 }
 .hist-card:hover .hist-card-overlay { opacity: 1; }
@@ -6702,6 +6702,89 @@ function openFolder(idx) {
   renderHistGrid(items, c);
 }
 
+function renderHistGrid(items, c) {
+  const esc  = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
+  const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'?'failed':'pending');
+  const statusLabel = s => s==='COMPLETED'?'Listo':(s==='FAILED'?'Falló':(s==='IN_PROGRESS'?'Generando':'Pendiente'));
+  const modelLabel  = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
+  const ratioMap = {'9:16':'9/16','16:9':'16/9','1:1':'1/1','4:5':'4/5','3:4':'3/4','2:3':'2/3','3:2':'3/2','auto':'1/1'};
+
+  if (!items.length) {
+    c.innerHTML = `<div class="hist-folder-empty">
+      <div class="hist-folder-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 7A2 2 0 014 5h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V7z"/></svg></div>
+      <div class="hist-folder-empty-title">Carpeta vacía</div>
+      <div class="hist-folder-empty-sub">Seleccioná creaciones y movelas a esta carpeta.</div>
+    </div>`;
+    return;
+  }
+
+  const gridDiv = document.createElement('div');
+  gridDiv.className = 'hist-grid' + (selModeActive ? ' sel-mode-active' : '');
+  gridDiv.innerHTML = items.map((v, idx) => {
+    const isImage   = v.type === 'image';
+    const done      = v.status === 'COMPLETED' && !!v.video_url;
+    const title     = isImage ? (modelLabel(v.model) || 'Imagen') : escH(v.actor || 'Actor');
+    const safeUrl   = esc(v.video_url);
+    const safeTitle = esc(title);
+    const openFn    = isImage ? 'openImageModal' : 'openVideoModal';
+    const dlFn      = isImage ? 'downloadImageFile' : 'downloadVideo';
+    const dlLabel   = isImage ? 'Descargar imagen' : 'Descargar MP4';
+    const specs     = [
+      !isImage && v.duration ? v.duration+'s' : null,
+      v.aspect_ratio || null,
+      v.resolution || (isImage ? '2K' : '720p'),
+      modelLabel(v.model) || null
+    ].filter(Boolean);
+    const raw = v.aspect_ratio || (isImage ? '1:1' : '9:16');
+    const thumbRatio = ratioMap[raw] || (isImage ? '1/1' : '9/16');
+
+    let thumb = '';
+    if (done) {
+      if (isImage) {
+        thumb = `<img src="${v.video_url}" alt=""><div class="hist-card-overlay"></div>`;
+      } else {
+        thumb = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
+          <div class="hist-card-overlay">
+            <button class="hist-card-play" onclick="event.stopPropagation();openVideoModal('${safeUrl}','${safeTitle}')">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><polygon points="3,1 13,7 3,13"/></svg>
+            </button>
+          </div>`;
+      }
+    } else {
+      thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
+    }
+
+    return `<div class="hist-card${isImage?' is-image':''}"
+      data-id="${v.id}" data-idx="${idx}"
+      data-url="${safeUrl}" data-title="${safeTitle}"
+      data-is-image="${isImage}" data-dl-fn="${dlFn}"
+      onclick="histCardClick(event,this,${idx},${done},'${openFn}','${safeUrl}','${safeTitle}')"
+      draggable="true" ondragstart="histDragStart(event,this)" ondragend="histDragEnd(event)">
+      <div class="hist-card-thumb" style="aspect-ratio:${thumbRatio};">
+        <div class="hist-card-checkbox">
+          <svg class="hist-card-checkbox-check" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 3.5,6.5 7.5,2"/></svg>
+        </div>
+        ${thumb}
+      </div>
+      <div class="hist-card-info">
+        <div class="hist-card-header">
+          <div class="hist-card-name">${title}</div>
+          <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+        </div>
+        <div class="hist-card-prompt">${escH(v.script || '')}</div>
+        <div class="hist-card-footer">
+          <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
+          <span class="hist-card-time">${timeAgo(v.created_at)}</span>
+        </div>
+        ${done ? `<button class="hist-card-dl" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">${dlLabel}</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  c.innerHTML = '';
+  c.appendChild(gridDiv);
+}
+
 function histGoRoot() {
   currentFolder = null;
   const bc = document.getElementById('histBreadcrumb');
@@ -8034,7 +8117,7 @@ function renderHistory(){
         if (isImage) {
           // Imágenes: overlay sin play, click en cualquier parte abre modal
           thumb = `<img src="${v.video_url}" alt="">
-            <div class="hist-card-overlay" style="cursor:zoom-in;"></div>`;
+            <div class="hist-card-overlay"></div>`;
         } else {
           // Videos: overlay con play button glassmorphism centrado
           thumb = `<video src="${v.video_url}" muted playsinline preload="metadata"></video>
@@ -8169,16 +8252,49 @@ function openImageModal(url, title){
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'imageModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:40px;cursor:pointer;';
-    modal.onclick = () => { modal.style.display = 'none'; };
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:32px;';
+    modal.onclick = (e) => { if(e.target===modal) modal.style.display='none'; };
     modal.innerHTML = `
-      <div style="position:relative;max-width:90vw;max-height:90vh;cursor:default;" onclick="event.stopPropagation()">
-        <img id="imageModalImg" src="" alt="" style="max-width:100%;max-height:90vh;border-radius:8px;display:block;" />
-        <button onclick="document.getElementById('imageModal').style.display='none'" style="position:absolute;top:-44px;right:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;">×</button>
+      <div style="display:flex;align-items:flex-start;gap:20px;max-height:90vh;max-width:1100px;width:100%;" onclick="event.stopPropagation()">
+        <div style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;align-items:flex-start;">
+          <img id="imageModalImg" src="" alt="" style="max-width:100%;max-height:78vh;border-radius:12px;display:block;" />
+          <div style="display:flex;gap:10px;">
+            <button class="btn-w" id="imageModalDl" style="font-size:13px;">Descargar imagen</button>
+            <button class="btn-outline" onclick="document.getElementById('imageModal').style.display='none'" style="border-radius:8px;font-size:13px;">Cerrar</button>
+          </div>
+        </div>
+        <div id="imageModalInfo" style="width:248px;flex-shrink:0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;overflow-y:auto;max-height:86vh;"></div>
       </div>`;
     document.body.appendChild(modal);
   }
-  document.getElementById('imageModalImg').src = url;
+  const img = document.getElementById('imageModalImg');
+  img.src = url;
+  document.getElementById('imageModalDl').onclick = () => downloadImageFile(url, title);
+
+  const item = historyData.find(v => v.video_url === url);
+  const info = document.getElementById('imageModalInfo');
+  if (item && info) {
+    const mlabel = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
+    const fmt = d => new Date(d).toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+    const rows = [
+      ['Modelo',     mlabel(item.model)],
+      ['Ratio',      item.aspect_ratio],
+      ['Resolucion', item.resolution || '2K'],
+      ['Creado',     item.created_at ? fmt(item.created_at) : null],
+    ].filter(([,v]) => v);
+    info.style.display = '';
+    info.innerHTML = `
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">Configuracion</div>
+      ${item.script ? `<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);">${item.script}</div>` : ''}
+      ${rows.map(([label, val]) => `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:11px;color:rgba(255,255,255,0.35);">${label}</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;">${val}</span>
+        </div>`).join('')}`;
+  } else if (info) {
+    info.style.display = 'none';
+  }
+
   modal.style.display = 'flex';
 }
 
@@ -8590,23 +8706,54 @@ function downloadGeneratedImage(){
 }
 
 function openVideoModal(url, actor){
-  // Crear modal de video si no existe
   let modal = document.getElementById('videoModal');
   if(!modal){
     modal = document.createElement('div');
     modal.id = 'videoModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:32px;';
     modal.onclick = (e)=>{ if(e.target===modal) closeVideoModal(); };
     modal.innerHTML = `
-      <video id="videoModalPlayer" controls autoplay style="max-height:80vh;max-width:90vw;border-radius:12px;"></video>
-      <div style="display:flex;gap:12px;">
-        <button class="btn-w" id="videoModalDl" style="font-size:14px;">Descargar MP4</button>
-        <button class="btn-outline" onclick="closeVideoModal()" style="border-radius:8px;font-size:14px;">✕ Cerrar</button>
+      <div style="display:flex;align-items:flex-start;gap:20px;max-height:90vh;max-width:1100px;width:100%;" onclick="event.stopPropagation()">
+        <div style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;">
+          <video id="videoModalPlayer" controls autoplay style="width:100%;max-height:78vh;border-radius:12px;display:block;background:#000;"></video>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-w" id="videoModalDl" style="font-size:13px;">Descargar MP4</button>
+            <button class="btn-outline" onclick="closeVideoModal()" style="border-radius:8px;font-size:13px;">Cerrar</button>
+          </div>
+        </div>
+        <div id="videoModalInfo" style="width:248px;flex-shrink:0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;overflow-y:auto;max-height:86vh;"></div>
       </div>`;
     document.body.appendChild(modal);
   }
   document.getElementById('videoModalPlayer').src = url;
   document.getElementById('videoModalDl').onclick = ()=>downloadVideo(url, actor);
+
+  const item = historyData.find(v => v.video_url === url);
+  const info = document.getElementById('videoModalInfo');
+  if (item && info) {
+    const mlabel = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
+    const fmt = d => new Date(d).toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+    const rows = [
+      ['Modelo',     mlabel(item.model)],
+      ['Ratio',      item.aspect_ratio],
+      ['Resolucion', item.resolution || '720p'],
+      ['Duracion',   item.duration ? item.duration + 's' : null],
+      ['Creado',     item.created_at ? fmt(item.created_at) : null],
+    ].filter(([,v]) => v);
+    info.style.display = '';
+    info.innerHTML = `
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">Configuracion</div>
+      ${item.actor ? `<div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.3;">${item.actor}</div>` : ''}
+      ${item.script ? `<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);">${item.script}</div>` : ''}
+      ${rows.map(([label, val]) => `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:11px;color:rgba(255,255,255,0.35);">${label}</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;">${val}</span>
+        </div>`).join('')}`;
+  } else if (info) {
+    info.style.display = 'none';
+  }
+
   modal.style.display = 'flex';
 }
 
