@@ -2466,6 +2466,44 @@ body, #app { background: #07050f; }
 }
 .hist-sel-deselect:hover { color: var(--text2); }
 
+/* ---- Modal mover a carpeta ---- */
+.move-to-folder-modal {
+  position: fixed; inset: 0; z-index: 9800;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.move-to-folder-modal.open { opacity: 1; pointer-events: all; }
+.move-to-folder-inner {
+  background: rgba(12,7,26,0.97);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 16px; padding: 24px; min-width: 280px; max-width: 360px; width: 100%;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+  transform: translateY(8px);
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.move-to-folder-modal.open .move-to-folder-inner { transform: translateY(0); }
+.move-folder-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.move-folder-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.move-folder-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer; transition: background 0.14s, border-color 0.14s; color: var(--text);
+}
+.move-folder-item:hover { background: rgba(109,40,217,0.12); border-color: rgba(139,92,246,0.3); }
+.move-folder-item-name { flex: 1; font-size: 13px; font-weight: 600; }
+.move-folder-item-count { font-size: 11px; color: var(--text2); }
+.move-folder-cancel {
+  width: 100%; padding: 10px; border-radius: 9px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+  color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+.move-folder-cancel:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+
 /* Drag ghost */
 .hist-drag-ghost {
   position: fixed; z-index: 10000; pointer-events: none;
