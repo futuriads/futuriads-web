@@ -1240,8 +1240,6 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
   background: var(--card); border: 1px solid var(--border2);
   border-radius: var(--r-xl); padding: 28px;
   margin-bottom: 40px; overflow: visible; position: relative; z-index: 10;
-
-  height: 228px;
   display: flex; flex-direction: column;
   box-sizing: border-box;
 }
@@ -1260,7 +1258,6 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
   background: var(--card2); color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
-/* Textarea altura fija para que el cuadro no cambie de tamaño entre tabs */
 .a-gen-textarea {
   width: 100%; background: var(--hover);
   border: 1px solid transparent; border-radius: var(--r-md);
@@ -1269,8 +1266,8 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
   line-height: 1.65; outline: none;
   transition: border-color 0.2s; margin-bottom: 16px;
   box-sizing: border-box;
-  flex: 1; /* ocupa todo el espacio entre toggle y fila de opciones */
-  min-height: 0;
+  min-height: 100px;
+  overflow-y: hidden;
 }
 .a-gen-textarea:focus { border-color: rgba(255,255,255,0.2); }
 .a-gen-textarea::placeholder { color: var(--text3); }
@@ -1784,10 +1781,9 @@ body, #app { background: #07050f; }
 
 /* ── Gen box ── */
 .a-gen-box {
-  background: rgba(255,255,255,0.025) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
+  background: rgba(20,12,40,0.85) !important;
+  border: 1px solid rgba(139,92,246,0.14) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 24px rgba(0,0,0,0.35);
 }
 .a-gen-textarea {
   background: rgba(255,255,255,0.04) !important;
@@ -4575,19 +4571,7 @@ function toggleCustomSelect(id) {
   const el = document.getElementById(id);
   const isOpen = el.classList.contains('open');
   document.querySelectorAll('.custom-select.open').forEach(s => s.classList.remove('open'));
-  if (!isOpen) {
-    el.classList.add('open');
-    const trigger = el.querySelector('.custom-select-trigger');
-    const dropdown = el.querySelector('.custom-select-dropdown');
-    const rect = trigger.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = (rect.bottom + 6) + 'px';
-    dropdown.style.left = rect.left + 'px';
-    dropdown.style.minWidth = rect.width + 'px';
-    // Limitar altura para que no se corte abajo del viewport
-    const spaceBelow = window.innerHeight - rect.bottom - 20;
-    dropdown.style.maxHeight = Math.max(180, Math.min(320, spaceBelow)) + 'px';
-  }
+  if (!isOpen) el.classList.add('open');
 }
 
 function selectCustomOption(selectId, optionEl) {
@@ -8933,6 +8917,20 @@ document.addEventListener('DOMContentLoaded', function() {
     v.play().catch(function() {});
   });
 });
+// Auto-resize del textarea principal del dashboard
+(function() {
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const ta = document.getElementById('genTextarea');
+    if (!ta) return;
+    ta.addEventListener('input', function() { autoResize(this); });
+    autoResize(ta);
+  });
+})();
+
 // Sidebar estático — limpiar cualquier ancho guardado de versiones anteriores
 localStorage.removeItem('sidebarWidth');
 
