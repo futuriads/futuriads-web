@@ -1993,6 +1993,7 @@ body, #app { background: #07050f; }
   background: #fff; color: #000; border-color: #fff; font-weight: 600;
 }
 .hist-sort-wrap { display: flex; align-items: center; gap: 8px; position: relative; }
+#histContent { transition: opacity 0.15s ease; }
 /* Dropdown sort — estilo custom */
 .hist-sort {
   appearance: none; -webkit-appearance: none;
@@ -7917,7 +7918,12 @@ function setHistFilter(f){
   document.querySelectorAll('.hist-filter').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === f);
   });
-  renderHistory();
+  const c = document.getElementById('histContent');
+  c.style.opacity = '0';
+  setTimeout(() => {
+    renderHistory();
+    c.style.opacity = '1';
+  }, 150);
 }
 
 function timeAgo(dateStr){
