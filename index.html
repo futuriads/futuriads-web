@@ -2606,6 +2606,14 @@ body, #app { background: #07050f; }
 .hfb-folder-item-icon { color: var(--accent2); }
 .hfb-folder-item-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
 .hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 3px; }
+.hfb-folder-delete {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text3); display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.hfb-folder-item:hover .hfb-folder-delete { opacity: 1; }
+.hfb-folder-delete:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
 .hist-card-overlay {
   position: absolute; inset: 0;
   background: transparent;
@@ -6713,20 +6721,64 @@ function openFolder(idx) {
   const folder = folders[idx];
   if (!folder) return;
 
-  currentFolder = idx;
+  const folderItems = JSON.parse(localStorage.getItem(`hist_folder_items_${idx}`) || '[]');
+  const folderSet = new Set(folderItems.map(id => String(id)));
+  const items = historyData.filter(v => folderSet.has(String(v.id)));
 
-  const bc = document.getElementById('histBreadcrumb');
-  if (bc) bc.innerHTML = `
-    <span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span>
-    <span class="hist-bc-sep">/</span>
-    <span class="hist-bc-folder">${folder.name}</span>`;
+  let modal = document.getElementById('folderViewModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'folderViewModal';
+    modal.className = 'folder-view-modal';
+    modal.onclick = (e) => { if (e.target === modal) closeFolderView(); };
+    modal.innerHTML = `
+      <div class="folder-view-panel">
+        <div class="folder-view-header">
+          <div>
+            <div class="folder-view-title" id="folderViewTitle"></div>
+            <div class="folder-view-count" id="folderViewCount"></div>
+          </div>
+          <button class="folder-view-close" onclick="closeFolderView()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>
+          </button>
+        </div>
+        <div class="folder-view-body" id="folderViewBody"></div>
+      </div>`;
+    document.body.appendChild(modal);
+  }
 
-  const sub = document.getElementById('histSubLabel');
-  if (sub) sub.textContent = `Contenido de la carpeta "${folder.name}".`;
+  document.getElementById('folderViewTitle').textContent = folder.name;
+  document.getElementById('folderViewCount').textContent =
+    `${items.length} elemento${items.length !== 1 ? 's' : ''}`;
 
-  const c = document.getElementById('histContent');
-  if (c) { c.style.opacity = '0'; setTimeout(() => { renderHistory(); c.style.opacity = '1'; }, 120); }
-  else renderHistory();
+  renderHistGrid(items, document.getElementById('folderViewBody'));
+  requestAnimationFrame(() => modal.classList.add('open'));
+}
+
+function closeFolderView() {
+  const modal = document.getElementById('folderViewModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function deleteFolder(idx, e) {
+  e.stopPropagation();
+  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+  if (!folders[idx]) return;
+  const name = folders[idx].name;
+  if (!confirm(`¿Eliminar la carpeta "${name}"? Las creaciones no se borran.`)) return;
+  localStorage.removeItem(`hist_folder_items_${idx}`);
+  // Rearmar claves para índices posteriores
+  for (let i = idx + 1; i < folders.length; i++) {
+    const items = localStorage.getItem(`hist_folder_items_${i}`);
+    if (items !== null) {
+      localStorage.setItem(`hist_folder_items_${i - 1}`, items);
+      localStorage.removeItem(`hist_folder_items_${i}`);
+    }
+  }
+  folders.splice(idx, 1);
+  localStorage.setItem('hist_folders', JSON.stringify(folders));
+  showToast(`Carpeta "${name}" eliminada`);
+  loadFolders();
 }
 
 function renderHistGrid(items, c) {
@@ -7049,63 +7101,6 @@ function hfbFolderDrop(e, idx) {
   moveSelectedToFolder(idx);
 }
 
-// ---- Acciones de la toolbar ----
-function selMoveToFolder() {
-  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
-  if (!folders.length) { createFolder(); return; }
-  const list = document.getElementById('moveFolderList');
-  const folderSVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 3.5A1.5 1.5 0 012.5 2h3l1.5 1.5H12A1.5 1.5 0 0113.5 5v5A1.5 1.5 0 0112 11.5H2.5A1.5 1.5 0 011 10V3.5z"/></svg>`;
-  list.innerHTML = folders.map((f, i) => `
-    <div class="move-folder-item" onclick="moveSelectedToFolder(${i})">
-      ${folderSVG}
-      <span class="move-folder-item-name">${f.name}</span>
-      <span class="move-folder-item-count">${f.items} elementos</span>
-    </div>`).join('');
-  document.getElementById('moveToFolderModal').classList.add('open');
-}
-
-function closeMoveToFolderModal(e) {
-  if (e && e.target !== document.getElementById('moveToFolderModal')) return;
-  document.getElementById('moveToFolderModal').classList.remove('open');
-}
-
-function moveSelectedToFolder(folderIdx) {
-  const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
-  if (!folders[folderIdx]) return;
-  const n = selectedIds.size;
-  folders[folderIdx].items = (folders[folderIdx].items || 0) + n;
-  localStorage.setItem('hist_folders', JSON.stringify(folders));
-  document.getElementById('moveToFolderModal').classList.remove('open');
-  showToast(`${n} archivo${n !== 1 ? 's' : ''} movido${n !== 1 ? 's' : ''} a "${folders[folderIdx].name}"`);
-  clearSelection();
-  loadFolders();
-}
-
-async function selDelete() {
-  if (!selectedIds.size) return;
-  const n = selectedIds.size;
-  if (!confirm(`¿Eliminar ${n} creación${n !== 1 ? 'es' : ''}?`)) return;
-  try {
-    const ids = [...selectedIds];
-    await supa.from('videos').delete().in('id', ids);
-    historyData = historyData.filter(v => !selectedIds.has(v.id));
-    clearSelection();
-    renderHistory();
-    updateDashMetrics();
-    showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
-  } catch (e) { showToast('Error al eliminar'); }
-}
-
-function selDownload() {
-  const items = historyData.filter(v => selectedIds.has(v.id) && v.video_url);
-  items.forEach(v => {
-    const a = document.createElement('a');
-    a.href = v.video_url; a.download = `futuriads-${v.id}.${v.type==='image'?'jpg':'mp4'}`;
-    a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  });
-  showToast(`Descargando ${items.length} archivo${items.length !== 1 ? 's' : ''}...`);
-}
-
 /* ================================================================ */
 function loadFolders() {
   const right = document.getElementById('histFoldersRight');
@@ -7122,10 +7117,13 @@ function loadFolders() {
       ondragleave="hfbFolderDragLeave(this)"
       ondrop="hfbFolderDrop(event,${i})">
       <div class="hfb-folder-item-icon">${folderSVG}</div>
-      <div>
+      <div style="flex:1;min-width:0;">
         <div class="hfb-folder-item-name">${f.name}</div>
         <div class="hfb-folder-item-count">${f.items} elemento${f.items !== 1 ? 's' : ''}</div>
       </div>
+      <button class="hfb-folder-delete" onclick="deleteFolder(${i},event)" title="Eliminar carpeta">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>
+      </button>
     </div>`).join('');
 }
 
