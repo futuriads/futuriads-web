@@ -118,46 +118,101 @@ html.pre-landing #app { display: none !important; }
 /* ==============================================
    APP — CAMPAÑAS
    ============================================== */
+/* ── Anuncios header ── */
 .camp-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
 }
-.camp-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; }
-.camp-list { display: flex; flex-direction: column; gap: 12px; max-width: 860px; }
-.camp-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 18px 22px;
-  display: flex; align-items: center; gap: 16px;
-  cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+.camp-header-left {}
+.camp-title { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; }
+.camp-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+.camp-header-right { display: flex; align-items: center; gap: 10px; }
+
+/* View toggle buttons (igual que historial) */
+.camp-view-btns { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 3px; }
+.camp-view-btn { width: 30px; height: 30px; border-radius: 6px; border: none; background: transparent; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+.camp-view-btn.active { background: rgba(109,40,217,0.35); color: #fff; }
+.camp-view-btn:hover:not(.active) { background: rgba(255,255,255,0.06); color: var(--text); }
+
+/* Botón "Nuevo anuncio" */
+.camp-new-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  color: #fff; border: none; border-radius: 12px;
+  padding: 10px 20px; font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4);
+  transition: box-shadow 0.2s, transform 0.15s;
 }
-.camp-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
-.camp-card-icon {
-  width: 44px; height: 44px; border-radius: var(--r-md);
-  background: var(--hover); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: var(--text2);
+.camp-new-btn:hover { box-shadow: 0 6px 24px rgba(109,40,217,0.6); transform: translateY(-1px); }
+.camp-new-btn svg { flex-shrink: 0; }
+
+/* Grid de anuncios */
+.camp-ads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
-.camp-card-info { flex: 1; min-width: 0; }
-.camp-card-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.camp-card-meta { font-size: 12px; color: var(--text2); }
-.camp-card-status {
-  font-size: 11px; font-weight: 600; padding: 4px 12px;
-  border-radius: 999px; flex-shrink: 0;
+.camp-ads-grid.list-view {
+  display: flex; flex-direction: column; gap: 8px;
 }
-.camp-card-status.draft { background: rgba(255,255,255,0.06); color: #888; border: 1px solid rgba(255,255,255,0.1); }
-.camp-card-status.generating_clips,
-.camp-card-status.generating_variants { background: rgba(234,179,8,0.12); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
-.camp-card-status.clips_ready,
-.camp-card-status.variants_ready { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
-.camp-card-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
-.camp-card-status.failed { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
+/* Card modo grid */
+.camp-ad-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; overflow: hidden; cursor: pointer;
+  transition: border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+  position: relative;
+}
+.camp-ad-card:hover { border-color: rgba(139,92,246,0.35); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.35); }
+
+/* Área visual superior del card */
+.camp-ad-thumb {
+  height: 96px; background: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, rgba(20,12,40,0.6) 100%);
+  display: flex; align-items: center; justify-content: center; position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.camp-ad-thumb-icon { color: rgba(139,92,246,0.5); }
+.camp-ad-body { padding: 14px 16px 16px; }
+.camp-ad-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.camp-ad-meta { font-size: 11px; color: var(--text2); margin-bottom: 10px; line-height: 1.5; }
+.camp-ad-footer { display: flex; align-items: center; justify-content: space-between; }
+
+/* Badge estado */
+.camp-ad-status {
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 999px; letter-spacing: 0.3px;
+}
+.camp-ad-status.completed { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+.camp-ad-status.pending { background: rgba(234,179,8,0.12); color: #facc15; border: 1px solid rgba(234,179,8,0.25); }
+.camp-ad-status.failed { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
+/* Botón eliminar */
+.camp-ad-delete {
+  width: 26px; height: 26px; border-radius: 7px; border: none; background: transparent;
+  color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s; flex-shrink: 0;
+}
+.camp-ad-card:hover .camp-ad-delete { opacity: 1; }
+.camp-ad-delete:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+/* Card modo lista */
+.camp-ads-grid.list-view .camp-ad-card { border-radius: 10px; }
+.camp-ads-grid.list-view .camp-ad-thumb { display: none; }
+.camp-ads-grid.list-view .camp-ad-body { padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+.camp-ads-grid.list-view .camp-ad-title { margin-bottom: 0; flex: 1; font-size: 13px; }
+.camp-ads-grid.list-view .camp-ad-meta { margin-bottom: 0; white-space: nowrap; }
+.camp-ads-grid.list-view .camp-ad-footer { gap: 12px; }
+
+/* Estado vacío */
 .camp-empty {
-  text-align: center; padding: 64px 40px;
-  background: var(--card); border: 1px dashed var(--border);
-  border-radius: var(--r-xl); max-width: 860px;
+  text-align: center; padding: 80px 40px;
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 18px;
 }
-.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+.camp-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.35; }
 .camp-empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+.camp-empty-sub { font-size: 14px; color: var(--text2); margin-bottom: 28px; max-width: 340px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 .camp-wizard { max-width: 720px; }
 .camp-wizard-step { display: none; }
 .camp-wizard-step.active { display: block; }
@@ -1882,8 +1937,7 @@ body, #app { background: #07050f; }
 }
 
 /* ── Camp cards ── */
-.camp-card { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.camp-card:hover { border-color: rgba(139,92,246,0.2) !important; }
+.camp-ad-card:hover { border-color: rgba(139,92,246,0.35) !important; }
 
 /* ── Scrollbar violeta ── */
 ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); }
@@ -3969,27 +4023,36 @@ body, #app { background: #07050f; }
     <!-- ---- CAMPAÑAS ---- -->
     <div class="screen" id="screen-campanas">
 
-      <!-- Vista: lista de campañas -->
+      <!-- Vista: lista de anuncios -->
       <div id="campView-list">
         <div class="camp-header">
-          <div class="camp-title">Campañas</div>
-          <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 20px;">Nueva campaña</button>
-        </div>
-        <div id="campListContainer">
-          <div class="camp-empty">
-            
-            <div class="camp-empty-title">Todavía no tenés campañas</div>
-            <div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div>
-            <button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button>
+          <div class="camp-header-left">
+            <div class="camp-title">Anuncios</div>
+            <div class="camp-sub">Todos tus anuncios creados.</div>
+          </div>
+          <div class="camp-header-right">
+            <div class="camp-view-btns">
+              <button class="camp-view-btn active" id="campBtnGrid" onclick="campSetView('grid')" title="Grid">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+              </button>
+              <button class="camp-view-btn" id="campBtnList" onclick="campSetView('list')" title="Lista">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3.5h12M1 7h12M1 10.5h12" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <button class="camp-new-btn" onclick="campStartNew()">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 1v11M1 6.5h11"/></svg>
+              Nuevo anuncio
+            </button>
           </div>
         </div>
+        <div id="campListContainer"></div>
       </div>
 
       <!-- Vista: wizard nueva campaña -->
       <div id="campView-wizard" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
           <button class="btn-ghost-sm" onclick="campBackToList()" style="padding:6px 12px;">Volver</button>
-          <div style="font-size:13px;color:var(--text2);">Nueva campaña</div>
+          <div style="font-size:13px;color:var(--text2);">Nuevo anuncio</div>
         </div>
 
         <div class="camp-wizard">
@@ -6442,8 +6505,30 @@ async function campRegenClip(index) {
   await campGenerateOneClipV2(index);
 }
 
+let campViewMode = 'grid';
+
+function campSetView(mode) {
+  campViewMode = mode;
+  document.getElementById('campBtnGrid')?.classList.toggle('active', mode === 'grid');
+  document.getElementById('campBtnList')?.classList.toggle('active', mode === 'list');
+  const grid = document.querySelector('.camp-ads-grid');
+  if (grid) grid.classList.toggle('list-view', mode === 'list');
+}
+
+async function deleteCampaign(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar este anuncio? Esta acción no se puede deshacer.')) return;
+  try {
+    await fetch(BACKEND_URL + '/api/campaign/delete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaignId: id, userId: _currentUser.userId })
+    });
+  } catch(_) {}
+  await campLoadList();
+  showToast('Anuncio eliminado');
+}
+
 async function campLoadList() {
-  // Esperar hasta que _currentUser esté disponible (máx 5 segundos)
   if(!_currentUser) {
     for(let i = 0; i < 25 && !_currentUser; i++) await new Promise(r => setTimeout(r, 200));
   }
@@ -6458,12 +6543,60 @@ async function campLoadList() {
     const data = await resp.json();
     const campaigns = data.campaigns || [];
     if(!campaigns.length){
-      container.innerHTML = '<div class="camp-empty"><div class="camp-empty-title">Todavía no tenés campañas</div><div class="camp-empty-sub">Creá tu primer creativo completo en minutos. Solo necesitás tu guión y una foto.</div><button class="btn-w" onclick="campStartNew()" style="font-size:13px;padding:10px 22px;">Crear mi primera campaña</button></div>';
+      container.innerHTML = `<div class="camp-empty">
+        <div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg></div>
+        <div class="camp-empty-title">Todavía no tenés anuncios</div>
+        <div class="camp-empty-sub">Creá tu primer anuncio en minutos. Solo necesitás tu guión y una foto.</div>
+        <button class="camp-new-btn" onclick="campStartNew()" style="margin:0 auto;">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 1v11M1 6.5h11"/></svg>
+          Nuevo anuncio
+        </button>
+      </div>`;
       return;
     }
-    const statusLabels = { draft:'Borrador', generating_variants:'Generando avatars', variants_ready:'Avatars listos', generating_clips:'Generando clips', clips_ready:'Clips listos', completed:'Completada', failed:'Error' };
-    container.innerHTML = '<div class="camp-list">' + campaigns.map(c => '<div class="camp-card" onclick="campOpenDetail(\'' + c.id + '\',\'' + c.title.replace(/'/g, "\\'") + '\')"><div class="camp-card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="16" height="12" rx="2"/><path d="M7 7l5 2-5 2V7z" fill="currentColor" stroke="none"/></svg></div><div class="camp-card-info"><div class="camp-card-title">' + c.title + '</div><div class="camp-card-meta">' + new Date(c.created_at).toLocaleDateString('es-AR') + ' · ' + c.resolution + '</div></div><div class="camp-card-status ' + c.status + '">' + (statusLabels[c.status] || c.status) + '</div></div>').join('') + '</div>';
-  } catch(e){ console.error('Error cargando campañas:', e); }
+
+    const thumbSVG = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg>`;
+    const deleteSVG = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>`;
+
+    function statusClass(s) {
+      if (s === 'completed') return 'completed';
+      if (s === 'failed') return 'failed';
+      return 'pending';
+    }
+    function statusLabel(s) {
+      if (s === 'completed') return 'Listo';
+      if (s === 'failed') return 'Error';
+      return 'Pendiente';
+    }
+    function configLabel(c) {
+      const parts = [];
+      if (c.aspect_ratio) parts.push(c.aspect_ratio);
+      if (c.resolution) parts.push(c.resolution);
+      return parts.join(' · ') || '—';
+    }
+
+    const cards = campaigns.map(c => {
+      const safeId = c.id.toString().replace(/'/g, '');
+      const safeTitle = (c.title || 'Sin título').replace(/'/g, "\\'");
+      const date = new Date(c.created_at).toLocaleDateString('es-AR', { day:'numeric', month:'short', year:'numeric' });
+      const sClass = statusClass(c.status);
+      const sLabel = statusLabel(c.status);
+      const config = configLabel(c);
+      return `<div class="camp-ad-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
+        <div class="camp-ad-thumb"><div class="camp-ad-thumb-icon">${thumbSVG}</div></div>
+        <div class="camp-ad-body">
+          <div class="camp-ad-title">${c.title || 'Sin título'}</div>
+          <div class="camp-ad-meta">${date} · ${config}</div>
+          <div class="camp-ad-footer">
+            <span class="camp-ad-status ${sClass}">${sLabel}</span>
+            <button class="camp-ad-delete" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    container.innerHTML = `<div class="camp-ads-grid${campViewMode === 'list' ? ' list-view' : ''}">${cards}</div>`;
+  } catch(e){ console.error('Error cargando anuncios:', e); }
 }
 
 async function campOpenDetail(campaignId, title) {
