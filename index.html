@@ -6419,7 +6419,7 @@ async function campLaunchV2() {
   }
 }
 
-// Modo "talking": variantes + clips UGC (avatar habla)
+// Modo "talking": clips UGC directos (sin variantes de imagen)
 async function campLaunchTalking() {
   if (!_camp.chunks.length) { showToast('Esperá a que se carguen los clips'); return; }
   const btn = document.getElementById('campLaunchBtn');
@@ -6443,26 +6443,17 @@ async function campLaunchTalking() {
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
     document.getElementById('campGenCampaignTitle').textContent = _camp.title;
-    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
+    document.getElementById('campGenStatusTitle').textContent = 'Iniciando generación de clips...';
+    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos por clip.';
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'none';
     document.getElementById('campGenProgressBar').style.width = '0%';
     campRenderClipsGrid();
 
-    // Generar variantes del avatar
-    const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
-    const varResp = await fetch(BACKEND_URL + '/api/campaign/generate-variants', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId, photoUrl: _camp.photoUrl,
-        totalVariants, userId: _currentUser.userId
-      })
-    });
-    const varData = await varResp.json();
-    if (!varResp.ok) throw new Error(varData.message || varData.error || 'Error generando variantes');
-    showToast('Variantes encoladas. Esperando resultados...');
+    // Iniciar polling y generar clips directamente (sin variantes)
     campStartPolling();
+    _camp.clipsLaunched = false;
+    await campStartClipGeneration();
   } catch (e) {
     showToast('Error: ' + e.message);
     btn.textContent = 'Empezar generación'; btn.disabled = false;
@@ -6604,41 +6595,14 @@ async function campPollStatus() {
 }
 
 async function campUpdateGeneratingView(data) {
-  const { variants, clips } = data;
-  const variantsDone = variants.filter(v => v.status === 'completed').length;
-  const variantsTotal = variants.length;
+  const { clips } = data;
   const clipsDone = clips.filter(c => c.status === 'completed').length;
   const clipsTotal = _camp.chunks.length || _camp.audioClips.length || clips.length;
-
-  variants.forEach(v => {
-    if(v.status === 'completed' && v.image_url) _camp.variantsMap[v.variant_index] = v.image_url;
-  });
-
-  // Si hay variantes pendientes, mostrar progreso de variantes
-  if(variantsTotal > 0 && variantsDone < variantsTotal) {
-    document.getElementById('campGenStatusTitle').textContent = 'Generando variantes del avatar... (' + variantsDone + '/' + variantsTotal + ')';
-    document.getElementById('campGenProgressBar').style.width = Math.round((variantsDone / variantsTotal) * 30) + '%';
-    return;
-  }
-
-  // Si hay variantes listas y no se lanzó la generación de clips, iniciarla
-  if(variantsDone === variantsTotal && variantsTotal > 0 && !_camp.clipsLaunched) {
-    document.getElementById('campGenStatusTitle').textContent = 'Variantes listas. Iniciando generación de clips...';
-    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos por clip.';
-    if (_camp.videoMode === 'talking') {
-      await campStartClipGeneration();
-    } else {
-      await campStartClipGenerationV2();
-    }
-    return;
-  }
 
   // Actualizar cards de clips
   clips.forEach(clip => campUpdateClipCard(clip.clip_index, clip.status, clip.video_url));
 
-  const totalSteps = Math.max(variantsTotal, 1) + clipsTotal;
-  const doneSoFar = (variantsTotal > 0 ? variantsDone : 1) + clipsDone;
-  const pct = totalSteps > 0 ? Math.round((doneSoFar / totalSteps) * 100) : 0;
+  const pct = clipsTotal > 0 ? Math.round((clipsDone / clipsTotal) * 100) : 0;
   document.getElementById('campGenProgressBar').style.width = pct + '%';
 
   if(_camp.genMode === 'review' && clips.length > 0) {
@@ -6710,9 +6674,9 @@ async function campGenerateOneClip(index) {
 
   const chunk = _camp.chunks[index];
   if(!chunk) return;
-  const variantImageUrl = _camp.variantsMap[chunk.variantIndex];
-  if(!variantImageUrl){ console.error('No hay imagen para variante', chunk.variantIndex); return; }
-  
+  const variantImageUrl = _camp.photoUrl;
+  if(!variantImageUrl){ console.error('No hay foto de avatar en _camp.photoUrl'); return; }
+
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
   
