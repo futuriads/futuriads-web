@@ -6621,9 +6621,10 @@ async function campUpdateGeneratingView(data) {
     return;
   }
 
-  // Si hay variantes listas y no hay clips todavía, iniciar generación de clips
-  if(variantsDone === variantsTotal && variantsTotal > 0 && clips.length === 0) {
+  // Si hay variantes listas y no se lanzó la generación de clips, iniciarla
+  if(variantsDone === variantsTotal && variantsTotal > 0 && !_camp.clipsLaunched) {
     document.getElementById('campGenStatusTitle').textContent = 'Variantes listas. Iniciando generación de clips...';
+    document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos por clip.';
     if (_camp.videoMode === 'talking') {
       await campStartClipGeneration();
     } else {
