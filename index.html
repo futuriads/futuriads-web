@@ -1954,6 +1954,248 @@ body, #app { background: #07050f; }
 /* ── Camp cards ── */
 .camp-ad-card:hover { border-color: rgba(139,92,246,0.35) !important; }
 
+/* ══════════════════════════════════════════
+   WIZARD — Estilo unificado con el resto
+   ══════════════════════════════════════════ */
+
+/* Número de paso */
+.camp-step-num {
+  color: var(--accent2) !important;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Input de nombre */
+.camp-input {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+  padding: 13px 16px !important;
+  font-size: 14px !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+.camp-input:focus {
+  border-color: rgba(139,92,246,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.12) !important;
+  outline: none !important;
+}
+
+/* Textareas del wizard */
+.camp-textarea {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+}
+.camp-textarea:focus {
+  border-color: rgba(139,92,246,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.12) !important;
+  outline: none !important;
+}
+
+/* Botones de opción (Tengo mi guión / Generarlo con IA, etc.) */
+.camp-option-btn {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  color: var(--text2) !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  transition: border-color 0.15s, background 0.15s, color 0.15s !important;
+}
+.camp-option-btn:hover {
+  border-color: rgba(139,92,246,0.3) !important;
+  background: rgba(109,40,217,0.1) !important;
+  color: var(--text) !important;
+}
+.camp-option-btn.selected {
+  background: linear-gradient(135deg, rgba(109,40,217,0.55), rgba(147,51,234,0.45)) !important;
+  border-color: rgba(139,92,246,0.6) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.2) inset !important;
+}
+
+/* Cards de modo (Avatar / Voz en off) */
+.camp-mode-card {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 14px !important;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s !important;
+}
+.camp-mode-card:hover {
+  border-color: rgba(139,92,246,0.3) !important;
+  background: rgba(109,40,217,0.08) !important;
+}
+.camp-mode-card.selected {
+  border-color: rgba(139,92,246,0.6) !important;
+  background: rgba(109,40,217,0.2) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.12) !important;
+}
+
+/* Zona de upload */
+.camp-upload-zone {
+  background: rgba(255,255,255,0.03) !important;
+  border: 2px dashed rgba(139,92,246,0.25) !important;
+  border-radius: 14px !important;
+  transition: border-color 0.2s, background 0.2s !important;
+}
+.camp-upload-zone:hover {
+  border-color: rgba(139,92,246,0.5) !important;
+  background: rgba(109,40,217,0.07) !important;
+}
+.camp-upload-zone.has-file { border-style: solid !important; border-color: rgba(139,92,246,0.4) !important; }
+
+/* Chips de clips */
+.camp-chunk-item {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+}
+.camp-chunk-text {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+}
+.camp-chunk-text:focus {
+  border-color: rgba(139,92,246,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.12) !important;
+}
+.camp-chunk-num {
+  background: rgba(109,40,217,0.25) !important;
+  border-color: rgba(139,92,246,0.3) !important;
+  color: var(--accent2) !important;
+}
+
+/* Banner de costo */
+.camp-cost-banner {
+  background: rgba(109,40,217,0.12) !important;
+  border: 1px solid rgba(139,92,246,0.22) !important;
+  border-radius: 12px !important;
+  color: var(--text2) !important;
+}
+
+/* Línea divisoria del nav */
+.camp-nav-row {
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+  margin-top: 32px !important;
+}
+
+/* Puntos de progreso */
+.camp-prog-dot { background: rgba(255,255,255,0.15) !important; }
+.camp-prog-dot.done { background: rgba(139,92,246,0.45) !important; }
+.camp-prog-dot.active { background: var(--accent2) !important; }
+
+/* Botón Siguiente/Empezar → gradiente violeta */
+.camp-nav-row .btn-w,
+#campView-wizard .camp-nav-row .btn-w {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  padding: 10px 22px !important;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4) !important;
+  transition: box-shadow 0.2s, transform 0.15s !important;
+}
+.camp-nav-row .btn-w:hover,
+#campView-wizard .camp-nav-row .btn-w:hover {
+  opacity: 1 !important;
+  box-shadow: 0 6px 24px rgba(109,40,217,0.6) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Botón Empezar generación (paso 4) */
+#campLaunchBtn {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4) !important;
+}
+#campLaunchBtn:hover {
+  box-shadow: 0 6px 24px rgba(109,40,217,0.6) !important;
+  transform: translateY(-1px) !important;
+  opacity: 1 !important;
+}
+
+/* Botón Volver (ghost) */
+.camp-wizard-back,
+#campView-wizard .btn-ghost-sm {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 10px !important;
+  color: var(--text2) !important;
+  font-size: 12px !important;
+  padding: 7px 14px !important;
+}
+#campView-wizard .btn-ghost-sm:hover {
+  background: rgba(255,255,255,0.09) !important;
+  color: var(--text) !important;
+}
+
+/* Botón Regenerar (outline) */
+#campView-generating .btn-outline,
+#campView-wizard .btn-outline {
+  border-color: rgba(139,92,246,0.35) !important;
+  color: var(--accent2) !important;
+  border-radius: 12px !important;
+}
+#campView-generating .btn-outline:hover,
+#campView-wizard .btn-outline:hover {
+  background: rgba(109,40,217,0.12) !important;
+  border-color: rgba(139,92,246,0.55) !important;
+}
+
+/* Botón Aprobar en generating */
+#campView-generating .btn-w {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(109,40,217,0.4) !important;
+}
+#campView-generating .btn-w:hover { opacity: 1 !important; box-shadow: 0 6px 22px rgba(109,40,217,0.6) !important; }
+
+/* Progress bar de generación → violeta */
+#campGenProgressBar { background: linear-gradient(90deg, #6d28d9, #9333ea) !important; }
+
+/* Panel de subtítulos */
+.sub-select {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 9px !important;
+  color: var(--text) !important;
+  padding: 8px 12px !important;
+}
+.sub-preset-btn {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  color: var(--text2) !important;
+  border-radius: 8px !important;
+  transition: all 0.15s !important;
+}
+.sub-preset-btn:hover {
+  border-color: rgba(139,92,246,0.4) !important;
+  background: rgba(109,40,217,0.15) !important;
+  color: var(--accent2) !important;
+}
+
+/* Panel audio del paso 4 */
+#campClipsReady > div:first-child {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+}
+
+/* Volver a mis anuncios (view generating) */
+#campView-generating .btn-ghost-sm {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 10px !important;
+  color: var(--text2) !important;
+}
+#campView-generating .btn-ghost-sm:hover { background: rgba(255,255,255,0.09) !important; color: var(--text) !important; }
+
 /* ── Scrollbar violeta ── */
 ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); }
 ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.55); }
@@ -2582,6 +2824,48 @@ body, #app { background: #07050f; }
 .hist-drag-ghost.visible { opacity: 1; }
 
 /* ---- Modal custom crear carpeta ---- */
+/* ── Modal confirmación personalizado ── */
+.confirm-modal-backdrop {
+  position: fixed; inset: 0; z-index: 11000;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.confirm-modal-backdrop.open { opacity: 1; pointer-events: all; }
+.confirm-modal {
+  background: rgba(12,7,26,0.98); border: 1px solid rgba(239,68,68,0.22);
+  border-radius: 18px; padding: 28px 28px 24px; max-width: 360px; width: calc(100% - 48px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(239,68,68,0.07);
+  transform: scale(0.95) translateY(6px);
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1);
+  text-align: center;
+}
+.confirm-modal-backdrop.open .confirm-modal { transform: scale(1) translateY(0); }
+.confirm-modal-icon {
+  width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 16px;
+  background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.22);
+  display: flex; align-items: center; justify-content: center; color: #f87171;
+}
+.confirm-modal-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 8px; letter-spacing: -0.3px; }
+.confirm-modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
+.confirm-modal-btns { display: flex; gap: 8px; }
+.confirm-modal-cancel {
+  flex: 1; padding: 11px; border-radius: 11px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.confirm-modal-cancel:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.confirm-modal-confirm {
+  flex: 1; padding: 11px; border-radius: 11px;
+  background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.3);
+  color: #f87171; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.confirm-modal-confirm:hover { background: rgba(239,68,68,0.3); box-shadow: 0 4px 16px rgba(239,68,68,0.25); }
+
 .folder-modal-backdrop {
   position: fixed; inset: 0; z-index: 10000;
   background: rgba(0,0,0,0.72);
@@ -4600,6 +4884,21 @@ body, #app { background: #07050f; }
 <!-- Drag ghost -->
 <div class="hist-drag-ghost" id="histDragGhost"></div>
 
+<!-- Modal confirmación personalizado -->
+<div class="confirm-modal-backdrop" id="confirmModal">
+  <div class="confirm-modal">
+    <div class="confirm-modal-icon" id="confirmModalIcon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round" stroke-width="2"/></svg>
+    </div>
+    <div class="confirm-modal-title" id="confirmModalTitle">¿Confirmar acción?</div>
+    <div class="confirm-modal-sub" id="confirmModalSub"></div>
+    <div class="confirm-modal-btns">
+      <button class="confirm-modal-cancel" id="confirmModalCancel" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="confirm-modal-confirm" id="confirmModalConfirm">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal custom crear carpeta -->
 <div class="folder-modal-backdrop" id="folderModal" onclick="closeFolderModal(event)">
   <div class="folder-modal">
@@ -6531,17 +6830,23 @@ function campSetView(mode) {
   if (grid) grid.classList.toggle('list-view', mode === 'list');
 }
 
-async function deleteCampaign(id, e) {
+function deleteCampaign(id, e) {
   e.stopPropagation();
-  if (!confirm('¿Eliminar este anuncio? Esta acción no se puede deshacer.')) return;
-  try {
-    await fetch(BACKEND_URL + '/api/campaign/delete', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ campaignId: id, userId: _currentUser.userId })
-    });
-  } catch(_) {}
-  await campLoadList();
-  showToast('Anuncio eliminado');
+  showConfirm(
+    'Eliminar anuncio',
+    'Esta acción es permanente y no se puede deshacer. ¿Querés continuar?',
+    'Eliminar anuncio',
+    async () => {
+      try {
+        await fetch(BACKEND_URL + '/api/campaign/delete', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ campaignId: id, userId: _currentUser.userId })
+        });
+      } catch(_) {}
+      await campLoadList();
+      showToast('Anuncio eliminado');
+    }
+  );
 }
 
 async function campLoadList() {
@@ -6944,20 +7249,25 @@ function deleteFolder(idx, e) {
   const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
   if (!folders[idx]) return;
   const name = folders[idx].name;
-  if (!confirm(`¿Eliminar la carpeta "${name}"? Las creaciones no se borran.`)) return;
-  localStorage.removeItem(`hist_folder_items_${idx}`);
-  // Rearmar claves para índices posteriores
-  for (let i = idx + 1; i < folders.length; i++) {
-    const items = localStorage.getItem(`hist_folder_items_${i}`);
-    if (items !== null) {
-      localStorage.setItem(`hist_folder_items_${i - 1}`, items);
-      localStorage.removeItem(`hist_folder_items_${i}`);
+  showConfirm(
+    `Eliminar carpeta`,
+    `¿Eliminar la carpeta "${name}"? Las creaciones que contiene no se borran.`,
+    'Eliminar carpeta',
+    () => {
+      localStorage.removeItem(`hist_folder_items_${idx}`);
+      for (let i = idx + 1; i < folders.length; i++) {
+        const items = localStorage.getItem(`hist_folder_items_${i}`);
+        if (items !== null) {
+          localStorage.setItem(`hist_folder_items_${i - 1}`, items);
+          localStorage.removeItem(`hist_folder_items_${i}`);
+        }
+      }
+      folders.splice(idx, 1);
+      localStorage.setItem('hist_folders', JSON.stringify(folders));
+      showToast(`Carpeta "${name}" eliminada`);
+      loadFolders();
     }
-  }
-  folders.splice(idx, 1);
-  localStorage.setItem('hist_folders', JSON.stringify(folders));
-  showToast(`Carpeta "${name}" eliminada`);
-  loadFolders();
+  );
 }
 
 function renderHistGrid(items, c) {
@@ -7107,18 +7417,24 @@ function moveSelectedToFolder(folderIdx) {
   loadFolders();
 }
 
-async function selDelete() {
+function selDelete() {
   if (!selectedIds.size) return;
   const n = selectedIds.size;
-  if (!confirm(`¿Eliminar ${n} creación${n !== 1 ? 'es' : ''}?`)) return;
-  try {
-    await supa.from('videos').delete().in('id', [...selectedIds]);
-    historyData = historyData.filter(v => !selectedIds.has(v.id));
-    clearSelection();
-    if (selModeActive) toggleSelectionMode();
-    renderHistory(); updateDashMetrics();
-    showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
-  } catch(err) { showToast('Error al eliminar'); }
+  showConfirm(
+    `Eliminar ${n} creación${n !== 1 ? 'es' : ''}`,
+    `Esta acción es permanente. ¿Querés eliminar ${n} creación${n !== 1 ? 'es' : ''}?`,
+    'Eliminar',
+    async () => {
+      try {
+        await supa.from('videos').delete().in('id', [...selectedIds]);
+        historyData = historyData.filter(v => !selectedIds.has(v.id));
+        clearSelection();
+        if (selModeActive) toggleSelectionMode();
+        renderHistory(); updateDashMetrics();
+        showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
+      } catch(err) { showToast('Error al eliminar'); }
+    }
+  );
 }
 
 function selDownload() {
@@ -7469,17 +7785,24 @@ function viewRecentItem(url, isImage) {
   else openVideoModal(url, '');
 }
 
-async function deleteRecentItem(id, idx) {
+function deleteRecentItem(id, idx) {
   closeAllRecentMenus();
-  if (!id || !confirm('¿Eliminar esta creación?')) return;
-  try {
-    await supa.from('videos').delete().eq('id', id);
-    historyData = historyData.filter(v => v.id !== id);
-    loadDashRecent();
-    updateDashMetrics();
-  } catch (e) {
-    showToast('Error al eliminar');
-  }
+  if (!id) return;
+  showConfirm(
+    'Eliminar creación',
+    '¿Querés eliminar esta creación? La acción no se puede deshacer.',
+    'Eliminar',
+    async () => {
+      try {
+        await supa.from('videos').delete().eq('id', id);
+        historyData = historyData.filter(v => v.id !== id);
+        loadDashRecent();
+        updateDashMetrics();
+      } catch (e) {
+        showToast('Error al eliminar');
+      }
+    }
+  );
 }
 
 function closeAllRecentMenus() {
@@ -9074,6 +9397,23 @@ document.addEventListener('DOMContentLoaded', function() {
     v.play().catch(function() {});
   });
 });
+/* ── Modal de confirmación personalizado ── */
+function showConfirm(title, sub, confirmLabel, onConfirm) {
+  const backdrop = document.getElementById('confirmModal');
+  document.getElementById('confirmModalTitle').textContent = title;
+  document.getElementById('confirmModalSub').textContent = sub;
+  const btn = document.getElementById('confirmModalConfirm');
+  btn.textContent = confirmLabel || 'Eliminar';
+  btn.onclick = () => { closeConfirmModal(); onConfirm(); };
+  backdrop.classList.add('open');
+}
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('open');
+}
+document.getElementById('confirmModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeConfirmModal();
+});
+
 // Auto-resize del textarea principal del dashboard
 (function() {
   function autoResize(ta) {
