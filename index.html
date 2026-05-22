@@ -6796,7 +6796,19 @@ function selDownload() {
 function histCardClick(e, card, idx, done, openFn, url, title) {
   const id = card.dataset.id;
 
-  // Si Ctrl/Cmd → toggle selección
+  // Modo selección activo → siempre seleccionar, nunca abrir modal
+  if (selModeActive) {
+    e.stopPropagation();
+    if (e.shiftKey && lastClickIdx !== null) {
+      selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
+    } else {
+      toggleSelect(id, card);
+      lastClickIdx = idx;
+    }
+    return;
+  }
+
+  // Ctrl/Cmd → toggle selección
   if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
     toggleSelect(id, card);
@@ -6804,7 +6816,7 @@ function histCardClick(e, card, idx, done, openFn, url, title) {
     return;
   }
 
-  // Si Shift y hay un último click → seleccionar rango
+  // Shift → seleccionar rango
   if (e.shiftKey && lastClickIdx !== null) {
     e.preventDefault();
     selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
@@ -6818,7 +6830,7 @@ function histCardClick(e, card, idx, done, openFn, url, title) {
     return;
   }
 
-  // Sin selección activa → abrir el item
+  // Sin selección → abrir el item
   if (done) window[openFn](url, title);
   lastClickIdx = idx;
 }
@@ -7994,7 +8006,7 @@ function renderHistory(){
     gridDiv.className = 'hist-grid' + (selModeActive ? ' sel-mode-active' : '');
     gridDiv.innerHTML = data.map(v => {
       const isImage  = v.type === 'image';
-      const done     = v.status === 'COMPLETED' && v.video_url;
+      const done     = v.status === 'COMPLETED' && !!v.video_url;
       const title    = isImage ? (modelLabel(v.model) || 'Imagen') : escH(v.actor || 'Actor');
       const safeUrl  = esc(v.video_url);
       const safeTitle= esc(title);
@@ -8072,7 +8084,7 @@ function renderHistory(){
     // List view
     c.innerHTML = '<div class="hist-list">' + data.map(v => {
       const isImage  = v.type === 'image';
-      const done     = v.status === 'COMPLETED' && v.video_url;
+      const done     = v.status === 'COMPLETED' && !!v.video_url;
       const title    = isImage ? (modelLabel(v.model) || 'Imagen') : (v.actor || 'Actor');
       const safeUrl  = esc(v.video_url);
       const safeTitle= esc(title);
