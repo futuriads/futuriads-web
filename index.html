@@ -1465,57 +1465,6 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-/* ---- Empty state historial ---- */
-.hist-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 80px 40px; text-align: center; gap: 16px;
-}
-.hist-empty-icon {
-  width: 64px; height: 64px; border-radius: 18px;
-  background: rgba(109,40,217,0.1); border: 1px solid rgba(139,92,246,0.2);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--accent2); margin-bottom: 4px;
-}
-.hist-empty-title {
-  font-size: 18px; font-weight: 800; color: var(--text);
-  letter-spacing: -0.3px;
-}
-.hist-empty-sub {
-  font-size: 14px; color: var(--text2); max-width: 340px; line-height: 1.6;
-}
-.hist-empty-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
-
-
-.hist-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-}
-.hist-skeleton-card {
-  border-radius: 16px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.hist-skeleton-thumb {
-  width: 100%; aspect-ratio: 9/16;
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-.hist-skeleton-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.hist-skeleton-line {
-  border-radius: 6px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-.hist-skeleton-line.title { height: 14px; width: 70%; }
-.hist-skeleton-line.sub { height: 11px; width: 50%; }
-.hist-skeleton-line.tag { height: 11px; width: 40%; }
-
-
-
 /* ---- Modal de video tutorial custom ---- */
 .tutorial-modal-backdrop {
   position: fixed; inset: 0;
@@ -2492,57 +2441,6 @@ body, #app { background: #07050f; }
 .hist-drag-ghost.visible { opacity: 1; }
 
 /* ---- Modal custom crear carpeta ---- */
-/* ---- Modal "Mover a carpeta" ---- */
-.move-to-folder-modal {
-  position: fixed; inset: 0; z-index: 10001;
-  background: rgba(0,0,0,0.72);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1);
-}
-.move-to-folder-modal.open { opacity: 1; pointer-events: all; }
-.move-to-folder-inner {
-  width: 360px; max-width: 92vw;
-  background: rgba(10,6,22,0.97);
-  border: 1px solid rgba(139,92,246,0.25);
-  border-radius: 18px; padding: 24px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(139,92,246,0.1);
-  transform: translateY(12px) scale(0.97);
-  transition: transform 0.24s cubic-bezier(0.16,1,0.3,1);
-  display: flex; flex-direction: column; gap: 12px;
-}
-.move-to-folder-modal.open .move-to-folder-inner { transform: translateY(0) scale(1); }
-.move-folder-title {
-  font-size: 15px; font-weight: 800; color: #f0ecff;
-  letter-spacing: -0.3px; margin-bottom: 4px;
-}
-.move-folder-list {
-  display: flex; flex-direction: column; gap: 6px;
-  max-height: 280px; overflow-y: auto;
-}
-.move-folder-list::-webkit-scrollbar { width: 4px; }
-.move-folder-list::-webkit-scrollbar-track { background: transparent; }
-.move-folder-list::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 4px; }
-.move-folder-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  cursor: pointer; transition: background 0.15s, border-color 0.15s;
-}
-.move-folder-item:hover {
-  background: rgba(109,40,217,0.14); border-color: rgba(139,92,246,0.3);
-}
-.move-folder-item-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
-.move-folder-item-count { font-size: 11px; color: var(--text2); }
-.move-folder-cancel {
-  width: 100%; padding: 11px; border-radius: 10px; margin-top: 4px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer;
-  font-family: inherit; transition: background 0.15s, color 0.15s;
-}
-.move-folder-cancel:hover { background: rgba(255,255,255,0.09); color: var(--text); }
-
 .folder-modal-backdrop {
   position: fixed; inset: 0; z-index: 10000;
   background: rgba(0,0,0,0.72);
@@ -2647,6 +2545,29 @@ body, #app { background: #07050f; }
 .hfb-create-btn:hover { background: rgba(109,40,217,0.35); }
 
 /* Derecha */
+.hfb-right {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  gap: 4px; padding-left: 24px; min-width: 0;
+}
+.hfb-center-label {
+  font-size: 10px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.hfb-folders-row {
+  display: flex; gap: 8px; overflow-x: auto; align-items: center;
+}
+.hfb-folders-row::-webkit-scrollbar { display: none; }
+.hfb-empty { font-size: 12px; color: var(--text3); }
+.hfb-folder-item {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 5px 12px; flex-shrink: 0;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.hfb-folder-item:hover { border-color: rgba(139,92,246,0.3); background: rgba(109,40,217,0.1); }
+.hfb-folder-item-icon { color: var(--accent2); }
+.hfb-folder-item-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.hfb-folder-item-count { font-size: 10px; color: var(--text2); margin-left: 3px; }
 .hist-card-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
@@ -2985,44 +2906,6 @@ body, #app { background: #07050f; }
 }
 .a-field-label:first-child { margin-top: 0; }
 .a-field-val { font-size: 14px; color: var(--text); font-weight: 500; }
-
-/* ---- Editar perfil ---- */
-.a-field-edit-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 0;
-}
-.a-field-edit-row .a-field-val { flex: 1; min-width: 0; }
-.a-field-edit-btn {
-  flex-shrink: 0; background: transparent; border: none; cursor: pointer;
-  color: var(--text2); padding: 4px; border-radius: 6px;
-  transition: color 0.15s, background 0.15s;
-  display: flex; align-items: center;
-}
-.a-field-edit-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-.a-field-input {
-  width: 100%; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
-  padding: 10px 12px; color: var(--text); font-size: 14px; font-family: inherit;
-  outline: none; transition: border-color 0.18s;
-  box-sizing: border-box;
-}
-.a-field-input:focus { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
-.a-field-select {
-  width: 100%; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
-  padding: 10px 12px; color: var(--text); font-size: 14px; font-family: inherit;
-  outline: none; transition: border-color 0.18s; cursor: pointer;
-  box-sizing: border-box; -webkit-appearance: none;
-}
-.a-field-select:focus { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
-.a-field-select option { background: #1a1a1a; color: #fff; }
-.a-profile-save-row {
-  display: flex; gap: 8px; margin-top: 16px;
-}
-.a-profile-save-error {
-  font-size: 12px; color: #f87171; margin-top: 6px; display: none;
-}
-
 .btn-danger {
   display: inline-flex; align-items: center; gap: 6px;
   background: transparent; color: rgba(255,100,100,0.75);
@@ -3819,7 +3702,7 @@ body, #app { background: #07050f; }
       <div id="gen-step-2" style="display:none;">
         <div class="a-gen-title">Tu prompt</div>
         <p class="a-gen-sub">Escribí exactamente lo que querés que diga o haga el actor en el video.</p>
-        <textarea class="a-script-area" id="scriptInput" placeholder="Ej: Una chica argentina mirando a cámara dice: &quot;Este producto cambió mi rutina...&quot;" rows="5" oninput="document.getElementById('scriptInputError').style.display='none'"></textarea>
+        <textarea class="a-script-area" id="scriptInput" placeholder="Ej: Una chica argentina mirando a cámara dice: &quot;Este producto cambió mi rutina...&quot;" rows="5"></textarea>
         <div class="a-select-row">
           <div class="custom-select" id="cs-step2-dur">
             <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-step2-dur')">
@@ -3859,12 +3742,9 @@ body, #app { background: #07050f; }
             </div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;margin-top:16px;flex-direction:column;">
-          <div id="scriptInputError" style="display:none;color:#f87171;font-size:13px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;"></div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Atrás</button>
-            <button class="btn-w" style="border-radius:var(--r-sm);" onclick="validateAndGenerate()">Generar video</button>
-          </div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Atrás</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="goGenStep(3)">Generar video</button>
         </div>
       </div>
 
@@ -3941,7 +3821,7 @@ body, #app { background: #07050f; }
           </div>
         </div>
 
-        <textarea class="a-script-area" id="imgPromptInput" placeholder="Ej: Un producto de skincare sobre fondo mármol blanco, iluminación suave, estilo editorial..." rows="5" oninput="document.getElementById('imgPromptInputError').style.display='none'"></textarea>
+        <textarea class="a-script-area" id="imgPromptInput" placeholder="Ej: Un producto de skincare sobre fondo mármol blanco, iluminación suave, estilo editorial..." rows="5"></textarea>
 
         <div class="a-select-row">
           <div class="custom-select" id="cs-img-step-ratio">
@@ -3973,12 +3853,9 @@ body, #app { background: #07050f; }
           <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 30MB cada una</div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:24px;flex-direction:column;">
-          <div id="imgPromptInputError" style="display:none;color:#f87171;font-size:13px;padding:10px 14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;"></div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">Atrás</button>
-            <button class="btn-w" style="border-radius:var(--r-sm);" onclick="validateAndGenerateImage()">Generar imagen</button>
-          </div>
+        <div style="display:flex;gap:10px;margin-top:24px;">
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">Atrás</button>
+          <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen</button>
         </div>
       </div>
 
@@ -4516,64 +4393,13 @@ body, #app { background: #07050f; }
           </div>
         </div>
         <div class="a-profile-card">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-            <div class="a-profile-card-title" style="margin-bottom:0;">Mi cuenta</div>
-            <button class="a-field-edit-btn" id="profileEditToggle" onclick="toggleProfileEdit()" title="Editar perfil">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.5 2.5a1.414 1.414 0 012 2L5 12l-3 1 1-3 7.5-7.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
-
-          <!-- Vista solo lectura -->
-          <div id="profileViewMode">
-            <div class="a-field-label">Nombre</div>
-            <div class="a-field-val" id="profileFieldName">--</div>
-            <div class="a-field-label">Email</div>
-            <div class="a-field-val" id="profileFieldEmail">--</div>
-            <div class="a-field-label">País</div>
-            <div class="a-field-val" id="profileFieldCountry">--</div>
-          </div>
-
-          <!-- Vista edición (oculta por default) -->
-          <div id="profileEditMode" style="display:none;">
-            <div class="a-field-label">Nombre</div>
-            <input class="a-field-input" id="profileEditName" type="text" maxlength="60" placeholder="Tu nombre completo">
-            <div class="a-field-label" style="margin-top:14px;">Email</div>
-            <div class="a-field-val" id="profileEditEmailDisplay" style="color:var(--text2);font-size:13px;">—</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:3px;">El email no se puede cambiar por seguridad.</div>
-            <div class="a-field-label" style="margin-top:14px;">País</div>
-            <select class="a-field-select" id="profileEditCountry">
-              <option value="">Seleccioná un país</option>
-              <option value="Argentina">Argentina</option>
-              <option value="Bolivia">Bolivia</option>
-              <option value="Chile">Chile</option>
-              <option value="Colombia">Colombia</option>
-              <option value="Costa Rica">Costa Rica</option>
-              <option value="Cuba">Cuba</option>
-              <option value="Ecuador">Ecuador</option>
-              <option value="El Salvador">El Salvador</option>
-              <option value="España">España</option>
-              <option value="Guatemala">Guatemala</option>
-              <option value="Honduras">Honduras</option>
-              <option value="México">México</option>
-              <option value="Nicaragua">Nicaragua</option>
-              <option value="Panamá">Panamá</option>
-              <option value="Paraguay">Paraguay</option>
-              <option value="Perú">Perú</option>
-              <option value="Puerto Rico">Puerto Rico</option>
-              <option value="República Dominicana">República Dominicana</option>
-              <option value="Uruguay">Uruguay</option>
-              <option value="Venezuela">Venezuela</option>
-              <option value="Estados Unidos">Estados Unidos</option>
-              <option value="Brasil">Brasil</option>
-              <option value="Otro">Otro</option>
-            </select>
-            <div class="a-profile-save-error" id="profileSaveError"></div>
-            <div class="a-profile-save-row">
-              <button class="btn-outline" style="flex:1;justify-content:center;border-radius:var(--r-sm);" onclick="cancelProfileEdit()">Cancelar</button>
-              <button class="btn-w" id="profileSaveBtn" style="flex:1;justify-content:center;border-radius:var(--r-sm);" onclick="saveProfile()">Guardar</button>
-            </div>
-          </div>
-
+          <div class="a-profile-card-title">Mi cuenta</div>
+          <div class="a-field-label">Nombre</div>
+          <div class="a-field-val" id="profileFieldName">--</div>
+          <div class="a-field-label">Email</div>
+          <div class="a-field-val" id="profileFieldEmail">--</div>
+          <div class="a-field-label">País</div>
+          <div class="a-field-val" id="profileFieldCountry">--</div>
           <button class="btn-danger" onclick="openSignOutModal()">Cerrar sesión</button>
         </div>
       </div>
@@ -4912,19 +4738,7 @@ const BACKEND_URL = 'https://futuriads-backend-production.up.railway.app';
 async function loadHistory() {
   const container = document.getElementById('histContent');
   if (!container) return;
-  // Skeleton loaders mientras carga
-  const skeletonCard = (ratio='9/16') => `
-    <div class="hist-skeleton-card">
-      <div class="hist-skeleton-thumb" style="aspect-ratio:${ratio};"></div>
-      <div class="hist-skeleton-body">
-        <div class="hist-skeleton-line title"></div>
-        <div class="hist-skeleton-line sub"></div>
-        <div class="hist-skeleton-line tag"></div>
-      </div>
-    </div>`;
-  container.innerHTML = `<div class="hist-skeleton-grid">${Array(8).fill('').map((_,i) =>
-    skeletonCard(i % 3 === 0 ? '1/1' : '9/16')
-  ).join('')}</div>`;
+  container.innerHTML = '<div style="color:#888;padding:40px;text-align:center;">Cargando creaciones...</div>';
   try {
     const { data, error } = await supa.from('videos').select('*').order('created_at', { ascending: false });
     if (error) throw error;
@@ -5347,103 +5161,6 @@ function updateProfileUI(profile, email) {
 function openSignOutModal() {
   document.getElementById('signOutModal').classList.add('open');
 }
-
-/* ---- Editar perfil ---- */
-function toggleProfileEdit() {
-  const viewMode = document.getElementById('profileViewMode');
-  const editMode = document.getElementById('profileEditMode');
-  const isEditing = editMode.style.display !== 'none';
-  if (isEditing) {
-    cancelProfileEdit();
-  } else {
-    // Pre-llenar los campos con los valores actuales
-    const nameEl = document.getElementById('profileFieldName');
-    const countryEl = document.getElementById('profileFieldCountry');
-    const emailEl = document.getElementById('profileFieldEmail');
-    const editName = document.getElementById('profileEditName');
-    const editCountry = document.getElementById('profileEditCountry');
-    const editEmailDisplay = document.getElementById('profileEditEmailDisplay');
-    if (editName) editName.value = nameEl?.textContent !== '--' ? nameEl.textContent : '';
-    if (editCountry) editCountry.value = countryEl?.textContent !== '--' ? countryEl.textContent : '';
-    if (editEmailDisplay) editEmailDisplay.textContent = emailEl?.textContent || '—';
-    document.getElementById('profileSaveError').style.display = 'none';
-    viewMode.style.display = 'none';
-    editMode.style.display = 'block';
-    editName?.focus();
-  }
-}
-
-function cancelProfileEdit() {
-  document.getElementById('profileViewMode').style.display = 'block';
-  document.getElementById('profileEditMode').style.display = 'none';
-  document.getElementById('profileSaveError').style.display = 'none';
-}
-
-async function saveProfile() {
-  const name = document.getElementById('profileEditName')?.value?.trim() || '';
-  const country = document.getElementById('profileEditCountry')?.value || '';
-  const errEl = document.getElementById('profileSaveError');
-  const saveBtn = document.getElementById('profileSaveBtn');
-
-  errEl.style.display = 'none';
-  if (!name) {
-    errEl.textContent = 'El nombre no puede estar vacío.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  // Obtener userId
-  let userId = null;
-  try {
-    const { data: sess } = await supa.auth.getSession();
-    userId = sess?.session?.user?.id || null;
-  } catch(e) {}
-  if (!userId) {
-    errEl.textContent = 'No se pudo identificar tu sesión. Volvé a iniciar sesión.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  saveBtn.textContent = 'Guardando...';
-  saveBtn.disabled = true;
-
-  try {
-    const resp = await fetch(BACKEND_URL + '/api/update-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, full_name: name, country })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Error al guardar');
-
-    // Actualizar la vista de solo lectura
-    const nameEl = document.getElementById('profileFieldName');
-    const countryEl = document.getElementById('profileFieldCountry');
-    const profileName = document.getElementById('profileName');
-    const profileAvatar = document.getElementById('profileAvatar');
-    if (nameEl) nameEl.textContent = name;
-    if (countryEl) countryEl.textContent = country || '--';
-    if (profileName) profileName.textContent = name;
-    if (profileAvatar) profileAvatar.textContent = name.charAt(0).toUpperCase();
-
-    // Actualizar el caché global
-    if (window._currentUser) {
-      window._currentUser.full_name = name;
-      window._currentUser.country = country;
-    }
-
-    cancelProfileEdit();
-    showToast('Perfil actualizado correctamente');
-  } catch(e) {
-    errEl.textContent = e.message || 'Ocurrió un error. Intentá de nuevo.';
-    errEl.style.display = 'block';
-  } finally {
-    saveBtn.textContent = 'Guardar';
-    saveBtn.disabled = false;
-  }
-}
-
-
 
 function closeSignOutModal(e) {
   if (!e || e.target === document.getElementById('signOutModal')) {
@@ -6822,6 +6539,96 @@ function toggleSelectionMode() {
 }
 
 /* ---- Click en card ---- */
+function histCardClick(e, card, idx, done, openFn, url, title) {
+  const id = card.dataset.id;
+
+  // --- MODO SELECCIÓN ACTIVO ---
+  if (selModeActive) {
+    // Nunca abrir modal en modo selección
+    e.stopPropagation();
+    if (e.shiftKey && lastClickIdx !== null) {
+      selectRange(Math.min(idx, lastClickIdx), Math.max(idx, lastClickIdx));
+    } else {
+      toggleSelect(id, card, idx);
+      lastClickIdx = idx;
+    }
+    return;
+  }
+
+  // --- MODO NORMAL ---
+  // Ctrl/Cmd → activa modo selección directamente
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    toggleSelectionMode();
+    toggleSelect(id, card, idx);
+    lastClickIdx = idx;
+    return;
+  }
+
+  // Click normal → abrir modal según tipo
+  if (done) {
+    window[openFn](url, title);
+  }
+}
+
+function toggleSelect(id, card, idx) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selectedIds.add(id);
+    card.classList.add('selected');
+    if (idx !== undefined) lastClickIdx = idx;
+  }
+  updateSelectionBar();
+}
+
+function selectRange(fromIdx, toIdx) {
+  const cards = document.querySelectorAll('.hist-card');
+  cards.forEach((card, i) => {
+    if (i >= fromIdx && i <= toIdx) {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    }
+  });
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  document.querySelectorAll('.hist-card.selected').forEach(c => c.classList.remove('selected'));
+  lastClickIdx = null;
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar   = document.getElementById('histSelectionBar');
+  const count = document.getElementById('histSelCount');
+  if (!bar) return;
+  const n = selectedIds.size;
+  count.textContent = `${n} seleccionado${n !== 1 ? 's' : ''}`;
+  bar.classList.toggle('visible', n > 0);
+}
+
+/* ---- Keyboard shortcuts ---- */
+document.addEventListener('keydown', function(e) {
+  const onHistorial = document.getElementById('screen-historial')?.classList.contains('active');
+  if (!onHistorial) return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+    e.preventDefault();
+    if (!selModeActive) toggleSelectionMode();
+    document.querySelectorAll('.hist-card').forEach(card => {
+      selectedIds.add(card.dataset.id);
+      card.classList.add('selected');
+    });
+    updateSelectionBar();
+  }
+  if (e.key === 'Escape') {
+    clearSelection();
+    if (selModeActive) toggleSelectionMode();
+  }
+  if (e.key === 'Delete' && selectedIds.size > 0) selDelete();
+});
 
 /* ---- Drag & Drop ---- */
 function histDragStart(e, card) {
@@ -7952,48 +7759,7 @@ function goGenStep(step){
 let _generatedVideoUrl = null;
 let _generatedRequestId = null;
 
-/* ---- Validación de prompt antes de generar ---- */
-function validateAndGenerate() {
-  const script = document.getElementById('scriptInput')?.value?.trim() || '';
-  const errEl = document.getElementById('scriptInputError');
-  const MIN_CHARS = 20;
-  if (!script) {
-    errEl.textContent = 'Escribí el prompt antes de continuar.';
-    errEl.style.display = 'block';
-    document.getElementById('scriptInput').focus();
-    return;
-  }
-  if (script.length < MIN_CHARS) {
-    errEl.textContent = `El prompt es muy corto. Necesitás al menos ${MIN_CHARS} caracteres (ahora tiene ${script.length}).`;
-    errEl.style.display = 'block';
-    document.getElementById('scriptInput').focus();
-    return;
-  }
-  errEl.style.display = 'none';
-  goGenStep(3);
-}
-
-function validateAndGenerateImage() {
-  const prompt = document.getElementById('imgPromptInput')?.value?.trim() || '';
-  const errEl = document.getElementById('imgPromptInputError');
-  const MIN_CHARS = 10;
-  if (!prompt) {
-    errEl.textContent = 'Escribí una descripción antes de generar.';
-    errEl.style.display = 'block';
-    document.getElementById('imgPromptInput').focus();
-    return;
-  }
-  if (prompt.length < MIN_CHARS) {
-    errEl.textContent = `La descripción es muy corta. Necesitás al menos ${MIN_CHARS} caracteres (ahora tiene ${prompt.length}).`;
-    errEl.style.display = 'block';
-    document.getElementById('imgPromptInput').focus();
-    return;
-  }
-  errEl.style.display = 'none';
-  generateImage();
-}
-
-
+async function runGeneration(){
   const msgEl = document.getElementById('loadingMsg');
   const bar = document.getElementById('genProgressBar');
   const pbox = document.getElementById('promptResultBox');
@@ -8203,52 +7969,11 @@ function renderHistory(){
   renderHistStats();
 
   if (!data.length) {
-    // Estado vacío — diseño invitador según el filtro activo
-    if (searchVal) {
-      c.innerHTML = `
-        <div class="hist-empty">
-          <div class="hist-empty-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>
-          </div>
-          <div class="hist-empty-title">Sin resultados</div>
-          <div class="hist-empty-sub">No encontramos nada para "<strong>${searchVal.replace(/</g,'&lt;')}</strong>". Probá con otro término.</div>
-        </div>`;
-      return;
-    }
-    const configs = {
-      image: {
-        icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`,
-        title: 'Todavía no creaste ninguna imagen',
-        sub: 'Generá creativos estáticos con IA en segundos. Perfectos para redes sociales y anuncios.',
-        cta: 'Crear mi primera imagen',
-        screen: 'nueva-imagen'
-      },
-      video: {
-        icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.693A1 1 0 0121 8.234v7.532a1 1 0 01-1.447.894L15 14"/><rect x="3" y="6" width="12" height="12" rx="3"/></svg>`,
-        title: 'Todavía no creaste ningún video',
-        sub: 'Generá videos UGC con avatares reales. Listos para TikTok, Reels e Instagram.',
-        cta: 'Crear mi primer video',
-        screen: 'nuevo'
-      },
-      all: {
-        icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>`,
-        title: 'Empezá a crear',
-        sub: 'Tus videos e imágenes generadas con IA van a aparecer acá. Es el momento de hacer el primero.',
-        cta: 'Crear mi primer anuncio',
-        screen: 'nuevo'
-      }
-    };
-    const cfg = configs[histFilter] || configs.all;
-    c.innerHTML = `
-      <div class="hist-empty">
-        <div class="hist-empty-icon">${cfg.icon}</div>
-        <div class="hist-empty-title">${cfg.title}</div>
-        <div class="hist-empty-sub">${cfg.sub}</div>
-        <div class="hist-empty-actions">
-          <button class="btn-w" onclick="showScreen('${cfg.screen}')" style="border-radius:var(--r-sm);">✦ ${cfg.cta}</button>
-          ${histFilter !== 'all' ? `<button class="btn-outline" onclick="setHistFilter('all')" style="border-radius:var(--r-sm);">Ver todas las creaciones</button>` : ''}
-        </div>
-      </div>`;
+    const msg = histFilter === 'image' ? 'Todavía no generaste ninguna imagen.'
+      : histFilter === 'video' ? 'Todavía no generaste ningún video.'
+      : searchVal ? 'Sin resultados para tu búsqueda.'
+      : 'Todavía no generaste ninguna creación.';
+    c.innerHTML = `<div style="color:var(--text2);padding:80px;text-align:center;font-size:14px;">${msg}</div>`;
     return;
   }
 
@@ -8309,7 +8034,7 @@ function renderHistory(){
         data-id="${v.id}" data-idx="${data.indexOf(v)}"
         data-url="${safeUrl}" data-title="${safeTitle}"
         data-is-image="${isImage}" data-dl-fn="${dlFn}"
-        onclick="histCardClick(event,this,${data.indexOf(v)},${done?1:0},'${openFn}','${safeUrl}','${safeTitle}')"
+        onclick="histCardClick(event,this,${data.indexOf(v)},${done},'${openFn}','${safeUrl}','${safeTitle}')"
         draggable="true"
         ondragstart="histDragStart(event,this)"
         ondragend="histDragEnd(event)">
