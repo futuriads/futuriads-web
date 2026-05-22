@@ -6713,42 +6713,20 @@ function openFolder(idx) {
   const folder = folders[idx];
   if (!folder) return;
 
-  const folderItems = JSON.parse(localStorage.getItem(`hist_folder_items_${idx}`) || '[]');
-  const items = historyData.filter(v => folderItems.includes(v.id));
+  currentFolder = idx;
 
-  let modal = document.getElementById('folderViewModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'folderViewModal';
-    modal.className = 'folder-view-modal';
-    modal.onclick = (e) => { if (e.target === modal) closeFolderView(); };
-    modal.innerHTML = `
-      <div class="folder-view-panel">
-        <div class="folder-view-header">
-          <div>
-            <div class="folder-view-title" id="folderViewTitle"></div>
-            <div class="folder-view-count" id="folderViewCount"></div>
-          </div>
-          <button class="folder-view-close" onclick="closeFolderView()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11"/></svg>
-          </button>
-        </div>
-        <div class="folder-view-body" id="folderViewBody"></div>
-      </div>`;
-    document.body.appendChild(modal);
-  }
+  const bc = document.getElementById('histBreadcrumb');
+  if (bc) bc.innerHTML = `
+    <span class="hist-bc-root" onclick="histGoRoot()">Mis creaciones</span>
+    <span class="hist-bc-sep">/</span>
+    <span class="hist-bc-folder">${folder.name}</span>`;
 
-  document.getElementById('folderViewTitle').textContent = folder.name;
-  document.getElementById('folderViewCount').textContent =
-    `${items.length} elemento${items.length !== 1 ? 's' : ''}`;
+  const sub = document.getElementById('histSubLabel');
+  if (sub) sub.textContent = `Contenido de la carpeta "${folder.name}".`;
 
-  renderHistGrid(items, document.getElementById('folderViewBody'));
-  requestAnimationFrame(() => modal.classList.add('open'));
-}
-
-function closeFolderView() {
-  const modal = document.getElementById('folderViewModal');
-  if (modal) modal.classList.remove('open');
+  const c = document.getElementById('histContent');
+  if (c) { c.style.opacity = '0'; setTimeout(() => { renderHistory(); c.style.opacity = '1'; }, 120); }
+  else renderHistory();
 }
 
 function renderHistGrid(items, c) {
@@ -8090,8 +8068,15 @@ function renderHistory(){
   const c = document.getElementById('histContent');
   const searchVal = (document.getElementById('histSearch')?.value || '').toLowerCase();
 
-  // Filtro por tipo
+  // Filtro por carpeta activa
   let data = historyData;
+  if (currentFolder !== null) {
+    const folderItems = JSON.parse(localStorage.getItem(`hist_folder_items_${currentFolder}`) || '[]');
+    const folderSet = new Set(folderItems.map(id => String(id)));
+    data = data.filter(v => folderSet.has(String(v.id)));
+  }
+
+  // Filtro por tipo
   if (histFilter === 'video') data = data.filter(v => (v.type || 'video') === 'video');
   else if (histFilter === 'image') data = data.filter(v => v.type === 'image');
 
