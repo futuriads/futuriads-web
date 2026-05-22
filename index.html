@@ -150,8 +150,14 @@ html.pre-landing #app { display: none !important; }
 /* Grid de anuncios */
 .camp-ads-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+}
+@media (max-width: 1100px) {
+  .camp-ads-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .camp-ads-grid { grid-template-columns: 1fr; }
 }
 .camp-ads-grid.list-view {
   display: flex; flex-direction: column; gap: 8px;
@@ -6505,10 +6511,11 @@ async function campRegenClip(index) {
   await campGenerateOneClipV2(index);
 }
 
-let campViewMode = 'grid';
+let campViewMode = localStorage.getItem('campViewMode') || 'grid';
 
 function campSetView(mode) {
   campViewMode = mode;
+  localStorage.setItem('campViewMode', mode);
   document.getElementById('campBtnGrid')?.classList.toggle('active', mode === 'grid');
   document.getElementById('campBtnList')?.classList.toggle('active', mode === 'list');
   const grid = document.querySelector('.camp-ads-grid');
@@ -6696,7 +6703,15 @@ function showScreen(name, instant){
 
   if(name==='historial') { loadHistory(); loadFolders(); toggleFoldersBar(true); }
   else { toggleFoldersBar(false); }
-  if(name==='campanas'){ campLoadList(); document.getElementById('campView-list').style.display='block'; document.getElementById('campView-wizard').style.display='none'; document.getElementById('campView-generating').style.display='none'; }
+  if(name==='campanas'){
+    // Restaurar botones de vista desde el modo guardado
+    document.getElementById('campBtnGrid')?.classList.toggle('active', campViewMode === 'grid');
+    document.getElementById('campBtnList')?.classList.toggle('active', campViewMode === 'list');
+    campLoadList();
+    document.getElementById('campView-list').style.display='block';
+    document.getElementById('campView-wizard').style.display='none';
+    document.getElementById('campView-generating').style.display='none';
+  }
   if(name==='nueva-imagen') {
     rebuildRatioDropdown();
     rebuildResDropdown();
