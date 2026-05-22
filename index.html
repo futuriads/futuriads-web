@@ -160,7 +160,15 @@ html.pre-landing #app { display: none !important; }
   .camp-ads-grid { grid-template-columns: 1fr; }
 }
 .camp-ads-grid.list-view {
-  display: flex; flex-direction: column; gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+@media (max-width: 1100px) {
+  .camp-ads-grid.list-view { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .camp-ads-grid.list-view { grid-template-columns: 1fr; }
 }
 
 /* Card modo grid */
@@ -205,9 +213,10 @@ html.pre-landing #app { display: none !important; }
 /* Card modo lista */
 .camp-ads-grid.list-view .camp-ad-card { border-radius: 10px; }
 .camp-ads-grid.list-view .camp-ad-thumb { display: none; }
-.camp-ads-grid.list-view .camp-ad-body { padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
-.camp-ads-grid.list-view .camp-ad-title { margin-bottom: 0; flex: 1; font-size: 13px; }
-.camp-ads-grid.list-view .camp-ad-meta { margin-bottom: 0; white-space: nowrap; }
+.camp-ads-grid.list-view .camp-ad-body { padding: 12px 14px 13px; }
+.camp-ads-grid.list-view .camp-ad-title { font-size: 13px; margin-bottom: 4px; }
+.camp-ads-grid.list-view .camp-ad-meta { margin-bottom: 8px; white-space: normal; }
+.camp-ads-grid.list-view .camp-ad-footer { justify-content: space-between; }
 .camp-ads-grid.list-view .camp-ad-footer { gap: 12px; }
 
 /* Estado vacío */
