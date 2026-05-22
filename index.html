@@ -317,44 +317,114 @@ html.pre-landing #app { display: none !important; }
 .sub-style-active { border-color:#fff!important;color:#fff!important; }
 .sub-mode-btn { flex:1;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s; }
 .sub-mode-active { border-color:#fff!important;color:#fff!important; }
+/* ── Clip generation grid ── */
 .camp-clips-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px; margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
 }
 .camp-clip-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-md); overflow: hidden;
-  aspect-ratio: 9/16; position: relative;
-  display: flex; align-items: center; justify-content: center;
+  background: rgba(12, 7, 26, 0.85);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 9/16;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 .camp-clip-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.camp-clip-card.pending { opacity: 0.5; }
-.camp-clip-card.generating { border-color: rgba(234,179,8,0.4); }
-.camp-clip-card.completed { border-color: rgba(34,197,94,0.3); }
-.camp-clip-card.failed { border-color: rgba(239,68,68,0.3); }
+.camp-clip-card.pending {
+  border-color: rgba(139, 92, 246, 0.1);
+  opacity: 0.65;
+}
+.camp-clip-card.generating {
+  border-color: rgba(234, 179, 8, 0.5);
+  box-shadow: 0 0 0 1px rgba(234,179,8,0.12), 0 4px 24px rgba(234,179,8,0.08);
+  animation: camp-gen-glow 2.4s ease-in-out infinite;
+}
+.camp-clip-card.completed {
+  border-color: rgba(139, 92, 246, 0.55);
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.15), 0 4px 24px rgba(139,92,246,0.1);
+}
+.camp-clip-card.failed {
+  border-color: rgba(239, 68, 68, 0.45);
+  box-shadow: 0 0 0 1px rgba(239,68,68,0.1);
+}
+@keyframes camp-gen-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(234,179,8,0.1), 0 4px 20px rgba(234,179,8,0.06); }
+  50%       { box-shadow: 0 0 0 1px rgba(234,179,8,0.2), 0 4px 32px rgba(234,179,8,0.16); }
+}
 .camp-clip-overlay {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; background: rgba(0,0,0,0.5);
+  gap: 12px;
+  background: linear-gradient(160deg, rgba(20,10,45,0.92) 0%, rgba(10,5,25,0.96) 100%);
 }
+/* Large spinner for generating state */
+.camp-clip-spinner-lg {
+  width: 36px; height: 36px;
+  border: 2.5px solid rgba(255,255,255,0.1);
+  border-top-color: rgba(234,179,8,0.85);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+/* Smaller spinner (used elsewhere) */
 .camp-clip-spinner {
-  width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.15);
-  border-top-color: #fff; border-radius: 50%;
+  width: 22px; height: 22px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: #fff;
+  border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.camp-clip-idx {
-  position: absolute; top: 6px; left: 6px;
-  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.6);
-  background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px 6px;
+.camp-clip-status-label {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.02em;
 }
-.camp-clip-regen {
-  position: absolute; bottom: 6px; right: 6px;
-  background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 6px; padding: 4px 8px; font-size: 10px; color: #aaa;
-  cursor: pointer; }
-.camp-clip-card.completed .camp-clip-regen { display: block; }
-.camp-clip-card.failed .camp-clip-regen { display: block; color: #f87171; }
+.camp-clip-queue-icon { font-size: 22px; opacity: 0.35; }
+.camp-clip-fail-icon  { font-size: 28px; opacity: 0.85; }
+.camp-clip-retry-btn {
+  background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px; padding: 5px 14px;
+  font-size: 11px; color: #f87171; cursor: pointer;
+  transition: background 0.15s;
+}
+.camp-clip-retry-btn:hover { background: rgba(239,68,68,0.25); }
+/* Clip number badge */
+.camp-clip-badge {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 11px; font-weight: 800;
+  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  border-radius: 6px; padding: 3px 8px;
+  letter-spacing: 0.02em;
+}
+/* Download + Regen action buttons (hover overlay on completed cards) */
+.camp-clip-actions {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; gap: 6px; padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  opacity: 0; transition: opacity 0.2s;
+  justify-content: flex-end;
+}
+.camp-clip-card.completed:hover .camp-clip-actions { opacity: 1; }
+.camp-clip-action-btn {
+  background: rgba(20,12,40,0.9); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 8px; padding: 5px 10px;
+  font-size: 13px; color: rgba(255,255,255,0.8); cursor: pointer;
+  text-decoration: none; transition: border-color 0.15s, background 0.15s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.camp-clip-action-btn:hover {
+  border-color: rgba(139,92,246,0.6);
+  background: rgba(139,92,246,0.15);
+}
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
   flex: 1; min-width: 200px; background: var(--hover);
@@ -5847,9 +5917,10 @@ async function campAssemble() {
   btn.disabled = true; btn.textContent = 'Ensamblando...';
   document.getElementById('campAssembleStatus').style.display = 'block';
   const subtitleStyle = campGetSubtitleStyle();
+  const isTalking = _camp.videoMode === 'talking';
   document.getElementById('campAssembleMsg').textContent = subtitleStyle
-    ? 'Ensamblando audio + video + subtítulos... Esto puede tardar un minuto.'
-    : 'Ensamblando audio + video... Esto puede tardar un minuto.';
+    ? (isTalking ? 'Ensamblando clips + subtítulos... Esto puede tardar un minuto.' : 'Ensamblando audio + video + subtítulos... Esto puede tardar un minuto.')
+    : (isTalking ? 'Ensamblando clips de video... Esto puede tardar un minuto.' : 'Ensamblando audio + video... Esto puede tardar un minuto.');
   document.getElementById('campFinalVideo').style.display = 'none';
 
   try {
@@ -5859,7 +5930,9 @@ async function campAssemble() {
       body: JSON.stringify({
         campaignId: _camp.campaignId,
         userId: _currentUser.userId,
-        subtitleStyle
+        subtitleStyle,
+        videoMode: _camp.videoMode,
+        chunks: isTalking ? _camp.chunks.map(c => ({ text: c.text, estimatedSeconds: c.estimatedSeconds || 8 })) : undefined
       })
     });
 
@@ -6570,7 +6643,7 @@ function campRenderClipsGrid() {
     const card = document.createElement('div');
     card.className = 'camp-clip-card pending';
     card.id = 'campClip-' + i;
-    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.4);">Esperando...</div></div><div class="camp-clip-idx">' + (i+1) + '</div>';
+    card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-queue-icon">⏳</div><div class="camp-clip-status-label">En cola</div></div><div class="camp-clip-badge">' + (i+1) + '</div>';
     grid.appendChild(card);
   });
 }
@@ -6632,15 +6705,39 @@ async function campUpdateGeneratingView(data) {
 function campUpdateClipCard(index, status, videoUrl) {
   const card = document.getElementById('campClip-' + index);
   if(!card) return;
+  // No re-renderizar cards ya completadas — interrumpiría la reproducción del video
+  if(card.classList.contains('completed') && status === 'completed') return;
   card.className = 'camp-clip-card ' + status;
   if(status === 'generating') {
-    card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-spinner"></div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
+    card.innerHTML =
+      '<div class="camp-clip-overlay">' +
+        '<div class="camp-clip-spinner-lg"></div>' +
+        '<div class="camp-clip-status-label">Generando...</div>' +
+      '</div>' +
+      '<div class="camp-clip-badge">' + (index+1) + '</div>';
   } else if(status === 'completed' && videoUrl) {
-    card.innerHTML = '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (index+1) + '</div><a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a><button class="camp-clip-regen" style="bottom:30px;" onclick="campRegenClip(' + index + ')">↻ Regen</button>';
+    card.innerHTML =
+      '<video src="' + videoUrl + '" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>' +
+      '<div class="camp-clip-badge">' + (index+1) + '</div>' +
+      '<div class="camp-clip-actions">' +
+        '<a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-action-btn" title="Descargar">↓</a>' +
+        '<button class="camp-clip-action-btn" onclick="campRegenClip(' + index + ')" title="Regenerar">↻</button>' +
+      '</div>';
   } else if(status === 'failed') {
-    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (index+1) + '</div><button class="camp-clip-regen" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>';
+    card.innerHTML =
+      '<div class="camp-clip-overlay">' +
+        '<div class="camp-clip-fail-icon">✕</div>' +
+        '<div class="camp-clip-status-label" style="color:#f87171;">Falló</div>' +
+        '<button class="camp-clip-retry-btn" onclick="campRegenClip(' + index + ')">↻ Reintentar</button>' +
+      '</div>' +
+      '<div class="camp-clip-badge">' + (index+1) + '</div>';
   } else if(status === 'pending') {
-    card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.3);">En cola</div></div><div class="camp-clip-idx">' + (index+1) + '</div>';
+    card.innerHTML =
+      '<div class="camp-clip-overlay">' +
+        '<div class="camp-clip-queue-icon">⏳</div>' +
+        '<div class="camp-clip-status-label">En cola</div>' +
+      '</div>' +
+      '<div class="camp-clip-badge">' + (index+1) + '</div>';
   }
 }
 
@@ -6923,11 +7020,26 @@ async function campOpenDetail(campaignId, title) {
       card.id = 'campClip-' + clip.clip_index;
       
       if(clip.status === 'completed' && clip.video_url) {
-        card.innerHTML = '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;"></video><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div><a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-regen" style="text-decoration:none;">↓ Descargar</a>';
+        card.innerHTML =
+          '<video src="' + clip.video_url + '" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>' +
+          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>' +
+          '<div class="camp-clip-actions">' +
+            '<a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-action-btn" title="Descargar">↓</a>' +
+          '</div>';
       } else if(clip.status === 'failed') {
-        card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:20px;">✕</div><div style="font-size:11px;color:#f87171;">Falló</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
+        card.innerHTML =
+          '<div class="camp-clip-overlay">' +
+            '<div class="camp-clip-fail-icon">✕</div>' +
+            '<div class="camp-clip-status-label" style="color:#f87171;">Falló</div>' +
+          '</div>' +
+          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>';
       } else {
-        card.innerHTML = '<div class="camp-clip-overlay"><div style="font-size:11px;color:rgba(255,255,255,0.3);">' + clip.status + '</div></div><div class="camp-clip-idx">' + (clip.clip_index+1) + '</div>';
+        card.innerHTML =
+          '<div class="camp-clip-overlay">' +
+            '<div class="camp-clip-queue-icon">⏳</div>' +
+            '<div class="camp-clip-status-label">' + clip.status + '</div>' +
+          '</div>' +
+          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>';
       }
       grid.appendChild(card);
     });
