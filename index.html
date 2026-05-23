@@ -222,6 +222,30 @@ html.pre-landing #app { display: none !important; }
 }
 .camp-ad-meta { font-size: 10px; color: var(--text2); line-height: 1.4; }
 
+/* ── Vista lista (horizontal compact) ── */
+.camp-ads-grid.list-view {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.camp-ads-grid.list-view .camp-ad-card {
+  flex-direction: row;
+  border-radius: 10px;
+  transform: none !important;
+}
+.camp-ads-grid.list-view .camp-ad-card:hover { transform: none !important; }
+.camp-ads-grid.list-view .camp-ad-thumb {
+  width: 56px; height: 56px; aspect-ratio: unset;
+  flex-shrink: 0; border-radius: 8px;
+  margin: 8px 0 8px 8px;
+}
+.camp-ads-grid.list-view .camp-ad-thumb-placeholder { border-radius: 8px; }
+.camp-ads-grid.list-view .camp-ad-status-badge { font-size: 8px; padding: 2px 6px; top: 4px; left: 4px; }
+.camp-ads-grid.list-view .camp-ad-delete { top: 50%; right: 10px; transform: translateY(-50%); opacity: 0; }
+.camp-ads-grid.list-view .camp-ad-card:hover .camp-ad-delete { opacity: 1; }
+.camp-ads-grid.list-view .camp-ad-body { padding: 10px 40px 10px 12px; display: flex; flex-direction: column; justify-content: center; }
+.camp-ads-grid.list-view .camp-ad-title { font-size: 13px; white-space: normal; }
+.camp-ads-grid.list-view .camp-ad-meta { margin-top: 2px; }
+
 /* Mantener compatibilidad con badge antiguo (por si queda algún ref) */
 .camp-ad-status {
   font-size: 10px; font-weight: 700; padding: 3px 10px;
@@ -2770,7 +2794,7 @@ body, #app { background: #07050f; }
 /* ---- Botón SELECCIONAR — flotante fijo ---- */
 .hist-sel-float {
   position: fixed;
-  bottom: calc(90px + 24px + 16px); /* encima del dock */
+  bottom: 32px;
   right: 32px;
   z-index: 8800;
   display: flex; align-items: center; gap: 7px;
@@ -7549,7 +7573,7 @@ async function campLoadList() {
       </div>`;
     }).join('');
 
-    container.innerHTML = `<div class="camp-ads-grid">${cards}</div>`;
+    container.innerHTML = `<div class="camp-ads-grid${campViewMode === 'list' ? ' list-view' : ''}">${cards}</div>`;
   } catch(e){ console.error('Error cargando anuncios:', e); }
 }
 
@@ -9458,55 +9482,130 @@ function downloadImageFile(url, name){
   a.click();
 }
 
-function openImageModal(url, title){
-  let modal = document.getElementById('imageModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'imageModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:32px;';
-    modal.onclick = (e) => { if(e.target===modal) modal.style.display='none'; };
-    modal.innerHTML = `
-      <div style="display:flex;align-items:flex-start;gap:20px;max-height:90vh;max-width:1100px;width:100%;" onclick="event.stopPropagation()">
-        <div style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;align-items:flex-start;">
-          <img id="imageModalImg" src="" alt="" style="max-width:100%;max-height:78vh;border-radius:12px;display:block;" />
-          <div style="display:flex;gap:10px;">
-            <button class="btn-w" id="imageModalDl" style="font-size:13px;">Descargar imagen</button>
-            <button class="btn-outline" onclick="document.getElementById('imageModal').style.display='none'" style="border-radius:8px;font-size:13px;">Cerrar</button>
-          </div>
-        </div>
-        <div id="imageModalInfo" style="width:248px;flex-shrink:0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;overflow-y:auto;max-height:86vh;"></div>
-      </div>`;
-    document.body.appendChild(modal);
-  }
-  const img = document.getElementById('imageModalImg');
-  img.src = url;
-  document.getElementById('imageModalDl').onclick = () => downloadImageFile(url, title);
+function openImageModal(url, title) {
+  // Siempre reconstruir para mantener diseño limpio
+  const old = document.getElementById('imageModal');
+  if (old) old.remove();
 
   const item = historyData.find(v => v.video_url === url);
-  const info = document.getElementById('imageModalInfo');
-  if (item && info) {
-    const mlabel = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
-    const fmt = d => new Date(d).toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+  const mlabel = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
+  const fmt = d => new Date(d).toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+
+  let infoHtml = '';
+  let itemId = '';
+  let currentName = title || '';
+  if (item) {
+    itemId = item.id || '';
+    currentName = item.actor || title || mlabel(item.model) || '';
     const rows = [
       ['Modelo',     mlabel(item.model)],
       ['Ratio',      item.aspect_ratio],
-      ['Resolucion', item.resolution || '2K'],
+      ['Resolución', item.resolution || '2K'],
       ['Creado',     item.created_at ? fmt(item.created_at) : null],
     ].filter(([,v]) => v);
-    info.style.display = '';
-    info.innerHTML = `
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">Configuracion</div>
-      ${item.script ? `<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);">${item.script}</div>` : ''}
-      ${rows.map(([label, val]) => `
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-          <span style="font-size:11px;color:rgba(255,255,255,0.35);">${label}</span>
-          <span style="font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;">${val}</span>
-        </div>`).join('')}`;
-  } else if (info) {
-    info.style.display = 'none';
+    infoHtml = `
+      <div style="padding:22px 20px 20px;">
+        <div style="font-size:9px;font-weight:700;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Configuración</div>
+        <div style="margin-bottom:14px;">
+          <div id="imNameDisplay" style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="imStartRename('${String(itemId).replace(/'/g,'')}')">
+            <div style="font-size:15px;font-weight:700;color:#f0ecff;line-height:1.25;flex:1;">${currentName || '—'}</div>
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="rgba(167,139,250,0.5)" stroke-width="1.5" stroke-linecap="round" style="flex-shrink:0"><path d="M9 1.5l2.5 2.5L4 11.5H1.5V9L9 1.5z"/><path d="M7.5 3l2.5 2.5"/></svg>
+          </div>
+          <div id="imNameEdit" style="display:none;">
+            <input id="imNameInput" type="text" value="${(currentName||'').replace(/"/g,'&quot;')}"
+              style="width:100%;background:rgba(109,40,217,0.12);border:1px solid rgba(139,92,246,0.4);border-radius:8px;
+                     padding:7px 10px;font-size:14px;font-weight:600;color:#f0ecff;outline:none;margin-bottom:6px;"
+              onkeydown="if(event.key==='Enter')imSaveRename('${itemId}');if(event.key==='Escape')imCancelRename();">
+            <div style="display:flex;gap:6px;">
+              <button onclick="imSaveRename('${itemId}')"
+                style="flex:1;padding:5px 10px;font-size:11px;font-weight:600;background:rgba(109,40,217,0.4);
+                       border:1px solid rgba(139,92,246,0.4);border-radius:6px;color:#e0d4ff;cursor:pointer;">Guardar</button>
+              <button onclick="imCancelRename()"
+                style="padding:5px 10px;font-size:11px;font-weight:600;background:transparent;
+                       border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:rgba(255,255,255,0.4);cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        ${item.script ? `<div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.65;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">${item.script}</div>` : ''}
+        ${rows.map(([label, val]) => `
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:10px;color:rgba(167,139,250,0.45);">${label}</span>
+            <span style="font-size:11px;color:rgba(240,236,255,0.85);font-weight:600;">${val}</span>
+          </div>`).join('')}
+      </div>`;
   }
 
-  modal.style.display = 'flex';
+  const modal = document.createElement('div');
+  modal.id = 'imageModal';
+  modal.style.cssText = `
+    position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:rgba(8,4,20,0.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    padding:20px;animation:vm-in 0.22s ease;
+  `;
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div onclick="event.stopPropagation()" style="
+      display:flex;align-items:stretch;max-height:92vh;max-width:960px;width:100%;
+      border-radius:18px;overflow:hidden;
+      border:1px solid rgba(109,40,217,0.35);
+      box-shadow:0 0 0 1px rgba(109,40,217,0.15), 0 32px 80px rgba(0,0,0,0.7);
+    ">
+      <!-- Panel izquierdo: imagen + controles -->
+      <div style="display:flex;flex-direction:column;background:#05020f;flex:1;min-width:0;">
+        <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <img id="imageModalImg" src="" alt=""
+            style="max-width:100%;max-height:100%;display:block;object-fit:contain;">
+        </div>
+        <div style="padding:12px 14px;display:flex;gap:8px;background:#07041a;border-top:1px solid rgba(109,40,217,0.2);flex-shrink:0;">
+          <button id="imageModalDl"
+            style="flex:1;padding:9px 14px;font-size:12px;font-weight:600;border-radius:9px;cursor:pointer;
+                   background:rgba(109,40,217,0.25);border:1px solid rgba(139,92,246,0.4);color:#e0d4ff;
+                   transition:background 0.15s;">↓ Descargar</button>
+          <button onclick="document.getElementById('imageModal').remove()"
+            style="padding:9px 16px;font-size:12px;font-weight:600;border-radius:9px;cursor:pointer;
+                   background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);
+                   transition:all 0.15s;">Cerrar</button>
+        </div>
+      </div>
+      <!-- Panel derecho: config -->
+      <div style="
+        width:240px;flex-shrink:0;background:#07041a;
+        border-left:1px solid rgba(109,40,217,0.25);
+        overflow-y:auto;
+      ">${infoHtml || '<div style="padding:20px;font-size:12px;color:rgba(255,255,255,0.3);">Sin información</div>'}</div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  modal.querySelector('#imageModalImg').src = url;
+  modal.querySelector('#imageModalDl').onclick = () => downloadImageFile(url, currentName);
+}
+
+function imStartRename(id) {
+  document.getElementById('imNameDisplay').style.display = 'none';
+  document.getElementById('imNameEdit').style.display = 'block';
+  const inp = document.getElementById('imNameInput');
+  inp.focus(); inp.select();
+}
+function imCancelRename() {
+  document.getElementById('imNameDisplay').style.display = 'flex';
+  document.getElementById('imNameEdit').style.display = 'none';
+}
+async function imSaveRename(id) {
+  const input = document.getElementById('imNameInput');
+  const newName = input.value.trim();
+  if (!newName) return;
+  try {
+    await supa.from('videos').update({ actor: newName }).eq('id', id);
+    const idx = historyData.findIndex(v => String(v.id) === String(id));
+    if (idx >= 0) historyData[idx].actor = newName;
+    renderHistory();
+    const display = document.getElementById('imNameDisplay');
+    if (display) display.querySelector('div').textContent = newName;
+    imCancelRename();
+    showToast('Nombre actualizado');
+  } catch(e) {
+    showToast('Error al guardar: ' + e.message);
+  }
 }
 
 function downloadVideo(url, name){
@@ -10012,9 +10111,9 @@ function openVideoModal(url, actor) {
     </div>
     <style>@keyframes vm-in{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}</style>`;
 
-  document.getElementById('videoModalPlayer').src = url;
-  document.getElementById('videoModalDl').onclick = () => downloadVideo(url, currentName);
   document.body.appendChild(modal);
+  modal.querySelector('#videoModalPlayer').src = url;
+  modal.querySelector('#videoModalDl').onclick = () => downloadVideo(url, currentName);
 }
 
 function vmStartRename(id) {
