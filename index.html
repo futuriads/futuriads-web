@@ -522,6 +522,18 @@ html.pre-landing #app { display: none !important; }
 .vp-final-wrap.landscape { max-width: 100%; }
 .vp-final-wrap.square    { max-width: 400px; margin-left: auto; margin-right: auto; }
 
+/* ZapCap template picker */
+.zapcap-tpl {
+  padding: 8px;
+  border: 1.5px solid rgba(109,40,217,0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  background: rgba(109,40,217,0.04);
+}
+.zapcap-tpl:hover   { border-color: rgba(109,40,217,0.5); background: rgba(109,40,217,0.1); }
+.zapcap-tpl.selected { border-color: #6d28d9; background: rgba(109,40,217,0.18); box-shadow: 0 0 0 1px rgba(109,40,217,0.4); }
+
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
   flex: 1; min-width: 200px; background: var(--hover);
@@ -4954,6 +4966,68 @@ body, #app { background: #07050f; }
               </div>
             </div>
           </div>
+
+          <!-- ZapCap: Subtítulos automáticos -->
+          <div id="campZapcapSection" style="display:none;margin-top:20px;">
+            <div style="background:rgba(12,7,26,0.85);border:1px solid rgba(109,40,217,0.3);border-radius:16px;padding:20px;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;">
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:7px;">
+                    <span style="background:linear-gradient(135deg,#6d28d9,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:16px;">✦</span>
+                    Subtítulos automáticos con IA
+                  </div>
+                  <div style="font-size:12px;color:var(--text2);margin-top:3px;">ZapCap transcribe y anima los subtítulos directamente sobre tu video.</div>
+                </div>
+                <div style="flex-shrink:0;text-align:right;">
+                  <div style="font-size:18px;font-weight:800;color:var(--text1);" id="campZapcapCreditsNum">—</div>
+                  <div style="font-size:10px;color:var(--text2);margin-top:-1px;">créditos</div>
+                </div>
+              </div>
+
+              <!-- Template picker -->
+              <div>
+                <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Estilo de subtítulo</div>
+                <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:230px;overflow-y:auto;padding-right:2px;">
+                  <div style="grid-column:1/-1;text-align:center;padding:20px 0;font-size:12px;color:var(--text2);">Cargando estilos...</div>
+                </div>
+              </div>
+
+              <!-- Toggles -->
+              <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;">
+                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
+                  <input type="checkbox" id="campZapcapEmoji" style="accent-color:#6d28d9;width:14px;height:14px;"> Emojis
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
+                  <input type="checkbox" id="campZapcapAnim" checked style="accent-color:#6d28d9;width:14px;height:14px;"> Animación
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
+                  <input type="checkbox" id="campZapcapKeywords" checked style="accent-color:#6d28d9;width:14px;height:14px;"> Destacar palabras clave
+                </label>
+              </div>
+
+              <!-- Botón principal -->
+              <div style="margin-top:16px;">
+                <button id="campZapcapBtn" onclick="campZapcapStart()" class="btn-w" style="width:100%;font-size:13px;padding:11px 16px;">
+                  Generar subtítulos
+                </button>
+              </div>
+
+              <!-- Progreso shimmer -->
+              <div id="campZapcapProgress" style="display:none;margin-top:14px;">
+                <div style="height:3px;border-radius:2px;background:rgba(109,40,217,0.15);overflow:hidden;">
+                  <div style="height:100%;width:100%;background:linear-gradient(90deg,#6d28d9,#9333ea,#6d28d9);background-size:200% 100%;animation:transcribe-shimmer 1.5s linear infinite;"></div>
+                </div>
+                <div style="font-size:12px;color:var(--text2);margin-top:10px;text-align:center;">Procesando subtítulos... puede tardar 1-2 minutos.</div>
+              </div>
+
+              <!-- Éxito -->
+              <div id="campZapcapSuccess" style="display:none;margin-top:14px;padding:12px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;">
+                <div style="font-size:13px;font-weight:600;color:#10b981;">✓ Subtítulos listos</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:2px;">El player y el botón de descarga se actualizaron con el video subtitulado.</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div><!-- /campView-generating -->
 
@@ -6093,10 +6167,17 @@ async function campAssemble() {
     vid.addEventListener('timeupdate', () => vpFullTick('campFinalPlayer','campFinalFill','campFinalTime'));
     vid.addEventListener('play',  () => document.getElementById('campFinalVP').classList.add('playing'));
     vid.addEventListener('pause', () => document.getElementById('campFinalVP').classList.remove('playing'));
+    vid.addEventListener('loadedmetadata', () => {
+      _camp.finalVideoDuration = vid.duration;
+      campZapcapUpdateCost();
+    });
     document.getElementById('campFinalVP').querySelector('.vp-full-btn').textContent = '▶';
 
     btn.textContent = 'Video ensamblado';
     showToast('Video final listo');
+
+    // Mostrar sección de subtítulos ZapCap
+    campZapcapLoad();
 
   } catch (e) {
     console.error('Error ensamblando:', e);
@@ -6107,8 +6188,155 @@ async function campAssemble() {
   }
 }
 
+// =============================================
+// ZAPCAP - Subtítulos automáticos
+// =============================================
+let _zapcapTemplates        = [];
+let _zapcapSelectedTemplate = null;
+let _zapcapPollingInterval  = null;
+
+async function campZapcapLoad() {
+  const section = document.getElementById('campZapcapSection');
+  if (!section) return;
+  section.style.display = 'block';
+
+  // Mostrar costo estimado (puede actualizarse después cuando el video carga metadata)
+  campZapcapUpdateCost();
+
+  // Cargar templates desde backend
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/zapcap/templates');
+    const data = await resp.json();
+    _zapcapTemplates = Array.isArray(data.templates) ? data.templates : [];
+    campZapcapRenderTemplates();
+  } catch (e) {
+    const c = document.getElementById('campZapcapTemplates');
+    if (c) c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;font-size:12px;color:var(--text2);">No se pudieron cargar los estilos. Intentá de nuevo.</div>';
+  }
+}
+
+function campZapcapUpdateCost() {
+  const vid = document.getElementById('campFinalPlayer');
+  const dur = (vid && vid.duration && isFinite(vid.duration)) ? vid.duration : (_camp.finalVideoDuration || 60);
+  const credits = Math.ceil(dur / 60 * 200);
+  const numEl = document.getElementById('campZapcapCreditsNum');
+  if (numEl) numEl.textContent = credits;
+  const btn = document.getElementById('campZapcapBtn');
+  if (btn && !btn.disabled) btn.textContent = `Generar subtítulos · ${credits} créditos`;
+  return credits;
+}
+
+function campZapcapRenderTemplates() {
+  const container = document.getElementById('campZapcapTemplates');
+  if (!container) return;
+  if (!_zapcapTemplates.length) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;font-size:12px;color:var(--text2);">No hay estilos disponibles.</div>';
+    return;
+  }
+  _zapcapSelectedTemplate = _zapcapTemplates[0].id;
+  container.innerHTML = _zapcapTemplates.map((t, i) => {
+    const thumb = t.thumbnail || t.previewUrl || t.preview_url || t.preview || '';
+    const name  = t.name || t.id;
+    return `<div class="zapcap-tpl${i === 0 ? ' selected' : ''}" onclick="campZapcapSelectTemplate('${t.id}',this)" title="${name}">
+      ${thumb
+        ? `<img src="${thumb}" style="width:100%;height:68px;object-fit:cover;border-radius:6px;margin-bottom:6px;" loading="lazy">`
+        : `<div style="width:100%;height:68px;background:rgba(109,40,217,0.12);border-radius:6px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.7);">Aa</div>`}
+      <div style="font-size:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);">${name}</div>
+    </div>`;
+  }).join('');
+}
+
+function campZapcapSelectTemplate(id, el) {
+  _zapcapSelectedTemplate = id;
+  document.querySelectorAll('.zapcap-tpl').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function campZapcapStart() {
+  if (!_zapcapSelectedTemplate) { showToast('Seleccioná un estilo primero'); return; }
+  if (!_camp.campaignId)        { showToast('No hay campaña activa'); return; }
+
+  const vid      = document.getElementById('campFinalPlayer');
+  const dur      = (vid && vid.duration && isFinite(vid.duration)) ? vid.duration : (_camp.finalVideoDuration || 60);
+  const credits  = Math.ceil(dur / 60 * 200);
+  const emoji    = document.getElementById('campZapcapEmoji').checked;
+  const animation    = document.getElementById('campZapcapAnim').checked;
+  const emphasizeKeywords = document.getElementById('campZapcapKeywords').checked;
+
+  const btn = document.getElementById('campZapcapBtn');
+  btn.disabled = true;
+  document.getElementById('campZapcapProgress').style.display = 'block';
+  document.getElementById('campZapcapSuccess').style.display  = 'none';
+
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/zapcap/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        userId:     _currentUser.userId,
+        templateId: _zapcapSelectedTemplate,
+        emoji, animation, emphasizeKeywords,
+        videoDuration: dur
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Error iniciando subtítulos');
+
+    showToast(`✦ Procesando subtítulos · ${data.creditsDeducted} créditos usados`);
+    campZapcapPoll(data.zapcapVideoId, data.zapcapTaskId);
+
+  } catch (e) {
+    showToast('Error: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = `Generar subtítulos · ${credits} créditos`;
+    document.getElementById('campZapcapProgress').style.display = 'none';
+  }
+}
+
+function campZapcapPoll(videoId, taskId) {
+  if (_zapcapPollingInterval) clearInterval(_zapcapPollingInterval);
+  _zapcapPollingInterval = setInterval(async () => {
+    try {
+      const resp = await fetch(`${BACKEND_URL}/api/campaign/zapcap/status?videoId=${videoId}&taskId=${taskId}`);
+      const data = await resp.json();
+      if (data.status === 'completed' && data.downloadUrl) {
+        clearInterval(_zapcapPollingInterval);
+        _zapcapPollingInterval = null;
+        campZapcapDone(data.downloadUrl);
+      } else if (data.status === 'failed') {
+        clearInterval(_zapcapPollingInterval);
+        _zapcapPollingInterval = null;
+        showToast('Error: ZapCap no pudo procesar el video');
+        document.getElementById('campZapcapBtn').disabled = false;
+        campZapcapUpdateCost();
+        document.getElementById('campZapcapProgress').style.display = 'none';
+      }
+    } catch (e) {
+      console.warn('[zapcap poll]', e.message);
+    }
+  }, 6000);
+}
+
+function campZapcapDone(downloadUrl) {
+  // Actualizar player con video subtitulado
+  const vid = document.getElementById('campFinalPlayer');
+  if (vid) { vid.src = downloadUrl; }
+  const dl = document.getElementById('campFinalDownload');
+  if (dl)  { dl.href = downloadUrl; dl.download = 'creativo-subtitulado.mp4'; }
+
+  document.getElementById('campZapcapProgress').style.display = 'none';
+  document.getElementById('campZapcapSuccess').style.display  = 'block';
+
+  const btn = document.getElementById('campZapcapBtn');
+  btn.disabled    = false;
+  btn.textContent = '↺ Regenerar subtítulos';
+  showToast('✦ Subtítulos listos');
+}
+
 function campBackToList() {
-  if (_camp.pollingInterval){ clearInterval(_camp.pollingInterval); _camp.pollingInterval = null; }
+  if (_camp.pollingInterval)   { clearInterval(_camp.pollingInterval);   _camp.pollingInterval   = null; }
+  if (_zapcapPollingInterval)  { clearInterval(_zapcapPollingInterval);  _zapcapPollingInterval  = null; }
   document.getElementById('campView-list').style.display = 'block';
   document.getElementById('campView-wizard').style.display = 'none';
   document.getElementById('campView-generating').style.display = 'none';
