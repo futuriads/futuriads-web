@@ -241,19 +241,21 @@ html.pre-landing #app { display: none !important; }
 .camp-ads-grid.list-view .camp-grid-only { display: none !important; }
 .camp-ads-grid.list-view .camp-list-only { display: flex; }
 
-/* List-view: body en fila con texto a la izq y acciones a la der */
+/* List-view: body en fila — thumbnail | texto | acciones */
 .camp-ads-grid.list-view .camp-ad-body {
-  display: flex; flex-direction: row; align-items: center;
+  display: flex; flex-direction: row; align-items: stretch;
   padding: 8px 10px 8px 12px; gap: 8px;
 }
-.camp-ad-body-text { flex: 1; min-width: 0; }
+.camp-ad-body-text { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
 
-/* Columna de acciones derecha (list view) */
+/* Columna de acciones — estado arriba, eliminar abajo, pegada a la derecha */
 .camp-list-actions {
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
   flex-shrink: 0;
+  padding: 2px 0;
+  min-width: 60px;
 }
 .camp-ad-delete-inline {
   width: 24px; height: 24px; border-radius: 6px; border: none;
@@ -7607,10 +7609,10 @@ async function campLoadList() {
             <div class="camp-ad-title">${c.title || 'Sin título'}</div>
             <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
           </div>
-          <!-- Acciones derecha — solo en list view -->
+          <!-- Acciones derecha — solo en list view: estado arriba, eliminar abajo -->
           <div class="camp-list-actions camp-list-only">
-            <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
             <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
+            <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
           </div>
         </div>
       </div>`;
