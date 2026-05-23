@@ -233,6 +233,27 @@ html.pre-landing #app { display: none !important; }
 @media (max-width: 600px) {
   .camp-ads-grid.list-view { grid-template-columns: 1fr; }
 }
+
+/* Elementos exclusivos de cada modo */
+.camp-grid-only { /* visible en grid, oculto en list */ }
+.camp-list-only { display: none; /* oculto en grid, visible en list */ }
+
+.camp-ads-grid.list-view .camp-grid-only { display: none !important; }
+.camp-ads-grid.list-view .camp-list-only { display: flex; }
+
+/* Footer de list-view: badge + botón eliminar en el card body */
+.camp-list-footer {
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.camp-ad-delete-inline {
+  width: 22px; height: 22px; border-radius: 6px; border: none;
+  background: transparent; color: rgba(255,255,255,0.35);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s; flex-shrink: 0;
+}
+.camp-ad-delete-inline:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
 .camp-ads-grid.list-view .camp-ad-card {
   flex-direction: row;
   border-radius: 10px;
@@ -7558,23 +7579,28 @@ async function campLoadList() {
       const sLabel    = statusLabel(c.status);
       const isReady   = (c.status === 'assembled' || c.status === 'completed') && c.final_video_url;
 
-      // Thumbnail: video preview si está listo, sino placeholder con gradiente
+      // Thumbnail: video preview si está listo, sino placeholder solo con ícono (sin texto)
       const thumb = isReady
         ? `<video src="${c.final_video_url.replace(/'/g,'')}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
         : `<div class="camp-ad-thumb-placeholder">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg>
-            <span>En progreso</span>
           </div>`;
 
       return `<div class="camp-ad-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
         <div class="camp-ad-thumb">
           ${thumb}
-          <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
-          <button class="camp-ad-delete" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+          <!-- Badge y delete en grid view (sobre la imagen) -->
+          <span class="camp-ad-status-badge ${sClass} camp-grid-only">${sLabel}</span>
+          <button class="camp-ad-delete camp-grid-only" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
         </div>
         <div class="camp-ad-body">
           <div class="camp-ad-title">${c.title || 'Sin título'}</div>
           <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
+          <!-- Badge y delete en list view (dentro del card) -->
+          <div class="camp-list-footer camp-list-only">
+            <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
+            <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+          </div>
         </div>
       </div>`;
     }).join('');
