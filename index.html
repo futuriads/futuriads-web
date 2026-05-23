@@ -362,6 +362,42 @@ html.pre-landing #app { display: none !important; }
   0%   { background-position: 200% center; }
   100% { background-position: -200% center; }
 }
+/* ── Skeleton loading ── */
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.sk {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.6s ease-in-out infinite;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+/* Card skeleton para campaign list */
+.sk-camp-card {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+/* Card skeleton para historial (aspect-ratio 9/16) */
+.sk-hist-card {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 9/16;
+  position: relative;
+}
+}
 .camp-clip-overlay {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1708,9 +1744,9 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 /* Skeleton */
 .dash-tip-skeleton {
   height: 70px; border-radius: 8px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.05) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
+  animation: sk-shimmer 1.6s ease-in-out infinite;
 }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
@@ -2482,7 +2518,7 @@ body, #app { background: #07050f; }
   background: #fff; color: #000; border-color: #fff; font-weight: 600;
 }
 .hist-sort-wrap { display: flex; align-items: center; gap: 8px; position: relative; }
-#histContent { transition: opacity 0.15s ease; }
+#histContent, #campListContainer { transition: opacity 0.2s ease; }
 /* Dropdown sort — estilo custom */
 .hist-sort {
   appearance: none; -webkit-appearance: none;
@@ -4202,9 +4238,9 @@ body, #app { background: #07050f; }
             <button class="dash-tips-more" onclick="showScreen('historial')">Ver todos</button>
           </div>
           <div class="dash-recent-list" id="dashRecentList">
-            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;"></div>
-            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;margin-top:6px;"></div>
-            <div class="dash-tip-skeleton" style="height:72px;border-radius:10px;margin-top:6px;"></div>
+            <div class="sk" style="height:72px;border-radius:10px;"></div>
+            <div class="sk" style="height:72px;border-radius:10px;margin-top:6px;"></div>
+            <div class="sk" style="height:72px;border-radius:10px;margin-top:6px;"></div>
           </div>
         </div>
 
@@ -4826,7 +4862,7 @@ body, #app { background: #07050f; }
               <div>
                 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Estilo de subtítulo</div>
                 <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:280px;overflow-y:auto;padding-right:4px;">
-                  <div style="grid-column:1/-1;text-align:center;padding:20px 0;font-size:12px;color:var(--text2);">Cargando estilos...</div>
+                  ${Array.from({length:6},()=>`<div style="border-radius:10px;border:1.5px solid rgba(109,40,217,0.15);padding:8px;"><div class="sk" style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;"></div><div class="sk" style="height:10px;width:70%;margin:0 auto;"></div></div>`).join('')}
                 </div>
               </div>
 
@@ -5315,11 +5351,42 @@ const supa = {
 
 const BACKEND_URL = 'https://futuriads-backend-production.up.railway.app';
 
+// ─── Skeleton generators ───────────────────────────────────────────
+function skCampCards(n = 6) {
+  return Array.from({ length: n }, () => `
+    <div class="sk-camp-card">
+      <div class="sk" style="width:100%;aspect-ratio:16/9;border-radius:10px;"></div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:2px 0;">
+        <div class="sk" style="height:14px;width:65%;"></div>
+        <div class="sk" style="height:11px;width:40%;"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="sk" style="height:28px;flex:1;border-radius:8px;"></div>
+        <div class="sk" style="height:28px;width:60px;border-radius:8px;"></div>
+      </div>
+    </div>`).join('');
+}
+
+function skHistCards(n = 8) {
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:16px 0;">
+    ${Array.from({ length: n }, () => `<div class="sk-hist-card"><div class="sk" style="position:absolute;inset:0;border-radius:14px;"></div></div>`).join('')}
+  </div>`;
+}
+
+function skLines(widths) {
+  return widths.map(w => `<div class="sk" style="height:13px;width:${w};margin-bottom:6px;"></div>`).join('');
+}
+
+function skMetric() {
+  return `<div class="sk" style="height:28px;width:80px;border-radius:8px;margin-bottom:6px;"></div>
+          <div class="sk" style="height:11px;width:55px;"></div>`;
+}
+
 
 async function loadHistory() {
   const container = document.getElementById('histContent');
   if (!container) return;
-  container.innerHTML = '<div style="color:#888;padding:40px;text-align:center;">Cargando creaciones...</div>';
+  container.innerHTML = skHistCards(12);
   try {
     const { data, error } = await supa.from('videos').select('*').order('created_at', { ascending: false });
     if (error) throw error;
@@ -7295,6 +7362,10 @@ async function campLoadList() {
   if(!_currentUser) return;
   const container = document.getElementById('campListContainer');
   if(!container) return;
+
+  // Skeleton inmediato mientras carga
+  container.innerHTML = `<div class="camp-ads-grid">${skCampCards(6)}</div>`;
+
   try {
     const resp = await fetch(BACKEND_URL + '/api/campaign/list', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
