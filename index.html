@@ -236,22 +236,30 @@ html.pre-landing #app { display: none !important; }
 
 /* Elementos exclusivos de cada modo */
 .camp-grid-only { /* visible en grid, oculto en list */ }
-.camp-list-only { display: none; /* oculto en grid, visible en list */ }
+.camp-list-only { display: none; }
 
 .camp-ads-grid.list-view .camp-grid-only { display: none !important; }
 .camp-ads-grid.list-view .camp-list-only { display: flex; }
 
-/* Footer de list-view: badge + botón eliminar en el card body */
-.camp-list-footer {
+/* List-view: body en fila con texto a la izq y acciones a la der */
+.camp-ads-grid.list-view .camp-ad-body {
+  display: flex; flex-direction: row; align-items: center;
+  padding: 8px 10px 8px 12px; gap: 8px;
+}
+.camp-ad-body-text { flex: 1; min-width: 0; }
+
+/* Columna de acciones derecha (list view) */
+.camp-list-actions {
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 6px;
+  gap: 5px;
+  flex-shrink: 0;
 }
 .camp-ad-delete-inline {
-  width: 22px; height: 22px; border-radius: 6px; border: none;
-  background: transparent; color: rgba(255,255,255,0.35);
+  width: 24px; height: 24px; border-radius: 6px; border: none;
+  background: transparent; color: rgba(255,255,255,0.3);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
 }
 .camp-ad-delete-inline:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
 .camp-ads-grid.list-view .camp-ad-card {
@@ -2821,7 +2829,7 @@ body, #app { background: #07050f; }
 /* ---- Botón SELECCIONAR — flotante fijo ---- */
 .hist-sel-float {
   position: fixed;
-  bottom: 32px;
+  bottom: calc(24px + 80px + 12px); /* encima del dock de carpetas (80px alto, 24px desde abajo) */
   right: 32px;
   z-index: 8800;
   display: flex; align-items: center; gap: 7px;
@@ -7589,17 +7597,20 @@ async function campLoadList() {
       return `<div class="camp-ad-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
         <div class="camp-ad-thumb">
           ${thumb}
-          <!-- Badge y delete en grid view (sobre la imagen) -->
+          <!-- Badge y delete flotantes en grid view -->
           <span class="camp-ad-status-badge ${sClass} camp-grid-only">${sLabel}</span>
           <button class="camp-ad-delete camp-grid-only" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
         </div>
         <div class="camp-ad-body">
-          <div class="camp-ad-title">${c.title || 'Sin título'}</div>
-          <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
-          <!-- Badge y delete en list view (dentro del card) -->
-          <div class="camp-list-footer camp-list-only">
-            <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
+          <!-- Texto izquierda -->
+          <div class="camp-ad-body-text">
+            <div class="camp-ad-title">${c.title || 'Sin título'}</div>
+            <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
+          </div>
+          <!-- Acciones derecha — solo en list view -->
+          <div class="camp-list-actions camp-list-only">
             <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+            <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
           </div>
         </div>
       </div>`;
