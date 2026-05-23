@@ -222,10 +222,16 @@ html.pre-landing #app { display: none !important; }
 }
 .camp-ad-meta { font-size: 10px; color: var(--text2); line-height: 1.4; }
 
-/* ── Vista lista (horizontal compact) ── */
+/* ── Vista lista (3 por fila, horizontal compact) ── */
 .camp-ads-grid.list-view {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
+}
+@media (max-width: 900px) {
+  .camp-ads-grid.list-view { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .camp-ads-grid.list-view { grid-template-columns: 1fr; }
 }
 .camp-ads-grid.list-view .camp-ad-card {
   flex-direction: row;
