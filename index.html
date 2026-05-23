@@ -4822,7 +4822,7 @@ body, #app { background: #07050f; }
               <!-- Template picker -->
               <div>
                 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Estilo de subtítulo</div>
-                <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:230px;overflow-y:auto;padding-right:2px;">
+                <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:280px;overflow-y:auto;padding-right:4px;">
                   <div style="grid-column:1/-1;text-align:center;padding:20px 0;font-size:12px;color:var(--text2);">Cargando estilos...</div>
                 </div>
               </div>
@@ -6079,17 +6079,21 @@ function campZapcapRenderTemplates() {
   }
   _zapcapSelectedTemplate = _zapcapTemplates[0].id;
   container.innerHTML = _zapcapTemplates.map((t, i) => {
-    const thumb = t.gifUrl || t.thumbnailUrl || t.previewGifUrl || t.preview_gif_url
-               || t.thumbnail || t.previewUrl || t.preview_url || t.preview || t.imageUrl || '';
-    const name  = t.name || t.label || t.id;
-    // Color de fondo único por template usando el índice
-    const hues  = [270,290,250,310,230,280,260,300,240,270,255,285];
-    const hue   = hues[i % hues.length];
+    // Usar GIF animado como preview — muestra exactamente cómo se ven los subtítulos
+    const gif  = (t.previews && t.previews.previewGif) || '';
+    const mp4  = (t.previews && t.previews.previewMp4) || t.previewUrl || '';
+    const name = t.name || t.id;
     return `<div class="zapcap-tpl${i === 0 ? ' selected' : ''}" onclick="campZapcapSelectTemplate('${t.id}',this)" title="${name}">
-      ${thumb
-        ? `<img src="${thumb}" style="width:100%;height:72px;object-fit:cover;border-radius:7px;margin-bottom:6px;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-           <div style="display:none;width:100%;height:72px;background:linear-gradient(135deg,hsl(${hue},60%,18%),hsl(${hue},50%,12%));border-radius:7px;margin-bottom:6px;align-items:center;justify-content:center;font-size:20px;font-weight:900;letter-spacing:-1px;color:hsl(${hue},70%,70%);">Aa</div>`
-        : `<div style="width:100%;height:72px;background:linear-gradient(135deg,hsl(${hue},60%,18%),hsl(${hue},50%,12%));border-radius:7px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;letter-spacing:-1px;color:hsl(${hue},70%,70%);">Aa</div>`}
+      <div style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;overflow:hidden;background:#000;position:relative;">
+        ${gif
+          ? `<img src="${gif}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+             <video src="${mp4}" style="display:none;width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
+          : mp4
+            ? `<video src="${mp4}" style="width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.6);">Aa</div>`
+        }
+      </div>
       <div style="font-size:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);font-weight:500;">${name}</div>
     </div>`;
   }).join('');
