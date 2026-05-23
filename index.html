@@ -362,7 +362,83 @@ html.pre-landing #app { display: none !important; }
   0%   { background-position: 200% center; }
   100% { background-position: -200% center; }
 }
-/* ── Skeleton loading ── */
+/* ── App loader (purple orb) ── */
+@keyframes orb-drift-1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(8%,6%) scale(1.06); }
+  66%      { transform: translate(-5%,10%) scale(0.96); }
+}
+@keyframes orb-drift-2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  40%      { transform: translate(-10%,-8%) scale(1.08); }
+  70%      { transform: translate(6%,-4%) scale(0.95); }
+}
+@keyframes orb-drift-3 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%      { transform: translate(5%,-12%) scale(1.06); }
+}
+@keyframes dot-float {
+  0%,100% { transform: translateY(0) scale(1); opacity: 0.25; }
+  50%      { transform: translateY(-7px) scale(1.25); opacity: 0.7; }
+}
+.app-loader {
+  position: relative;
+  overflow: hidden;
+  background: #0c071a;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+.app-loader-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(56px);
+  pointer-events: none;
+}
+.app-loader-orb-1 {
+  width: 58%; aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(109,40,217,0.48) 0%, rgba(76,29,149,0.2) 55%, transparent 78%);
+  top: -18%; left: -12%;
+  animation: orb-drift-1 9s ease-in-out infinite;
+}
+.app-loader-orb-2 {
+  width: 46%; aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(139,92,246,0.38) 0%, rgba(109,40,217,0.14) 55%, transparent 78%);
+  bottom: -12%; right: -6%;
+  animation: orb-drift-2 11s ease-in-out infinite;
+}
+.app-loader-orb-3 {
+  width: 32%; aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(167,139,250,0.28) 0%, rgba(109,40,217,0.1) 55%, transparent 78%);
+  top: 38%; left: 52%;
+  animation: orb-drift-3 7s ease-in-out infinite;
+}
+.app-loader-dots { position: absolute; inset: 0; pointer-events: none; }
+.app-loader-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,168,255,0.8), rgba(109,40,217,0.3));
+}
+.app-loader-center {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.app-loader-ring {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(139,92,246,0.18);
+  border-top-color: rgba(192,168,255,0.9);
+  animation: spin 0.9s linear infinite;
+}
+.app-loader-label {
+  font-size: 11px; font-weight: 500;
+  color: rgba(192,168,255,0.5);
+  letter-spacing: 0.6px;
+}
+/* ── Shimmer utility (small inline placeholders) ── */
 @keyframes sk-shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
@@ -370,33 +446,11 @@ html.pre-landing #app { display: none !important; }
 .sk {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.04) 25%,
-    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.08) 50%,
     rgba(255,255,255,0.04) 75%);
   background-size: 200% 100%;
   animation: sk-shimmer 1.6s ease-in-out infinite;
   border-radius: 6px;
-  flex-shrink: 0;
-}
-/* Card skeleton para campaign list */
-.sk-camp-card {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 14px;
-}
-/* Card skeleton para historial (aspect-ratio 9/16) */
-.sk-hist-card {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  aspect-ratio: 9/16;
-  position: relative;
-}
 }
 .camp-clip-overlay {
   position: absolute; inset: 0;
@@ -4861,9 +4915,7 @@ body, #app { background: #07050f; }
               <!-- Template picker -->
               <div>
                 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Estilo de subtítulo</div>
-                <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:280px;overflow-y:auto;padding-right:4px;">
-                  ${Array.from({length:6},()=>`<div style="border-radius:10px;border:1.5px solid rgba(109,40,217,0.15);padding:8px;"><div class="sk" style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;"></div><div class="sk" style="height:10px;width:70%;margin:0 auto;"></div></div>`).join('')}
-                </div>
+                <div id="campZapcapTemplates" style="border-radius:12px;overflow:hidden;"></div>
               </div>
 
               <!-- Nota de posición/fuente -->
@@ -5351,30 +5403,29 @@ const supa = {
 
 const BACKEND_URL = 'https://futuriads-backend-production.up.railway.app';
 
-// ─── Skeleton generators ───────────────────────────────────────────
-function skCampCards(n = 6) {
-  return Array.from({ length: n }, () => `
-    <div class="sk-camp-card">
-      <div class="sk" style="width:100%;aspect-ratio:16/9;border-radius:10px;"></div>
-      <div style="display:flex;flex-direction:column;gap:8px;padding:2px 0;">
-        <div class="sk" style="height:14px;width:65%;"></div>
-        <div class="sk" style="height:11px;width:40%;"></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px;">
-        <div class="sk" style="height:28px;flex:1;border-radius:8px;"></div>
-        <div class="sk" style="height:28px;width:60px;border-radius:8px;"></div>
-      </div>
-    </div>`).join('');
-}
-
-function skHistCards(n = 8) {
-  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:16px 0;">
-    ${Array.from({ length: n }, () => `<div class="sk-hist-card"><div class="sk" style="position:absolute;inset:0;border-radius:14px;"></div></div>`).join('')}
+// ─── App loader (purple orb) ───────────────────────────────────────
+function appLoader(minH = '260px', label = 'Cargando...') {
+  const dots = [
+    {l:'11%',t:'18%',s:3,d:0},    {l:'79%',t:'14%',s:2,d:0.4},
+    {l:'44%',t:'7%', s:4,d:0.8},  {l:'89%',t:'44%',s:2,d:1.2},
+    {l:'24%',t:'71%',s:3,d:0.6},  {l:'61%',t:'79%',s:2,d:1.0},
+    {l:'5%', t:'54%',s:2,d:1.5},  {l:'71%',t:'29%',s:3,d:0.2},
+    {l:'36%',t:'87%',s:2,d:1.8},  {l:'91%',t:'71%',s:3,d:0.9},
+    {l:'51%',t:'47%',s:2,d:2.1},  {l:'17%',t:'39%',s:2,d:1.3},
+  ];
+  const dotHtml = dots.map(({l,t,s,d}) =>
+    `<div class="app-loader-dot" style="left:${l};top:${t};width:${s}px;height:${s}px;animation:dot-float ${2.8+d}s ${d}s ease-in-out infinite;"></div>`
+  ).join('');
+  return `<div class="app-loader" style="min-height:${minH};">
+    <div class="app-loader-orb app-loader-orb-1"></div>
+    <div class="app-loader-orb app-loader-orb-2"></div>
+    <div class="app-loader-orb app-loader-orb-3"></div>
+    <div class="app-loader-dots">${dotHtml}</div>
+    <div class="app-loader-center">
+      <div class="app-loader-ring"></div>
+      <div class="app-loader-label">${label}</div>
+    </div>
   </div>`;
-}
-
-function skLines(widths) {
-  return widths.map(w => `<div class="sk" style="height:13px;width:${w};margin-bottom:6px;"></div>`).join('');
 }
 
 function skMetric() {
@@ -5386,7 +5437,7 @@ function skMetric() {
 async function loadHistory() {
   const container = document.getElementById('histContent');
   if (!container) return;
-  container.innerHTML = skHistCards(12);
+  container.innerHTML = appLoader('400px');
   try {
     const { data, error } = await supa.from('videos').select('*').order('created_at', { ascending: false });
     if (error) throw error;
@@ -6124,6 +6175,10 @@ async function campZapcapLoad() {
 
   // Mostrar costo estimado (puede actualizarse después cuando el video carga metadata)
   campZapcapUpdateCost();
+
+  // Loader mientras carga templates
+  const tplContainer = document.getElementById('campZapcapTemplates');
+  if (tplContainer) tplContainer.innerHTML = appLoader('200px', 'Cargando estilos...');
 
   // Cargar templates desde backend
   try {
@@ -7363,8 +7418,8 @@ async function campLoadList() {
   const container = document.getElementById('campListContainer');
   if(!container) return;
 
-  // Skeleton inmediato mientras carga
-  container.innerHTML = `<div class="camp-ads-grid">${skCampCards(6)}</div>`;
+  // Loader inmediato mientras carga
+  container.innerHTML = appLoader('320px');
 
   try {
     const resp = await fetch(BACKEND_URL + '/api/campaign/list', {
