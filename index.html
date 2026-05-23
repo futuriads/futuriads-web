@@ -6217,6 +6217,9 @@ function campZapcapShowEditor(transcript, videoId, taskId) {
     const captions = _zapcapTranscript
       ? campZapcapBuildCaptions(_zapcapTranscript, editedText)
       : null;
+    console.log('[zapcap] Aprobando. _zapcapTranscript length:', _zapcapTranscript?.length,
+      '| captions length:', captions?.length,
+      '| primer item:', JSON.stringify(captions?.[0]));
     campZapcapApprove(videoId, taskId, captions);
   };
 
