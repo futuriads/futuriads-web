@@ -3679,45 +3679,171 @@ body, #app { background: #07050f; }
 .a-back-link:hover { color: var(--text); }
 
 /* ==============================================
-   APP — PROFILE
+   APP — PROFILE (redesigned)
    ============================================== */
-.a-profile-head { margin-bottom: 32px; }
-.a-profile-avatar {
-  width: 70px; height: 70px; border-radius: 50%;
-  background: var(--card2); border: 1px solid var(--border);
+
+/* Hero banner */
+.prof-hero {
+  position: relative; overflow: hidden;
+  background: #09051a;
+  border: 1px solid rgba(109,40,217,0.28);
+  border-radius: 18px; padding: 32px 28px 28px;
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 20px;
+}
+.prof-hero-orb {
+  position: absolute; border-radius: 50%; pointer-events: none; filter: blur(52px);
+}
+.prof-hero-orb-1 {
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(109,40,217,0.4) 0%, transparent 70%);
+  top: -80px; left: -60px;
+}
+.prof-hero-orb-2 {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(139,92,246,0.28) 0%, transparent 70%);
+  bottom: -60px; right: 60px;
+}
+.prof-hero-avatar {
+  position: relative; z-index: 1;
+  width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(109,40,217,0.7) 0%, rgba(76,29,149,0.5) 100%);
+  border: 2px solid rgba(139,92,246,0.5);
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 12px;
+  font-size: 26px; font-weight: 800; color: #e8d8ff;
+  box-shadow: 0 0 28px rgba(109,40,217,0.35);
 }
-.a-profile-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.a-profile-email { font-size: 14px; color: var(--text2); margin-top: 3px; }
-.a-profile-cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 680px;
+.prof-hero-info { position: relative; z-index: 1; flex: 1; min-width: 0; }
+.prof-hero-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #fff; margin-bottom: 3px; }
+.prof-hero-email { font-size: 13px; color: rgba(192,168,255,0.55); margin-bottom: 10px; }
+.prof-hero-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prof-plan-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(109,40,217,0.3); border: 1px solid rgba(139,92,246,0.4); color: #c4b5fd;
 }
+.prof-hero-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+@media(max-width:680px){
+  .prof-hero { flex-direction:column; align-items:flex-start; }
+  .prof-hero-actions { flex-direction:row; align-items:center; width:100%; }
+}
+
+/* Stats row */
+.prof-stats {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px;
+}
+@media(max-width:800px){ .prof-stats { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:460px){ .prof-stats { grid-template-columns: 1fr 1fr; } }
+.prof-stat {
+  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px; padding: 18px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.prof-stat-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: #fff; }
+.prof-stat-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+  color: rgba(192,168,255,0.45);
+}
+.prof-stat-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.25);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+
+/* Main 2-col grid */
+.prof-main {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+}
+@media(max-width:680px){ .prof-main { grid-template-columns: 1fr; } }
+
+/* Cards (shared) */
 .a-profile-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 28px;
+  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 24px;
 }
 .a-profile-card-title {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--text2); margin-bottom: 20px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(192,168,255,0.4); margin-bottom: 20px;
 }
-.a-plan-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.a-plan-price { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
-.a-plan-bar-bg { height: 3px; background: var(--card2); border-radius: 3px; margin: 10px 0 8px; }
-.a-plan-bar-fill { height: 100%; width: 20%; background: #fff; border-radius: 3px; }
-.a-plan-videos-text { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+/* Plan card */
+.a-plan-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.a-plan-price { font-size: 26px; font-weight: 900; letter-spacing: -1.5px; color: #fff; }
+.a-plan-bar-bg { height: 4px; background: rgba(255,255,255,0.07); border-radius: 4px; margin: 10px 0 6px; }
+.a-plan-bar-fill { height: 100%; width: 20%; background: linear-gradient(90deg,#7c3aed,#a78bfa); border-radius: 4px; transition: width 0.4s ease; }
+.a-plan-videos-text { font-size: 12px; color: rgba(192,168,255,0.5); margin-bottom: 6px; }
+.a-plan-card-renewal { font-size: 11px; color: rgba(192,168,255,0.4); margin-bottom: 20px; }
+
+/* Account card — fields + inline edit */
 .a-field-label {
   font-size: 10px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--text2); margin-bottom: 4px; margin-top: 14px;
+  text-transform: uppercase; color: rgba(192,168,255,0.4); margin-bottom: 4px; margin-top: 16px;
 }
-.a-field-label:first-child { margin-top: 0; }
-.a-field-val { font-size: 14px; color: var(--text); font-weight: 500; }
+.a-field-label:first-of-type { margin-top: 0; }
+.a-field-row { display: flex; align-items: center; gap: 8px; }
+.a-field-val { font-size: 14px; color: #e0d4ff; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a-field-edit-btn {
+  width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0;
+  background: transparent; border: 1px solid rgba(139,92,246,0.25); color: rgba(192,168,255,0.4);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.a-field-edit-btn:hover { background: rgba(109,40,217,0.2); color: #c4b5fd; }
+.a-field-input {
+  flex: 1; background: rgba(109,40,217,0.12); border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 8px; padding: 5px 10px; font-size: 14px; color: #e0d4ff;
+  outline: none; font-family: inherit;
+}
+.a-field-input:focus { border-color: rgba(167,139,250,0.7); }
+.a-field-save-btn {
+  padding: 5px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
+  background: rgba(109,40,217,0.4); border: 1px solid rgba(139,92,246,0.5); color: #e0d4ff;
+  cursor: pointer; transition: background 0.15s; flex-shrink: 0;
+}
+.a-field-save-btn:hover { background: rgba(109,40,217,0.6); }
+
+/* Recent activity */
+.prof-activity-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(192,168,255,0.4); margin-bottom: 12px;
+}
+.prof-act-list { display: flex; flex-direction: column; gap: 8px; }
+.prof-act-item {
+  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.065);
+  border-radius: 12px; padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.prof-act-item:hover { background: rgba(109,40,217,0.1); border-color: rgba(139,92,246,0.25); }
+.prof-act-thumb {
+  width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; overflow: hidden;
+  background: rgba(109,40,217,0.15); display: flex; align-items: center; justify-content: center;
+  color: rgba(192,168,255,0.3); font-size: 18px;
+}
+.prof-act-thumb img, .prof-act-thumb video { width: 100%; height: 100%; object-fit: cover; }
+.prof-act-body { flex: 1; min-width: 0; }
+.prof-act-name { font-size: 13px; font-weight: 600; color: #e0d4ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.prof-act-meta { font-size: 11px; color: rgba(192,168,255,0.4); }
+.prof-act-type {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
+  background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.3); color: rgba(192,168,255,0.6);
+}
+
+/* Legacy compat (keep for sidebar/credits) */
+.a-profile-head { margin-bottom: 0; }
+.a-profile-avatar { display: none; }
+.a-profile-name { display: none; }
+.a-profile-email { display: none; }
+.a-profile-cards { display: none; }
+
 .btn-danger {
   display: inline-flex; align-items: center; gap: 6px;
-  background: transparent; color: rgba(255,100,100,0.75);
-  border: 1px solid rgba(255,59,59,0.25); border-radius: var(--r-sm);
+  background: transparent; color: rgba(255,100,100,0.7);
+  border: 1px solid rgba(255,59,59,0.2); border-radius: 8px;
   padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer;
-  transition: background 0.2s; margin-top: 24px;
+  transition: background 0.2s; margin-top: 20px; width: 100%; justify-content: center;
 }
 .btn-danger:hover { background: rgba(255,59,59,0.06); }
 
@@ -5149,37 +5275,123 @@ body, #app { background: #07050f; }
 
     <!-- ---- PERFIL ---- -->
     <div class="screen" id="screen-perfil">
-      <div class="a-profile-head">
-        <div class="a-profile-avatar" id="profileAvatar">--</div>
-        <div class="a-profile-name" id="profileName">Cargando...</div>
-        <div class="a-profile-email" id="profileEmail">cargando@email.com</div>
+
+      <!-- Hero banner -->
+      <div class="prof-hero">
+        <div class="prof-hero-orb prof-hero-orb-1"></div>
+        <div class="prof-hero-orb prof-hero-orb-2"></div>
+        <div class="prof-hero-avatar" id="profileAvatar">--</div>
+        <div class="prof-hero-info">
+          <div class="prof-hero-name" id="profileName">Cargando...</div>
+          <div class="prof-hero-email" id="profileEmail">cargando@email.com</div>
+          <div class="prof-hero-badges">
+            <span class="prof-plan-badge" id="profHeroPlan">—</span>
+          </div>
+        </div>
+        <div class="prof-hero-actions">
+          <button class="btn-danger" style="margin-top:0;width:auto;" onclick="openSignOutModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Cerrar sesión
+          </button>
+        </div>
       </div>
-      <div class="a-profile-cards">
+
+      <!-- Stats row -->
+      <div class="prof-stats">
+        <div class="prof-stat">
+          <div class="prof-stat-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <div class="prof-stat-val" id="profStatVideos">—</div>
+          <div class="prof-stat-label">Videos generados</div>
+        </div>
+        <div class="prof-stat">
+          <div class="prof-stat-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="prof-stat-val" id="profStatAds">—</div>
+          <div class="prof-stat-label">Anuncios creados</div>
+        </div>
+        <div class="prof-stat">
+          <div class="prof-stat-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="prof-stat-val" id="profStatHours">—</div>
+          <div class="prof-stat-label">Horas ahorradas</div>
+        </div>
+        <div class="prof-stat">
+          <div class="prof-stat-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="prof-stat-val" id="profStatSaved">—</div>
+          <div class="prof-stat-label">USD ahorrados</div>
+        </div>
+      </div>
+
+      <!-- Plan + Cuenta -->
+      <div class="prof-main">
+        <!-- Mi plan -->
         <div class="a-profile-card">
           <div class="a-profile-card-title">Mi plan</div>
           <div class="a-plan-row">
-            <div class="a-metric-badge" id="profilePlan">—</div>
-            <div class="a-plan-price" id="profilePlanPrice">$0<span style="font-size:14px;font-weight:400;color:var(--text2)">/mes</span></div>
+            <span class="prof-plan-badge" id="profilePlan">—</span>
+            <div class="a-plan-price" id="profilePlanPrice">$0<span style="font-size:14px;font-weight:400;color:rgba(192,168,255,0.4)">/mes</span></div>
           </div>
           <div class="a-plan-videos-text">Cargando...</div>
           <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
-          <div class="a-plan-card-renewal" style="font-size:11px;color:var(--text2);margin-bottom:20px;">—</div>
+          <div class="a-plan-card-renewal">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
             <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
+
+        <!-- Mi cuenta (editable) -->
         <div class="a-profile-card">
           <div class="a-profile-card-title">Mi cuenta</div>
+
           <div class="a-field-label">Nombre</div>
-          <div class="a-field-val" id="profileFieldName">--</div>
+          <div class="a-field-row" id="profNameRow">
+            <div class="a-field-val" id="profileFieldName">--</div>
+            <button class="a-field-edit-btn" onclick="profEditField('name')" title="Editar nombre">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+          <div class="a-field-row" id="profNameEdit" style="display:none;">
+            <input class="a-field-input" id="profNameInput" type="text" placeholder="Tu nombre completo" onkeydown="if(event.key==='Enter')profSaveField('name');if(event.key==='Escape')profCancelField('name')">
+            <button class="a-field-save-btn" onclick="profSaveField('name')">Guardar</button>
+          </div>
+
           <div class="a-field-label">Email</div>
-          <div class="a-field-val" id="profileFieldEmail">--</div>
+          <div class="a-field-row">
+            <div class="a-field-val" id="profileFieldEmail">--</div>
+          </div>
+
           <div class="a-field-label">País</div>
-          <div class="a-field-val" id="profileFieldCountry">--</div>
-          <button class="btn-danger" onclick="openSignOutModal()">Cerrar sesión</button>
+          <div class="a-field-row" id="profCountryRow">
+            <div class="a-field-val" id="profileFieldCountry">--</div>
+            <button class="a-field-edit-btn" onclick="profEditField('country')" title="Editar país">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+          <div class="a-field-row" id="profCountryEdit" style="display:none;">
+            <input class="a-field-input" id="profCountryInput" type="text" placeholder="Ej: Argentina" onkeydown="if(event.key==='Enter')profSaveField('country');if(event.key==='Escape')profCancelField('country')">
+            <button class="a-field-save-btn" onclick="profSaveField('country')">Guardar</button>
+          </div>
+
+          <div class="a-field-label" style="margin-top:20px;">Miembro desde</div>
+          <div class="a-field-val" id="profileFieldSince">—</div>
         </div>
       </div>
+
+      <!-- Actividad reciente -->
+      <div>
+        <div class="prof-activity-title">Actividad reciente</div>
+        <div class="prof-act-list" id="profActList">
+          <div style="font-size:13px;color:rgba(192,168,255,0.35);padding:16px 0;">Cargando actividad...</div>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -5982,27 +6194,170 @@ function updateProfileUI(profile, email) {
   const saludo = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches';
   if (dashGreeting) dashGreeting.innerHTML = `${saludo}, <em>${firstName}</em>`;
   if (dashSub) {
-    // El subtexto dinámico se actualiza en updateDashMetrics cuando carga el historial
     dashSub.textContent = '¿Qué estás creando hoy?';
   }
 
-  // Profile page (datos personales)
+  // Profile hero
   const profileAvatar = document.getElementById('profileAvatar');
   const profileName = document.getElementById('profileName');
   const profileEmail = document.getElementById('profileEmail');
-  const profileFieldName = document.getElementById('profileFieldName');
-  const profileFieldEmail = document.getElementById('profileFieldEmail');
-  const profileFieldCountry = document.getElementById('profileFieldCountry');
-
+  const profHeroPlan = document.getElementById('profHeroPlan');
   if (profileAvatar) profileAvatar.textContent = initials;
   if (profileName) profileName.textContent = fullName;
   if (profileEmail) profileEmail.textContent = email;
+  if (profHeroPlan) profHeroPlan.textContent = planInfo.label;
+
+  // Profile fields
+  const profileFieldName = document.getElementById('profileFieldName');
+  const profileFieldEmail = document.getElementById('profileFieldEmail');
+  const profileFieldCountry = document.getElementById('profileFieldCountry');
+  const profileFieldSince = document.getElementById('profileFieldSince');
   if (profileFieldName) profileFieldName.textContent = fullName;
   if (profileFieldEmail) profileFieldEmail.textContent = email;
   if (profileFieldCountry) profileFieldCountry.textContent = country;
+  if (profileFieldSince && profile.created_at) {
+    const d = new Date(profile.created_at);
+    profileFieldSince.textContent = d.toLocaleDateString('es-AR', { year:'numeric', month:'long', day:'numeric' });
+  } else if (profileFieldSince && _currentUser && _currentUser.userId) {
+    // fallback: get from supabase auth metadata
+    supa.auth.getSession().then(({ data: { session } }) => {
+      if (session && session.user.created_at) {
+        const d = new Date(session.user.created_at);
+        profileFieldSince.textContent = d.toLocaleDateString('es-AR', { year:'numeric', month:'long', day:'numeric' });
+      }
+    });
+  }
 
-  // Créditos y card de plan (delegamos a updateCreditsUI)
+  // Créditos y card de plan
   updateCreditsUI(profile);
+
+  // Stats & activity (async, load after)
+  profLoadStats();
+  profLoadActivity();
+}
+
+async function profLoadStats() {
+  // Total videos (from historyData already loaded)
+  const totalVideos = Array.isArray(historyData) ? historyData.length : 0;
+  // Total campaigns
+  let totalAds = 0;
+  if (_currentUser) {
+    try {
+      const { data: camps } = await supa.from('campaigns').select('id').eq('user_id', _currentUser.userId);
+      if (camps) totalAds = camps.length;
+    } catch(e) {}
+  }
+  // Hours & money saved (all-time): 2h/video + 3h/campaign @ $35/hr
+  const hours = (totalVideos * 2) + (totalAds * 3);
+  const saved = Math.round(hours * 35);
+
+  const el = (id) => document.getElementById(id);
+  if (el('profStatVideos')) el('profStatVideos').textContent = totalVideos;
+  if (el('profStatAds')) el('profStatAds').textContent = totalAds;
+  if (el('profStatHours')) el('profStatHours').textContent = hours + 'h';
+  if (el('profStatSaved')) el('profStatSaved').textContent = '$' + saved.toLocaleString('es-AR');
+}
+
+function profLoadActivity() {
+  const container = document.getElementById('profActList');
+  if (!container) return;
+  const items = Array.isArray(historyData) ? historyData.slice(0, 5) : [];
+  if (!items.length) {
+    container.innerHTML = '<div style="font-size:13px;color:rgba(192,168,255,0.35);padding:16px 0;">Todavía no hay creaciones.</div>';
+    return;
+  }
+  container.innerHTML = items.map(v => {
+    const isImg = v.type === 'image';
+    const url = v.video_url || '';
+    const name = v.actor || (v.model ? v.model.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Creación');
+    const date = v.created_at ? new Date(v.created_at).toLocaleDateString('es-AR', { day:'numeric', month:'short' }) : '';
+    const typeLabel = isImg ? 'Imagen' : 'Video';
+    let thumbHtml = '';
+    if (url && isImg) {
+      thumbHtml = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" loading="lazy">`;
+    } else if (url) {
+      thumbHtml = `<video src="${url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></video>`;
+    } else {
+      thumbHtml = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+    }
+    const escName = name.replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+    const escUrl = url.replace(/'/g,"&#39;");
+    const onclick = url ? `openVideoModal('${escUrl}','${escName}')` : '';
+    return `<div class="prof-act-item" ${onclick ? `onclick="${onclick}"` : ''}>
+      <div class="prof-act-thumb">${thumbHtml}</div>
+      <div class="prof-act-body">
+        <div class="prof-act-name">${name}</div>
+        <div class="prof-act-meta">${date}${v.aspect_ratio ? ' · ' + v.aspect_ratio : ''}</div>
+      </div>
+      <span class="prof-act-type">${typeLabel}</span>
+    </div>`;
+  }).join('');
+}
+
+// Profile inline field editing
+function profEditField(field) {
+  if (field === 'name') {
+    const cur = document.getElementById('profileFieldName').textContent.trim();
+    document.getElementById('profNameInput').value = cur === '—' ? '' : cur;
+    document.getElementById('profNameRow').style.display = 'none';
+    document.getElementById('profNameEdit').style.display = 'flex';
+    document.getElementById('profNameInput').focus();
+  } else if (field === 'country') {
+    const cur = document.getElementById('profileFieldCountry').textContent.trim();
+    document.getElementById('profCountryInput').value = cur === '—' ? '' : cur;
+    document.getElementById('profCountryRow').style.display = 'none';
+    document.getElementById('profCountryEdit').style.display = 'flex';
+    document.getElementById('profCountryInput').focus();
+  }
+}
+function profCancelField(field) {
+  if (field === 'name') {
+    document.getElementById('profNameRow').style.display = 'flex';
+    document.getElementById('profNameEdit').style.display = 'none';
+  } else if (field === 'country') {
+    document.getElementById('profCountryRow').style.display = 'flex';
+    document.getElementById('profCountryEdit').style.display = 'none';
+  }
+}
+async function profSaveField(field) {
+  if (!_currentUser) return;
+  let newVal, updateObj, displayEl;
+  if (field === 'name') {
+    newVal = (document.getElementById('profNameInput').value || '').trim();
+    if (!newVal) { showToast('El nombre no puede estar vacío'); return; }
+    updateObj = { full_name: newVal };
+    displayEl = document.getElementById('profileFieldName');
+  } else if (field === 'country') {
+    newVal = (document.getElementById('profCountryInput').value || '').trim();
+    if (!newVal) { showToast('Ingresá un país'); return; }
+    updateObj = { country: newVal };
+    displayEl = document.getElementById('profileFieldCountry');
+  }
+  try {
+    const { error } = await supa.from('profiles').update(updateObj).eq('id', _currentUser.userId);
+    if (error) { showToast('Error al guardar'); return; }
+    if (displayEl) displayEl.textContent = newVal;
+    // Update _currentUser cache
+    if (field === 'name') {
+      _currentUser.full_name = newVal;
+      const initials = getInitials(newVal);
+      const firstName = getFirstName(newVal);
+      const av = document.getElementById('profileAvatar');
+      const pn = document.getElementById('profileName');
+      const sa = document.getElementById('sidebarAvatar');
+      const su = document.getElementById('sidebarUserName');
+      if (av) av.textContent = initials;
+      if (pn) pn.textContent = newVal;
+      if (sa) sa.textContent = initials;
+      if (su) su.textContent = firstName;
+    } else if (field === 'country') {
+      _currentUser.country = newVal;
+    }
+    profCancelField(field);
+    showToast('Guardado correctamente');
+  } catch(e) {
+    showToast('Error al guardar');
+  }
 }
 
 function openSignOutModal() {
@@ -7796,6 +8151,7 @@ function showScreen(name, instant){
 
   if(name==='historial') { loadHistory(); loadFolders(); toggleFoldersBar(true); }
   else { toggleFoldersBar(false); }
+  if(name==='perfil') { profLoadStats(); profLoadActivity(); }
   if(name==='campanas'){
     // Restaurar botones de vista desde el modo guardado
     document.getElementById('campBtnGrid')?.classList.toggle('active', campViewMode === 'grid');
