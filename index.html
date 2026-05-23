@@ -4777,7 +4777,7 @@ body, #app { background: #07050f; }
           <div id="campFinalVideo" style="display:none;margin-top:24px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
               <div>
-                <div style="font-size:15px;font-weight:700;color:var(--text1);">✦ Video final listo</div>
+                <div style="font-size:15px;font-weight:700;color:var(--text1);">Video final listo</div>
                 <div style="font-size:12px;color:var(--text2);margin-top:2px;">Revisalo y descargalo cuando estés listo.</div>
               </div>
               <a id="campFinalDownload" href="#" download="creativo-final.mp4" class="btn-w" style="font-size:12px;padding:8px 18px;text-decoration:none;flex-shrink:0;">↓ Descargar</a>
@@ -4808,8 +4808,7 @@ body, #app { background: #07050f; }
             <div style="background:rgba(12,7,26,0.85);border:1px solid rgba(109,40,217,0.3);border-radius:16px;padding:20px;">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;">
                 <div>
-                  <div style="font-size:14px;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:7px;">
-                    <span style="background:linear-gradient(135deg,#6d28d9,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:16px;">✦</span>
+                  <div style="font-size:14px;font-weight:700;color:var(--text1);">
                     Subtítulos automáticos con IA
                   </div>
                   <div style="font-size:12px;color:var(--text2);margin-top:3px;">ZapCap transcribe y anima los subtítulos directamente sobre tu video.</div>
@@ -4841,6 +4840,29 @@ body, #app { background: #07050f; }
                   <div style="height:100%;width:100%;background:linear-gradient(90deg,#6d28d9,#9333ea,#6d28d9);background-size:200% 100%;animation:transcribe-shimmer 1.5s linear infinite;"></div>
                 </div>
                 <div style="font-size:12px;color:var(--text2);margin-top:10px;text-align:center;">Procesando subtítulos... puede tardar 1-2 minutos.</div>
+              </div>
+
+              <!-- Editor de transcript -->
+              <div id="campZapcapEditor" style="display:none;margin-top:16px;border:1px solid rgba(109,40,217,0.3);border-radius:12px;overflow:hidden;">
+                <div style="padding:12px 16px;background:rgba(109,40,217,0.1);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                  <div>
+                    <div style="font-size:13px;font-weight:700;">Revisá el texto transcripto</div>
+                    <div style="font-size:11px;color:var(--text2);margin-top:2px;">Corregí palabras mal escritas antes de renderizar los subtítulos.</div>
+                  </div>
+                </div>
+                <div style="padding:14px 16px;">
+                  <textarea id="campZapcapWords" rows="4"
+                    style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;resize:vertical;outline:none;font-family:inherit;line-height:1.5;"
+                    placeholder="El texto transcripto aparecerá aquí..."></textarea>
+                  <div style="display:flex;gap:10px;margin-top:12px;">
+                    <button id="campZapcapApproveBtn" class="btn-w" style="flex:1;font-size:13px;padding:10px;">
+                      Renderizar subtítulos
+                    </button>
+                    <button onclick="campZapcapApprove(_zapcapCurrentVideoId,_zapcapCurrentTaskId,null)" class="btn-ghost-sm" style="font-size:12px;padding:10px 16px;">
+                      Aprobar sin cambios
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <!-- Éxito -->
@@ -6106,7 +6128,7 @@ async function campZapcapStart() {
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Error iniciando subtítulos');
 
-    showToast(`✦ Procesando subtítulos · ${data.creditsDeducted} créditos usados`);
+    showToast(`Procesando subtítulos · ${data.creditsDeducted} créditos usados`);
     campZapcapPoll(data.zapcapVideoId, data.zapcapTaskId);
 
   } catch (e) {
@@ -6117,17 +6139,31 @@ async function campZapcapStart() {
   }
 }
 
+let _zapcapCurrentVideoId = null;
+let _zapcapCurrentTaskId  = null;
+
 function campZapcapPoll(videoId, taskId) {
+  _zapcapCurrentVideoId = videoId;
+  _zapcapCurrentTaskId  = taskId;
   if (_zapcapPollingInterval) clearInterval(_zapcapPollingInterval);
   _zapcapPollingInterval = setInterval(async () => {
     try {
       const resp = await fetch(`${BACKEND_URL}/api/campaign/zapcap/status?videoId=${videoId}&taskId=${taskId}`);
       const data = await resp.json();
+
       if (data.status === 'completed' && data.downloadUrl) {
         clearInterval(_zapcapPollingInterval);
         _zapcapPollingInterval = null;
         campZapcapDone(data.downloadUrl);
-      } else if (data.status === 'failed') {
+
+      } else if (data.status === 'transcript_ready' || (data.transcript && data.status !== 'completed')) {
+        // Transcript listo para revisar/editar antes de renderizar
+        clearInterval(_zapcapPollingInterval);
+        _zapcapPollingInterval = null;
+        document.getElementById('campZapcapProgress').style.display = 'none';
+        campZapcapShowEditor(data.transcript || data.captions, videoId, taskId);
+
+      } else if (data.status === 'failed' || data.status === 'error') {
         clearInterval(_zapcapPollingInterval);
         _zapcapPollingInterval = null;
         showToast('Error: ZapCap no pudo procesar el video');
@@ -6141,20 +6177,86 @@ function campZapcapPoll(videoId, taskId) {
   }, 6000);
 }
 
+function campZapcapShowEditor(transcript, videoId, taskId) {
+  const editor = document.getElementById('campZapcapEditor');
+  if (!editor) return;
+  editor.style.display = 'block';
+
+  // Construir lista editable de palabras
+  const wordsArea = document.getElementById('campZapcapWords');
+  if (!wordsArea) return;
+
+  // transcript puede ser array de { text/word, start, end } o string URL
+  if (Array.isArray(transcript)) {
+    _zapcapTranscript = transcript;
+    wordsArea.value = transcript.map(w => w.text || w.word || '').join(' ');
+  } else if (typeof transcript === 'string' && !transcript.startsWith('http')) {
+    wordsArea.value = transcript;
+    _zapcapTranscript = null;
+  } else {
+    // Es una URL de transcript — no tenemos los datos aún, aprobar directo
+    campZapcapApprove(videoId, taskId, null);
+    return;
+  }
+
+  document.getElementById('campZapcapApproveBtn').onclick = () => {
+    const editedText = wordsArea.value.trim();
+    const captions = _zapcapTranscript
+      ? campZapcapBuildCaptions(_zapcapTranscript, editedText)
+      : null;
+    campZapcapApprove(videoId, taskId, captions);
+  };
+}
+
+let _zapcapTranscript = null;
+
+function campZapcapBuildCaptions(original, editedText) {
+  const editedWords = editedText.split(/\s+/).filter(Boolean);
+  return original.map((cap, i) => ({
+    ...cap,
+    text: editedWords[i] !== undefined ? editedWords[i] : (cap.text || cap.word || ''),
+    word: editedWords[i] !== undefined ? editedWords[i] : (cap.word || cap.text || ''),
+  }));
+}
+
+async function campZapcapApprove(videoId, taskId, captions) {
+  document.getElementById('campZapcapEditor').style.display = 'none';
+  document.getElementById('campZapcapProgress').style.display = 'block';
+  document.getElementById('campZapcapProgress').querySelector('div:last-child').textContent = 'Renderizando video con subtítulos...';
+
+  try {
+    const resp = await fetch(BACKEND_URL + '/api/campaign/zapcap/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ videoId, taskId, captions })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Error aprobando');
+
+    // Ahora sí polling hasta completed
+    campZapcapPoll(videoId, taskId);
+  } catch (e) {
+    showToast('Error: ' + e.message);
+    document.getElementById('campZapcapProgress').style.display = 'none';
+    document.getElementById('campZapcapBtn').disabled = false;
+    campZapcapUpdateCost();
+  }
+}
+
 function campZapcapDone(downloadUrl) {
-  // Actualizar player con video subtitulado
   const vid = document.getElementById('campFinalPlayer');
   if (vid) { vid.src = downloadUrl; }
   const dl = document.getElementById('campFinalDownload');
   if (dl)  { dl.href = downloadUrl; dl.download = 'creativo-subtitulado.mp4'; }
 
   document.getElementById('campZapcapProgress').style.display = 'none';
+  document.getElementById('campZapcapEditor').style.display   = 'none';
   document.getElementById('campZapcapSuccess').style.display  = 'block';
 
   const btn = document.getElementById('campZapcapBtn');
   btn.disabled    = false;
   btn.textContent = '↺ Regenerar subtítulos';
-  showToast('✦ Subtítulos listos');
+  showToast('Subtítulos listos');
 }
 
 function campBackToList() {
