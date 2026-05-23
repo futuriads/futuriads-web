@@ -4830,13 +4830,10 @@ body, #app { background: #07050f; }
                 </div>
               </div>
 
-              <!-- Posición -->
-              <div style="margin-top:14px;">
-                <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Posición</div>
-                <div style="display:flex;gap:6px;">
-                  <button class="zapcap-pos-btn active" id="zapcapPosTop"    onclick="campZapcapSetPos('top',this)">Arriba</button>
-                  <button class="zapcap-pos-btn"        id="zapcapPosCenter" onclick="campZapcapSetPos('center',this)">Centro</button>
-                  <button class="zapcap-pos-btn"        id="zapcapPosBottom" onclick="campZapcapSetPos('bottom',this)">Abajo</button>
+              <!-- Nota de posición/fuente -->
+              <div style="margin-top:14px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;">
+                <div style="font-size:11px;color:var(--text2);line-height:1.5;">
+                  El estilo visual (posición, fuente, tamaño, color) está definido por el template que elegís arriba. Elegí el que más se adapte a tu video.
                 </div>
               </div>
 
@@ -6097,15 +6094,14 @@ function campZapcapRenderTemplates() {
     const gif  = (t.previews && t.previews.previewGif) || '';
     const mp4  = (t.previews && t.previews.previewMp4) || t.previewUrl || '';
     const name = t.name || t.id;
+    // Usar SOLO el GIF de cdn.zapcap.ai (público). El MP4 de cloudinary requiere auth.
+    const zapcapGif = gif && gif.includes('cdn.zapcap.ai') ? gif : '';
     return `<div class="zapcap-tpl${i === 0 ? ' selected' : ''}" onclick="campZapcapSelectTemplate('${t.id}',this)" title="${name}">
-      <div style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;overflow:hidden;background:#000;position:relative;">
-        ${gif
-          ? `<img src="${gif}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-             <video src="${mp4}" style="display:none;width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
-          : mp4
-            ? `<video src="${mp4}" style="width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
-            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.6);">Aa</div>`
+      <div style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;overflow:hidden;background:#111;position:relative;">
+        ${zapcapGif
+          ? `<img src="${zapcapGif}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"
+               onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.5)\\'>Aa</div>'">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.5);">Aa</div>`
         }
       </div>
       <div style="font-size:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);font-weight:500;">${name}</div>
