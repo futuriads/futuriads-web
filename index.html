@@ -6206,27 +6206,12 @@ function campZapcapPoll(videoId, taskId) {
 }
 
 function campZapcapShowEditor(transcript, videoId, taskId) {
-  const editor = document.getElementById('campZapcapEditor');
-  if (!editor) return;
+  const editor   = document.getElementById('campZapcapEditor');
+  const wordsArea = document.getElementById('campZapcapWords');
+  if (!editor || !wordsArea) return;
   editor.style.display = 'block';
 
-  // Construir lista editable de palabras
-  const wordsArea = document.getElementById('campZapcapWords');
-  if (!wordsArea) return;
-
-  // transcript puede ser array de { text/word, start, end } o string URL
-  if (Array.isArray(transcript)) {
-    _zapcapTranscript = transcript;
-    wordsArea.value = transcript.map(w => w.text || w.word || '').join(' ');
-  } else if (typeof transcript === 'string' && !transcript.startsWith('http')) {
-    wordsArea.value = transcript;
-    _zapcapTranscript = null;
-  } else {
-    // Es una URL de transcript — no tenemos los datos aún, aprobar directo
-    campZapcapApprove(videoId, taskId, null);
-    return;
-  }
-
+  // Conectar botón de aprobación — se define aquí para capturar videoId/taskId correctos
   document.getElementById('campZapcapApproveBtn').onclick = () => {
     const editedText = wordsArea.value.trim();
     const captions = _zapcapTranscript
@@ -6234,6 +6219,52 @@ function campZapcapShowEditor(transcript, videoId, taskId) {
       : null;
     campZapcapApprove(videoId, taskId, captions);
   };
+
+  if (Array.isArray(transcript)) {
+    // Array de objetos {text/word, start, end}
+    _zapcapTranscript = transcript;
+    wordsArea.value = transcript.map(w => w.text || w.word || '').join(' ');
+
+  } else if (typeof transcript === 'string' && transcript.startsWith('http')) {
+    // ZapCap devolvió una URL al transcript — fetcheamos el contenido
+    wordsArea.value = '';
+    wordsArea.placeholder = 'Cargando texto transcripto...';
+    wordsArea.disabled = true;
+    fetch(transcript)
+      .then(r => r.json())
+      .then(data => {
+        const words = Array.isArray(data)
+          ? data
+          : (data.words || data.captions || data.transcript || data.subtitles || []);
+        if (Array.isArray(words) && words.length > 0) {
+          _zapcapTranscript = words;
+          wordsArea.value = words.map(w => w.text || w.word || w.content || '').join(' ');
+        } else if (typeof data === 'string') {
+          _zapcapTranscript = null;
+          wordsArea.value = data;
+        } else {
+          wordsArea.value = '';
+          wordsArea.placeholder = 'No se pudo cargar el texto. Podés aprobarlo sin cambios.';
+        }
+        wordsArea.disabled = false;
+      })
+      .catch(() => {
+        wordsArea.value = '';
+        wordsArea.placeholder = 'Error cargando el texto. Podés aprobarlo sin cambios.';
+        wordsArea.disabled = false;
+      });
+
+  } else if (typeof transcript === 'string' && transcript.trim()) {
+    // String de texto plano
+    _zapcapTranscript = null;
+    wordsArea.value = transcript;
+
+  } else {
+    // Sin datos de transcript (null/undefined)
+    _zapcapTranscript = null;
+    wordsArea.value = '';
+    wordsArea.placeholder = 'Transcript no disponible. Aprobá para renderizar con el texto automático.';
+  }
 }
 
 let _zapcapTranscript = null;
