@@ -4766,171 +4766,7 @@ body, #app { background: #07050f; }
           <div style="font-size:15px;font-weight:700;margin-bottom:6px;">Todos los clips generados</div>
           <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Revisá los clips arriba. Configurá los subtítulos y ensamblá el video final.</div>
 
-          <!-- CONFIGURACIÓN DE SUBTÍTULOS -->
-          <div style="margin-bottom:20px;border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-
-            <!-- Header accordion -->
-            <div onclick="campToggleSubPanel()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--card2);user-select:none;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                
-                <span style="font-size:13px;font-weight:700;">Subtítulos</span>
-                <span id="campSubStatusBadge" style="font-size:11px;padding:2px 10px;border-radius:99px;background:#fff;color:#000;font-weight:700;">ON</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:12px;">
-                <div id="campSubToggle" onclick="event.stopPropagation();campToggleSubtitles()" style="width:40px;height:22px;border-radius:99px;background:#fff;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;">
-                  <div id="campSubThumb" style="position:absolute;top:3px;left:20px;width:16px;height:16px;border-radius:50%;background:#000;transition:left 0.2s;"></div>
-                </div>
-                <span id="campSubChevron" style="color:var(--text2);font-size:12px;transition:transform 0.2s;">▼</span>
-              </div>
-            </div>
-
-            <!-- Body colapsable -->
-            <div id="campSubBody" style="padding:16px 18px;display:block;">
-              <div id="campSubOptions">
-
-                <!-- IA Transcription row -->
-                <div id="campTranscribeRow" style="margin-bottom:18px;padding:14px 16px;background:rgba(109,40,217,0.08);border:1px solid rgba(109,40,217,0.22);border-radius:12px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-                    <div>
-                      <div style="font-size:13px;font-weight:700;margin-bottom:3px;">Sincronización automática con IA</div>
-                      <div style="font-size:11px;color:var(--text2);" id="campTranscribeStatus">Genera timestamps precisos desde el audio real de tus clips.</div>
-                    </div>
-                    <button id="campTranscribeBtn" onclick="campTranscribe()" style="flex-shrink:0;background:linear-gradient(135deg,#6d28d9,#9333ea);color:#fff;border:none;border-radius:10px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;white-space:nowrap;">
-                      ✦ Transcribir con IA
-                    </button>
-                  </div>
-                  <div id="campTranscribeProgress" style="display:none;margin-top:10px;">
-                    <div style="height:3px;background:rgba(139,92,246,0.15);border-radius:3px;overflow:hidden;">
-                      <div style="height:100%;width:100%;background:linear-gradient(90deg,#6d28d9,#9333ea,#6d28d9);background-size:200%;animation:transcribe-shimmer 1.5s linear infinite;"></div>
-                    </div>
-                    <div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center;" id="campTranscribeProgressMsg">Analizando audio... Esto puede tardar 1-2 minutos.</div>
-                  </div>
-                </div>
-
-                <!-- Fila 1: Presets -->
-                <div style="margin-bottom:14px;">
-                  <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text2);text-transform:uppercase;margin-bottom:7px;">Preset rápido</div>
-                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                    <button onclick="campApplyPreset('tiktok')"    class="sub-preset-btn">TikTok</button>
-                    <button onclick="campApplyPreset('netflix')"   class="sub-preset-btn">Netflix</button>
-                    <button onclick="campApplyPreset('bold')"      class="sub-preset-btn">Bold</button>
-                    <button onclick="campApplyPreset('minimal')"   class="sub-preset-btn">Minimal</button>
-                    <button onclick="campApplyPreset('highlight')" class="sub-preset-btn">Highlight</button>
-                  </div>
-                </div>
-
-                <!-- Fila 2: Fuente + Tamaño -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Fuente</div>
-                    <select id="campSubFont" onchange="campSubtitlePreview()" class="sub-select">
-                      <option value="Arial">Arial</option>
-                      <option value="Arial Black" selected>Arial Black</option>
-                      <option value="Impact">Impact</option>
-                      <option value="Helvetica">Helvetica</option>
-                      <option value="Georgia">Georgia</option>
-                      <option value="Verdana">Verdana</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="sub-label">Tamaño <span id="campSubSizeVal" style="color:var(--text);font-weight:600;">26</span></div>
-                    <input type="range" id="campSubSize" min="14" max="52" value="26"
-                      oninput="document.getElementById('campSubSizeVal').textContent=this.value;campSubtitlePreview();"
-                      style="width:100%;margin-top:12px;accent-color:#fff;">
-                  </div>
-                </div>
-
-                <!-- Fila 3: Colores -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Color texto</div>
-                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                      <input type="color" id="campSubColor" value="#ffffff"
-                        oninput="document.getElementById('campSubColorHex').value=this.value;campSubtitlePreview();"
-                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
-                      <input type="text" id="campSubColorHex" value="#ffffff" maxlength="7"
-                        oninput="campSyncColorFromHex('campSubColor','campSubColorHex');"
-                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    </div>
-                  </div>
-                  <div>
-                    <div class="sub-label">Color borde</div>
-                    <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                      <input type="color" id="campSubOutlineColor" value="#000000"
-                        oninput="document.getElementById('campSubOutlineHex').value=this.value;campSubtitlePreview();"
-                        style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;flex-shrink:0;">
-                      <input type="text" id="campSubOutlineHex" value="#000000" maxlength="7"
-                        oninput="campSyncColorFromHex('campSubOutlineColor','campSubOutlineHex');"
-                        style="flex:1;min-width:0;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Fila 4: Borde + Posición -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                  <div>
-                    <div class="sub-label">Borde <span id="campSubBorderVal" style="color:var(--text);font-weight:600;">3</span></div>
-                    <input type="range" id="campSubOutlineWidth" min="0" max="8" value="3"
-                      oninput="document.getElementById('campSubBorderVal').textContent=this.value;campSubtitlePreview();"
-                      style="width:100%;margin-top:12px;accent-color:#fff;">
-                  </div>
-                  <div>
-                    <div class="sub-label">Posición</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubPosTop"    onclick="campSetPosition('top')"    class="sub-pos-btn">↑</button>
-                      <button id="campSubPosCenter" onclick="campSetPosition('center')" class="sub-pos-btn">↕</button>
-                      <button id="campSubPosBottom" onclick="campSetPosition('bottom')" class="sub-pos-btn sub-pos-active">Abajo</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Fila 5: Estilo + Modo -->
-                <div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:end;margin-bottom:14px;">
-                  <div>
-                    <div class="sub-label">Estilo</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubBoldBtn"   onclick="campToggleBold()"   class="sub-style-btn sub-style-active" style="font-weight:900;">B</button>
-                      <button id="campSubItalicBtn" onclick="campToggleItalic()" class="sub-style-btn" style="font-style:italic;">I</button>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="sub-label">Modo</div>
-                    <div style="display:flex;gap:5px;margin-top:4px;">
-                      <button id="campSubModeBlock" onclick="campSetSubMode('block')" class="sub-mode-btn sub-mode-active">Bloque</button>
-                      <button id="campSubModeWord"  onclick="campSetSubMode('word')"  class="sub-mode-btn">Palabra x palabra</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Color highlight (solo word mode) -->
-                <div id="campSubHighlightRow" style="display:none;margin-bottom:14px;">
-                  <div class="sub-label">Color palabra activa</div>
-                  <div style="display:flex;align-items:center;gap:7px;margin-top:4px;">
-                    <input type="color" id="campSubHighlightColor" value="#FFD700"
-                      oninput="document.getElementById('campSubHighlightHex').value=this.value;campSubtitlePreview();"
-                      style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:none;padding:2px;">
-                    <input type="text" id="campSubHighlightHex" value="#FFD700" maxlength="7"
-                      oninput="campSyncColorFromHex('campSubHighlightColor','campSubHighlightHex');"
-                      style="width:90px;padding:6px 8px;background:var(--hover);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:monospace;outline:none;">
-                    <span style="font-size:11px;color:var(--text2);">Resalta la palabra que se está diciendo</span>
-                  </div>
-                </div>
-
-                <!-- Preview 9:16 compacto -->
-                <div class="sub-label" style="margin-bottom:6px;">Preview</div>
-                <div style="display:flex;justify-content:center;">
-                  <div style="position:relative;width:120px;border-radius:10px;overflow:hidden;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a2e,#0f3460);flex-shrink:0;">
-                    <div id="campSubPreviewBox" style="position:absolute;bottom:12%;left:0;right:0;display:flex;justify-content:center;padding:0 8px;">
-                      <span id="campSubPreviewText" style="font-family:'Arial Black';font-size:11px;font-weight:900;color:#fff;text-align:center;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000;line-height:1.3;">Así van a verse tus subtítulos</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
             <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">Ensamblar video final</button>
             <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">Volver a mis campañas</button>
           </div>
@@ -4990,19 +4826,6 @@ body, #app { background: #07050f; }
                 <div id="campZapcapTemplates" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:230px;overflow-y:auto;padding-right:2px;">
                   <div style="grid-column:1/-1;text-align:center;padding:20px 0;font-size:12px;color:var(--text2);">Cargando estilos...</div>
                 </div>
-              </div>
-
-              <!-- Toggles -->
-              <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;">
-                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
-                  <input type="checkbox" id="campZapcapEmoji" style="accent-color:#6d28d9;width:14px;height:14px;"> Emojis
-                </label>
-                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
-                  <input type="checkbox" id="campZapcapAnim" checked style="accent-color:#6d28d9;width:14px;height:14px;"> Animación
-                </label>
-                <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);cursor:pointer;">
-                  <input type="checkbox" id="campZapcapKeywords" checked style="accent-color:#6d28d9;width:14px;height:14px;"> Destacar palabras clave
-                </label>
               </div>
 
               <!-- Botón principal -->
@@ -6127,11 +5950,10 @@ async function campAssemble() {
   const btn = document.getElementById('campAssembleBtn');
   btn.disabled = true; btn.textContent = 'Ensamblando...';
   document.getElementById('campAssembleStatus').style.display = 'block';
-  const subtitleStyle = campGetSubtitleStyle();
   const isTalking = _camp.videoMode === 'talking';
-  document.getElementById('campAssembleMsg').textContent = subtitleStyle
-    ? (isTalking ? 'Ensamblando clips + subtítulos... Esto puede tardar un minuto.' : 'Ensamblando audio + video + subtítulos... Esto puede tardar un minuto.')
-    : (isTalking ? 'Ensamblando clips de video... Esto puede tardar un minuto.' : 'Ensamblando audio + video... Esto puede tardar un minuto.');
+  document.getElementById('campAssembleMsg').textContent = isTalking
+    ? 'Ensamblando clips de video... Esto puede tardar un minuto.'
+    : 'Ensamblando audio + video... Esto puede tardar un minuto.';
   document.getElementById('campFinalVideo').style.display = 'none';
 
   try {
@@ -6141,7 +5963,7 @@ async function campAssemble() {
       body: JSON.stringify({
         campaignId: _camp.campaignId,
         userId: _currentUser.userId,
-        subtitleStyle,
+        subtitleStyle: null,
         videoMode: _camp.videoMode,
         chunks: isTalking ? _camp.chunks.map(c => ({ text: c.text, estimatedSeconds: c.estimatedSeconds || 8 })) : undefined
       })
@@ -6259,9 +6081,6 @@ async function campZapcapStart() {
   const vid      = document.getElementById('campFinalPlayer');
   const dur      = (vid && vid.duration && isFinite(vid.duration)) ? vid.duration : (_camp.finalVideoDuration || 60);
   const credits  = Math.ceil(dur / 60 * 200);
-  const emoji    = document.getElementById('campZapcapEmoji').checked;
-  const animation    = document.getElementById('campZapcapAnim').checked;
-  const emphasizeKeywords = document.getElementById('campZapcapKeywords').checked;
 
   const btn = document.getElementById('campZapcapBtn');
   btn.disabled = true;
@@ -6273,10 +6092,9 @@ async function campZapcapStart() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        campaignId: _camp.campaignId,
-        userId:     _currentUser.userId,
-        templateId: _zapcapSelectedTemplate,
-        emoji, animation, emphasizeKeywords,
+        campaignId:    _camp.campaignId,
+        userId:        _currentUser.userId,
+        templateId:    _zapcapSelectedTemplate,
         videoDuration: dur
       })
     });
