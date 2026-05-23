@@ -533,6 +533,9 @@ html.pre-landing #app { display: none !important; }
 }
 .zapcap-tpl:hover   { border-color: rgba(109,40,217,0.5); background: rgba(109,40,217,0.1); }
 .zapcap-tpl.selected { border-color: #6d28d9; background: rgba(109,40,217,0.18); box-shadow: 0 0 0 1px rgba(109,40,217,0.4); }
+.zapcap-pos-btn { padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s; }
+.zapcap-pos-btn:hover  { border-color:rgba(109,40,217,0.5);color:var(--text); }
+.zapcap-pos-btn.active { border-color:#6d28d9;background:rgba(109,40,217,0.18);color:#fff;font-weight:600; }
 
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
@@ -4827,6 +4830,16 @@ body, #app { background: #07050f; }
                 </div>
               </div>
 
+              <!-- Posición -->
+              <div style="margin-top:14px;">
+                <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Posición</div>
+                <div style="display:flex;gap:6px;">
+                  <button class="zapcap-pos-btn active" id="zapcapPosTop"    onclick="campZapcapSetPos('top',this)">Arriba</button>
+                  <button class="zapcap-pos-btn"        id="zapcapPosCenter" onclick="campZapcapSetPos('center',this)">Centro</button>
+                  <button class="zapcap-pos-btn"        id="zapcapPosBottom" onclick="campZapcapSetPos('bottom',this)">Abajo</button>
+                </div>
+              </div>
+
               <!-- Botón principal -->
               <div style="margin-top:16px;">
                 <button id="campZapcapBtn" onclick="campZapcapStart()" class="btn-w" style="width:100%;font-size:13px;padding:11px 16px;">
@@ -6038,6 +6051,7 @@ async function campAssemble() {
 let _zapcapTemplates        = [];
 let _zapcapSelectedTemplate = null;
 let _zapcapPollingInterval  = null;
+let _zapcapPosition         = 'bottom'; // top | center | bottom
 
 async function campZapcapLoad() {
   const section = document.getElementById('campZapcapSection');
@@ -6105,6 +6119,12 @@ function campZapcapSelectTemplate(id, el) {
   el.classList.add('selected');
 }
 
+function campZapcapSetPos(pos, el) {
+  _zapcapPosition = pos;
+  document.querySelectorAll('.zapcap-pos-btn').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+}
+
 async function campZapcapStart() {
   if (!_zapcapSelectedTemplate) { showToast('Seleccioná un estilo primero'); return; }
   if (!_camp.campaignId)        { showToast('No hay campaña activa'); return; }
@@ -6126,6 +6146,7 @@ async function campZapcapStart() {
         campaignId:    _camp.campaignId,
         userId:        _currentUser.userId,
         templateId:    _zapcapSelectedTemplate,
+        position:      _zapcapPosition,
         videoDuration: dur
       })
     });
@@ -6154,18 +6175,15 @@ function campZapcapPoll(videoId, taskId) {
     try {
       const resp = await fetch(`${BACKEND_URL}/api/campaign/zapcap/status?videoId=${videoId}&taskId=${taskId}`);
       const data = await resp.json();
+      console.log('[zapcap poll] status=', data.status, 'keys=', data.rawData ? Object.keys(data.rawData) : []);
+
+      // Estados activos donde seguimos esperando
+      const busyStates = ['pending','uploading','transcribing','processing','rendering','submitted','queued','in_progress'];
 
       if (data.status === 'completed' && data.downloadUrl) {
         clearInterval(_zapcapPollingInterval);
         _zapcapPollingInterval = null;
         campZapcapDone(data.downloadUrl);
-
-      } else if (data.status === 'transcript_ready' || (data.transcript && data.status !== 'completed')) {
-        // Transcript listo para revisar/editar antes de renderizar
-        clearInterval(_zapcapPollingInterval);
-        _zapcapPollingInterval = null;
-        document.getElementById('campZapcapProgress').style.display = 'none';
-        campZapcapShowEditor(data.transcript || data.captions, videoId, taskId);
 
       } else if (data.status === 'failed' || data.status === 'error') {
         clearInterval(_zapcapPollingInterval);
@@ -6174,6 +6192,16 @@ function campZapcapPoll(videoId, taskId) {
         document.getElementById('campZapcapBtn').disabled = false;
         campZapcapUpdateCost();
         document.getElementById('campZapcapProgress').style.display = 'none';
+
+      } else if (!busyStates.includes(data.status)) {
+        // Estado desconocido = probablemente "transcript listo para aprobar"
+        clearInterval(_zapcapPollingInterval);
+        _zapcapPollingInterval = null;
+        console.log('[zapcap] Estado inesperado → mostrando editor. Status:', data.status);
+        document.getElementById('campZapcapProgress').style.display = 'none';
+        const transcriptData = data.transcript || data.captions
+          || (data.rawData && (data.rawData.transcript || data.rawData.captions || data.rawData.words));
+        campZapcapShowEditor(transcriptData, videoId, taskId);
       }
     } catch (e) {
       console.warn('[zapcap poll]', e.message);
