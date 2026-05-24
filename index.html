@@ -6563,9 +6563,9 @@ function getPlanInfo(plan) {
   // Espejo de la config del backend en server.js > PLANS
   const plans = {
     'none':    { label: 'Sin plan', price: '$0',  credits: 0,      topup_price: 0, topup_credits: 0    },
-    'starter': { label: 'Starter',  price: '$19', credits: 15000,  topup_price: 9, topup_credits: 8000 },
-    'growth':  { label: 'Growth',   price: '$49', credits: 50000,  topup_price: 7, topup_credits: 8000 },
-    'scale':   { label: 'Scale',    price: '$129',credits: 150000, topup_price: 5, topup_credits: 8000 }
+    'starter': { label: 'Starter',  price: '$29', credits: 35000,  topup_price: 10, topup_credits: 10000 },
+    'growth':  { label: 'Growth',   price: '$69', credits: 110000, topup_price: 25, topup_credits: 28000 },
+    'scale':   { label: 'Scale',    price: '$149',credits: 300000, topup_price: 50, topup_credits: 60000 }
   };
   return plans[plan] || plans.none;
 }
@@ -8974,9 +8974,9 @@ function renderPlanCards() {
   const grid = document.getElementById('pfPlanGrid');
   if (!grid) return;
   const plans = [
-    { id: 'starter', label: 'Starter', price: 'AR$29.990', desc: '500 créditos / mes · 1 usuario' },
-    { id: 'growth',  label: 'Growth',  price: 'AR$59.990', desc: '1.500 créditos / mes · 3 usuarios' },
-    { id: 'scale',   label: 'Scale',   price: 'AR$99.990', desc: '4.000 créditos / mes · usuarios ilimitados' }
+    { id: 'starter', label: 'Starter', price: 'USD $29', desc: '35.000 créditos / mes' },
+    { id: 'growth',  label: 'Growth',  price: 'USD $69', desc: '110.000 créditos / mes' },
+    { id: 'scale',   label: 'Scale',   price: 'USD $149', desc: '300.000 créditos / mes' }
   ];
   grid.innerHTML = plans.map(p => `
     <div class="pf-plan-card${_pfSelectedPlan === p.id ? ' pf-sel' : ''}" onclick="selectPlan('${p.id}')">
@@ -10017,9 +10017,9 @@ function toggleCreditsPopover(e) {
   // Construir contenido de planes
   const currentPlan = (_currentUser && _currentUser.plan) || 'none';
   const allPlans = [
-    { key: 'starter', label: 'Starter',  price: '$19/mes',  credits: '15.000 créditos' },
-    { key: 'growth',  label: 'Growth',   price: '$49/mes',  credits: '50.000 créditos' },
-    { key: 'scale',   label: 'Scale',    price: '$129/mes', credits: '150.000 créditos' }
+    { key: 'starter', label: 'Starter',  price: '$29/mes',  credits: '35.000 créditos' },
+    { key: 'growth',  label: 'Growth',   price: '$69/mes',  credits: '110.000 créditos' },
+    { key: 'scale',   label: 'Scale',    price: '$149/mes', credits: '300.000 créditos' }
   ];
   const plansContainer = document.getElementById('creditsPopoverPlans');
   plansContainer.innerHTML = allPlans.map(p => {
@@ -11673,60 +11673,6 @@ document.addEventListener('DOMContentLoaded', function() {
     v.play().catch(function() {});
   });
 });
-/* ── Transcripción con IA (AssemblyAI) ── */
-
-async function campTranscribe() {
-  if(!_camp.campaignId || !_currentUser) { showToast('No hay campaña activa'); return; }
-
-  const btn       = document.getElementById('campTranscribeBtn');
-  const status    = document.getElementById('campTranscribeStatus');
-  const progress  = document.getElementById('campTranscribeProgress');
-  const progressMsg = document.getElementById('campTranscribeProgressMsg');
-
-  btn.disabled = true;
-  btn.textContent = 'Transcribiendo...';
-  btn.style.opacity = '0.6';
-  progress.style.display = 'block';
-  status.textContent = 'Analizando el audio de tus clips con IA...';
-  progressMsg.textContent = 'Enviando audio a AssemblyAI. Esto puede tardar 1-3 minutos según la duración.';
-
-  try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/transcribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ campaignId: _camp.campaignId, userId: _currentUser.userId })
-    });
-
-    const data = await resp.json();
-    if(!resp.ok) throw new Error(data.error || 'Error en transcripción');
-
-    // Guardar words en _camp para posible uso local
-    _camp.transcriptionWords = data.words;
-
-    progress.style.display = 'none';
-    btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
-    btn.style.opacity = '1';
-    btn.textContent = '✓ Transcripción lista';
-    btn.disabled = false;
-
-    const wordCount  = data.words.length;
-    const duration   = data.duration ? data.duration.toFixed(1) + 's' : '';
-    status.innerHTML =
-      '<span style="color:#4ade80;font-weight:600;">✓ Sincronización lista</span> · ' +
-      wordCount + ' palabras detectadas' + (duration ? ' · ' + duration : '') +
-      ' · Los subtítulos ahora usan timestamps reales.';
-
-    showToast('✓ Subtítulos sincronizados (' + wordCount + ' palabras)');
-  } catch(e) {
-    console.error('[transcribe]', e);
-    progress.style.display = 'none';
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.textContent = '↻ Reintentar';
-    status.innerHTML = '<span style="color:#f87171;">Error: ' + e.message + '</span>';
-    showToast('Error al transcribir: ' + e.message);
-  }
-}
 
 /* ── Custom Video Player helpers ── */
 
