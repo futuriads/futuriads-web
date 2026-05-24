@@ -3916,6 +3916,251 @@ body, #app { background: #07050f; }
 .a-field-input { flex:1; background:rgba(109,40,217,0.1); border:1px solid rgba(139,92,246,0.4); border-radius:8px; padding:5px 10px; font-size:13px; color:#e0d4ff; outline:none; font-family:inherit; }
 .a-field-save-btn { padding:5px 11px; border-radius:7px; font-size:11px; font-weight:600; background:rgba(109,40,217,0.4); border:1px solid rgba(139,92,246,0.5); color:#e0d4ff; cursor:pointer; }
 
+/* ==============================================
+   PROFILE — MODALS & INTERACTIVE v2
+   ============================================== */
+
+/* Base pf-modal */
+.pf-modal {
+  position:fixed; inset:0; z-index:800;
+  background:rgba(0,0,0,0.72); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+  opacity:0; pointer-events:none; transition:opacity 0.22s ease;
+}
+.pf-modal.open { opacity:1; pointer-events:all; }
+.pf-modal-card {
+  background:#0e0b1a; border:1px solid rgba(139,92,246,0.22);
+  border-radius:20px; padding:28px; width:100%; max-width:440px;
+  transform:scale(0.95) translateY(10px);
+  transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);
+  max-height:90vh; overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:#2a2a2a transparent;
+}
+.pf-modal-card::-webkit-scrollbar { width:5px; }
+.pf-modal-card::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:3px; }
+.pf-modal.open .pf-modal-card { transform:scale(1) translateY(0); }
+.pf-modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+.pf-modal-title { font-size:17px; font-weight:800; letter-spacing:-0.3px; color:#fff; }
+.pf-modal-close {
+  width:28px; height:28px; border-radius:50%; border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05); color:rgba(192,168,255,0.55);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px;
+  transition:background 0.15s, color 0.15s;
+}
+.pf-modal-close:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.pf-modal-sub { font-size:13px; color:rgba(192,168,255,0.45); margin-bottom:22px; line-height:1.5; }
+
+/* Field */
+.pf-field { margin-bottom:16px; }
+.pf-field-label { font-size:9.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(192,168,255,0.36); margin-bottom:6px; }
+.pf-field-input {
+  width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px; padding:11px 14px; font-size:13px; color:#e0d4ff;
+  outline:none; font-family:inherit; box-sizing:border-box;
+  transition:border-color 0.2s, background 0.2s;
+}
+.pf-field-input:focus { border-color:rgba(139,92,246,0.6); background:rgba(109,40,217,0.08); }
+.pf-field-input:disabled { opacity:0.38; cursor:not-allowed; }
+.pf-field-input.error { border-color:rgba(255,80,80,0.5); }
+.pf-field-err { font-size:10px; color:rgba(255,80,80,0.75); margin-top:4px; display:none; }
+.pf-field-err.vis { display:block; }
+
+/* Buttons */
+.pf-modal-btns { display:flex; gap:10px; margin-top:22px; }
+.pf-btn-cancel {
+  flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px; padding:11px; font-size:13px; font-weight:500; color:rgba(255,255,255,0.55);
+  cursor:pointer; transition:background 0.15s, color 0.15s;
+}
+.pf-btn-cancel:hover { background:rgba(255,255,255,0.09); color:#fff; }
+.pf-btn-primary {
+  flex:1; background:#7c3aed; border:none; border-radius:10px;
+  padding:11px; font-size:13px; font-weight:600; color:#fff;
+  cursor:pointer; transition:background 0.15s, box-shadow 0.15s;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+}
+.pf-btn-primary:hover:not(:disabled) { background:#6d28d9; box-shadow:0 0 18px rgba(109,40,217,0.4); }
+.pf-btn-primary:disabled { opacity:0.45; cursor:not-allowed; }
+.pf-btn-danger-sm {
+  flex:1; background:rgba(255,59,59,0.08); border:1px solid rgba(255,59,59,0.22);
+  border-radius:10px; padding:11px; font-size:13px; font-weight:600; color:rgba(255,100,100,0.75);
+  cursor:pointer; transition:background 0.15s;
+}
+.pf-btn-danger-sm:hover { background:rgba(255,59,59,0.16); }
+@keyframes pfSpin { to { transform:rotate(360deg); } }
+.pf-spinner { animation:pfSpin 0.8s linear infinite; flex-shrink:0; }
+
+/* Avatar section */
+.pf-avatar-section { display:flex; align-items:center; gap:18px; margin-bottom:22px; }
+.pf-avatar-lg {
+  width:64px; height:64px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,rgba(109,40,217,0.7),rgba(76,29,149,0.5));
+  border:2px solid rgba(139,92,246,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:800; color:#e8d8ff; overflow:hidden;
+}
+.pf-avatar-lg img { width:100%; height:100%; object-fit:cover; }
+.pf-avatar-upload-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(109,40,217,0.15); border:1px solid rgba(139,92,246,0.3);
+  border-radius:8px; padding:7px 13px; font-size:11.5px; font-weight:500; color:#c4b5fd;
+  cursor:pointer; transition:background 0.15s;
+}
+.pf-avatar-upload-btn:hover { background:rgba(109,40,217,0.26); }
+.pf-avatar-hint { font-size:10px; color:rgba(192,168,255,0.3); margin-top:4px; }
+
+/* Plan cards */
+.pf-plan-grid { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.pf-plan-card {
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+  border-radius:13px; padding:14px 16px; cursor:pointer;
+  transition:border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  display:flex; align-items:center; gap:14px;
+}
+.pf-plan-card:hover { border-color:rgba(139,92,246,0.35); background:rgba(109,40,217,0.07); }
+.pf-plan-card.pf-sel { border-color:rgba(139,92,246,0.6); background:rgba(109,40,217,0.13); box-shadow:0 0 18px rgba(109,40,217,0.18); }
+.pf-plan-radio { width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s; }
+.pf-plan-card.pf-sel .pf-plan-radio { border-color:#a78bfa; }
+.pf-plan-radio-dot { width:8px; height:8px; border-radius:50%; background:#a78bfa; opacity:0; transition:opacity 0.2s; }
+.pf-plan-card.pf-sel .pf-plan-radio-dot { opacity:1; }
+.pf-plan-info { flex:1; min-width:0; }
+.pf-plan-nm { font-size:13.5px; font-weight:700; color:#fff; margin-bottom:2px; display:flex; align-items:center; gap:7px; }
+.pf-plan-desc { font-size:10.5px; color:rgba(192,168,255,0.42); }
+.pf-plan-price-tag { font-size:16px; font-weight:800; color:#fff; white-space:nowrap; letter-spacing:-0.5px; }
+.pf-plan-price-tag small { font-size:11px; font-weight:400; color:rgba(192,168,255,0.4); }
+.pf-cur-badge {
+  font-size:8px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  padding:2px 7px; border-radius:999px;
+  background:rgba(109,40,217,0.28); border:1px solid rgba(139,92,246,0.38); color:#c4b5fd;
+}
+
+/* Password strength */
+.pf-pwd-bars { display:flex; gap:4px; margin-top:7px; margin-bottom:4px; }
+.pf-pwd-bar { height:3px; flex:1; border-radius:3px; background:rgba(255,255,255,0.08); transition:background 0.25s; }
+.pf-pwd-bar.weak  { background:rgba(239,68,68,0.7); }
+.pf-pwd-bar.fair  { background:rgba(249,115,22,0.7); }
+.pf-pwd-bar.good  { background:rgba(234,179,8,0.7); }
+.pf-pwd-bar.strong{ background:rgba(34,197,94,0.7); }
+.pf-pwd-lbl { font-size:10px; color:rgba(192,168,255,0.38); transition:color 0.2s; height:14px; }
+.pf-pwd-eye {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:rgba(192,168,255,0.4); cursor:pointer; padding:4px;
+  transition:color 0.15s;
+}
+.pf-pwd-eye:hover { color:#c4b5fd; }
+.pf-pwd-wrap { position:relative; }
+.pf-pwd-wrap .pf-field-input { padding-right:38px; }
+
+/* Payment history table */
+.pf-table { width:100%; border-collapse:collapse; }
+.pf-table thead th { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:rgba(192,168,255,0.3); padding:0 0 12px; text-align:left; }
+.pf-table tbody td { padding:11px 0 11px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:12.5px; color:#e0d4ff; }
+.pf-table tbody tr:last-child td { border-bottom:none; }
+.pf-status { font-size:8.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; padding:3px 8px; border-radius:999px; }
+.pf-status.ok      { background:rgba(34,197,94,0.12);  border:1px solid rgba(34,197,94,0.28);  color:#4ade80; }
+.pf-status.pending { background:rgba(234,179,8,0.12);  border:1px solid rgba(234,179,8,0.28);  color:#facc15; }
+.pf-status.failed  { background:rgba(239,68,68,0.12);  border:1px solid rgba(239,68,68,0.28);  color:#f87171; }
+
+/* Devices list */
+.pf-device {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.pf-device:last-child { border-bottom:none; }
+.pf-device-icon {
+  width:36px; height:36px; border-radius:9px; flex-shrink:0;
+  background:rgba(109,40,217,0.12); border:1px solid rgba(109,40,217,0.2);
+  display:flex; align-items:center; justify-content:center; color:rgba(192,168,255,0.5);
+}
+.pf-device-name { font-size:13px; font-weight:600; color:#e0d4ff; margin-bottom:1px; }
+.pf-device-meta { font-size:10px; color:rgba(192,168,255,0.38); }
+.pf-device-this { font-size:8px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; padding:2px 7px; border-radius:999px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.22); color:#4ade80; flex-shrink:0; }
+.pf-device-kick { font-size:10.5px; color:rgba(255,80,80,0.6); background:transparent; border:1px solid rgba(255,80,80,0.18); border-radius:7px; padding:4px 9px; cursor:pointer; flex-shrink:0; transition:background 0.15s, color 0.15s; }
+.pf-device-kick:hover { background:rgba(255,80,80,0.1); color:rgba(255,100,100,0.9); }
+
+/* Card display */
+.pf-card-row {
+  background:rgba(109,40,217,0.07); border:1px solid rgba(139,92,246,0.18);
+  border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}
+.pf-card-icon { width:38px; height:24px; background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; color:#c4b5fd; letter-spacing:0.5px; border:1px solid rgba(255,255,255,0.1); }
+.pf-card-num { font-size:13px; font-weight:600; color:#e0d4ff; flex:1; letter-spacing:0.5px; }
+.pf-card-default { font-size:8px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; padding:2px 7px; border-radius:999px; background:rgba(109,40,217,0.22); border:1px solid rgba(139,92,246,0.28); color:#c4b5fd; }
+
+/* Custom dropdown (pf-dropdown) */
+.pf-dropdown { position:relative; }
+.pf-dd-trigger {
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px; padding:10px 14px; font-size:13px; color:#e0d4ff; cursor:pointer;
+  transition:border-color 0.2s; width:100%; box-sizing:border-box; text-align:left;
+}
+.pf-dd-trigger:hover { border-color:rgba(255,255,255,0.18); }
+.pf-dropdown.open .pf-dd-trigger { border-color:rgba(139,92,246,0.5); }
+.pf-dd-menu {
+  position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:9000;
+  background:#141414; border:1px solid rgba(255,255,255,0.1); border-radius:12px;
+  padding:5px; max-height:220px; overflow-y:auto;
+  opacity:0; pointer-events:none; transform:translateY(-6px);
+  transition:opacity 0.15s, transform 0.15s;
+  box-shadow:0 8px 28px rgba(0,0,0,0.65);
+}
+.pf-dropdown.open .pf-dd-menu { opacity:1; pointer-events:all; transform:translateY(0); }
+.pf-dd-opt {
+  padding:9px 12px; border-radius:8px; font-size:13px; color:#e0d4ff; cursor:pointer;
+  transition:background 0.12s; display:flex; align-items:center; justify-content:space-between;
+}
+.pf-dd-opt:hover { background:rgba(109,40,217,0.14); }
+.pf-dd-opt.pf-sel { color:#c4b5fd; background:rgba(109,40,217,0.1); }
+.pf-dd-check { color:#a78bfa; opacity:0; flex-shrink:0; }
+.pf-dd-opt.pf-sel .pf-dd-check { opacity:1; }
+
+/* Month dropdown trigger (inside USO DEL MES card) */
+.prof2-usage-dropdown { position:relative; }
+.prof2-usage-dd-menu {
+  position:absolute; top:calc(100% + 6px); right:0; z-index:9000; min-width:180px;
+  background:#141414; border:1px solid rgba(255,255,255,0.1); border-radius:12px;
+  padding:5px; opacity:0; pointer-events:none; transform:translateY(-6px);
+  transition:opacity 0.15s, transform 0.15s;
+  box-shadow:0 8px 28px rgba(0,0,0,0.65);
+}
+.prof2-usage-dropdown.open .prof2-usage-dd-menu { opacity:1; pointer-events:all; transform:translateY(0); }
+.prof2-usage-dd-menu .pf-dd-opt { font-size:12px; padding:8px 11px; }
+
+/* 2FA QR */
+.pf-qr-box {
+  width:148px; height:148px; border-radius:12px; background:#fff; margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 28px rgba(109,40,217,0.2);
+}
+.pf-qr-inner { display:grid; grid-template-columns:repeat(9,1fr); gap:2px; width:116px; height:116px; }
+.pf-qr-cell { border-radius:1px; }
+.pf-secret { font-family:monospace,monospace; font-size:12px; letter-spacing:2px; color:#a78bfa; background:rgba(109,40,217,0.1); border:1px solid rgba(109,40,217,0.2); border-radius:8px; padding:8px 14px; text-align:center; margin-bottom:16px; }
+
+/* Info col with dropdown */
+.pf-info-dd-val { cursor:pointer; display:flex; align-items:center; gap:5px; }
+.pf-info-dd-val:hover { color:#c4b5fd; }
+
+/* Bar color states */
+.prof2-bar-fill.orange { background:linear-gradient(90deg,#ea580c,#fb923c); box-shadow:0 0 8px rgba(234,88,12,0.4); }
+.prof2-bar-fill.red    { background:linear-gradient(90deg,#dc2626,#f87171); box-shadow:0 0 8px rgba(220,38,38,0.4); }
+.a-plan-bar-fill.orange { background:linear-gradient(90deg,#ea580c,#fb923c); }
+.a-plan-bar-fill.red    { background:linear-gradient(90deg,#dc2626,#f87171); }
+
+/* Enhanced toast types */
+.toast-success .toast-dot { background:#4ade80; box-shadow:0 0 8px rgba(74,222,128,0.5); }
+.toast-error   .toast-dot { background:#f87171; box-shadow:0 0 8px rgba(248,113,113,0.5); }
+.toast-info    .toast-dot { background:#60a5fa; box-shadow:0 0 8px rgba(96,165,250,0.5); }
+.toast-warn    .toast-dot { background:#facc15; box-shadow:0 0 8px rgba(250,204,21,0.5); }
+.toast-success svg { color:#4ade80; }
+.toast-error   svg { color:#f87171; }
+.toast-info    svg { color:#60a5fa; }
+.toast-warn    svg { color:#facc15; }
+
+/* ==============================================
+   END PROFILE MODALS
+   ============================================== */
+
 .btn-danger {
   display: inline-flex; align-items: center; gap: 6px;
   background: transparent; color: rgba(255,100,100,0.7);
@@ -5363,7 +5608,7 @@ body, #app { background: #07050f; }
             <div class="prof2-email" id="profileEmail">—</div>
           </div>
         </div>
-        <button class="prof2-edit-btn" onclick="profEditField('name')">
+        <button class="prof2-edit-btn" onclick="openProfEditModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Editar perfil
         </button>
@@ -5385,7 +5630,7 @@ body, #app { background: #07050f; }
           </div>
           <div class="a-plan-card-renewal prof2-plan-renew">—</div>
           <div class="prof2-plan-btns">
-            <button class="btn-w" style="width:100%;justify-content:center;font-size:12px;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
+            <button class="btn-w" style="width:100%;justify-content:center;font-size:12px;" onclick="openProfChangePlanModal()">Cambiar plan</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;font-size:12px;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -5394,10 +5639,18 @@ body, #app { background: #07050f; }
         <div class="prof2-card">
           <div class="prof2-usage-head">
             <div class="prof2-card-title" style="margin-bottom:0">Uso del mes</div>
-            <button class="prof2-month-btn">
-              <span id="profUsageMonthLabel">este mes</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5l2.5 3 2.5-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
+            <div class="prof2-usage-dropdown" id="usageDropdown">
+              <button class="prof2-month-btn" onclick="pfToggleDd('usageDropdown',event)">
+                <span id="profUsageMonthLabel">Este mes</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5l2.5 3 2.5-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="prof2-usage-dd-menu">
+                <div class="pf-dd-opt pf-sel" onclick="pfSelectUsage('week','Últimos 7 días',event)">Últimos 7 días<svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="pf-dd-opt pf-sel" onclick="pfSelectUsage('current','Este mes',event)">Este mes<svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="pf-dd-opt" onclick="pfSelectUsage('last','Mes pasado',event)">Mes pasado<svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="pf-dd-opt" onclick="pfSelectUsage('quarter','Últimos 3 meses',event)">Últimos 3 meses<svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+              </div>
+            </div>
           </div>
           <div class="prof2-usage-nums">
             <div>
@@ -5499,7 +5752,7 @@ body, #app { background: #07050f; }
           <div class="prof2-card-title">Facturación</div>
           <div style="display:flex;flex-direction:column;flex:1;">
 
-            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-bill-item" onclick="openPayHistModal()">
               <div class="prof2-bill-icon">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
               </div>
@@ -5510,7 +5763,7 @@ body, #app { background: #07050f; }
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-bill-item" onclick="openPayMethodsModal()">
               <div class="prof2-bill-icon">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="2"/></svg>
               </div>
@@ -5522,7 +5775,7 @@ body, #app { background: #07050f; }
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-bill-item" onclick="openBillingModal()">
               <div class="prof2-bill-icon">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
               </div>
@@ -5550,7 +5803,7 @@ body, #app { background: #07050f; }
                 <div class="prof2-pref-desc">Alertas importantes de tu cuenta</div>
               </div>
               <label class="prof2-toggle">
-                <input type="checkbox" checked>
+                <input type="checkbox" id="pref_email" onchange="pfSavePref('pref_email',this.checked)">
                 <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
               </label>
             </div>
@@ -5564,7 +5817,7 @@ body, #app { background: #07050f; }
                 <div class="prof2-pref-desc">Tips para mejorar tus anuncios</div>
               </div>
               <label class="prof2-toggle">
-                <input type="checkbox" checked>
+                <input type="checkbox" id="pref_news" onchange="pfSavePref('pref_news',this.checked)">
                 <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
               </label>
             </div>
@@ -5578,7 +5831,7 @@ body, #app { background: #07050f; }
                 <div class="prof2-pref-desc">Estadísticas de tu uso cada semana</div>
               </div>
               <label class="prof2-toggle">
-                <input type="checkbox" checked>
+                <input type="checkbox" id="pref_weekly" onchange="pfSavePref('pref_weekly',this.checked)">
                 <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
               </label>
             </div>
@@ -5592,7 +5845,7 @@ body, #app { background: #07050f; }
                 <div class="prof2-pref-desc">Descuentos y beneficios exclusivos</div>
               </div>
               <label class="prof2-toggle">
-                <input type="checkbox">
+                <input type="checkbox" id="pref_offers" onchange="pfSavePref('pref_offers',this.checked)">
                 <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
               </label>
             </div>
@@ -5605,7 +5858,7 @@ body, #app { background: #07050f; }
           <div class="prof2-card-title">Seguridad</div>
           <div style="display:flex;flex-direction:column;flex:1;">
 
-            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-sec-item" onclick="openPasswordModal()">
               <div class="prof2-sec-icon">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
@@ -5616,7 +5869,7 @@ body, #app { background: #07050f; }
               <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-sec-item" onclick="openTwoFAModal()">
               <div class="prof2-sec-icon">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
@@ -5624,13 +5877,13 @@ body, #app { background: #07050f; }
                 <div class="prof2-sec-name">Autenticación 2FA</div>
                 <div class="prof2-sec-desc">Verificación en dos pasos</div>
               </div>
-              <label class="prof2-toggle" onclick="event.stopPropagation();showToast('Próximamente disponible')">
-                <input type="checkbox">
+              <label class="prof2-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggle2fa" onchange="pfToggle2FA(this)">
                 <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
               </label>
             </div>
 
-            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+            <div class="prof2-sec-item" onclick="openDevicesModal()">
               <div class="prof2-sec-icon">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
               </div>
@@ -5660,11 +5913,39 @@ body, #app { background: #07050f; }
           </div>
           <div class="prof2-info-col">
             <div class="prof2-info-col-label">Zona horaria</div>
-            <div class="prof2-info-col-val">(GMT-03:00) Bs. As.</div>
+            <div class="prof2-info-col-val">
+              <div class="pf-dropdown" id="tzDropdown">
+                <button style="background:transparent;border:none;padding:0;color:#e0d4ff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;" onclick="pfToggleTzDd(event)">
+                  <span id="profTzLabel">(GMT-03:00) Bs. As.</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="pf-dd-menu" style="min-width:220px;bottom:auto;top:calc(100% + 6px);">
+                  <div class="pf-dd-opt pf-sel" onclick="pfSelectTz('America/Argentina/Buenos_Aires','(GMT-03:00) Bs. As.',event)">(GMT-03:00) Buenos Aires <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('America/New_York','(GMT-05:00) New York',event)">(GMT-05:00) New York <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('Europe/Madrid','(GMT+01:00) Madrid',event)">(GMT+01:00) Madrid <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Mexico_City','(GMT-06:00) México',event)">(GMT-06:00) México <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Bogota','(GMT-05:00) Bogotá',event)">(GMT-05:00) Bogotá <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Santiago','(GMT-03:00) Santiago',event)">(GMT-03:00) Santiago <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectTz('UTC','(GMT+00:00) UTC',event)">(GMT+00:00) UTC <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="prof2-info-col">
             <div class="prof2-info-col-label">Idioma</div>
-            <div class="prof2-info-col-val">Español</div>
+            <div class="prof2-info-col-val">
+              <div class="pf-dropdown" id="langDropdown">
+                <button style="background:transparent;border:none;padding:0;color:#e0d4ff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;" onclick="pfToggleLangDd(event)">
+                  <span id="profLangLabel">Español</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="pf-dd-menu" style="min-width:160px;bottom:auto;top:calc(100% + 6px);">
+                  <div class="pf-dd-opt pf-sel" onclick="pfSelectLang('es','Español',event)">Español <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectLang('en','English',event)">English <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="pf-dd-opt" onclick="pfSelectLang('pt','Português',event)">Português <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -6360,6 +6641,7 @@ async function loadProfile() {
     // Cargar historial (para borradores recientes y métricas) y tips de IA
     loadHistory();
     loadDashTips();
+    initPrefToggles();
   } catch (e) {
     console.error('Error en loadProfile:', e);
   }
@@ -6446,6 +6728,7 @@ function updateCreditsUI(me) {
       pct = Math.min(100, Math.round(used / planInfo.credits * 100));
     }
     planBarFill.style.width = pct + '%';
+    updateBarColor(pct);
   }
   if (planRenewalText) {
     if (plan === 'none') {
@@ -8500,17 +8783,387 @@ function showScreen(name, instant){
 }
 
 /* ---- Toast ---- */
-function showToast(msg){
-  const w=document.getElementById('toastWrap');
-  const t=document.createElement('div');
-  t.className='toast';
-  t.innerHTML='<div class="toast-dot"></div>'+msg;
+function showToast(msg, type) {
+  const w = document.getElementById('toastWrap');
+  if (!w) return;
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-' + type : '');
+  const icons = {
+    success: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    warn:    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    info:    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const icon = type && icons[type] ? icons[type] : '<div class="toast-dot"></div>';
+  t.innerHTML = icon + msg;
   w.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),300);},3000);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
 /* ---- Credits modal (recarga / topup) ---- */
 function openModal(){ openCreditsModal(); }
+
+/* ================================================================
+   PROFILE — Full Interactivity
+   ================================================================ */
+
+/* --- pf-modal helpers --- */
+function closeProfModal(id, e) {
+  if (e && e.target !== document.getElementById(id)) return;
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+function setPfBtnLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? '…' : text;
+}
+
+/* --- Close dropdowns on outside click --- */
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.pf-dropdown.open, .prof2-usage-dropdown.open').forEach(dd => {
+    if (!dd.contains(e.target)) dd.classList.remove('open');
+  });
+});
+
+/* --- Generic dropdown toggle --- */
+function pfToggleDd(id, e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById(id);
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.pf-dropdown.open, .prof2-usage-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dd.classList.add('open');
+}
+
+/* --- USO DEL MES dropdown --- */
+function pfSelectUsage(period, label, e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('usageDropdown');
+  const lbl = document.getElementById('profUsageMonthLabel');
+  if (lbl) lbl.textContent = label;
+  if (dd) {
+    dd.querySelectorAll('.pf-dd-opt').forEach(o => o.classList.remove('pf-sel'));
+    if (e && e.currentTarget) e.currentTarget.classList.add('pf-sel');
+    dd.classList.remove('open');
+  }
+  showToast('Período: ' + label, 'info');
+}
+
+/* --- Language dropdown --- */
+function pfToggleLangDd(e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('langDropdown');
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.pf-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dd.classList.add('open');
+}
+
+function pfSelectLang(code, label, e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('langDropdown');
+  const lbl = document.getElementById('profLangLabel');
+  if (lbl) lbl.textContent = label;
+  if (dd) {
+    dd.querySelectorAll('.pf-dd-opt').forEach(o => o.classList.remove('pf-sel'));
+    if (e && e.currentTarget) e.currentTarget.classList.add('pf-sel');
+    dd.classList.remove('open');
+  }
+  try { localStorage.setItem('futuriads_lang', code); } catch(_) {}
+  showToast('Idioma actualizado: ' + label, 'success');
+}
+
+/* --- Timezone dropdown --- */
+function pfToggleTzDd(e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('tzDropdown');
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.pf-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dd.classList.add('open');
+}
+
+function pfSelectTz(tz, label, e) {
+  if (e) e.stopPropagation();
+  const dd = document.getElementById('tzDropdown');
+  const lbl = document.getElementById('profTzLabel');
+  if (lbl) lbl.textContent = label;
+  if (dd) {
+    dd.querySelectorAll('.pf-dd-opt').forEach(o => o.classList.remove('pf-sel'));
+    if (e && e.currentTarget) e.currentTarget.classList.add('pf-sel');
+    dd.classList.remove('open');
+  }
+  try { localStorage.setItem('futuriads_tz', tz); } catch(_) {}
+  showToast('Zona horaria actualizada', 'success');
+}
+
+/* --- Progress bar color helper --- */
+function updateBarColor(pct) {
+  const bar = document.querySelector('.a-plan-bar-fill');
+  if (!bar) return;
+  bar.classList.remove('orange', 'red');
+  if (pct >= 90) bar.classList.add('red');
+  else if (pct >= 70) bar.classList.add('orange');
+}
+
+/* --- Edit Profile modal --- */
+function openProfEditModal() {
+  const name = (_currentUser && _currentUser.full_name) || '';
+  const country = (_currentUser && _currentUser.country) || '';
+  const el = document.getElementById('profEditModal');
+  if (!el) return;
+  const nameIn = document.getElementById('profEditName');
+  const cntryIn = document.getElementById('profEditCountry');
+  if (nameIn) nameIn.value = name;
+  if (cntryIn) cntryIn.value = country;
+  pfUpdateEditAvatar();
+  el.classList.add('open');
+}
+
+function pfUpdateEditAvatar() {
+  const nameIn = document.getElementById('profEditName');
+  const av = document.getElementById('profEditAvatar');
+  if (!av) return;
+  const val = nameIn ? nameIn.value.trim() : '';
+  av.textContent = val ? getInitials(val) : ((_currentUser && getInitials(_currentUser.full_name || '?')) || '?');
+}
+
+async function saveProfEdit() {
+  const nameIn = document.getElementById('profEditName');
+  const cntryIn = document.getElementById('profEditCountry');
+  const nameErr = document.getElementById('profEditNameErr');
+  const name = nameIn ? nameIn.value.trim() : '';
+  const country = cntryIn ? cntryIn.value.trim() : '';
+  if (nameErr) nameErr.style.display = 'none';
+  if (!name) {
+    if (nameErr) { nameErr.textContent = 'El nombre no puede estar vacío.'; nameErr.style.display = 'block'; }
+    return;
+  }
+  setPfBtnLoading('profEditSaveBtn', true, 'Guardar cambios');
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (!session) throw new Error('No session');
+    const { error } = await supa.from('profiles').update({ full_name: name, country: country || null }).eq('id', session.user.id);
+    if (error) throw error;
+    if (_currentUser) { _currentUser.full_name = name; _currentUser.country = country; }
+    updateProfileUI({ full_name: name, country, plan: (_currentUser && _currentUser.plan) || 'none' }, (_currentUser && _currentUser.email) || '');
+    closeProfModal('profEditModal');
+    showToast('Perfil actualizado correctamente', 'success');
+  } catch (err) {
+    console.error('saveProfEdit error:', err);
+    showToast('Error al guardar el perfil', 'error');
+  } finally {
+    setPfBtnLoading('profEditSaveBtn', false, 'Guardar cambios');
+  }
+}
+
+/* --- Change Plan modal --- */
+let _pfSelectedPlan = null;
+
+function openProfChangePlanModal() {
+  _pfSelectedPlan = (_currentUser && _currentUser.plan) || 'none';
+  renderPlanCards();
+  const el = document.getElementById('profChangePlanModal');
+  if (el) el.classList.add('open');
+}
+
+function renderPlanCards() {
+  const grid = document.getElementById('pfPlanGrid');
+  if (!grid) return;
+  const plans = [
+    { id: 'starter', label: 'Starter', price: 'AR$29.990', desc: '500 créditos / mes · 1 usuario' },
+    { id: 'growth',  label: 'Growth',  price: 'AR$59.990', desc: '1.500 créditos / mes · 3 usuarios' },
+    { id: 'scale',   label: 'Scale',   price: 'AR$99.990', desc: '4.000 créditos / mes · usuarios ilimitados' }
+  ];
+  grid.innerHTML = plans.map(p => `
+    <div class="pf-plan-card${_pfSelectedPlan === p.id ? ' pf-sel' : ''}" onclick="selectPlan('${p.id}')">
+      <div class="pf-plan-radio"><div class="pf-plan-radio-dot"></div></div>
+      <div class="pf-plan-info">
+        <div class="pf-plan-name">${p.label}</div>
+        <div class="pf-plan-desc">${p.desc}</div>
+      </div>
+      <div class="pf-plan-price">${p.price}<span style="font-size:10px;font-weight:400;color:rgba(192,168,255,0.4)">/mes</span></div>
+    </div>
+  `).join('');
+}
+
+function selectPlan(id) {
+  _pfSelectedPlan = id;
+  const cards = document.querySelectorAll('#pfPlanGrid .pf-plan-card');
+  const plans = ['starter', 'growth', 'scale'];
+  cards.forEach((c, i) => c.classList.toggle('pf-sel', plans[i] === id));
+}
+
+function confirmChangePlan() {
+  if (!_pfSelectedPlan || _pfSelectedPlan === (_currentUser && _currentUser.plan)) {
+    showToast('Ya tenés este plan activo', 'info');
+    return;
+  }
+  closeProfModal('profChangePlanModal');
+  showToast('Para cambiar de plan, gestionalo desde tu portal de pagos', 'info');
+}
+
+/* --- Payment modals --- */
+function openPayHistModal() {
+  const el = document.getElementById('profPayHistModal');
+  if (el) el.classList.add('open');
+}
+
+function openPayMethodsModal() {
+  const el = document.getElementById('profPayMethodsModal');
+  if (el) el.classList.add('open');
+}
+
+function openBillingModal() {
+  const el = document.getElementById('profBillingModal');
+  if (!el) return;
+  try {
+    const saved = JSON.parse(localStorage.getItem('futuriads_billing') || '{}');
+    const nameIn = document.getElementById('billName');
+    const taxIn  = document.getElementById('billTax');
+    const addrIn = document.getElementById('billAddr');
+    if (nameIn) nameIn.value = saved.name || '';
+    if (taxIn)  taxIn.value  = saved.tax  || '';
+    if (addrIn) addrIn.value = saved.addr || '';
+  } catch(_) {}
+  el.classList.add('open');
+}
+
+function saveBilling() {
+  const name = (document.getElementById('billName') || {}).value || '';
+  const tax  = (document.getElementById('billTax')  || {}).value || '';
+  const addr = (document.getElementById('billAddr') || {}).value || '';
+  try { localStorage.setItem('futuriads_billing', JSON.stringify({ name, tax, addr })); } catch(_) {}
+  closeProfModal('profBillingModal');
+  showToast('Datos de facturación guardados', 'success');
+}
+
+/* --- Password modal --- */
+function openPasswordModal() {
+  const el = document.getElementById('profPasswordModal');
+  if (!el) return;
+  ['pwdCurrent', 'pwdNew', 'pwdConfirm'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; });
+  ['pwdBar1', 'pwdBar2', 'pwdBar3', 'pwdBar4'].forEach(id => { const b = document.getElementById(id); if (b) b.className = 'pf-pwd-bar'; });
+  const lbl = document.getElementById('pwdStrLbl'); if (lbl) lbl.textContent = '';
+  const err = document.getElementById('pwdConfirmErr'); if (err) err.style.display = 'none';
+  el.classList.add('open');
+}
+
+function updatePwdStrength(val) {
+  const bars = ['pwdBar1', 'pwdBar2', 'pwdBar3', 'pwdBar4'].map(id => document.getElementById(id));
+  const lbl = document.getElementById('pwdStrLbl');
+  bars.forEach(b => { if (b) b.className = 'pf-pwd-bar'; });
+  if (!val) { if (lbl) lbl.textContent = ''; return; }
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = ['weak', 'fair', 'good', 'strong'];
+  const names  = ['Débil', 'Regular', 'Buena', 'Fuerte'];
+  const colors = { weak:'#f87171', fair:'#fb923c', good:'#fde047', strong:'#86efac' };
+  const cls = levels[score - 1] || 'weak';
+  for (let i = 0; i < score; i++) { if (bars[i]) bars[i].classList.add(cls); }
+  if (lbl) { lbl.textContent = names[score - 1] || ''; lbl.style.color = colors[cls] || '#f87171'; }
+}
+
+async function savePassword() {
+  const cur  = (document.getElementById('pwdCurrent')  || {}).value || '';
+  const nw   = (document.getElementById('pwdNew')       || {}).value || '';
+  const conf = (document.getElementById('pwdConfirm')   || {}).value || '';
+  const err  = document.getElementById('pwdConfirmErr');
+  if (err) err.style.display = 'none';
+  if (!cur || !nw) { showToast('Completá todos los campos', 'warn'); return; }
+  if (nw.length < 8) { showToast('La contraseña debe tener al menos 8 caracteres', 'warn'); return; }
+  if (nw !== conf) {
+    if (err) { err.textContent = 'Las contraseñas no coinciden.'; err.style.display = 'block'; }
+    return;
+  }
+  setPfBtnLoading('pfPwdSaveBtn', true, 'Actualizar contraseña');
+  try {
+    const { error } = await supa.auth.updateUser({ password: nw });
+    if (error) throw error;
+    closeProfModal('profPasswordModal');
+    showToast('Contraseña actualizada correctamente', 'success');
+  } catch (e) {
+    console.error('savePassword error:', e);
+    showToast(e.message || 'Error al actualizar la contraseña', 'error');
+  } finally {
+    setPfBtnLoading('pfPwdSaveBtn', false, 'Actualizar contraseña');
+  }
+}
+
+/* --- 2FA modal --- */
+function openTwoFAModal() {
+  const el = document.getElementById('profTwoFAModal');
+  if (!el) return;
+  generateFakeQR();
+  const codeIn = document.getElementById('pfTotpCode');
+  if (codeIn) codeIn.value = '';
+  el.classList.add('open');
+}
+
+function generateFakeQR() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const key = Array.from({length: 16}, () => chars[Math.floor(Math.random() * 32)]).join('');
+  const keyEl = document.getElementById('pfTotpKey');
+  if (keyEl) keyEl.textContent = key.match(/.{1,4}/g).join(' ');
+  const canvas = document.getElementById('pfQrCanvas');
+  if (!canvas) return;
+  const cells = [];
+  for (let r = 0; r < 19; r++) {
+    for (let c = 0; c < 19; c++) {
+      const inCorner = (r < 7 && c < 7) || (r < 7 && c > 11) || (r > 11 && c < 7);
+      const onBorder = r === 0 || r === 6 || r === 12 || r === 18 || c === 0 || c === 6 || c === 12 || c === 18;
+      const fill = inCorner || onBorder || (Math.sin(r * 7 + c * 13 + key.charCodeAt((r + c) % key.length)) > 0.05);
+      if (fill) cells.push(`<rect x="${8 + c * 6.5}" y="${8 + r * 6.5}" width="6" height="6" fill="#1a103a"/>`);
+    }
+  }
+  canvas.innerHTML = `<svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">${cells.join('')}</svg>`;
+}
+
+function confirmTwoFA() {
+  const code = (document.getElementById('pfTotpCode') || {}).value || '';
+  if (!code || code.replace(/\s/g, '').length < 6) { showToast('Ingresá el código de 6 dígitos', 'warn'); return; }
+  closeProfModal('profTwoFAModal');
+  const toggle = document.getElementById('toggle2fa');
+  if (toggle) toggle.checked = true;
+  showToast('2FA activado correctamente', 'success');
+}
+
+function pfToggle2FA(chk) {
+  if (chk.checked) { chk.checked = false; openTwoFAModal(); }
+  else { showToast('2FA desactivado', 'info'); }
+}
+
+/* --- Devices modal --- */
+function openDevicesModal() {
+  const el = document.getElementById('profDevicesModal');
+  if (el) el.classList.add('open');
+}
+
+/* --- Preferences toggles --- */
+function pfSavePref(key, val) {
+  try {
+    const prefs = JSON.parse(localStorage.getItem('futuriads_prefs') || '{}');
+    prefs[key] = val;
+    localStorage.setItem('futuriads_prefs', JSON.stringify(prefs));
+  } catch(_) {}
+  showToast(val ? 'Preferencia activada' : 'Preferencia desactivada', 'info');
+}
+
+function initPrefToggles() {
+  try {
+    const prefs = JSON.parse(localStorage.getItem('futuriads_prefs') || '{}');
+    ['pref_email', 'pref_news', 'pref_weekly', 'pref_offers'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && prefs[id] !== undefined) el.checked = prefs[id];
+    });
+  } catch(_) {}
+}
 
 /* ================================================================
    SISTEMA DE SELECCIÓN, CARPETAS Y DROPDOWN — PREMIUM
@@ -11175,6 +11828,218 @@ localStorage.removeItem('sidebarWidth');
     <div style="display:flex;gap:10px;">
       <button class="btn-danger" style="flex:1;justify-content:center;color:#fff;border-color:rgba(255,255,255,0.15);" onclick="closeSignOutModal()">Cancelar</button>
       <button class="btn-danger" style="flex:1;justify-content:center;" onclick="confirmSignOut()">Sí, cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE MODALS ===== -->
+
+<!-- Edit Profile -->
+<div class="pf-modal" id="profEditModal" onclick="closeProfModal('profEditModal',event)">
+  <div class="pf-modal-card" style="max-width:420px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Editar perfil</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profEditModal')">&times;</button>
+    </div>
+    <div style="display:flex;justify-content:center;margin-bottom:20px;">
+      <div id="profEditAvatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;letter-spacing:-1px;border:2px solid rgba(139,92,246,0.5);box-shadow:0 0 20px rgba(109,40,217,0.4);"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:13px;">
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Nombre completo</label>
+        <input id="profEditName" type="text" placeholder="Tu nombre completo" maxlength="60" oninput="pfUpdateEditAvatar()" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        <div id="profEditNameErr" style="font-size:11px;color:#f87171;margin-top:4px;display:none;"></div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">País</label>
+        <input id="profEditCountry" type="text" placeholder="Tu país" maxlength="40" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+    </div>
+    <div class="pf-modal-btns">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profEditModal')">Cancelar</button>
+      <button class="pf-btn-primary" id="profEditSaveBtn" onclick="saveProfEdit()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Plan -->
+<div class="pf-modal" id="profChangePlanModal" onclick="closeProfModal('profChangePlanModal',event)">
+  <div class="pf-modal-card" style="max-width:460px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Cambiar plan</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profChangePlanModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Elegí el plan que mejor se adapta a tu volumen de producción.</div>
+    <div class="pf-plan-grid" id="pfPlanGrid"></div>
+    <div class="pf-modal-btns">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profChangePlanModal')">Cancelar</button>
+      <button class="pf-btn-primary" id="pfChangePlanBtn" onclick="confirmChangePlan()">Confirmar cambio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment History -->
+<div class="pf-modal" id="profPayHistModal" onclick="closeProfModal('profPayHistModal',event)">
+  <div class="pf-modal-card" style="max-width:540px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Historial de pagos</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profPayHistModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Todos tus movimientos y facturas.</div>
+    <div style="overflow-x:auto;">
+      <table class="pf-table">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Estado</th></tr></thead>
+        <tbody id="pfPayHistBody">
+          <tr><td colspan="4" style="text-align:center;padding:28px;color:rgba(192,168,255,0.3);">No hay transacciones disponibles.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pf-modal-btns" style="justify-content:flex-end;">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profPayHistModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Methods -->
+<div class="pf-modal" id="profPayMethodsModal" onclick="closeProfModal('profPayMethodsModal',event)">
+  <div class="pf-modal-card" style="max-width:420px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Métodos de pago</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profPayMethodsModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Tus tarjetas y métodos de pago guardados.</div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+      <svg width="36" height="26" viewBox="0 0 36 26" fill="none"><rect width="36" height="26" rx="4" fill="rgba(109,40,217,0.2)"/><rect x="0" y="7" width="36" height="6" fill="rgba(139,92,246,0.4)"/><rect x="4" y="17" width="8" height="3" rx="1" fill="rgba(192,168,255,0.5)"/></svg>
+      <div style="flex:1;">
+        <div style="font-size:13px;color:#e0d4ff;font-weight:600;">•••• •••• •••• 4242</div>
+        <div style="font-size:11px;color:rgba(192,168,255,0.4);margin-top:2px;">Vence 12/27 · Principal</div>
+      </div>
+      <div style="font-size:10px;background:rgba(34,197,94,0.12);color:#86efac;border-radius:5px;padding:3px 8px;border:1px solid rgba(34,197,94,0.2);">Activa</div>
+    </div>
+    <button style="width:100%;background:transparent;border:1.5px dashed rgba(139,92,246,0.3);border-radius:12px;padding:13px;color:rgba(192,168,255,0.5);font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(139,92,246,0.6)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(139,92,246,0.3)';this.style.color='rgba(192,168,255,0.5)'" onclick="showToast('Redirigiendo al portal de pagos…','info')">+ Agregar tarjeta</button>
+    <div class="pf-modal-btns" style="justify-content:flex-end;">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profPayMethodsModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Billing Config -->
+<div class="pf-modal" id="profBillingModal" onclick="closeProfModal('profBillingModal',event)">
+  <div class="pf-modal-card" style="max-width:420px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Configuración de facturación</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profBillingModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Datos para tus facturas y comprobantes.</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Nombre / Razón social</label>
+        <input id="billName" type="text" placeholder="Tu nombre o empresa" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">CUIT / NIF / Tax ID</label>
+        <input id="billTax" type="text" placeholder="20-00000000-0" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Dirección</label>
+        <input id="billAddr" type="text" placeholder="Calle 123, Ciudad, País" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+    </div>
+    <div class="pf-modal-btns">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profBillingModal')">Cancelar</button>
+      <button class="pf-btn-primary" onclick="saveBilling()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Change -->
+<div class="pf-modal" id="profPasswordModal" onclick="closeProfModal('profPasswordModal',event)">
+  <div class="pf-modal-card" style="max-width:400px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Cambiar contraseña</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profPasswordModal')">&times;</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Contraseña actual</label>
+        <input id="pwdCurrent" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Nueva contraseña</label>
+        <input id="pwdNew" type="password" placeholder="••••••••" oninput="updatePwdStrength(this.value)" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        <div class="pf-pwd-bars">
+          <div class="pf-pwd-bar" id="pwdBar1"></div><div class="pf-pwd-bar" id="pwdBar2"></div><div class="pf-pwd-bar" id="pwdBar3"></div><div class="pf-pwd-bar" id="pwdBar4"></div>
+        </div>
+        <div class="pf-pwd-lbl" id="pwdStrLbl"></div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Confirmar nueva contraseña</label>
+        <input id="pwdConfirm" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        <div id="pwdConfirmErr" style="font-size:11px;color:#f87171;margin-top:4px;display:none;"></div>
+      </div>
+    </div>
+    <div class="pf-modal-btns">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profPasswordModal')">Cancelar</button>
+      <button class="pf-btn-primary" id="pfPwdSaveBtn" onclick="savePassword()">Actualizar contraseña</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2FA Setup -->
+<div class="pf-modal" id="profTwoFAModal" onclick="closeProfModal('profTwoFAModal',event)">
+  <div class="pf-modal-card" style="max-width:380px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Autenticación de dos factores</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profTwoFAModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Escaneá el código QR con Google Authenticator o cualquier app TOTP.</div>
+    <div style="display:flex;justify-content:center;margin-bottom:18px;">
+      <div id="pfQrCanvas" style="width:140px;height:140px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;"></div>
+    </div>
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="font-size:10px;color:rgba(192,168,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Clave manual</div>
+      <div id="pfTotpKey" style="font-family:monospace,monospace;font-size:14px;color:#c4b5fd;letter-spacing:2px;word-break:break-all;"></div>
+    </div>
+    <div>
+      <label style="font-size:11px;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.6px;font-weight:600;display:block;margin-bottom:6px;">Ingresá el código de verificación</label>
+      <input id="pfTotpCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:18px;letter-spacing:4px;text-align:center;outline:none;" onfocus="this.style.borderColor='rgba(139,92,246,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+    </div>
+    <div class="pf-modal-btns">
+      <button class="pf-btn-cancel" onclick="closeProfModal('profTwoFAModal')">Cancelar</button>
+      <button class="pf-btn-primary" onclick="confirmTwoFA()">Activar 2FA</button>
+    </div>
+  </div>
+</div>
+
+<!-- Connected Devices -->
+<div class="pf-modal" id="profDevicesModal" onclick="closeProfModal('profDevicesModal',event)">
+  <div class="pf-modal-card" style="max-width:460px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Dispositivos conectados</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profDevicesModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Sesiones activas en tu cuenta. Podés cerrar las que no reconocés.</div>
+    <div style="display:flex;flex-direction:column;">
+      <div class="pf-device">
+        <div class="pf-device-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg></div>
+        <div style="flex:1;min-width:0;">
+          <div class="pf-device-name">Este dispositivo</div>
+          <div class="pf-device-meta">Windows · Chrome · Buenos Aires</div>
+        </div>
+        <div style="font-size:10px;background:rgba(34,197,94,0.12);color:#86efac;border-radius:5px;padding:3px 8px;border:1px solid rgba(34,197,94,0.2);flex-shrink:0;">Activo ahora</div>
+      </div>
+      <div class="pf-device">
+        <div class="pf-device-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></div>
+        <div style="flex:1;min-width:0;">
+          <div class="pf-device-name">iPhone 15 Pro</div>
+          <div class="pf-device-meta">iOS Safari · hace 2 días</div>
+        </div>
+        <button class="pf-device-kick" onclick="showToast('Sesión cerrada en iPhone 15 Pro','success');this.closest('.pf-device').style.opacity='0.4'">Cerrar</button>
+      </div>
+    </div>
+    <div class="pf-modal-btns" style="justify-content:space-between;">
+      <button class="pf-btn-danger-sm" onclick="showToast('Todas las otras sesiones cerradas','success');closeProfModal('profDevicesModal')">Cerrar todas las demás</button>
+      <button class="pf-btn-cancel" style="flex:0;padding:11px 20px;" onclick="closeProfModal('profDevicesModal')">Listo</button>
     </div>
   </div>
 </div>
