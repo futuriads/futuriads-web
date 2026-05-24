@@ -3679,164 +3679,242 @@ body, #app { background: #07050f; }
 .a-back-link:hover { color: var(--text); }
 
 /* ==============================================
-   APP — PROFILE (redesigned)
+   APP — PROFILE v2
    ============================================== */
 
-/* Hero banner */
-.prof-hero {
-  position: relative; overflow: hidden;
-  background: #09051a;
-  border: 1px solid rgba(109,40,217,0.28);
-  border-radius: 18px; padding: 32px 28px 28px;
-  display: flex; align-items: center; gap: 24px;
-  margin-bottom: 20px;
+#screen-perfil { animation: profFadeIn 0.4s ease both; }
+@keyframes profFadeIn { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none} }
+
+/* ---- Header ---- */
+.prof2-header {
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(9,5,26,0.7); border:1px solid rgba(109,40,217,0.2);
+  border-radius:20px; padding:26px 30px; margin-bottom:14px;
+  position:relative; overflow:hidden;
 }
-.prof-hero-orb {
-  position: absolute; border-radius: 50%; pointer-events: none; filter: blur(52px);
+.prof2-header::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 55% 130% at 8% 50%, rgba(109,40,217,0.14) 0%, transparent 70%);
 }
-.prof-hero-orb-1 {
-  width: 260px; height: 260px;
-  background: radial-gradient(circle, rgba(109,40,217,0.4) 0%, transparent 70%);
-  top: -80px; left: -60px;
+.prof2-header-left { display:flex; align-items:center; gap:20px; position:relative; z-index:1; }
+.prof2-avatar {
+  width:68px; height:68px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg, rgba(109,40,217,0.7) 0%, rgba(76,29,149,0.5) 100%);
+  border:2px solid rgba(139,92,246,0.45);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800; color:#e8d8ff;
+  box-shadow:0 0 28px rgba(109,40,217,0.28);
 }
-.prof-hero-orb-2 {
-  width: 180px; height: 180px;
-  background: radial-gradient(circle, rgba(139,92,246,0.28) 0%, transparent 70%);
-  bottom: -60px; right: 60px;
+.prof2-name { font-size:20px; font-weight:800; letter-spacing:-0.5px; color:#fff; margin-bottom:3px; }
+.prof2-email { font-size:13px; color:rgba(192,168,255,0.5); }
+.prof2-edit-btn {
+  display:inline-flex; align-items:center; gap:7px; flex-shrink:0;
+  background:transparent; border:1px solid rgba(139,92,246,0.3); border-radius:10px;
+  padding:9px 18px; font-size:13px; font-weight:500; color:rgba(192,168,255,0.7);
+  cursor:pointer; position:relative; z-index:1;
+  transition:border-color 0.2s, box-shadow 0.2s, color 0.2s, background 0.2s;
 }
-.prof-hero-avatar {
-  position: relative; z-index: 1;
-  width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, rgba(109,40,217,0.7) 0%, rgba(76,29,149,0.5) 100%);
-  border: 2px solid rgba(139,92,246,0.5);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; font-weight: 800; color: #e8d8ff;
-  box-shadow: 0 0 28px rgba(109,40,217,0.35);
+.prof2-edit-btn:hover {
+  border-color:rgba(139,92,246,0.62); color:#c4b5fd;
+  box-shadow:0 0 16px rgba(109,40,217,0.25); background:rgba(109,40,217,0.1);
 }
-.prof-hero-info { position: relative; z-index: 1; flex: 1; min-width: 0; }
-.prof-hero-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #fff; margin-bottom: 3px; }
-.prof-hero-email { font-size: 13px; color: rgba(192,168,255,0.55); margin-bottom: 10px; }
-.prof-hero-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.prof-plan-badge {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px;
-  background: rgba(109,40,217,0.3); border: 1px solid rgba(139,92,246,0.4); color: #c4b5fd;
-}
-.prof-hero-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
-@media(max-width:680px){
-  .prof-hero { flex-direction:column; align-items:flex-start; }
-  .prof-hero-actions { flex-direction:row; align-items:center; width:100%; }
+@media(max-width:640px){
+  .prof2-header{flex-direction:column;align-items:flex-start;gap:14px;}
+  .prof2-edit-btn{width:100%;justify-content:center;}
 }
 
-/* Stats row */
-.prof-stats {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px;
+/* ---- Card grid ---- */
+.prof2-row { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; margin-bottom:13px; }
+@media(max-width:900px){ .prof2-row{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:560px){ .prof2-row{grid-template-columns:1fr;} }
+
+/* Base card */
+.prof2-card {
+  background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px; padding:22px; display:flex; flex-direction:column;
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
+  animation:profCardIn 0.42s ease both;
 }
-@media(max-width:800px){ .prof-stats { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:460px){ .prof-stats { grid-template-columns: 1fr 1fr; } }
-.prof-stat {
-  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px; padding: 18px 16px;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.prof-stat-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: #fff; }
-.prof-stat-label {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
-  color: rgba(192,168,255,0.45);
-}
-.prof-stat-icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.25);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 4px;
+.prof2-card:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(0,0,0,0.4); }
+@keyframes profCardIn { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none} }
+.prof2-card-row-1 .prof2-card:nth-child(1){animation-delay:0.06s}
+.prof2-card-row-1 .prof2-card:nth-child(2){animation-delay:0.12s}
+.prof2-card-row-1 .prof2-card:nth-child(3){animation-delay:0.18s}
+.prof2-card-row-2 .prof2-card:nth-child(1){animation-delay:0.24s}
+.prof2-card-row-2 .prof2-card:nth-child(2){animation-delay:0.30s}
+.prof2-card-row-2 .prof2-card:nth-child(3){animation-delay:0.36s}
+.prof2-card-title {
+  font-size:9px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase;
+  color:rgba(192,168,255,0.3); margin-bottom:16px; flex-shrink:0;
 }
 
-/* Main 2-col grid */
-.prof-main {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+/* MI PLAN */
+.prof2-plan-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px; }
+.prof2-plan-badge {
+  font-size:10px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  padding:4px 10px; border-radius:999px;
+  background:rgba(109,40,217,0.27); border:1px solid rgba(139,92,246,0.36); color:#c4b5fd;
 }
-@media(max-width:680px){ .prof-main { grid-template-columns: 1fr; } }
+.prof2-plan-price { font-size:24px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.prof2-bar-wrap { margin:8px 0; }
+.prof2-bar-bg { height:5px; background:rgba(255,255,255,0.07); border-radius:5px; overflow:hidden; }
+.prof2-bar-fill {
+  height:100%; width:0%; border-radius:5px;
+  background:linear-gradient(90deg,#7c3aed,#a78bfa);
+  box-shadow:0 0 8px rgba(139,92,246,0.45);
+  transition:width 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+.prof2-plan-text { font-size:11px; color:rgba(192,168,255,0.43); margin-bottom:4px; }
+.prof2-plan-renew { font-size:10.5px; color:rgba(192,168,255,0.3); margin-bottom:16px; flex:1; }
+.prof2-plan-btns { display:flex; flex-direction:column; gap:7px; margin-top:auto; }
 
-/* Cards (shared) */
-.a-profile-card {
-  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px; padding: 24px;
+/* USO DEL MES */
+.prof2-usage-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.prof2-month-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:8px;
+  padding:4px 9px; font-size:10.5px; color:#d0d0d0; cursor:pointer;
+  transition:border-color 0.2s; white-space:nowrap;
 }
-.a-profile-card-title {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: rgba(192,168,255,0.4); margin-bottom: 20px;
+.prof2-month-btn:hover { border-color:rgba(255,255,255,0.2); }
+.prof2-usage-nums { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+.prof2-usage-num-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(192,168,255,0.36); margin-bottom:3px; }
+.prof2-usage-num-val { font-size:18px; font-weight:800; letter-spacing:-0.7px; color:#fff; }
+.prof2-chart-wrap { position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.prof2-chart-inner { position:absolute; text-align:center; }
+.prof2-chart-pct { font-size:20px; font-weight:900; letter-spacing:-0.8px; color:#fff; line-height:1.1; }
+.prof2-chart-sublabel { font-size:8.5px; color:rgba(192,168,255,0.36); font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.prof2-usage-foot { display:flex; justify-content:space-between; font-size:10px; color:rgba(192,168,255,0.36); flex-wrap:wrap; gap:4px; }
+
+/* MI CUENTA */
+.prof2-field { margin-bottom:13px; }
+.prof2-field-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(192,168,255,0.3); margin-bottom:3px; }
+.prof2-field-row { display:flex; align-items:center; gap:7px; }
+.prof2-field-val { font-size:13px; font-weight:500; color:#e0d4ff; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.prof2-field-edit-btn {
+  width:22px; height:22px; border-radius:6px; flex-shrink:0;
+  background:transparent; border:1px solid rgba(139,92,246,0.2); color:rgba(192,168,255,0.3);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:background 0.15s, color 0.15s;
+}
+.prof2-field-edit-btn:hover { background:rgba(109,40,217,0.2); color:#c4b5fd; }
+.prof2-field-input {
+  flex:1; background:rgba(109,40,217,0.1); border:1px solid rgba(139,92,246,0.4);
+  border-radius:8px; padding:5px 10px; font-size:13px; color:#e0d4ff;
+  outline:none; font-family:inherit;
+}
+.prof2-field-input:focus { border-color:rgba(167,139,250,0.7); }
+.prof2-field-save-btn {
+  padding:5px 11px; border-radius:7px; font-size:11px; font-weight:600;
+  background:rgba(109,40,217,0.4); border:1px solid rgba(139,92,246,0.5); color:#e0d4ff;
+  cursor:pointer; flex-shrink:0; transition:background 0.15s;
+}
+.prof2-field-save-btn:hover { background:rgba(109,40,217,0.6); }
+.prof2-signout-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:transparent; border:1px solid rgba(255,59,59,0.2); border-radius:9px;
+  padding:9px 14px; font-size:12px; font-weight:500; color:rgba(255,100,100,0.62);
+  cursor:pointer; width:100%; justify-content:center; margin-top:auto;
+  transition:background 0.2s, border-color 0.2s, color 0.2s;
+}
+.prof2-signout-btn:hover { background:rgba(255,59,59,0.06); border-color:rgba(255,59,59,0.36); color:rgba(255,120,120,0.85); }
+
+/* FACTURACIÓN */
+.prof2-bill-item {
+  display:flex; align-items:center; gap:11px; padding:10px 7px; border-radius:9px; cursor:pointer;
+  transition:background 0.15s; border-bottom:1px solid rgba(255,255,255,0.045); margin:0 -7px;
+}
+.prof2-bill-item:last-child { border-bottom:none; }
+.prof2-bill-item:hover { background:rgba(109,40,217,0.09); }
+.prof2-bill-icon {
+  width:32px; height:32px; border-radius:9px; flex-shrink:0;
+  background:rgba(109,40,217,0.13); border:1px solid rgba(109,40,217,0.2);
+  display:flex; align-items:center; justify-content:center; color:rgba(192,168,255,0.5);
+}
+.prof2-bill-name { font-size:12.5px; font-weight:600; color:#e0d4ff; margin-bottom:1px; }
+.prof2-bill-sub { font-size:10px; color:rgba(192,168,255,0.37); }
+.prof2-bill-badge {
+  font-size:8px; font-weight:700; letter-spacing:0.7px; text-transform:uppercase;
+  padding:2px 7px; border-radius:999px; flex-shrink:0;
+  background:rgba(109,40,217,0.22); border:1px solid rgba(139,92,246,0.28); color:#c4b5fd;
+}
+.prof2-bill-chevron { color:rgba(192,168,255,0.2); flex-shrink:0; }
+
+/* PREFERENCIAS — custom toggles */
+.prof2-pref-item {
+  display:flex; align-items:center; gap:11px; padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.045);
+}
+.prof2-pref-item:last-child { border-bottom:none; }
+.prof2-pref-icon {
+  width:30px; height:30px; border-radius:9px; flex-shrink:0;
+  background:rgba(109,40,217,0.11); border:1px solid rgba(109,40,217,0.17);
+  display:flex; align-items:center; justify-content:center; color:rgba(192,168,255,0.48);
+}
+.prof2-pref-name { font-size:12px; font-weight:600; color:#e0d4ff; }
+.prof2-pref-desc { font-size:10px; color:rgba(192,168,255,0.32); margin-top:1px; }
+.prof2-toggle { position:relative; display:inline-block; cursor:pointer; flex-shrink:0; }
+.prof2-toggle input { position:absolute; opacity:0; width:0; height:0; }
+.prof2-toggle-track {
+  display:block; width:36px; height:20px; border-radius:99px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
+  position:relative; transition:background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.prof2-toggle input:checked ~ .prof2-toggle-track {
+  background:rgba(109,40,217,0.65); border-color:rgba(139,92,246,0.5);
+  box-shadow:0 0 10px rgba(109,40,217,0.35);
+}
+.prof2-toggle-thumb {
+  position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%;
+  background:#fff; opacity:0.45; box-shadow:0 1px 4px rgba(0,0,0,0.4);
+  transition:transform 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.2s;
+}
+.prof2-toggle input:checked ~ .prof2-toggle-track .prof2-toggle-thumb {
+  transform:translateX(16px); opacity:1;
 }
 
-/* Plan card */
-.a-plan-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.a-plan-price { font-size: 26px; font-weight: 900; letter-spacing: -1.5px; color: #fff; }
-.a-plan-bar-bg { height: 4px; background: rgba(255,255,255,0.07); border-radius: 4px; margin: 10px 0 6px; }
-.a-plan-bar-fill { height: 100%; width: 20%; background: linear-gradient(90deg,#7c3aed,#a78bfa); border-radius: 4px; transition: width 0.4s ease; }
-.a-plan-videos-text { font-size: 12px; color: rgba(192,168,255,0.5); margin-bottom: 6px; }
-.a-plan-card-renewal { font-size: 11px; color: rgba(192,168,255,0.4); margin-bottom: 20px; }
+/* SEGURIDAD */
+.prof2-sec-item {
+  display:flex; align-items:center; gap:11px; padding:10px 7px; border-radius:9px; cursor:pointer;
+  transition:background 0.15s; border-bottom:1px solid rgba(255,255,255,0.045); margin:0 -7px;
+}
+.prof2-sec-item:last-child { border-bottom:none; }
+.prof2-sec-item:hover { background:rgba(109,40,217,0.09); }
+.prof2-sec-icon {
+  width:30px; height:30px; border-radius:9px; flex-shrink:0;
+  background:rgba(109,40,217,0.11); border:1px solid rgba(109,40,217,0.17);
+  display:flex; align-items:center; justify-content:center; color:rgba(192,168,255,0.48);
+}
+.prof2-sec-name { font-size:12px; font-weight:600; color:#e0d4ff; }
+.prof2-sec-desc { font-size:10px; color:rgba(192,168,255,0.32); margin-top:1px; }
+.prof2-sec-arrow { color:rgba(192,168,255,0.18); flex-shrink:0; }
 
-/* Account card — fields + inline edit */
-.a-field-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: rgba(192,168,255,0.4); margin-bottom: 4px; margin-top: 16px;
+/* INFORMACIÓN DE LA CUENTA */
+.prof2-info-card {
+  background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px; padding:20px 26px;
+  transition:transform 0.2s, box-shadow 0.2s;
+  animation:profCardIn 0.42s 0.42s ease both;
 }
-.a-field-label:first-of-type { margin-top: 0; }
-.a-field-row { display: flex; align-items: center; gap: 8px; }
-.a-field-val { font-size: 14px; color: #e0d4ff; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.a-field-edit-btn {
-  width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0;
-  background: transparent; border: 1px solid rgba(139,92,246,0.25); color: rgba(192,168,255,0.4);
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.a-field-edit-btn:hover { background: rgba(109,40,217,0.2); color: #c4b5fd; }
-.a-field-input {
-  flex: 1; background: rgba(109,40,217,0.12); border: 1px solid rgba(139,92,246,0.4);
-  border-radius: 8px; padding: 5px 10px; font-size: 14px; color: #e0d4ff;
-  outline: none; font-family: inherit;
-}
-.a-field-input:focus { border-color: rgba(167,139,250,0.7); }
-.a-field-save-btn {
-  padding: 5px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
-  background: rgba(109,40,217,0.4); border: 1px solid rgba(139,92,246,0.5); color: #e0d4ff;
-  cursor: pointer; transition: background 0.15s; flex-shrink: 0;
-}
-.a-field-save-btn:hover { background: rgba(109,40,217,0.6); }
+.prof2-info-card:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(0,0,0,0.4); }
+.prof2-info-cols { display:grid; grid-template-columns:repeat(4,1fr); }
+@media(max-width:640px){ .prof2-info-cols{grid-template-columns:repeat(2,1fr);gap:16px 0;} }
+.prof2-info-col { padding:6px 22px; border-left:1px solid rgba(255,255,255,0.05); }
+.prof2-info-col:first-child { border-left:none; padding-left:0; }
+.prof2-info-col-label { font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:rgba(192,168,255,0.3); margin-bottom:7px; }
+.prof2-info-col-val { font-size:13px; font-weight:600; color:#e0d4ff; }
 
-/* Recent activity */
-.prof-activity-title {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: rgba(192,168,255,0.4); margin-bottom: 12px;
-}
-.prof-act-list { display: flex; flex-direction: column; gap: 8px; }
-.prof-act-item {
-  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.065);
-  border-radius: 12px; padding: 10px 14px;
-  display: flex; align-items: center; gap: 12px; cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-.prof-act-item:hover { background: rgba(109,40,217,0.1); border-color: rgba(139,92,246,0.25); }
-.prof-act-thumb {
-  width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; overflow: hidden;
-  background: rgba(109,40,217,0.15); display: flex; align-items: center; justify-content: center;
-  color: rgba(192,168,255,0.3); font-size: 18px;
-}
-.prof-act-thumb img, .prof-act-thumb video { width: 100%; height: 100%; object-fit: cover; }
-.prof-act-body { flex: 1; min-width: 0; }
-.prof-act-name { font-size: 13px; font-weight: 600; color: #e0d4ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-.prof-act-meta { font-size: 11px; color: rgba(192,168,255,0.4); }
-.prof-act-type {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
-  background: rgba(109,40,217,0.2); border: 1px solid rgba(109,40,217,0.3); color: rgba(192,168,255,0.6);
-}
-
-/* Legacy compat (keep for sidebar/credits) */
-.a-profile-head { margin-bottom: 0; }
-.a-profile-avatar { display: none; }
-.a-profile-name { display: none; }
-.a-profile-email { display: none; }
-.a-profile-cards { display: none; }
+/* Legacy compat (querySelector selectors used in JS) */
+.a-profile-head,.a-profile-avatar,.a-profile-name,.a-profile-email,.a-profile-cards { display:none; }
+.a-plan-bar-bg { height:5px; background:rgba(255,255,255,0.07); border-radius:5px; overflow:hidden; }
+.a-plan-bar-fill { height:100%; width:0%; border-radius:5px; background:linear-gradient(90deg,#7c3aed,#a78bfa); transition:width 0.9s cubic-bezier(0.22,1,0.36,1); }
+.a-plan-videos-text { font-size:11px; color:rgba(192,168,255,0.43); margin-bottom:4px; }
+.a-plan-card-renewal { font-size:10.5px; color:rgba(192,168,255,0.3); }
+.a-field-row { display:flex; align-items:center; gap:7px; }
+.a-field-val { font-size:13px; color:#e0d4ff; font-weight:500; flex:1; }
+.a-field-edit-btn { width:22px; height:22px; border-radius:6px; background:transparent; border:1px solid rgba(139,92,246,0.2); color:rgba(192,168,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.a-field-input { flex:1; background:rgba(109,40,217,0.1); border:1px solid rgba(139,92,246,0.4); border-radius:8px; padding:5px 10px; font-size:13px; color:#e0d4ff; outline:none; font-family:inherit; }
+.a-field-save-btn { padding:5px 11px; border-radius:7px; font-size:11px; font-weight:600; background:rgba(109,40,217,0.4); border:1px solid rgba(139,92,246,0.5); color:#e0d4ff; cursor:pointer; }
 
 .btn-danger {
   display: inline-flex; align-items: center; gap: 6px;
@@ -5276,120 +5354,329 @@ body, #app { background: #07050f; }
     <!-- ---- PERFIL ---- -->
     <div class="screen" id="screen-perfil">
 
-      <!-- Hero banner -->
-      <div class="prof-hero">
-        <div class="prof-hero-orb prof-hero-orb-1"></div>
-        <div class="prof-hero-orb prof-hero-orb-2"></div>
-        <div class="prof-hero-avatar" id="profileAvatar">--</div>
-        <div class="prof-hero-info">
-          <div class="prof-hero-name" id="profileName">Cargando...</div>
-          <div class="prof-hero-email" id="profileEmail">cargando@email.com</div>
-          <div class="prof-hero-badges">
-            <span class="prof-plan-badge" id="profHeroPlan">—</span>
+      <!-- Header -->
+      <div class="prof2-header">
+        <div class="prof2-header-left">
+          <div class="prof2-avatar" id="profileAvatar">--</div>
+          <div>
+            <div class="prof2-name" id="profileName">Cargando...</div>
+            <div class="prof2-email" id="profileEmail">—</div>
           </div>
         </div>
-        <div class="prof-hero-actions">
-          <button class="btn-danger" style="margin-top:0;width:auto;" onclick="openSignOutModal()">
+        <button class="prof2-edit-btn" onclick="profEditField('name')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar perfil
+        </button>
+      </div>
+
+      <!-- Row 1: MI PLAN · USO DEL MES · MI CUENTA -->
+      <div class="prof2-row prof2-card-row-1">
+
+        <!-- MI PLAN -->
+        <div class="prof2-card">
+          <div class="prof2-card-title">Mi plan</div>
+          <div class="prof2-plan-row">
+            <span class="prof2-plan-badge" id="profilePlan">—</span>
+            <span class="prof2-plan-price" id="profilePlanPrice">$0<span style="font-size:13px;font-weight:400;color:rgba(192,168,255,0.38)">/mes</span></span>
+          </div>
+          <div class="a-plan-videos-text prof2-plan-text">Cargando...</div>
+          <div class="prof2-bar-wrap">
+            <div class="a-plan-bar-bg prof2-bar-bg"><div class="a-plan-bar-fill prof2-bar-fill" style="width:0%"></div></div>
+          </div>
+          <div class="a-plan-card-renewal prof2-plan-renew">—</div>
+          <div class="prof2-plan-btns">
+            <button class="btn-w" style="width:100%;justify-content:center;font-size:12px;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
+            <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;font-size:12px;" onclick="openCreditsModal()">Recargar créditos</button>
+          </div>
+        </div>
+
+        <!-- USO DEL MES -->
+        <div class="prof2-card">
+          <div class="prof2-usage-head">
+            <div class="prof2-card-title" style="margin-bottom:0">Uso del mes</div>
+            <button class="prof2-month-btn">
+              <span id="profUsageMonthLabel">este mes</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5l2.5 3 2.5-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="prof2-usage-nums">
+            <div>
+              <div class="prof2-usage-num-label">Créditos usados</div>
+              <div class="prof2-usage-num-val" id="profUsageUsed">—</div>
+            </div>
+            <div style="text-align:right">
+              <div class="prof2-usage-num-label">Créditos restantes</div>
+              <div class="prof2-usage-num-val" id="profUsageLeft">—</div>
+            </div>
+          </div>
+          <div class="prof2-chart-wrap">
+            <svg width="116" height="116" viewBox="0 0 116 116">
+              <defs>
+                <linearGradient id="usageGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#7c3aed"/>
+                  <stop offset="100%" stop-color="#a78bfa"/>
+                </linearGradient>
+              </defs>
+              <circle cx="58" cy="58" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+              <circle id="profUsageCircle" cx="58" cy="58" r="46" fill="none"
+                stroke="url(#usageGrad)" stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="289.0" stroke-dashoffset="289.0"
+                transform="rotate(-90 58 58)"
+                style="transition:stroke-dashoffset 1s cubic-bezier(0.22,1,0.36,1)"/>
+            </svg>
+            <div class="prof2-chart-inner">
+              <div class="prof2-chart-pct" id="profUsagePct">0%</div>
+              <div class="prof2-chart-sublabel">usado</div>
+            </div>
+          </div>
+          <div class="prof2-usage-foot">
+            <span id="profUsageAvg">Promedio diario: —</span>
+            <span id="profUsageDays">— días restantes</span>
+          </div>
+        </div>
+
+        <!-- MI CUENTA -->
+        <div class="prof2-card" id="profCuentaCard">
+          <div class="prof2-card-title">Mi cuenta</div>
+
+          <div class="prof2-field">
+            <div class="prof2-field-label">Nombre</div>
+            <div class="prof2-field-row" id="profNameRow">
+              <div class="prof2-field-val" id="profileFieldName">--</div>
+              <button class="prof2-field-edit-btn" onclick="profEditField('name')" title="Editar nombre">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            </div>
+            <div class="prof2-field-row" id="profNameEdit" style="display:none;">
+              <input class="prof2-field-input" id="profNameInput" type="text" placeholder="Tu nombre completo"
+                onkeydown="if(event.key==='Enter')profSaveField('name');if(event.key==='Escape')profCancelField('name')">
+              <button class="prof2-field-save-btn" onclick="profSaveField('name')">Guardar</button>
+            </div>
+          </div>
+
+          <div class="prof2-field">
+            <div class="prof2-field-label">Email</div>
+            <div class="prof2-field-row">
+              <div class="prof2-field-val" id="profileFieldEmail">--</div>
+            </div>
+          </div>
+
+          <div class="prof2-field">
+            <div class="prof2-field-label">País</div>
+            <div class="prof2-field-row" id="profCountryRow">
+              <div class="prof2-field-val" id="profileFieldCountry">--</div>
+              <button class="prof2-field-edit-btn" onclick="profEditField('country')" title="Editar país">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            </div>
+            <div class="prof2-field-row" id="profCountryEdit" style="display:none;">
+              <input class="prof2-field-input" id="profCountryInput" type="text" placeholder="Ej: Argentina"
+                onkeydown="if(event.key==='Enter')profSaveField('country');if(event.key==='Escape')profCancelField('country')">
+              <button class="prof2-field-save-btn" onclick="profSaveField('country')">Guardar</button>
+            </div>
+          </div>
+
+          <div class="prof2-field">
+            <div class="prof2-field-label">Miembro desde</div>
+            <div class="prof2-field-row">
+              <div class="prof2-field-val" id="profileFieldSince">—</div>
+            </div>
+          </div>
+
+          <button class="prof2-signout-btn" onclick="openSignOutModal()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Cerrar sesión
           </button>
         </div>
+
+      </div><!-- /row 1 -->
+
+      <!-- Row 2: FACTURACIÓN · PREFERENCIAS · SEGURIDAD -->
+      <div class="prof2-row prof2-card-row-2">
+
+        <!-- FACTURACIÓN -->
+        <div class="prof2-card">
+          <div class="prof2-card-title">Facturación</div>
+          <div style="display:flex;flex-direction:column;flex:1;">
+
+            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-bill-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-bill-name">Historial de pagos</div>
+                <div class="prof2-bill-sub">Ver todas las transacciones</div>
+              </div>
+              <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-bill-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="2"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-bill-name">Métodos de pago</div>
+                <div class="prof2-bill-sub">Visa terminada en 4242</div>
+              </div>
+              <span class="prof2-bill-badge">Pred.</span>
+              <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <div class="prof2-bill-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-bill-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-bill-name">Configurar facturación</div>
+                <div class="prof2-bill-sub">Facturas y datos fiscales</div>
+              </div>
+              <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREFERENCIAS -->
+        <div class="prof2-card">
+          <div class="prof2-card-title">Preferencias</div>
+          <div style="display:flex;flex-direction:column;flex:1;">
+
+            <div class="prof2-pref-item">
+              <div class="prof2-pref-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-pref-name">Notificaciones por email</div>
+                <div class="prof2-pref-desc">Alertas importantes de tu cuenta</div>
+              </div>
+              <label class="prof2-toggle">
+                <input type="checkbox" checked>
+                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="prof2-pref-item">
+              <div class="prof2-pref-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-pref-name">Novedades y consejos</div>
+                <div class="prof2-pref-desc">Tips para mejorar tus anuncios</div>
+              </div>
+              <label class="prof2-toggle">
+                <input type="checkbox" checked>
+                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="prof2-pref-item">
+              <div class="prof2-pref-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-pref-name">Resumen semanal</div>
+                <div class="prof2-pref-desc">Estadísticas de tu uso cada semana</div>
+              </div>
+              <label class="prof2-toggle">
+                <input type="checkbox" checked>
+                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="prof2-pref-item">
+              <div class="prof2-pref-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-pref-name">Ofertas y promociones</div>
+                <div class="prof2-pref-desc">Descuentos y beneficios exclusivos</div>
+              </div>
+              <label class="prof2-toggle">
+                <input type="checkbox">
+                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SEGURIDAD -->
+        <div class="prof2-card">
+          <div class="prof2-card-title">Seguridad</div>
+          <div style="display:flex;flex-direction:column;flex:1;">
+
+            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-sec-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-sec-name">Cambiar contraseña</div>
+                <div class="prof2-sec-desc">Actualiza tu contraseña de acceso</div>
+              </div>
+              <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-sec-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-sec-name">Autenticación 2FA</div>
+                <div class="prof2-sec-desc">Verificación en dos pasos</div>
+              </div>
+              <label class="prof2-toggle" onclick="event.stopPropagation();showToast('Próximamente disponible')">
+                <input type="checkbox">
+                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
+              </label>
+            </div>
+
+            <div class="prof2-sec-item" onclick="showToast('Próximamente disponible')">
+              <div class="prof2-sec-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="prof2-sec-name">Dispositivos conectados</div>
+                <div class="prof2-sec-desc">Sesiones activas en tus dispositivos</div>
+              </div>
+              <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /row 2 -->
+
+      <!-- INFORMACIÓN DE LA CUENTA -->
+      <div class="prof2-info-card">
+        <div class="prof2-card-title" style="margin-bottom:14px">Información de la cuenta</div>
+        <div class="prof2-info-cols">
+          <div class="prof2-info-col">
+            <div class="prof2-info-col-label">Tipo de cuenta</div>
+            <div class="prof2-info-col-val">Personal</div>
+          </div>
+          <div class="prof2-info-col">
+            <div class="prof2-info-col-label">ID de usuario</div>
+            <div class="prof2-info-col-val" id="profUserId" style="font-size:11px;letter-spacing:0.3px;opacity:0.7;font-family:monospace,monospace;">usr_—</div>
+          </div>
+          <div class="prof2-info-col">
+            <div class="prof2-info-col-label">Zona horaria</div>
+            <div class="prof2-info-col-val">(GMT-03:00) Bs. As.</div>
+          </div>
+          <div class="prof2-info-col">
+            <div class="prof2-info-col-label">Idioma</div>
+            <div class="prof2-info-col-val">Español</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Stats row -->
-      <div class="prof-stats">
-        <div class="prof-stat">
-          <div class="prof-stat-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-          </div>
-          <div class="prof-stat-val" id="profStatVideos">—</div>
-          <div class="prof-stat-label">Videos generados</div>
-        </div>
-        <div class="prof-stat">
-          <div class="prof-stat-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          </div>
-          <div class="prof-stat-val" id="profStatAds">—</div>
-          <div class="prof-stat-label">Anuncios creados</div>
-        </div>
-        <div class="prof-stat">
-          <div class="prof-stat-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="prof-stat-val" id="profStatHours">—</div>
-          <div class="prof-stat-label">Horas ahorradas</div>
-        </div>
-        <div class="prof-stat">
-          <div class="prof-stat-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,168,255,0.7)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          </div>
-          <div class="prof-stat-val" id="profStatSaved">—</div>
-          <div class="prof-stat-label">USD ahorrados</div>
-        </div>
-      </div>
-
-      <!-- Plan + Cuenta -->
-      <div class="prof-main">
-        <!-- Mi plan -->
-        <div class="a-profile-card">
-          <div class="a-profile-card-title">Mi plan</div>
-          <div class="a-plan-row">
-            <span class="prof-plan-badge" id="profilePlan">—</span>
-            <div class="a-plan-price" id="profilePlanPrice">$0<span style="font-size:14px;font-weight:400;color:rgba(192,168,255,0.4)">/mes</span></div>
-          </div>
-          <div class="a-plan-videos-text">Cargando...</div>
-          <div class="a-plan-bar-bg"><div class="a-plan-bar-fill" style="width:0%"></div></div>
-          <div class="a-plan-card-renewal">—</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="btn-w" style="width:100%;justify-content:center;" onclick="showToast('El sistema de pagos se habilita pronto')">Cambiar plan</button>
-            <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;" onclick="openCreditsModal()">Recargar créditos</button>
-          </div>
-        </div>
-
-        <!-- Mi cuenta (editable) -->
-        <div class="a-profile-card">
-          <div class="a-profile-card-title">Mi cuenta</div>
-
-          <div class="a-field-label">Nombre</div>
-          <div class="a-field-row" id="profNameRow">
-            <div class="a-field-val" id="profileFieldName">--</div>
-            <button class="a-field-edit-btn" onclick="profEditField('name')" title="Editar nombre">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-          </div>
-          <div class="a-field-row" id="profNameEdit" style="display:none;">
-            <input class="a-field-input" id="profNameInput" type="text" placeholder="Tu nombre completo" onkeydown="if(event.key==='Enter')profSaveField('name');if(event.key==='Escape')profCancelField('name')">
-            <button class="a-field-save-btn" onclick="profSaveField('name')">Guardar</button>
-          </div>
-
-          <div class="a-field-label">Email</div>
-          <div class="a-field-row">
-            <div class="a-field-val" id="profileFieldEmail">--</div>
-          </div>
-
-          <div class="a-field-label">País</div>
-          <div class="a-field-row" id="profCountryRow">
-            <div class="a-field-val" id="profileFieldCountry">--</div>
-            <button class="a-field-edit-btn" onclick="profEditField('country')" title="Editar país">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-          </div>
-          <div class="a-field-row" id="profCountryEdit" style="display:none;">
-            <input class="a-field-input" id="profCountryInput" type="text" placeholder="Ej: Argentina" onkeydown="if(event.key==='Enter')profSaveField('country');if(event.key==='Escape')profCancelField('country')">
-            <button class="a-field-save-btn" onclick="profSaveField('country')">Guardar</button>
-          </div>
-
-          <div class="a-field-label" style="margin-top:20px;">Miembro desde</div>
-          <div class="a-field-val" id="profileFieldSince">—</div>
-        </div>
-      </div>
-
-      <!-- Actividad reciente -->
-      <div>
-        <div class="prof-activity-title">Actividad reciente</div>
-        <div class="prof-act-list" id="profActList">
-          <div style="font-size:13px;color:rgba(192,168,255,0.35);padding:16px 0;">Cargando actividad...</div>
-        </div>
+      <!-- Hidden legacy IDs (kept for JS compatibility) -->
+      <div style="display:none">
+        <span id="profHeroPlan"></span>
+        <span id="profStatVideos"></span>
+        <span id="profStatAds"></span>
+        <span id="profStatHours"></span>
+        <span id="profStatSaved"></span>
+        <div id="profActList"></div>
       </div>
 
     </div>
@@ -6169,6 +6456,45 @@ function updateCreditsUI(me) {
       planRenewalText.textContent = `${sub.toLocaleString('es-AR')} créditos restantes · Renueva en ${days} día${days === 1 ? '' : 's'}` + (top > 0 ? ` · ${top.toLocaleString('es-AR')} de recarga` : '');
     }
   }
+
+  // USO DEL MES — circular chart + metrics
+  const usageCircle = document.getElementById('profUsageCircle');
+  const usagePct   = document.getElementById('profUsagePct');
+  const usageUsed  = document.getElementById('profUsageUsed');
+  const usageLeft  = document.getElementById('profUsageLeft');
+  const usageAvg   = document.getElementById('profUsageAvg');
+  const usageDays  = document.getElementById('profUsageDays');
+  const usageMonth = document.getElementById('profUsageMonthLabel');
+
+  // Month label
+  if (usageMonth) {
+    const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+    const fmt = d => d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+    usageMonth.textContent = `${fmt(new Date(y,m,1))} – ${fmt(new Date(y,m+1,0))}`;
+  }
+
+  if (plan !== 'none' && planInfo.credits > 0) {
+    const used = Math.max(0, planInfo.credits - sub);
+    const left = Math.max(0, sub);
+    const pct  = Math.min(100, Math.round(used / planInfo.credits * 100));
+    const circumference = 289.0;
+    if (usageUsed) usageUsed.textContent = used.toLocaleString('es-AR');
+    if (usageLeft) usageLeft.textContent = left.toLocaleString('es-AR');
+    if (usagePct)  usagePct.textContent  = pct + '%';
+    if (usageCircle) usageCircle.style.strokeDashoffset = (circumference * (1 - pct / 100)).toFixed(1);
+    const daysLeft = me.period_end ? Math.max(1, Math.ceil((new Date(me.period_end) - new Date()) / (1000*60*60*24))) : 0;
+    const daysElapsed = Math.max(1, 30 - daysLeft);
+    const avgDaily = Math.round(used / daysElapsed);
+    if (usageAvg)  usageAvg.textContent  = `Promedio diario: ${avgDaily.toLocaleString('es-AR')} créditos`;
+    if (usageDays) usageDays.textContent = `${daysLeft} días restantes`;
+  } else {
+    if (usageUsed) usageUsed.textContent = '0';
+    if (usageLeft) usageLeft.textContent = '0';
+    if (usagePct)  usagePct.textContent  = '0%';
+    if (usageCircle) usageCircle.style.strokeDashoffset = '289.0';
+    if (usageAvg)  usageAvg.textContent  = 'Sin plan activo';
+    if (usageDays) usageDays.textContent = '';
+  }
 }
 
 function updateProfileUI(profile, email) {
@@ -6227,6 +6553,10 @@ function updateProfileUI(profile, email) {
       }
     });
   }
+
+  // User ID strip
+  const profUserIdEl = document.getElementById('profUserId');
+  if (profUserIdEl && userId) profUserIdEl.textContent = 'usr_' + userId.replace(/-/g,'').slice(0, 10);
 
   // Créditos y card de plan
   updateCreditsUI(profile);
