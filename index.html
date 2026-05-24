@@ -6556,7 +6556,9 @@ function updateProfileUI(profile, email) {
 
   // User ID strip
   const profUserIdEl = document.getElementById('profUserId');
-  if (profUserIdEl && userId) profUserIdEl.textContent = 'usr_' + userId.replace(/-/g,'').slice(0, 10);
+  if (profUserIdEl && _currentUser && _currentUser.userId) {
+    profUserIdEl.textContent = 'usr_' + _currentUser.userId.replace(/-/g,'').slice(0, 10);
+  }
 
   // Créditos y card de plan
   updateCreditsUI(profile);
