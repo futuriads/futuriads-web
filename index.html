@@ -4512,6 +4512,104 @@ body, #app { background: #07050f; }
 /* ==============================================
    CREDITS RECHARGE MODAL
    ============================================== */
+
+/* ==============================================
+   AUTH MODAL — REDESIGN
+   ============================================== */
+.auth-modal-card {
+  background: linear-gradient(160deg, rgba(14,7,32,0.98), rgba(4,2,15,0.99));
+  border: 1px solid rgba(139,92,246,0.22);
+  border-radius: 20px;
+  padding: 36px 32px 32px;
+  width: 420px; max-width: calc(100vw - 32px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.03);
+  transform: translateY(12px); transition: transform 0.25s ease;
+}
+.modal-overlay.open .auth-modal-card { transform: translateY(0); }
+.auth-logo-row {
+  text-align: center; margin-bottom: 24px;
+  font-size: 19px; font-weight: 800; letter-spacing: -0.5px; color: #fff;
+}
+.auth-tab-bar {
+  display: flex; gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 11px; padding: 4px; margin-bottom: 26px;
+}
+.auth-tab-btn {
+  flex: 1; padding: 9px 12px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; background: transparent; color: rgba(255,255,255,0.38);
+}
+.auth-tab-btn.active {
+  background: rgba(109,40,217,0.55); color: #fff;
+  box-shadow: 0 2px 10px rgba(109,40,217,0.3);
+}
+.auth-field { margin-bottom: 14px; }
+.auth-label {
+  font-size: 12px; color: rgba(255,255,255,0.42);
+  display: block; margin-bottom: 6px; font-weight: 500; letter-spacing: 0.2px;
+}
+.auth-input, .auth-select {
+  width: 100%; box-sizing: border-box;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 12px 14px;
+  color: #fff; font-size: 14px; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.auth-input:focus, .auth-select:focus {
+  border-color: rgba(139,92,246,0.55);
+  box-shadow: 0 0 0 3px rgba(109,40,217,0.13);
+}
+.auth-input::placeholder { color: rgba(255,255,255,0.18); }
+.auth-select {
+  appearance: none; -webkit-appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center; background-size: 13px;
+  padding-right: 36px;
+}
+.auth-select option { background: #1a0a3a; color: #fff; }
+.auth-error {
+  display: none; font-size: 13px; margin-bottom: 14px;
+  color: rgba(248,113,113,0.9);
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.18);
+  border-radius: 8px; padding: 10px 13px; line-height: 1.5;
+}
+.auth-success {
+  display: none; font-size: 13px; margin-bottom: 14px;
+  color: rgba(74,222,128,0.9);
+  background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.18);
+  border-radius: 8px; padding: 10px 13px; line-height: 1.5; text-align: center;
+}
+.auth-submit-btn {
+  width: 100%; background: linear-gradient(135deg,#6d28d9,#9333ea);
+  color: #fff; border: none; border-radius: 10px;
+  padding: 13px; font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; margin-top: 8px;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 18px rgba(109,40,217,0.38);
+}
+.auth-submit-btn:hover { opacity: 0.88; box-shadow: 0 6px 26px rgba(109,40,217,0.52); }
+.auth-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-forgot-row {
+  text-align: right; margin-top: -4px; margin-bottom: 18px;
+}
+.auth-forgot-row a, .auth-link {
+  font-size: 12px; color: rgba(167,139,250,0.65);
+  cursor: pointer; text-decoration: none;
+  transition: color 0.15s;
+}
+.auth-forgot-row a:hover, .auth-link:hover { color: #a78bfa; }
+.auth-back-row { text-align: center; margin-top: 18px; font-size: 13px; color: rgba(255,255,255,0.3); }
+.auth-recover-title {
+  font-size: 17px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 6px;
+}
+.auth-recover-sub {
+  font-size: 13px; color: rgba(255,255,255,0.42); margin-bottom: 22px; line-height: 1.6;
+}
+
 .modal-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.75);
@@ -6671,6 +6769,31 @@ const supa = {
         callback(session ? 'SIGNED_IN' : 'SIGNED_OUT', session);
       });
       return { data: { subscription: { unsubscribe: () => {} } } };
+    },
+    resetPasswordForEmail: async (email) => {
+      // Sends Supabase reset email. User must be listed in Auth > URL Config redirects.
+      const redirectTo = window.location.origin + window.location.pathname;
+      const res = await fetch(SUPA_URL + '/auth/v1/recover', {
+        method: 'POST',
+        headers: supa._headers,
+        body: JSON.stringify({ email, gotrue_meta_security: {} })
+      });
+      if (!res.ok) {
+        try { const d = await res.json(); return { error: d }; } catch(e) { return { error: { message: 'Error al enviar.' } }; }
+      }
+      return { error: null };
+    },
+    updateUser: async (changes, accessToken) => {
+      const token = accessToken || supa._session?.access_token || JSON.parse(localStorage.getItem('sb_session') || '{}')?.access_token;
+      if (!token) return { error: { message: 'Sin sesión activa.' } };
+      const res = await fetch(SUPA_URL + '/auth/v1/user', {
+        method: 'PUT',
+        headers: { ...supa._headers, 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(changes)
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data };
+      return { data, error: null };
     }
   },
   from: (table) => ({
@@ -12147,15 +12270,16 @@ resetGenerator();
 renderHistory();
 
 /* ---- Auth Modal ---- */
+// Token temporal para reset de contraseña (viene del hash de la URL)
+var _resetAccessToken = null;
+
 function openAuthModal(tab) {
   document.getElementById('authModal').classList.add('open');
   switchAuthTab(tab || 'login');
-  ['authEmail','authPass','authEmailSignup','authPassSignup'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.value = '';
-  });
-  ['authError','authErrorSignup'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.style.display = 'none';
-  });
+  ['authEmail','authPass','authEmailSignup','authPassSignup','authRecoverEmail','authNewPass','authNewPassConfirm']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  ['authError','authErrorSignup','authErrorRecover','authSuccessRecover','authErrorNewPass','authSuccessNewPass']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
 }
 
 function closeAuthModal(e) {
@@ -12165,29 +12289,39 @@ function closeAuthModal(e) {
 }
 
 function switchAuthTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('authLoginForm').style.display = isLogin ? 'block' : 'none';
-  document.getElementById('authSignupForm').style.display = isLogin ? 'none' : 'block';
-  document.getElementById('tabLogin').style.background = isLogin ? '#fff' : 'transparent';
-  document.getElementById('tabLogin').style.color = isLogin ? '#080808' : '#888';
-  document.getElementById('tabSignup').style.background = isLogin ? 'transparent' : '#fff';
-  document.getElementById('tabSignup').style.color = isLogin ? '#888' : '#080808';
+  const forms = ['authLoginForm','authSignupForm','authRecoverForm','authNewPassForm'];
+  forms.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+
+  const tabBar = document.getElementById('authTabBar');
+  const showTabs = (tab === 'login' || tab === 'signup');
+  if(tabBar) tabBar.style.display = showTabs ? 'flex' : 'none';
+
+  if(tab === 'login')   { document.getElementById('authLoginForm').style.display = 'block'; }
+  if(tab === 'signup')  { document.getElementById('authSignupForm').style.display = 'block'; }
+  if(tab === 'recover') { document.getElementById('authRecoverForm').style.display = 'block'; }
+  if(tab === 'newpass') { document.getElementById('authNewPassForm').style.display = 'block'; }
+
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
 }
 
 async function submitLogin() {
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
   const errEl = document.getElementById('authError');
+  const btn = document.getElementById('authLoginBtn');
   errEl.style.display = 'none';
   if (!email || !pass) { errEl.textContent = 'Completá todos los campos.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Iniciando sesión…';
   try {
     const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
     if (error) { errEl.textContent = 'Email o contraseña incorrectos.'; errEl.style.display = 'block'; return; }
     document.getElementById('authModal').classList.remove('open');
     goToApp();
   } catch(e) {
-    console.error('Login error:', e);
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Iniciar sesión';
   }
 }
 
@@ -12197,48 +12331,96 @@ async function submitSignup() {
   const email = document.getElementById('authEmailSignup').value.trim();
   const pass = document.getElementById('authPassSignup').value;
   const errEl = document.getElementById('authErrorSignup');
+  const btn = document.getElementById('authSignupBtn');
   errEl.style.display = 'none';
   if (!fullName || !country || !email || !pass) { errEl.textContent = 'Completá todos los campos.'; errEl.style.display = 'block'; return; }
   if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Creando cuenta…';
   try {
-    // 1. Crear usuario en auth.users
     const { data, error } = await supa.auth.signUp({
-      email,
-      password: pass,
-      options: {
-        data: {
-          full_name: fullName,
-          country: country
-        }
-      }
+      email, password: pass,
+      options: { data: { full_name: fullName, country } }
     });
-    if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
-
-    // 2. Si se creó con sesión inmediata, actualizar el perfil con nombre y país
+    if (error) { errEl.textContent = error.message || 'Error al crear la cuenta.'; errEl.style.display = 'block'; return; }
     if (data.session && data.session.access_token && data.user) {
       try {
-        const { error: updateError } = await supa.from('profiles').update({
-          full_name: fullName,
-          country: country
-        }).eq('id', data.user.id);
-        if (updateError) {
-          console.error('Error actualizando perfil:', updateError);
-        }
-      } catch(updErr) {
-        console.error('Error en update de perfil:', updErr);
-      }
+        await supa.from('profiles').update({ full_name: fullName, country }).eq('id', data.user.id);
+      } catch(e) { console.error('perfil update:', e); }
       document.getElementById('authModal').classList.remove('open');
       goToApp();
     } else {
-      // Email confirmation required
       document.getElementById('authModal').classList.remove('open');
-      alert('Cuenta creada. Revisá tu email para confirmar tu cuenta antes de iniciar sesión.');
+      showToast('Cuenta creada. Revisá tu email para confirmar antes de iniciar sesión.', 'info');
     }
   } catch(e) {
-    console.error('Signup error:', e);
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Crear cuenta gratis';
   }
 }
+
+async function submitRecover() {
+  const email = document.getElementById('authRecoverEmail').value.trim();
+  const errEl = document.getElementById('authErrorRecover');
+  const sucEl = document.getElementById('authSuccessRecover');
+  const btn = document.getElementById('authRecoverBtn');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Ingresá tu email.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    const { error } = await supa.auth.resetPasswordForEmail(email);
+    if (error) { errEl.textContent = 'No pudimos enviar el enlace. Verificá el email.'; errEl.style.display = 'block'; return; }
+    sucEl.style.display = 'block';
+    btn.style.display = 'none';
+  } catch(e) {
+    errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    if(btn.style.display !== 'none') btn.textContent = 'Enviar enlace';
+  }
+}
+
+async function submitNewPassword() {
+  const pass = document.getElementById('authNewPass').value;
+  const confirm = document.getElementById('authNewPassConfirm').value;
+  const errEl = document.getElementById('authErrorNewPass');
+  const sucEl = document.getElementById('authSuccessNewPass');
+  const btn = document.getElementById('authNewPassBtn');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!pass || !confirm) { errEl.textContent = 'Completá ambos campos.'; errEl.style.display = 'block'; return; }
+  if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if (pass !== confirm) { errEl.textContent = 'Las contraseñas no coinciden.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  try {
+    const { error } = await supa.auth.updateUser({ password: pass }, _resetAccessToken);
+    if (error) { errEl.textContent = 'No se pudo actualizar. El enlace puede haber expirado.'; errEl.style.display = 'block'; return; }
+    sucEl.style.display = 'block';
+    btn.style.display = 'none';
+    _resetAccessToken = null;
+    // Clean URL hash
+    history.replaceState(null, '', window.location.pathname);
+    setTimeout(() => switchAuthTab('login'), 2500);
+  } catch(e) {
+    errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    if(btn.style.display !== 'none') btn.textContent = 'Guardar contraseña';
+  }
+}
+
+// Detectar redirect de reset desde email (URL hash #access_token=...&type=recovery)
+(function checkPasswordReset() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return;
+  const params = {};
+  hash.split('&').forEach(pair => { const [k,v] = pair.split('='); if(k) params[k] = decodeURIComponent(v||''); });
+  if (params.type === 'recovery' && params.access_token) {
+    _resetAccessToken = params.access_token;
+    document.addEventListener('DOMContentLoaded', function() {
+      openAuthModal('newpass');
+    });
+  }
+})();
 
 // ── Landing video lazy loader ─────────────────────────────────────────
 // Videos de la landing usan data-src en lugar de src.
@@ -12675,73 +12857,108 @@ localStorage.removeItem('sidebarWidth');
 
 <!-- Auth Modal -->
 <div class="modal-overlay" id="authModal" onclick="closeAuthModal(event)">
-  <div class="modal-card" style="max-width:400px;padding:36px;">
-    <!-- Tabs -->
-    <div style="display:flex;gap:4px;background:#1a1a1a;border-radius:999px;padding:4px;margin-bottom:28px;">
-      <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:9px;border-radius:999px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#080808;transition:all 0.2s;">Iniciar sesión</button>
-      <button id="tabSignup" onclick="switchAuthTab('signup')" style="flex:1;padding:9px;border-radius:999px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#888;transition:all 0.2s;">Crear cuenta</button>
+  <div class="auth-modal-card">
+
+    <div class="auth-logo-row">Futuriads</div>
+
+    <!-- Tabs (ocultas en recover/newpass) -->
+    <div class="auth-tab-bar" id="authTabBar">
+      <button class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Iniciar sesión</button>
+      <button class="auth-tab-btn" id="tabSignup" onclick="switchAuthTab('signup')">Crear cuenta</button>
     </div>
 
-    <!-- Login form -->
+    <!-- ── LOGIN ── -->
     <div id="authLoginForm">
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Email</label>
-        <input id="authEmail" type="email" placeholder="tu@email.com" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="authEmail" type="email" placeholder="tu@email.com" onkeydown="if(event.key==='Enter')submitLogin()">
       </div>
-      <div style="margin-bottom:24px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Contraseña</label>
-        <input id="authPass" type="password" placeholder="••••••••" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'" onkeydown="if(event.key==='Enter')submitLogin()">
+      <div class="auth-field">
+        <label class="auth-label">Contraseña</label>
+        <input class="auth-input" id="authPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitLogin()">
       </div>
-      <div id="authError" style="color:#ff5555;font-size:13px;margin-bottom:14px;display:none;"></div>
-      <button onclick="submitLogin()" style="width:100%;background:#fff;color:#080808;border:none;border-radius:999px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">Iniciar sesión</button>
+      <div class="auth-forgot-row"><a onclick="switchAuthTab('recover')">¿Olvidaste tu contraseña?</a></div>
+      <div class="auth-error" id="authError"></div>
+      <button class="auth-submit-btn" id="authLoginBtn" onclick="submitLogin()">Iniciar sesión</button>
     </div>
 
-    <!-- Signup form -->
+    <!-- ── SIGNUP ── -->
     <div id="authSignupForm" style="display:none;">
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Nombre completo</label>
-        <input id="authNameSignup" type="text" placeholder="Juan Pérez" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'">
+      <div class="auth-field">
+        <label class="auth-label">Nombre completo</label>
+        <input class="auth-input" id="authNameSignup" type="text" placeholder="Juan Pérez">
       </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">País</label>
-        <select id="authCountrySignup" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'">
+      <div class="auth-field">
+        <label class="auth-label">País</label>
+        <select class="auth-select" id="authCountrySignup">
           <option value="" disabled selected>Seleccioná tu país</option>
-          <option value="Argentina">Argentina</option>
-          <option value="Bolivia">Bolivia</option>
-          <option value="Chile">Chile</option>
-          <option value="Colombia">Colombia</option>
-          <option value="Costa Rica">Costa Rica</option>
-          <option value="Cuba">Cuba</option>
-          <option value="Ecuador">Ecuador</option>
-          <option value="El Salvador">El Salvador</option>
-          <option value="España">España</option>
-          <option value="Guatemala">Guatemala</option>
-          <option value="Honduras">Honduras</option>
-          <option value="México">México</option>
-          <option value="Nicaragua">Nicaragua</option>
-          <option value="Panamá">Panamá</option>
-          <option value="Paraguay">Paraguay</option>
-          <option value="Perú">Perú</option>
-          <option value="Puerto Rico">Puerto Rico</option>
-          <option value="República Dominicana">República Dominicana</option>
-          <option value="Uruguay">Uruguay</option>
-          <option value="Venezuela">Venezuela</option>
-          <option value="Estados Unidos">Estados Unidos</option>
-          <option value="Brasil">Brasil</option>
-          <option value="Otro">Otro</option>
+          <option value="Argentina">🇦🇷 Argentina</option>
+          <option value="Bolivia">🇧🇴 Bolivia</option>
+          <option value="Brasil">🇧🇷 Brasil</option>
+          <option value="Chile">🇨🇱 Chile</option>
+          <option value="Colombia">🇨🇴 Colombia</option>
+          <option value="Costa Rica">🇨🇷 Costa Rica</option>
+          <option value="Cuba">🇨🇺 Cuba</option>
+          <option value="Ecuador">🇪🇨 Ecuador</option>
+          <option value="El Salvador">🇸🇻 El Salvador</option>
+          <option value="Guatemala">🇬🇹 Guatemala</option>
+          <option value="Honduras">🇭🇳 Honduras</option>
+          <option value="México">🇲🇽 México</option>
+          <option value="Nicaragua">🇳🇮 Nicaragua</option>
+          <option value="Panamá">🇵🇦 Panamá</option>
+          <option value="Paraguay">🇵🇾 Paraguay</option>
+          <option value="Perú">🇵🇪 Perú</option>
+          <option value="Puerto Rico">🇵🇷 Puerto Rico</option>
+          <option value="República Dominicana">🇩🇴 República Dominicana</option>
+          <option value="Uruguay">🇺🇾 Uruguay</option>
+          <option value="Venezuela">🇻🇪 Venezuela</option>
         </select>
       </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Email</label>
-        <input id="authEmailSignup" type="email" placeholder="tu@email.com" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="authEmailSignup" type="email" placeholder="tu@email.com">
       </div>
-      <div style="margin-bottom:24px;">
-        <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Contraseña</label>
-        <input id="authPassSignup" type="password" placeholder="••••••••" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='#2a2a2a'" onkeydown="if(event.key==='Enter')submitSignup()">
+      <div class="auth-field">
+        <label class="auth-label">Contraseña</label>
+        <input class="auth-input" id="authPassSignup" type="password" placeholder="Mínimo 6 caracteres" onkeydown="if(event.key==='Enter')submitSignup()">
       </div>
-      <div id="authErrorSignup" style="color:#ff5555;font-size:13px;margin-bottom:14px;display:none;"></div>
-      <button onclick="submitSignup()" style="width:100%;background:#fff;color:#080808;border:none;border-radius:999px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">Crear cuenta</button>
+      <div class="auth-error" id="authErrorSignup"></div>
+      <button class="auth-submit-btn" id="authSignupBtn" onclick="submitSignup()">Crear cuenta gratis</button>
     </div>
+
+    <!-- ── RECUPERAR CONTRASEÑA ── -->
+    <div id="authRecoverForm" style="display:none;">
+      <div class="auth-recover-title">Recuperar contraseña</div>
+      <div class="auth-recover-sub">Ingresá tu email y te enviamos un enlace para crear una contraseña nueva.</div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="authRecoverEmail" type="email" placeholder="tu@email.com" onkeydown="if(event.key==='Enter')submitRecover()">
+      </div>
+      <div class="auth-error" id="authErrorRecover"></div>
+      <div class="auth-success" id="authSuccessRecover">
+        ✓ Te enviamos el enlace. Revisá tu bandeja de entrada (y spam).
+      </div>
+      <button class="auth-submit-btn" id="authRecoverBtn" onclick="submitRecover()">Enviar enlace</button>
+      <div class="auth-back-row"><a class="auth-link" onclick="switchAuthTab('login')">← Volver a iniciar sesión</a></div>
+    </div>
+
+    <!-- ── NUEVA CONTRASEÑA (redirect desde email) ── -->
+    <div id="authNewPassForm" style="display:none;">
+      <div class="auth-recover-title">Nueva contraseña</div>
+      <div class="auth-recover-sub">Elegí una contraseña nueva para tu cuenta.</div>
+      <div class="auth-field">
+        <label class="auth-label">Nueva contraseña</label>
+        <input class="auth-input" id="authNewPass" type="password" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Confirmar contraseña</label>
+        <input class="auth-input" id="authNewPassConfirm" type="password" placeholder="Repetí la contraseña" onkeydown="if(event.key==='Enter')submitNewPassword()">
+      </div>
+      <div class="auth-error" id="authErrorNewPass"></div>
+      <div class="auth-success" id="authSuccessNewPass">✓ Contraseña actualizada. Ya podés iniciar sesión.</div>
+      <button class="auth-submit-btn" id="authNewPassBtn" onclick="submitNewPassword()">Guardar contraseña</button>
+    </div>
+
   </div>
 </div>
 <!-- Modal créditos — centrado en pantalla, fuera de todo layout -->
