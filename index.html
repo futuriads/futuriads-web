@@ -12271,43 +12271,45 @@ async function submitSignup() {
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const cards = [
-      ...document.querySelectorAll('.actor-card'),
-      ...document.querySelectorAll('.l-feat-vid-card')
-    ];
+    var heroCards    = Array.from(document.querySelectorAll('.actor-card'));
+    var featureCards = Array.from(document.querySelectorAll('.l-feat-vid-card'));
 
+    // ── Hero cards (0-5): siempre visibles → carga inmediata
+    heroCards.forEach(function(card, i) {
+      var video = card.querySelector('video');
+      if (video && LANDING_VIDEOS[i]) loadVideo(video, LANDING_VIDEOS[i]);
+    });
+
+    // ── Feature cards (6-8): debajo del fold → lazy con IntersectionObserver
     if ('IntersectionObserver' in window) {
-      const obs = new IntersectionObserver(function(entries) {
+      var obs = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (!entry.isIntersecting) return;
-          const idx = cards.indexOf(entry.target);
-          const video = entry.target.querySelector('video');
-          if (video && idx >= 0 && LANDING_VIDEOS[idx]) {
-            loadVideo(video, LANDING_VIDEOS[idx]);
+          var idx = featureCards.indexOf(entry.target);
+          var video = entry.target.querySelector('video');
+          if (video && idx >= 0 && LANDING_VIDEOS[6 + idx]) {
+            loadVideo(video, LANDING_VIDEOS[6 + idx]);
           }
           obs.unobserve(entry.target);
         });
-      }, { threshold: 0.1, rootMargin: '100px' });
-
-      cards.forEach(function(card) { obs.observe(card); });
+      }, { threshold: 0.1, rootMargin: '200px' });
+      featureCards.forEach(function(card) { obs.observe(card); });
     } else {
-      // Fallback: carga directa sin IntersectionObserver
-      cards.forEach(function(card, idx) {
-        const video = card.querySelector('video');
-        if (video && LANDING_VIDEOS[idx]) loadVideo(video, LANDING_VIDEOS[idx]);
+      // Fallback sin IntersectionObserver
+      featureCards.forEach(function(card, i) {
+        var video = card.querySelector('video');
+        if (video && LANDING_VIDEOS[6 + i]) loadVideo(video, LANDING_VIDEOS[6 + i]);
       });
     }
   });
 
-  // API pública para conectar videos sin editar el HTML
+  // API pública: setLandingVideo(0-5 = hero, 6-8 = feature)
   window.setLandingVideo = function(index, url) {
     LANDING_VIDEOS[index] = url;
-    const cards = [
-      ...document.querySelectorAll('.actor-card'),
-      ...document.querySelectorAll('.l-feat-vid-card')
-    ];
-    if (cards[index]) {
-      const video = cards[index].querySelector('video');
+    var all = Array.from(document.querySelectorAll('.actor-card'))
+                   .concat(Array.from(document.querySelectorAll('.l-feat-vid-card')));
+    if (all[index]) {
+      var video = all[index].querySelector('video');
       if (video) loadVideo(video, url);
     }
   };
