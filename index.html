@@ -4081,6 +4081,115 @@ body, #app { background: #07050f; }
   background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); color:#4ade80;
 }
 
+/* ============================================
+   PLAN CARDS V2 — Enhancor style
+   ============================================ */
+.plnv2-toggle-bar {
+  display:flex; align-items:center; justify-content:center; gap:0;
+  background:rgba(255,255,255,0.05); border-radius:999px; padding:4px;
+  width:fit-content; margin:0 auto 24px;
+}
+.plnv2-toggle-btn {
+  padding:7px 22px; border-radius:999px; border:none;
+  background:transparent; font-size:13px; font-weight:600;
+  color:rgba(255,255,255,0.45); cursor:pointer; transition:all 0.2s;
+}
+.plnv2-toggle-btn.active { background:rgba(109,40,217,0.65); color:#fff; }
+.plnv2-toggle-save {
+  font-size:10px; font-weight:700; color:#4ade80;
+  background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25);
+  border-radius:999px; padding:2px 8px; margin-left:8px;
+}
+.plnv2-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;
+}
+@media(max-width:680px){ .plnv2-grid { grid-template-columns:1fr; } }
+.plnv2-card {
+  background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15);
+  border-radius:16px; padding:22px 18px;
+  display:flex; flex-direction:column;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.plnv2-card.featured {
+  border-color:rgba(139,92,246,0.5);
+  box-shadow:0 0 32px rgba(109,40,217,0.22);
+  background:linear-gradient(155deg,rgba(60,20,120,0.5),rgba(12,4,35,0.55));
+}
+.plnv2-badges { display:flex; gap:5px; flex-wrap:wrap; min-height:20px; margin-bottom:14px; }
+.plnv2-badge {
+  font-size:9px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  padding:3px 8px; border-radius:999px;
+}
+.plnv2-badge.popular  { background:rgba(109,40,217,0.25); border:1px solid rgba(139,92,246,0.4); color:#c4b5fd; }
+.plnv2-badge.current  { background:rgba(34,197,94,0.12);  border:1px solid rgba(34,197,94,0.3);  color:#4ade80; }
+.plnv2-badge.yearoff  { background:rgba(34,197,94,0.08);  border:1px solid rgba(34,197,94,0.2);  color:#86efac; }
+.plnv2-name  { font-size:18px; font-weight:800; color:#fff; margin-bottom:8px; }
+.plnv2-price-row { display:flex; align-items:baseline; gap:2px; margin-bottom:2px; }
+.plnv2-price-sym    { font-size:20px; font-weight:800; color:#fff; }
+.plnv2-price-amount { font-size:42px; font-weight:900; color:#fff; letter-spacing:-2px; line-height:1; }
+.plnv2-price-period { font-size:14px; color:rgba(192,168,255,0.4); margin-left:2px; }
+.plnv2-price-note   { font-size:10px; color:rgba(192,168,255,0.28); margin-bottom:2px; }
+.plnv2-credits-row {
+  display:flex; align-items:center; gap:6px;
+  font-size:14px; font-weight:700; color:#fff; margin-top:16px; margin-bottom:2px;
+}
+.plnv2-credits-icon { color:#a78bfa; font-style:normal; }
+.plnv2-gens { font-size:11px; color:rgba(192,168,255,0.38); margin-bottom:18px; }
+.plnv2-cta-btn {
+  width:100%; padding:11px; border-radius:10px;
+  font-size:13px; font-weight:700; cursor:pointer;
+  border:1px solid rgba(139,92,246,0.35); background:transparent;
+  color:rgba(192,168,255,0.65); transition:all 0.2s; margin-bottom:20px;
+}
+.plnv2-cta-btn:hover:not(:disabled) { background:rgba(109,40,217,0.22); color:#fff; border-color:rgba(139,92,246,0.6); }
+.plnv2-card.featured .plnv2-cta-btn:not(.is-current) {
+  background:linear-gradient(135deg,#6d28d9,#9333ea);
+  border-color:transparent; color:#fff;
+}
+.plnv2-card.featured .plnv2-cta-btn:not(.is-current):hover { opacity:0.86; }
+.plnv2-cta-btn.is-current {
+  background:rgba(34,197,94,0.1); border-color:rgba(34,197,94,0.3);
+  color:#4ade80; cursor:default;
+}
+.plnv2-hr { height:1px; background:rgba(139,92,246,0.12); margin-bottom:16px; }
+.plnv2-feats-title {
+  font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+  color:rgba(192,168,255,0.28); margin-bottom:12px;
+}
+.plnv2-feats { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.plnv2-feats li {
+  display:flex; align-items:center; gap:9px;
+  font-size:12px; color:rgba(192,168,255,0.6);
+}
+.plnv2-feats li svg { color:#a78bfa; flex-shrink:0; }
+.plnv2-topup-note {
+  margin-top:16px; padding:8px 10px; font-size:10.5px;
+  color:rgba(192,168,255,0.28); background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.05); border-radius:8px;
+}
+/* Topup pack grid */
+.topup-packs-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+.topup-pack {
+  padding:14px 16px; border-radius:12px; cursor:pointer;
+  border:1px solid rgba(139,92,246,0.2); background:rgba(255,255,255,0.03);
+  display:flex; flex-direction:column; gap:2px;
+  transition:border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.topup-pack:hover { border-color:rgba(139,92,246,0.4); background:rgba(109,40,217,0.07); }
+.topup-pack.selected {
+  border-color:rgba(139,92,246,0.7); background:rgba(109,40,217,0.18);
+  box-shadow:0 0 14px rgba(109,40,217,0.22);
+}
+.topup-pack-label   { font-size:9.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:rgba(192,168,255,0.4); }
+.topup-pack-credits { font-size:16px; font-weight:800; color:#fff; letter-spacing:-0.5px; }
+.topup-pack-price   { font-size:13px; font-weight:600; color:rgba(192,168,255,0.65); margin-top:2px; }
+.topup-pack-save    {
+  font-size:9px; font-weight:700; color:#4ade80;
+  background:rgba(34,197,94,0.1); border-radius:4px;
+  padding:1px 6px; margin-top:5px; align-self:flex-start;
+}
+.topup-pack.best-val .topup-pack-label { color:#a78bfa; }
+
 /* Password strength */
 .pf-pwd-bars { display:flex; gap:4px; margin-top:7px; margin-bottom:4px; }
 .pf-pwd-bar { height:3px; flex:1; border-radius:3px; background:rgba(255,255,255,0.08); transition:background 0.25s; }
@@ -4338,18 +4447,13 @@ body, #app { background: #07050f; }
 
 <!-- CREDITS MODAL (recarga / topup) -->
 <div class="modal-overlay" id="creditsModal">
-  <div class="modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="modal-title" id="creditsModalTitle">Recargar créditos</div>
+  <div class="modal-card" style="max-width:420px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="modal-title">Recargar créditos</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-sub" id="creditsModalSub">Los créditos comprados como recarga no caducan nunca.</div>
-    <div class="modal-opts">
-      <div class="modal-opt selected" id="topupOption">
-        <div class="modal-opt-credits" id="topupCreditsLabel">— créditos</div>
-        <div class="modal-opt-price" id="topupPriceLabel">$—</div>
-      </div>
-    </div>
+    <div class="modal-sub">Los créditos no caducan nunca. Elegí el pack que más te conviene.</div>
+    <div class="topup-packs-grid" id="topupPacksGrid"></div>
     <button class="btn-w" id="topupContinueBtn" style="width:100%;justify-content:center;" onclick="handleTopupCheckout()">Continuar</button>
   </div>
 </div>
@@ -4676,7 +4780,7 @@ body, #app { background: #07050f; }
       </div>
     </nav>
     <div style="flex:1;"></div>
-    <div class="a-credits-widget" id="creditsWidget" onclick="toggleCreditsPopover(event)">
+    <div class="a-credits-widget" id="creditsWidget" onclick="openProfChangePlanModal()">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
       <div class="a-credits-widget-sub" id="creditsWidgetSub">Cargando...</div>
@@ -5704,7 +5808,7 @@ body, #app { background: #07050f; }
           </div>
           <div class="a-plan-card-renewal prof2-plan-renew">—</div>
           <div class="prof2-plan-btns">
-            <button class="btn-w" style="width:100%;justify-content:center;font-size:12px;" onclick="openProfChangePlanModal()">Cambiar plan</button>
+            <button class="btn-outline" style="width:100%;justify-content:center;font-size:12px;" onclick="openProfChangePlanModal()">Cambiar plan</button>
             <button class="btn-outline" id="topupBtn" style="width:100%;justify-content:center;font-size:12px;" onclick="openCreditsModal()">Recargar créditos</button>
           </div>
         </div>
@@ -5849,13 +5953,13 @@ body, #app { background: #07050f; }
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-bill-item" onclick="openBillingModal()">
+            <div class="prof2-bill-item" onclick="openPayHistModal()">
               <div class="prof2-bill-icon">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
               </div>
               <div style="flex:1;min-width:0;">
-                <div class="prof2-bill-name">Configurar facturación</div>
-                <div class="prof2-bill-sub">Facturas y datos fiscales</div>
+                <div class="prof2-bill-name">Historial de facturas</div>
+                <div class="prof2-bill-sub">Todos tus pagos y recibos</div>
               </div>
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
@@ -6008,17 +6112,7 @@ body, #app { background: #07050f; }
           <div class="prof2-info-col">
             <div class="prof2-info-col-label">Idioma</div>
             <div class="prof2-info-col-val">
-              <div class="pf-dropdown" id="langDropdown">
-                <button style="background:transparent;border:none;padding:0;color:#e0d4ff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;" onclick="pfToggleLangDd(event)">
-                  <span id="profLangLabel">Español</span>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="pf-dd-menu" style="min-width:160px;bottom:auto;top:calc(100% + 6px);">
-                  <div class="pf-dd-opt pf-sel" onclick="pfSelectLang('es','Español',event)">Español <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectLang('en','English',event)">English <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectLang('pt','Português',event)">Português <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                </div>
-              </div>
+              <span style="color:#e0d4ff;font-size:13px;font-weight:500;">Español</span>
             </div>
           </div>
         </div>
@@ -9037,9 +9131,23 @@ async function saveProfEdit() {
 /* --- Change Plan modal --- */
 let _pfSelectedPlan = null;
 
-function openProfChangePlanModal() {
-  _pfSelectedPlan = (_currentUser && _currentUser.plan) || 'none';
+let _plnBillingMode = 'monthly';
+
+function toggleBillingMode(mode) {
+  _plnBillingMode = mode;
+  document.querySelectorAll('.plnv2-toggle-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === mode)
+  );
   renderPlanCards();
+}
+
+function openProfChangePlanModal() {
+  _plnBillingMode = 'monthly';
+  renderPlanCards();
+  // Reset toggle UI
+  document.querySelectorAll('.plnv2-toggle-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === 'monthly')
+  );
   const el = document.getElementById('profChangePlanModal');
   if (el) el.classList.add('open');
 }
@@ -9048,78 +9156,72 @@ function renderPlanCards() {
   const grid = document.getElementById('pfPlanGrid');
   if (!grid) return;
   const currentPlan = (_currentUser && _currentUser.plan) || 'none';
+  const isYearly = _plnBillingMode === 'yearly';
+  const chk = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+
   const plans = [
     {
-      id: 'starter', label: 'Starter', price: '$29',
-      credits: '35.000 créditos/mes',
-      feats: [
-        { text: '~10 anuncios de 15s por mes', hi: true },
-        { text: 'Actores IA · 4 voces', hi: false },
-        { text: 'Guiones con IA · Subtítulos auto', hi: false },
-        { text: 'Hasta 720p', hi: false }
-      ],
+      id: 'starter', label: 'Starter', priceM: 29, credits: 35000,
+      gens: '~10 anuncios de 15 segundos por mes',
+      feats: ['Actores IA (4 voces)', 'Guiones generados con IA', 'Subtítulos automáticos', 'Resolución hasta 720p', 'Historial de campañas'],
       topup: 'Recarga: +10.000 cr · $10'
     },
     {
-      id: 'growth', label: 'Growth', price: '$69', rec: true,
-      credits: '110.000 créditos/mes',
-      feats: [
-        { text: '~32 anuncios de 15s por mes', hi: true },
-        { text: '3× más créditos que Starter', hi: true },
-        { text: 'Imágenes IA de producto y avatar', hi: false },
-        { text: 'Hasta 1080p · Soporte prioritario', hi: false }
-      ],
+      id: 'growth', label: 'Growth', priceM: 69, credits: 110000, popular: true,
+      gens: '~32 anuncios de 15 segundos por mes',
+      feats: ['Todo lo del plan Starter', 'Imágenes IA de producto y avatar', 'Resolución hasta 1080p', 'Soporte prioritario por email', '3× más créditos que Starter'],
       topup: 'Recarga: +28.000 cr · $25 · mejor precio por crédito'
     },
     {
-      id: 'scale', label: 'Scale', price: '$149',
-      credits: '300.000 créditos/mes',
-      feats: [
-        { text: '~88 anuncios de 15s por mes', hi: true },
-        { text: 'Créditos 40% más baratos que Starter', hi: true },
-        { text: 'Todo lo de Growth · Volumen máximo', hi: false },
-        { text: 'Acceso anticipado a nuevas features', hi: false }
-      ],
+      id: 'scale', label: 'Scale', priceM: 149, credits: 300000,
+      gens: '~88 anuncios de 15 segundos por mes',
+      feats: ['Todo lo del plan Growth', 'Volumen sin interrupciones', 'Créditos 40% más baratos', 'Acceso anticipado a nuevas features', 'Account manager dedicado'],
       topup: 'Recarga: +60.000 cr · $50 · precio más bajo por crédito'
     }
   ];
+
   grid.innerHTML = plans.map(p => {
-    const isCur = p.id === currentPlan;
-    const badges = (isCur ? `<span class="pf-cur-badge">Tu plan</span>` : '')
-                 + (p.rec && !isCur ? `<span class="pf-rec-badge">MEJOR VALOR</span>` : '');
-    const featsHtml = p.feats.map(f =>
-      `<span class="pf-plan-feat${f.hi ? ' hi' : ''}">${f.text}</span>`
-    ).join('');
-    return `
-    <div class="pf-plan-card${_pfSelectedPlan === p.id ? ' pf-sel' : ''}" onclick="selectPlan('${p.id}')">
-      <div class="pf-plan-card-top">
-        <div class="pf-plan-radio"><div class="pf-plan-radio-dot"></div></div>
-        <div class="pf-plan-info">
-          <div class="pf-plan-nm">${p.label}${badges}</div>
-          <div class="pf-plan-desc">${p.credits}</div>
-        </div>
-        <div class="pf-plan-price-tag">${p.price}<small>/mes</small></div>
+    const isCurrent = p.id === currentPlan;
+    const price = isYearly ? Math.round(p.priceM * 0.8) : p.priceM;
+    const badges = [
+      p.popular ? `<span class="plnv2-badge popular">POPULAR</span>` : '',
+      isCurrent ? `<span class="plnv2-badge current">✓ Tu plan</span>` : '',
+      isYearly ? `<span class="plnv2-badge yearoff">-20%</span>` : ''
+    ].filter(Boolean).join('');
+    const btnClass = 'plnv2-cta-btn' + (isCurrent ? ' is-current' : '');
+    const btnText  = isCurrent ? '✓ Tu plan actual' : 'Suscribirse';
+    const btnClick = isCurrent ? '' : `onclick="confirmChangePlan('${p.id}',event)"`;
+
+    return `<div class="plnv2-card${p.popular ? ' featured' : ''}">
+      <div class="plnv2-badges">${badges || '<span style="height:20px;display:block"></span>'}</div>
+      <div class="plnv2-name">${p.label}</div>
+      <div class="plnv2-price-row">
+        <span class="plnv2-price-sym">$</span>
+        <span class="plnv2-price-amount">${price}</span>
+        <span class="plnv2-price-period">/mes</span>
       </div>
-      <div class="pf-plan-feats">${featsHtml}</div>
-      <div class="pf-plan-topup-hint">${p.topup}</div>
+      ${isYearly ? `<div class="plnv2-price-note">Facturado anualmente · $${price * 12}/año</div>` : ''}
+      <div class="plnv2-credits-row">
+        <em class="plnv2-credits-icon">⚡</em>
+        <span>${p.credits.toLocaleString('es-AR')} Créditos</span>
+      </div>
+      <div class="plnv2-gens">${p.gens}</div>
+      <button class="${btnClass}" ${btnClick}>${btnText}</button>
+      <div class="plnv2-hr"></div>
+      <div class="plnv2-feats-title">INCLUYE</div>
+      <ul class="plnv2-feats">${p.feats.map(f => `<li>${chk}${f}</li>`).join('')}</ul>
+      <div class="plnv2-topup-note">${p.topup}</div>
     </div>`;
   }).join('');
 }
 
-function selectPlan(id) {
-  _pfSelectedPlan = id;
-  const cards = document.querySelectorAll('#pfPlanGrid .pf-plan-card');
-  const plans = ['starter', 'growth', 'scale'];
-  cards.forEach((c, i) => c.classList.toggle('pf-sel', plans[i] === id));
-}
-
-function confirmChangePlan() {
-  if (!_pfSelectedPlan || _pfSelectedPlan === (_currentUser && _currentUser.plan)) {
-    showToast('Ya tenés este plan activo', 'info');
-    return;
+function confirmChangePlan(planId, event) {
+  if (event) event.stopPropagation();
+  if (planId === ((_currentUser && _currentUser.plan) || 'none')) {
+    showToast('Ya tenés este plan activo', 'info'); return;
   }
   closeProfModal('profChangePlanModal');
-  showToast('Para cambiar de plan, gestionalo desde tu portal de pagos', 'info');
+  showToast('Sistema de pagos en integración. ¡Próximamente!', 'info');
 }
 
 /* --- Payment modals --- */
@@ -10200,43 +10302,56 @@ document.addEventListener('click', function() {
   if (popover) popover.classList.remove('open');
 });
 
-function openCreditsModal() {
-  // Llenamos el modal con los datos reales del plan del usuario
-  const plan = (_currentUser && _currentUser.plan) || 'none';
-  const planInfo = getPlanInfo(plan);
-  const titleEl = document.getElementById('creditsModalTitle');
-  const subEl = document.getElementById('creditsModalSub');
-  const creditsEl = document.getElementById('topupCreditsLabel');
-  const priceEl = document.getElementById('topupPriceLabel');
-  const continueBtn = document.getElementById('topupContinueBtn');
+/* ── Topup packs ─────────────────────────────── */
+const TOPUP_PACKS = [
+  { id: 's',  label: 'Pack S',  credits: 10000,  price: 10,  save: null,  best: false },
+  { id: 'm',  label: 'Pack M',  credits: 30000,  price: 25,  save: 17,    best: false },
+  { id: 'l',  label: 'Pack L',  credits: 70000,  price: 50,  save: 29,    best: true  },
+  { id: 'xl', label: 'Pack XL', credits: 160000, price: 99,  save: 38,    best: false },
+];
+let _selectedTopupPack = 'l';
 
-  if (plan === 'none') {
-    if (titleEl) titleEl.textContent = 'Necesitás un plan activo';
-    if (subEl) subEl.textContent = 'Para recargar créditos primero tenés que tener un plan. Las recargas se compran al precio del plan que tengas.';
-    if (creditsEl) creditsEl.textContent = '—';
-    if (priceEl) priceEl.textContent = '—';
-    if (continueBtn) continueBtn.textContent = 'Ver planes';
-  } else {
-    if (titleEl) titleEl.textContent = 'Recargar créditos';
-    if (subEl) subEl.textContent = `Plan ${planInfo.label}: ${planInfo.topup_credits.toLocaleString('es-AR')} créditos extra por $${planInfo.topup_price}. No caducan.`;
-    if (creditsEl) creditsEl.textContent = planInfo.topup_credits.toLocaleString('es-AR') + ' créditos';
-    if (priceEl) priceEl.textContent = '$' + planInfo.topup_price;
-    if (continueBtn) continueBtn.textContent = 'Continuar';
-  }
+function renderTopupPacks() {
+  const grid = document.getElementById('topupPacksGrid');
+  if (!grid) return;
+  grid.innerHTML = TOPUP_PACKS.map(p => `
+    <div class="topup-pack${_selectedTopupPack === p.id ? ' selected' : ''}${p.best ? ' best-val' : ''}"
+         onclick="selectTopupPack('${p.id}')">
+      <div class="topup-pack-label">${p.label}${p.best ? ' · Mejor valor' : ''}</div>
+      <div class="topup-pack-credits">${p.credits.toLocaleString('es-AR')} cr</div>
+      <div class="topup-pack-price">$${p.price}</div>
+      ${p.save ? `<span class="topup-pack-save">ahorrás ${p.save}%</span>` : ''}
+    </div>`).join('');
+  _updateTopupBtn();
+}
+
+function selectTopupPack(id) {
+  _selectedTopupPack = id;
+  document.querySelectorAll('.topup-pack').forEach((el, i) =>
+    el.classList.toggle('selected', TOPUP_PACKS[i].id === id)
+  );
+  _updateTopupBtn();
+}
+
+function _updateTopupBtn() {
+  const pack = TOPUP_PACKS.find(p => p.id === _selectedTopupPack);
+  const btn = document.getElementById('topupContinueBtn');
+  if (btn && pack) btn.textContent = `Recargar ${pack.credits.toLocaleString('es-AR')} créditos — $${pack.price}`;
+}
+
+function openCreditsModal() {
+  _selectedTopupPack = 'l';
+  renderTopupPacks();
   document.getElementById('creditsModal').classList.add('open');
 }
 
 function closeModal(){ document.getElementById('creditsModal').classList.remove('open'); }
 
 function handleTopupCheckout() {
+  const pack = TOPUP_PACKS.find(p => p.id === _selectedTopupPack);
   closeModal();
-  // TODO: cuando se integre Paddle, acá disparamos el checkout de la recarga.
-  // Por ahora, solo informamos al usuario.
-  if (!_currentUser || _currentUser.plan === 'none') {
-    showToast('El sistema de pagos se habilita pronto');
-  } else {
-    showToast('Sistema de pagos en integración. Próximamente.');
-  }
+  // TODO: integrar Paddle checkout con pack.id, pack.credits, pack.price
+  showToast(`Pack ${pack ? pack.label : ''} seleccionado — Sistema de pagos próximamente`, 'info');
 }
 
 document.getElementById('creditsModal').addEventListener('click',function(e){
@@ -11941,17 +12056,17 @@ localStorage.removeItem('sidebarWidth');
 
 <!-- Change Plan -->
 <div class="pf-modal" id="profChangePlanModal" onclick="closeProfModal('profChangePlanModal',event)">
-  <div class="pf-modal-card" style="max-width:460px;">
-    <div class="pf-modal-header">
-      <div class="pf-modal-title">Cambiar plan</div>
+  <div class="pf-modal-card" style="max-width:860px;padding:32px 28px;">
+    <div class="pf-modal-header" style="margin-bottom:8px;">
+      <div class="pf-modal-title">Elegí tu plan</div>
       <button class="pf-modal-close" onclick="closeProfModal('profChangePlanModal')">&times;</button>
     </div>
-    <div class="pf-modal-sub">Elegí el plan que mejor se adapta a tu volumen de producción.</div>
-    <div class="pf-plan-grid" id="pfPlanGrid"></div>
-    <div class="pf-modal-btns">
-      <button class="pf-btn-cancel" onclick="closeProfModal('profChangePlanModal')">Cancelar</button>
-      <button class="pf-btn-primary" id="pfChangePlanBtn" onclick="confirmChangePlan()">Confirmar cambio</button>
+    <div class="pf-modal-sub" style="text-align:center;margin-bottom:22px;">Cancelás cuando querés. Sin costos ocultos.</div>
+    <div class="plnv2-toggle-bar">
+      <button class="plnv2-toggle-btn active" data-mode="monthly" onclick="toggleBillingMode('monthly')">Mensual</button>
+      <button class="plnv2-toggle-btn" data-mode="yearly" onclick="toggleBillingMode('yearly')">Anual <span class="plnv2-toggle-save">AHORRÁS 20%</span></button>
     </div>
+    <div class="plnv2-grid" id="pfPlanGrid"></div>
   </div>
 </div>
 
