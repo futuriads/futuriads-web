@@ -2415,6 +2415,68 @@ body, #app { background: #07050f; }
   box-shadow: 0 1px 8px rgba(109,40,217,0.35);
 }
 
+/* ── Inline dashboard generation panels ── */
+.dash-gen-panel { display: none; flex-direction: column; flex: 1; min-height: 0; }
+.dash-gen-panel.active { display: flex; animation: dashPanelIn 0.2s ease; }
+@keyframes dashPanelIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.dash-panel-nav {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.dash-panel-back {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none; color: rgba(255,255,255,0.38);
+  font-size: 12px; cursor: pointer; padding: 4px 0; transition: color 0.15s;
+  font-family: inherit;
+}
+.dash-panel-back:hover { color: #a78bfa; }
+.dash-panel-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
+
+/* Actor strip */
+.dash-actor-strip {
+  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px;
+  scrollbar-width: thin; scrollbar-color: rgba(109,40,217,0.3) transparent;
+}
+.dash-actor-strip::-webkit-scrollbar { height: 3px; }
+.dash-actor-strip::-webkit-scrollbar-thumb { background: rgba(109,40,217,0.3); border-radius: 2px; }
+.dash-actor-pick {
+  flex-shrink: 0; width: 76px; cursor: pointer;
+  border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  transition: border-color 0.2s, transform 0.2s, background 0.2s; overflow: hidden;
+}
+.dash-actor-pick:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-2px); }
+.dash-actor-pick.selected { border-color: rgba(139,92,246,0.75); background: rgba(109,40,217,0.14); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
+.dash-actor-pick img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+.dash-actor-pick-name { font-size: 11px; text-align: center; padding: 5px 4px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-actor-pick.selected .dash-actor-pick-name { color: #c4b5fd; }
+.dash-actor-add {
+  flex-shrink: 0; width: 76px; cursor: pointer;
+  border-radius: 12px; border: 1.5px dashed rgba(139,92,246,0.22);
+  background: rgba(109,40,217,0.05);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; aspect-ratio: 3/5;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dash-actor-add:hover { border-color: rgba(139,92,246,0.5); background: rgba(109,40,217,0.12); }
+.dash-actor-add-icon { font-size: 22px; color: rgba(139,92,246,0.6); line-height: 1; font-weight: 300; }
+.dash-actor-add-text { font-size: 10px; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.3; }
+
+/* Generating panel */
+.dash-generating-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 16px 0; text-align: center; }
+.dash-gen-spinner { margin-bottom: 4px; }
+.dash-gen-status { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+.dash-prog-wrap { width: 100%; max-width: 280px; background: rgba(255,255,255,0.06); border-radius: 4px; height: 4px; overflow: hidden; }
+.dash-prog-fill { height: 100%; background: linear-gradient(90deg, #6d28d9, #9333ea); border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+.dash-gen-hint { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+/* Done panel */
+.dash-done-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 0; padding: 12px 0; text-align: center; }
+.dash-done-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.22); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: #4ade80; }
+.dash-done-title { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 6px; }
+.dash-done-sub { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 20px; max-width: 280px; }
+.dash-done-btns { display: flex; gap: 8px; justify-content: center; }
+
 /* ── Botón Empezar ── */
 .a-gen-btn {
   background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%) !important;
@@ -5242,153 +5304,184 @@ body, #app { background: #07050f; }
         </div>
 
         <div id="genBoxInner" style="display:flex; flex-direction:column; flex:1; min-height:0;">
-        <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
 
-        <!-- Zona de referencia — botón + abre popover con avatar/producto -->
-        <div class="a-gen-ref-zone" id="videoRefZone" style="min-height:0; margin-bottom:0;"></div>
-
-        <div class="a-gen-row">
-          <div class="a-gen-opts active" id="videoOpts">
-            <div class="custom-select" id="cs-model">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-model')">
-                <span>Seedance 2.0</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-dur">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
-                <span>5s</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-dur', this)">5s</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">10s</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-dur', this)">15s</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-aspect">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-aspect')">
-                <span>9:16</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-aspect', this)">9:16</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">16:9</div>
-                <div class="custom-select-option" onclick="selectCustomOption('cs-aspect', this)">1:1</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-res">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-res')">
-                <span>720p</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-res', this)">480p</div>
-                <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-res', this)">720p</div>
-                <div class="custom-select-option" data-value="1080p" onclick="selectCustomOption('cs-res', this)">1080p</div>
-              </div>
-            </div>
-
-            <!-- Botón de imagen de referencia -->
-            <div style="position:relative;">
-              <button class="a-ref-add-btn" id="refAddBtn" onclick="toggleRefPopover(event)" title="Agregar imagen de referencia">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
-              </button>
-              <!-- Popover de upload -->
-              <div class="a-ref-popover" id="refPopover">
-                <div class="a-ref-popover-title">Imágenes de referencia</div>
-                <div class="a-ref-popover-uploads">
-                  <!-- Avatar -->
-                  <div class="a-ref-popover-slot" id="refSlotAvatar">
-                    <input type="file" accept="image/*" id="refFileAvatar" onchange="handleRefUpload('avatar',this)" style="display:none;">
-                    <div class="a-ref-slot-empty" onclick="document.getElementById('refFileAvatar').click()">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="7" r="3"/><path d="M3 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke-linecap="round"/></svg>
-                      <span class="a-ref-slot-label">Avatar</span>
-                      <span class="a-ref-slot-sub">Subir foto</span>
-                    </div>
-                  </div>
-                  <!-- Producto -->
-                  <div class="a-ref-popover-slot" id="refSlotProduct">
-                    <input type="file" accept="image/*" id="refFileProduct" onchange="handleRefUpload('product',this)" style="display:none;">
-                    <div class="a-ref-slot-empty" onclick="document.getElementById('refFileProduct').click()">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="13" height="13" rx="3"/><path d="M6 9h6M9 6v6" stroke-linecap="round"/></svg>
-                      <span class="a-ref-slot-label">Producto</span>
-                      <span class="a-ref-slot-sub">Subir foto</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="a-ref-popover-hint" id="refPopoverHint">Subí una o ambas imágenes.</div>
-              </div>
-            </div>
-
+  <!-- PANEL 0: Input -->
+  <div id="dash-panel-0" class="dash-gen-panel active">
+    <textarea class="a-gen-textarea" id="genTextarea" placeholder="Empezá a escribir lo que querés que diga el actor en el video..."></textarea>
+    <div class="a-gen-ref-zone" id="videoRefZone" style="min-height:0; margin-bottom:0;"></div>
+    <div class="a-gen-row">
+      <div class="a-gen-opts active" id="videoOpts">
+        <div class="custom-select" id="cs-model">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-model')">
+            <span>Seedance 2.0</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
           </div>
-          <div class="a-gen-opts" id="imageOpts">
-            <div class="custom-select" id="cs-img-model">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-model')">
-                <span>GPT Image 2</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" data-value="gpt-image-2" onclick="selectCustomOption('cs-img-model', this)">GPT Image 2</div>
-                <div class="custom-select-option" data-value="nano-banana-2" onclick="selectCustomOption('cs-img-model', this)">Nano Banana 2</div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-img-aspect">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-aspect')">
-                <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></div>
-                <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
-                <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
-                <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-4-5"></span>4:5</span></div>
-                <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-4"></span>3:4</span></div>
-                <div class="custom-select-option" data-value="2:3" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-2-3"></span>2:3</span></div>
-                <div class="custom-select-option" data-value="3:2" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-2"></span>3:2</span></div>
-                <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-auto"></span>Auto</span></div>
-              </div>
-            </div>
-            <div class="custom-select" id="cs-img-quality">
-              <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-quality')">
-                <span>2K</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
-              </div>
-              <div class="custom-select-dropdown">
-                <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-quality', this)">1K</div>
-                <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-quality', this)">2K</div>
-                <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-quality', this)">4K</div>
-              </div>
-            </div>
-
-            <!-- Botón + de imagen de referencia para generar imagen -->
-            <div style="position:relative;">
-              <button class="a-ref-add-btn" id="imgRefAddBtn" onclick="toggleImgRefPopover(event)" title="Agregar imagen de referencia">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
-              </button>
-              <div class="a-ref-popover" id="imgRefPopover">
-                <div class="a-ref-popover-title">Imagen de referencia</div>
-                <div class="a-ref-popover-uploads">
-                  <div class="a-ref-popover-slot" id="imgRefSlot">
-                    <input type="file" accept="image/*" id="imgRefFile" onchange="handleDashImgRefUpload(this)" style="display:none;">
-                    <div class="a-ref-slot-empty" onclick="document.getElementById('imgRefFile').click()">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="m2 13 4-4 3 3 2-2 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      <span class="a-ref-slot-label">Referencia</span>
-                      <span class="a-ref-slot-sub">Subir foto</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="a-ref-popover-hint" id="imgRefPopoverHint">El modelo usará esta imagen como referencia visual.</div>
-              </div>
-            </div>
-          </div><!-- /imageOpts -->
-          <div id="dashCreditPreview" style="font-size:12px;color:rgba(167,139,250,0.7);margin-bottom:6px;min-height:16px;text-align:right;"></div>
-          <button class="a-gen-btn" onclick="startFromDashboard()">Empezar</button>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
+          </div>
         </div>
-        </div><!-- /genBoxInner -->
+        <div class="custom-select" id="cs-dur">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
+            <span>5s</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" data-value="5" onclick="selectCustomOption('cs-dur', this)">5s</div>
+            <div class="custom-select-option" data-value="10" onclick="selectCustomOption('cs-dur', this)">10s</div>
+            <div class="custom-select-option" data-value="15" onclick="selectCustomOption('cs-dur', this)">15s</div>
+          </div>
+        </div>
+        <div class="custom-select" id="cs-aspect">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-aspect')">
+            <span>9:16</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-aspect', this)">9:16 — Vertical</div>
+            <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-aspect', this)">16:9 — Horizontal</div>
+          </div>
+        </div>
+        <div class="custom-select" id="cs-res">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-res')">
+            <span>720p</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-res', this)">480p</div>
+            <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-res', this)">720p</div>
+            <div class="custom-select-option" data-value="1080p" onclick="selectCustomOption('cs-res', this)">1080p</div>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <button class="a-ref-add-btn" id="refAddBtn" onclick="toggleRefPopover(event)" title="Agregar imagen de referencia">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
+          </button>
+          <div class="a-ref-popover" id="refPopover">
+            <div class="a-ref-popover-title">Imágenes de referencia</div>
+            <div class="a-ref-popover-uploads">
+              <div class="a-ref-popover-slot" id="refSlotAvatar">
+                <input type="file" accept="image/*" id="refFileAvatar" onchange="handleRefUpload('avatar',this)" style="display:none;">
+                <div class="a-ref-slot-empty" onclick="document.getElementById('refFileAvatar').click()">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="7" r="3"/><path d="M3 17c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke-linecap="round"/></svg>
+                  <span class="a-ref-slot-label">Avatar</span>
+                  <span class="a-ref-slot-sub">Subir foto</span>
+                </div>
+              </div>
+              <div class="a-ref-popover-slot" id="refSlotProduct">
+                <input type="file" accept="image/*" id="refFileProduct" onchange="handleRefUpload('product',this)" style="display:none;">
+                <div class="a-ref-slot-empty" onclick="document.getElementById('refFileProduct').click()">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="13" height="13" rx="3"/><path d="M6 9h6M9 6v6" stroke-linecap="round"/></svg>
+                  <span class="a-ref-slot-label">Producto</span>
+                  <span class="a-ref-slot-sub">Subir foto</span>
+                </div>
+              </div>
+            </div>
+            <div class="a-ref-popover-hint" id="refPopoverHint">Subí una o ambas imágenes.</div>
+          </div>
+        </div>
+      </div>
+      <div class="a-gen-opts" id="imageOpts">
+        <div class="custom-select" id="cs-img-model">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-model')">
+            <span>GPT Image 2</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" data-value="gpt-image-2" onclick="selectCustomOption('cs-img-model', this)">GPT Image 2</div>
+            <div class="custom-select-option" data-value="nano-banana-2" onclick="selectCustomOption('cs-img-model', this)">Nano Banana 2</div>
+          </div>
+        </div>
+        <div class="custom-select" id="cs-img-aspect">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-aspect')">
+            <span><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" data-value="1:1" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-1-1"></span>1:1</span></div>
+            <div class="custom-select-option" data-value="9:16" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
+            <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
+            <div class="custom-select-option" data-value="4:5" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-4-5"></span>4:5</span></div>
+            <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-3-4"></span>3:4</span></div>
+            <div class="custom-select-option" data-value="auto" onclick="selectCustomOption('cs-img-aspect', this)"><span class="ar-visual"><span class="ar-box ar-auto"></span>Auto</span></div>
+          </div>
+        </div>
+        <div class="custom-select" id="cs-img-quality">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-img-quality')">
+            <span>2K</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option" data-value="1K" onclick="selectCustomOption('cs-img-quality', this)">1K</div>
+            <div class="custom-select-option selected" data-value="2K" onclick="selectCustomOption('cs-img-quality', this)">2K</div>
+            <div class="custom-select-option" data-value="4K" onclick="selectCustomOption('cs-img-quality', this)">4K</div>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <button class="a-ref-add-btn" id="imgRefAddBtn" onclick="toggleImgRefPopover(event)" title="Agregar imagen de referencia">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
+          </button>
+          <div class="a-ref-popover" id="imgRefPopover">
+            <div class="a-ref-popover-title">Imagen de referencia</div>
+            <div class="a-ref-popover-uploads">
+              <div class="a-ref-popover-slot" id="imgRefSlot">
+                <input type="file" accept="image/*" id="imgRefFile" onchange="handleDashImgRefUpload(this)" style="display:none;">
+                <div class="a-ref-slot-empty" onclick="document.getElementById('imgRefFile').click()">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="14" height="14" rx="3"/><circle cx="6.5" cy="6.5" r="1.5"/><path d="m2 13 4-4 3 3 2-2 5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="a-ref-slot-label">Referencia</span>
+                  <span class="a-ref-slot-sub">Subir foto</span>
+                </div>
+              </div>
+            </div>
+            <div class="a-ref-popover-hint" id="imgRefPopoverHint">El modelo usará esta imagen como referencia visual.</div>
+          </div>
+        </div>
+      </div>
+      <div id="dashCreditPreview" style="font-size:12px;color:rgba(167,139,250,0.7);margin-bottom:6px;min-height:16px;text-align:right;"></div>
+      <button class="a-gen-btn" onclick="startFromDashboard()">Empezar</button>
+    </div>
+  </div><!-- /dash-panel-0 -->
+
+  <!-- PANEL 1: Actor picker (video only) -->
+  <div id="dash-panel-1" class="dash-gen-panel">
+    <div class="dash-panel-nav">
+      <button class="dash-panel-back" onclick="showDashPanel(0)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>
+        Volver
+      </button>
+      <span class="dash-panel-title">Elegí tu actor</span>
+    </div>
+    <div class="dash-actor-strip" id="dashActorStrip"></div>
+    <button class="a-gen-btn" id="dashGenBtn" onclick="runDashGen()" disabled style="opacity:0.35;cursor:not-allowed;margin-top:auto;">Generar video</button>
+  </div><!-- /dash-panel-1 -->
+
+  <!-- PANEL 2: Generating -->
+  <div id="dash-panel-2" class="dash-gen-panel">
+    <div class="dash-generating-wrap">
+      <div class="dash-gen-spinner">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12" stroke="rgba(139,92,246,0.2)"/><path d="M16 4a12 12 0 0 1 12 12" stroke="url(#dgs)" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 16 16" to="360 16 16" dur="1s" repeatCount="indefinite"/></path><defs><linearGradient id="dgs" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6d28d9"/><stop offset="100%" stop-color="#9333ea"/></linearGradient></defs></svg>
+      </div>
+      <div class="dash-gen-status" id="dashGenStatus">Preparando...</div>
+      <div class="dash-prog-wrap"><div id="dashProgBar" class="dash-prog-fill"></div></div>
+      <div class="dash-gen-hint" id="dashGenHint"></div>
+    </div>
+  </div><!-- /dash-panel-2 -->
+
+  <!-- PANEL 3: Done -->
+  <div id="dash-panel-3" class="dash-gen-panel">
+    <div class="dash-done-wrap">
+      <div class="dash-done-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 11 9 16 18 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="dash-done-title" id="dashDoneTitle">¡En proceso!</div>
+      <div class="dash-done-sub" id="dashDoneSub">Tu generación está en cola. Encontrala en el Historial en unos minutos.</div>
+      <div class="dash-done-btns">
+        <button class="btn-outline" style="border-radius:var(--r-sm);font-size:13px;" onclick="showScreen('historial')">Ver historial</button>
+        <button class="btn-w" style="border-radius:var(--r-sm);font-size:13px;" onclick="showDashPanel(0)">Generar otro</button>
+      </div>
+    </div>
+  </div><!-- /dash-panel-3 -->
+
+</div><!-- /genBoxInner -->
       </div>
 
       <!-- Dashboard bottom: dos columnas -->
@@ -5562,16 +5655,12 @@ body, #app { background: #07050f; }
         <div class="a-select-row" style="margin-top:8px;">
           <div class="custom-select" id="cs-step2-ratio">
             <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-step2-ratio')">
-              <span>9:16 — Vertical (Reels/TikTok)</span>
+              <span>9:16 — Vertical</span>
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
             </div>
             <div class="custom-select-dropdown">
-              <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-step2-ratio', this)">9:16 — Vertical (Reels/TikTok)</div>
-              <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-step2-ratio', this)">16:9 — Horizontal (YouTube)</div>
-              <div class="custom-select-option" data-value="1:1" onclick="selectCustomOption('cs-step2-ratio', this)">1:1 — Cuadrado</div>
-              <div class="custom-select-option" data-value="4:3" onclick="selectCustomOption('cs-step2-ratio', this)">4:3 — Clásico</div>
-              <div class="custom-select-option" data-value="3:4" onclick="selectCustomOption('cs-step2-ratio', this)">3:4 — Portrait</div>
-              <div class="custom-select-option" data-value="21:9" onclick="selectCustomOption('cs-step2-ratio', this)">21:9 — Cine</div>
+              <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-step2-ratio', this)">9:16 — Vertical</div>
+              <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-step2-ratio', this)">16:9 — Horizontal</div>
             </div>
           </div>
         </div>
@@ -11101,88 +11190,202 @@ function backFromGen() {
   showScreen('dashboard');
 }
 
-function startFromDashboard(){
-  // Detectar si el usuario está en tab "video" o "imagen"
-  const isVideo = document.getElementById('tabVideo').classList.contains('active');
+// ── Inline dashboard generation ─────────────────────────────────────
 
-  // Tomar el prompt que escribió en el dashboard
-  const dashPrompt = document.getElementById('genTextarea')?.value?.trim() || '';
+var _dashSelectedActor = null;
+var _dashCustomActorB64 = null;
 
-  // Si está en "Crear imagen", redirigir a la pantalla de Nueva imagen
-  if (!isVideo) {
-    showScreen('nueva-imagen');
-    resetImageGenerator();
-    if (dashPrompt) {
-      const promptEl = document.getElementById('imgPromptInput');
-      if (promptEl) promptEl.value = dashPrompt;
-    }
-    // Sincronizar modelo, aspect ratio y calidad elegidos en el dashboard
-    const dashImgModel = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value;
-    const dashImgAspect = document.querySelector('#cs-img-aspect .custom-select-option.selected')?.dataset.value;
-    const dashImgQuality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.dataset.value;
+var DASH_ACTORS = [
+  { name: 'Facu', tag: 'Joven · Casual', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png' },
+  { name: 'Sofi', tag: 'Lifestyle · Hogar', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png' },
+  { name: 'Paula', tag: 'Dinámica · Directa', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png' },
+  { name: 'José', tag: 'Maduro · Confiable', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png' }
+];
 
-    if (dashImgModel && (dashImgModel === 'gpt-image-2' || dashImgModel === 'nano-banana-2')) {
-      imgSelectedModel = dashImgModel;
-      // Reflejar visualmente en las cards
-      document.querySelectorAll('.img-model-card').forEach(c => {
-        c.classList.toggle('selected', c.dataset.model === dashImgModel);
-      });
-    }
-    if (dashImgAspect) imgSelectedRatio = dashImgAspect;
-    if (dashImgQuality) imgSelectedRes = dashImgQuality;
-    rebuildRatioDropdown();
-    rebuildResDropdown();
-
-    // Pasar imagen de referencia al generador de imágenes
-    window._pendingImgRefB64 = _dashImgRefB64 || null;
-
-    return;
+function showDashPanel(n) {
+  for (var i = 0; i <= 3; i++) {
+    var el = document.getElementById('dash-panel-' + i);
+    if (el) el.classList.toggle('active', i === n);
   }
+}
 
-  // Sincronizar las preferencias del dashboard (duración, aspect, resolución)
-  // con los custom-selects del Step 2 antes de mostrar el flujo
-  const dashDur = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim();
-  const dashAspect = document.querySelector('#cs-aspect .custom-select-option.selected')?.textContent?.trim();
-  const dashRes = document.querySelector('#cs-res .custom-select-option.selected')?.textContent?.trim();
+function initDashActorStrip() {
+  var strip = document.getElementById('dashActorStrip');
+  if (!strip) return;
+  strip.innerHTML = '';
+  DASH_ACTORS.forEach(function(actor) {
+    var card = document.createElement('div');
+    card.className = 'dash-actor-pick';
+    card.dataset.actor = actor.name;
+    card.innerHTML = '<img src="' + actor.img + '" alt="' + actor.name + '" loading="lazy"><div class="dash-actor-pick-name">' + actor.name + '</div>';
+    card.onclick = function() { dashSelectActor(card, actor.name); };
+    strip.appendChild(card);
+  });
+  // Custom actor upload card
+  var addCard = document.createElement('div');
+  addCard.className = 'dash-actor-add';
+  addCard.id = 'dashActorAddCard';
+  addCard.innerHTML = '<input type="file" accept="image/*" id="dashCustomActorFile" style="display:none;" onchange="handleDashCustomActor(this)"><div class="dash-actor-add-icon">+</div><div class="dash-actor-add-text">Añadir<br>actor</div>';
+  addCard.onclick = function() { document.getElementById('dashCustomActorFile').click(); };
+  strip.appendChild(addCard);
+}
 
-  const setStep2Selection = (selectId, dataValue) => {
-    if (!dataValue) return;
-    const el = document.getElementById(selectId);
-    if (!el) return;
-    const opt = el.querySelector(`.custom-select-option[data-value="${dataValue}"]`);
-    if (!opt) return;
-    el.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
-    const span = el.querySelector('.custom-select-trigger span');
-    if (span) span.textContent = opt.textContent;
+function dashSelectActor(card, name) {
+  document.querySelectorAll('.dash-actor-pick').forEach(function(c) { c.classList.remove('selected'); });
+  card.classList.add('selected');
+  _dashSelectedActor = name;
+  var btn = document.getElementById('dashGenBtn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'Generar video'; }
+}
+
+function handleDashCustomActor(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _dashCustomActorB64 = e.target.result;
+    var addCard = document.getElementById('dashActorAddCard');
+    if (addCard) {
+      addCard.className = 'dash-actor-pick';
+      addCard.innerHTML = '<img src="' + e.target.result + '" alt="Mi actor" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;"><div class="dash-actor-pick-name">Mi actor</div>';
+      addCard.onclick = function() { dashSelectActor(addCard, '_custom'); };
+      dashSelectActor(addCard, '_custom');
+    }
   };
+  reader.readAsDataURL(file);
+}
 
-  // Mapear "5s" -> "5", "10s" -> "10", "15s" -> "15"
-  if (dashDur) {
-    const num = dashDur.replace(/[^0-9]/g,'');
-    if (num) setStep2Selection('cs-step2-dur', num);
+function startFromDashboard() {
+  var isVideo = document.getElementById('tabVideo') && document.getElementById('tabVideo').classList.contains('active');
+  var prompt = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
+  if (!prompt) { showToast('Escribí un prompt antes de continuar', 'info'); return; }
+
+  if (isVideo) {
+    initDashActorStrip();
+    _dashSelectedActor = null;
+    var btn = document.getElementById('dashGenBtn');
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed'; }
+    showDashPanel(1);
+  } else {
+    showDashPanel(2);
+    runDashGenImage();
   }
-  if (dashAspect) setStep2Selection('cs-step2-ratio', dashAspect);
-  if (dashRes) setStep2Selection('cs-step2-res', dashRes);
+}
 
-  // Pre-cargar el prompt en el textarea del Step 2 (si lo escribió en el dashboard)
-  const scriptInput = document.getElementById('scriptInput');
-  if (scriptInput && dashPrompt) scriptInput.value = dashPrompt;
+async function runDashGen() {
+  if (!_dashSelectedActor) return;
+  var prompt = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
+  if (!prompt) { showToast('Sin prompt', 'info'); return; }
 
-  // Navegar a "Nuevo video" en el Step 1 (selección de actor)
-  showScreen('nuevo');
-  resetSelectedActor();
-  goGenStep(1);
+  var resVal   = (document.querySelector('#cs-res .custom-select-option.selected') && document.querySelector('#cs-res .custom-select-option.selected').dataset.value) || '720p';
+  var durVal   = (document.querySelector('#cs-dur .custom-select-option.selected') && document.querySelector('#cs-dur .custom-select-option.selected').dataset.value) || '5';
+  var ratioVal = (document.querySelector('#cs-aspect .custom-select-option.selected') && document.querySelector('#cs-aspect .custom-select-option.selected').dataset.value) || '9:16';
 
-  // Pasar imágenes de referencia al flujo de video
-  window._pendingAvatarB64  = _dashRefAvatarB64  || null;
-  window._pendingProductB64 = _dashRefProductB64 || null;
-  // Derivar modo automáticamente según lo que subió el usuario
-  if (_dashRefAvatarB64 && _dashRefProductB64) window._pendingRefMode = 'multi';
-  else if (_dashRefAvatarB64)                  window._pendingRefMode = 'avatar';
-  else if (_dashRefProductB64)                 window._pendingRefMode = 'product';
-  else                                         window._pendingRefMode = 'none';
+  showDashPanel(2);
+  var statusEl = document.getElementById('dashGenStatus');
+  var hintEl   = document.getElementById('dashGenHint');
+  var barEl    = document.getElementById('dashProgBar');
 
+  var prog = 0;
+  function setBar(target, ms) {
+    return new Promise(function(resolve) {
+      var from = prog, t0 = Date.now();
+      function anim() {
+        var t = Math.min((Date.now() - t0) / ms, 1);
+        prog = from + (target - from) * t;
+        if (barEl) barEl.style.width = prog + '%';
+        if (t < 1) requestAnimationFrame(anim); else resolve();
+      }
+      anim();
+    });
+  }
+
+  try {
+    if (statusEl) statusEl.textContent = 'Preparando tu video...';
+    if (hintEl) hintEl.textContent = '';
+    await setBar(35, 600);
+    if (statusEl) statusEl.textContent = 'Enviando a Seedance 2.0...';
+    await setBar(65, 500);
+
+    var userId = null;
+    try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
+
+    var body = { script: prompt, avatar: _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor, duration: durVal, aspectRatio: ratioVal, resolution: resVal, userId: userId };
+    if (_dashSelectedActor === '_custom' && _dashCustomActorB64) body.avatarRef = _dashCustomActorB64;
+
+    var genRes = await fetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+    if (genRes.status === 402) {
+      var errData = await genRes.json().catch(function() { return {}; });
+      if (barEl) barEl.style.width = '0%';
+      showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
+      showDashPanel(0); return;
+    }
+    if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
+
+    await setBar(100, 400);
+    refreshCredits();
+
+    if (document.getElementById('dashDoneTitle')) document.getElementById('dashDoneTitle').textContent = '¡Video en proceso!';
+    if (document.getElementById('dashDoneSub')) document.getElementById('dashDoneSub').textContent = 'Tu video se está generando con Seedance 2.0. Lo encontrás en el Historial en 5-10 minutos.';
+    showDashPanel(3);
+
+  } catch(err) {
+    console.error('runDashGen error:', err);
+    if (statusEl) { statusEl.textContent = '⚠ ' + (err.message || 'Ocurrió un error'); statusEl.style.color = '#f87171'; }
+    setTimeout(function() { if (statusEl) statusEl.style.color = ''; showDashPanel(1); }, 3000);
+  }
+}
+
+async function runDashGenImage() {
+  var prompt   = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
+  var model    = (document.querySelector('#cs-img-model .custom-select-option.selected') && document.querySelector('#cs-img-model .custom-select-option.selected').dataset.value) || 'gpt-image-2';
+  var quality  = (document.querySelector('#cs-img-quality .custom-select-option.selected') && document.querySelector('#cs-img-quality .custom-select-option.selected').dataset.value) || '2K';
+  var ratio    = (document.querySelector('#cs-img-aspect .custom-select-option.selected') && document.querySelector('#cs-img-aspect .custom-select-option.selected').dataset.value) || '1:1';
+
+  var statusEl = document.getElementById('dashGenStatus');
+  var hintEl   = document.getElementById('dashGenHint');
+  var barEl    = document.getElementById('dashProgBar');
+  if (barEl) barEl.style.width = '0%';
+
+  var prog = 0;
+  var interval = setInterval(function() {
+    prog = Math.min(prog + Math.random() * 10, 90);
+    if (barEl) barEl.style.width = prog + '%';
+  }, 700);
+
+  try {
+    if (statusEl) statusEl.textContent = 'Generando imagen...';
+    if (hintEl) hintEl.textContent = 'Esto puede tardar unos segundos.';
+
+    var userId = null;
+    try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
+
+    var response = await fetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: model, prompt: prompt, aspectRatio: ratio, resolution: quality, userId: userId }) });
+
+    clearInterval(interval);
+
+    if (response.status === 402) {
+      var errData = await response.json().catch(function() { return {}; });
+      if (barEl) barEl.style.width = '0%';
+      showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
+      showDashPanel(0); return;
+    }
+    if (!response.ok) throw new Error('Error al generar imagen');
+
+    if (barEl) barEl.style.width = '100%';
+    refreshCredits();
+
+    if (document.getElementById('dashDoneTitle')) document.getElementById('dashDoneTitle').textContent = '¡Imagen en proceso!';
+    if (document.getElementById('dashDoneSub')) document.getElementById('dashDoneSub').textContent = 'Tu imagen se está procesando. La encontrás en el Historial en unos minutos.';
+    showDashPanel(3);
+
+  } catch(err) {
+    clearInterval(interval);
+    console.error('runDashGenImage error:', err);
+    if (statusEl) { statusEl.textContent = '⚠ ' + (err.message || 'Ocurrió un error'); statusEl.style.color = '#f87171'; }
+    setTimeout(function() { if (statusEl) statusEl.style.color = ''; showDashPanel(0); }, 3000);
+  }
 }
 
 // Helper: limpiar selección de actor sin tocar el prompt ya cargado
