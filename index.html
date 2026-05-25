@@ -3852,6 +3852,7 @@ body, #app { background: #07050f; }
 }
 .prof2-bill-item:last-child { border-bottom:none; }
 .prof2-bill-item:hover { background:rgba(109,40,217,0.09); }
+.prof2-bill-item-danger:hover { background:rgba(239,68,68,0.07) !important; }
 .prof2-bill-icon {
   width:32px; height:32px; border-radius:9px; flex-shrink:0;
   background:rgba(109,40,217,0.13); border:1px solid rgba(109,40,217,0.2);
@@ -4189,6 +4190,42 @@ body, #app { background: #07050f; }
   padding:1px 6px; margin-top:5px; align-self:flex-start;
 }
 .topup-pack.best-val .topup-pack-label { color:#a78bfa; }
+
+/* Cancel membership modal */
+.cancel-warn-box {
+  background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 12px; padding: 16px; margin: 18px 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cancel-warn-title {
+  font-size: 13px; font-weight: 700; color: rgba(248,113,113,0.9);
+  display: flex; align-items: center; gap: 7px;
+}
+.cancel-warn-list {
+  list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0;
+}
+.cancel-warn-list li {
+  font-size: 12px; color: rgba(192,168,255,0.6);
+  display: flex; align-items: center; gap: 8px;
+}
+.cancel-warn-list li::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(248,113,113,0.5); flex-shrink: 0;
+}
+.cancel-plan-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #c4b5fd;
+  margin-bottom: 4px; align-self: flex-start;
+}
+.btn-danger {
+  width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.08); color: rgba(248,113,113,0.9);
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-danger:hover { background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.55); color: #fca5a5; }
+.btn-danger:disabled { opacity: 0.4; cursor: default; }
 
 /* Password strength */
 .pf-pwd-bars { display:flex; gap:4px; margin-top:7px; margin-bottom:4px; }
@@ -5953,15 +5990,15 @@ body, #app { background: #07050f; }
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-bill-item" onclick="openPayHistModal()">
-              <div class="prof2-bill-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            <div class="prof2-bill-item prof2-bill-item-danger" onclick="openCancelMembershipModal()">
+              <div class="prof2-bill-icon" style="color:rgba(248,113,113,0.7);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
               </div>
               <div style="flex:1;min-width:0;">
-                <div class="prof2-bill-name">Historial de facturas</div>
-                <div class="prof2-bill-sub">Todos tus pagos y recibos</div>
+                <div class="prof2-bill-name" style="color:rgba(248,113,113,0.85);">Cancelar membresía</div>
+                <div class="prof2-bill-sub">Perdés el acceso al finalizar el período</div>
               </div>
-              <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,113,113,0.5)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
           </div>
@@ -9235,6 +9272,35 @@ function openPayMethodsModal() {
   if (el) el.classList.add('open');
 }
 
+function openCancelMembershipModal() {
+  const plan = (_currentUser && _currentUser.plan) || 'none';
+  if (plan === 'none') {
+    showToast('No tenés ninguna membresía activa', 'info');
+    return;
+  }
+  const planInfo = getPlanInfo(plan);
+  // Populate plan chip
+  const nameEl = document.getElementById('cancelPlanName');
+  const renewEl = document.getElementById('cancelPlanRenew');
+  if (nameEl) nameEl.textContent = planInfo.label + ' — ' + planInfo.price + '/mes';
+  // Try to get renewal date from loaded profile
+  const renewText = document.querySelector('.a-plan-card-renewal');
+  if (renewEl) renewEl.textContent = renewText ? renewText.textContent : '';
+  // Reset confirm button
+  const btn = document.getElementById('cancelConfirmBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Cancelar mi membresía'; }
+  document.getElementById('profCancelModal')?.classList.add('open');
+}
+
+async function confirmCancelMembership() {
+  const btn = document.getElementById('cancelConfirmBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Procesando...'; }
+  // TODO: integrar con Paddle/Supabase para cancelar suscripción real
+  await new Promise(r => setTimeout(r, 1200));
+  closeProfModal('profCancelModal');
+  showToast('Membresía cancelada. Seguís teniendo acceso hasta fin del período.', 'info');
+}
+
 function openBillingModal() {
   const el = document.getElementById('profBillingModal');
   if (!el) return;
@@ -12111,6 +12177,41 @@ localStorage.removeItem('sidebarWidth');
     <button style="width:100%;background:transparent;border:1.5px dashed rgba(139,92,246,0.3);border-radius:12px;padding:13px;color:rgba(192,168,255,0.5);font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(139,92,246,0.6)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(139,92,246,0.3)';this.style.color='rgba(192,168,255,0.5)'" onclick="showToast('Redirigiendo al portal de pagos…','info')">+ Agregar tarjeta</button>
     <div class="pf-modal-btns" style="justify-content:flex-end;">
       <button class="pf-btn-cancel" onclick="closeProfModal('profPayMethodsModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Membership -->
+<div class="pf-modal" id="profCancelModal" onclick="closeProfModal('profCancelModal',event)">
+  <div class="pf-modal-card" style="max-width:420px;">
+    <div class="pf-modal-header">
+      <div class="pf-modal-title">Cancelar membresía</div>
+      <button class="pf-modal-close" onclick="closeProfModal('profCancelModal')">&times;</button>
+    </div>
+    <div class="pf-modal-sub">Tu plan activo:</div>
+    <div class="cancel-plan-chip" id="cancelPlanChip">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span id="cancelPlanName">—</span>
+      <span style="color:rgba(192,168,255,0.4);font-size:11px;" id="cancelPlanRenew"></span>
+    </div>
+    <div class="cancel-warn-box">
+      <div class="cancel-warn-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Si cancelás, perdés acceso a:
+      </div>
+      <ul class="cancel-warn-list">
+        <li>Generación de videos y anuncios con actores IA</li>
+        <li>Tus créditos de suscripción mensuales</li>
+        <li>Imágenes IA de producto y avatar</li>
+        <li>Soporte prioritario</li>
+      </ul>
+    </div>
+    <p style="font-size:12px;color:rgba(192,168,255,0.45);margin:0 0 18px;line-height:1.6;">
+      Vas a seguir teniendo acceso hasta el final del período ya abonado. Los créditos de recarga que hayas comprado <strong style="color:rgba(192,168,255,0.7)">no se pierden</strong> y quedan disponibles si volvés a suscribirte.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn-danger" id="cancelConfirmBtn" onclick="confirmCancelMembership()">Cancelar mi membresía</button>
+      <button class="pf-btn-cancel" onclick="closeProfModal('profCancelModal')" style="width:100%;text-align:center;">Volver, no quiero cancelar</button>
     </div>
   </div>
 </div>
