@@ -5286,8 +5286,9 @@ body, #app { background: #07050f; }
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
               </div>
               <div class="custom-select-dropdown">
-                <div class="custom-select-option" onclick="selectCustomOption('cs-res', this)">480p</div>
-                <div class="custom-select-option selected" onclick="selectCustomOption('cs-res', this)">720p</div>
+                <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-res', this)">480p</div>
+                <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-res', this)">720p</div>
+                <div class="custom-select-option" data-value="1080p" onclick="selectCustomOption('cs-res', this)">1080p</div>
               </div>
             </div>
 
@@ -5384,6 +5385,7 @@ body, #app { background: #07050f; }
               </div>
             </div>
           </div><!-- /imageOpts -->
+          <div id="dashCreditPreview" style="font-size:12px;color:rgba(167,139,250,0.7);margin-bottom:6px;min-height:16px;text-align:right;"></div>
           <button class="a-gen-btn" onclick="startFromDashboard()">Empezar</button>
         </div>
         </div><!-- /genBoxInner -->
@@ -5553,6 +5555,7 @@ body, #app { background: #07050f; }
             <div class="custom-select-dropdown">
               <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-step2-res', this)">480p — Borrador</div>
               <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-step2-res', this)">720p — HD</div>
+              <div class="custom-select-option" data-value="1080p" onclick="selectCustomOption('cs-step2-res', this)">1080p — Full HD</div>
             </div>
           </div>
         </div>
@@ -5616,7 +5619,7 @@ body, #app { background: #07050f; }
             <button class="btn-w" id="previewDownloadBtn">Descargar MP4</button>
             <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="goGenStep(1)">Generar otro</button>
           </div>
-          <div class="a-back-link" onclick="showScreen('dashboard')">Volver al dashboard</div>
+          <div class="a-back-link" onclick="backFromGen()">Volver al dashboard</div>
         </div>
       </div>
     </div><!-- /nuevo -->
@@ -5684,7 +5687,7 @@ body, #app { background: #07050f; }
         </div>
 
         <div style="display:flex;gap:10px;margin-top:24px;">
-          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="showScreen('dashboard')">Atrás</button>
+          <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="backFromGen()">Atrás</button>
           <button class="btn-w" style="border-radius:var(--r-sm);" onclick="generateImage()">Generar imagen</button>
         </div>
       </div>
@@ -5712,7 +5715,7 @@ body, #app { background: #07050f; }
           <button class="btn-w" style="border-radius:var(--r-sm);" onclick="downloadGeneratedImage()">Descargar imagen</button>
           <button class="btn-outline" style="border-radius:var(--r-sm);" onclick="resetImageGenerator()">Generar otra</button>
         </div>
-        <div class="a-back-link" style="margin-top:18px;" onclick="showScreen('dashboard')">Volver al dashboard</div>
+        <div class="a-back-link" style="margin-top:18px;" onclick="backFromGen()">Volver al dashboard</div>
       </div>
     </div><!-- /nueva-imagen -->
 
@@ -6634,6 +6637,9 @@ function selectCustomOption(selectId, optionEl) {
   el.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
   optionEl.classList.add('selected');
   el.classList.remove('open');
+  // Actualizar preview de créditos si el selector pertenece al dashboard
+  const dashSelects = ['cs-res','cs-dur','cs-img-model','cs-img-quality'];
+  if (dashSelects.includes(selectId)) updateDashCreditPreview();
 }
 
 document.addEventListener('click', function(e) {
@@ -7042,6 +7048,9 @@ function goToApp(){
           requestAnimationFrame(()=>{a.style.opacity='1';});
         },300);
       }
+      // Inicializar preview de créditos del dashboard
+      setTimeout(updateDashCreditPreview, 500);
+
       // Cargar el perfil del usuario logueado (con retry por si falla la primera vez)
       loadProfile().catch(err => {
         console.error('[goToApp] loadProfile falló, reintentando en 1s:', err);
@@ -9346,9 +9355,11 @@ function showScreen(name, instant){
       setTimeout(()=>{s.classList.remove('active');s.style.display='none';},200);
     });
     document.querySelectorAll('.a-nav-item').forEach(n=>n.classList.remove('active'));
-    document.getElementById('nav-'+name).classList.add('active');
+    const _navEl = document.getElementById('nav-'+name);
+    if (_navEl) _navEl.classList.add('active');
     setTimeout(()=>{
       const sc=document.getElementById('screen-'+name);
+      if (!sc) return;
       sc.style.display='block';
       requestAnimationFrame(()=>{sc.classList.add('active');sc.style.opacity='1';});
     },210);
@@ -10861,6 +10872,7 @@ function _doSwitchGenTab(tab){
     tab==='video'
       ? 'Empezá a escribir lo que querés que diga el actor en el video...'
       : 'Describí la imagen que querés generar...';
+  setTimeout(updateDashCreditPreview, 0);
 }
 
 function toggleRefPopover(e) {
@@ -11044,6 +11056,51 @@ document.addEventListener('click', function(e) {
 });
 
 /* ---- Dashboard → flujo de generación ---- */
+// ── Credit preview en el dashboard ───────────────────────────────────
+function updateDashCreditPreview() {
+  const el = document.getElementById('dashCreditPreview');
+  if (!el) return;
+  const isVideo = document.getElementById('tabVideo')?.classList.contains('active');
+  let credits = 0;
+
+  if (isVideo) {
+    const resVal  = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value || '720p';
+    const durText = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim() || '5s';
+    const dur     = parseInt(durText) || 5;
+    const rates   = { '480p': 93.5, '720p': 207, '1080p': 521 };
+    credits = Math.ceil(dur * (rates[resVal] || 207));
+    el.textContent = '≈ ' + credits.toLocaleString('es-AR') + ' créditos';
+  } else {
+    const model   = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
+    const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.dataset.value || '2K';
+    const imgCosts = {
+      'gpt-image-2':   { '1K': 250, '2K': 250, '4K': 300, 'auto': 250 },
+      'nano-banana-2': { '1K': 300, '2K': 300, '4K': 300, 'auto': 300 }
+    };
+    credits = (imgCosts[model] || imgCosts['gpt-image-2'])[quality] || 250;
+    el.textContent = '≈ ' + credits.toLocaleString('es-AR') + ' créditos';
+  }
+}
+
+// ── Volver desde generador sin perder configuración ──────────────────
+function backFromGen() {
+  // Sincronizar los selects de gen-step-2 de vuelta al dashboard
+  const syncToDs = (stepId, dsId) => {
+    const val = document.querySelector('#' + stepId + ' .custom-select-option.selected')?.dataset.value;
+    if (!val) return;
+    const dsOpt = document.querySelector('#' + dsId + ' .custom-select-option[data-value="' + val + '"]');
+    if (!dsOpt) return;
+    document.querySelectorAll('#' + dsId + ' .custom-select-option').forEach(o => o.classList.remove('selected'));
+    dsOpt.classList.add('selected');
+    const trigger = document.querySelector('#' + dsId + ' .custom-select-trigger span');
+    if (trigger) trigger.textContent = dsOpt.textContent;
+  };
+  syncToDs('cs-step2-res', 'cs-res');
+  syncToDs('cs-step2-dur', 'cs-dur');
+  syncToDs('cs-step2-ratio', 'cs-aspect');
+  showScreen('dashboard');
+}
+
 function startFromDashboard(){
   // Detectar si el usuario está en tab "video" o "imagen"
   const isVideo = document.getElementById('tabVideo').classList.contains('active');
@@ -11079,7 +11136,6 @@ function startFromDashboard(){
     // Pasar imagen de referencia al generador de imágenes
     window._pendingImgRefB64 = _dashImgRefB64 || null;
 
-    if (dashPrompt) document.getElementById('genTextarea').value = '';
     return;
   }
 
@@ -11127,8 +11183,6 @@ function startFromDashboard(){
   else if (_dashRefProductB64)                 window._pendingRefMode = 'product';
   else                                         window._pendingRefMode = 'none';
 
-  // Limpiar el textarea del dashboard para la próxima visita
-  if (dashPrompt) document.getElementById('genTextarea').value = '';
 }
 
 // Helper: limpiar selección de actor sin tocar el prompt ya cargado
