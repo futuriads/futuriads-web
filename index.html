@@ -1356,6 +1356,135 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 }
 
 /* ==============================================
+   LANDING — VIDEO CARD SHIMMER FALLBACK
+   ============================================== */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.actor-card {
+  background: linear-gradient(145deg, rgba(40,12,90,0.85), rgba(8,3,28,0.95));
+}
+.actor-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(105deg, transparent 40%, rgba(139,92,246,0.12) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 2.2s ease-in-out infinite;
+}
+.actor-card video { position: relative; z-index: 1; }
+.l-feat-vid-card {
+  background: linear-gradient(145deg, rgba(40,12,90,0.85), rgba(8,3,28,0.95));
+  position: relative; overflow: hidden;
+}
+.l-feat-vid-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(139,92,246,0.1) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 2.2s ease-in-out infinite;
+}
+.l-feat-vid-card video { position: relative; z-index: 1; }
+
+/* ==============================================
+   LANDING — STATS BAR
+   ============================================== */
+.l-stats-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 36px 40px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.l-stat-item {
+  text-align: center; padding: 0 48px;
+  border-right: 1px solid var(--border);
+}
+.l-stat-item:last-child { border-right: none; }
+.l-stat-num {
+  font-size: 36px; font-weight: 900; letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.l-stat-label { font-size: 12px; color: var(--text2); font-weight: 500; }
+@media(max-width:700px) {
+  .l-stats-bar { gap: 0; }
+  .l-stat-item { padding: 12px 24px; border-right: none; border-bottom: 1px solid var(--border); width: 50%; }
+  .l-stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+}
+
+/* ==============================================
+   LANDING — HERO NO-CC TEXT
+   ============================================== */
+.l-hero-nocc {
+  font-size: 12px; color: rgba(255,255,255,0.3);
+  margin-top: 14px; letter-spacing: 0.2px;
+}
+
+/* ==============================================
+   LANDING — TESTIMONIAL STARS
+   ============================================== */
+.l-testi-stars { display: flex; gap: 3px; margin-bottom: 10px; }
+.l-testi-stars span { color: #facc15; font-size: 14px; }
+.l-testi-platform {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  color: rgba(192,168,255,0.4); margin-bottom: 6px;
+}
+
+/* ==============================================
+   LANDING — COMPARISON TABLE
+   ============================================== */
+.l-compare-wrap {
+  max-width: 680px; margin: 0 auto;
+  border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden;
+}
+.l-compare-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.l-compare-row:last-child { border-bottom: none; }
+.l-compare-row > div {
+  padding: 14px 20px; font-size: 13px;
+  border-right: 1px solid var(--border);
+}
+.l-compare-row > div:last-child { border-right: none; }
+.l-compare-header > div {
+  padding: 12px 20px; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--text2);
+  background: rgba(255,255,255,0.03); border-right: 1px solid var(--border);
+}
+.l-compare-header > div:last-child { border-right: none; color: #a78bfa; }
+.l-compare-label { color: var(--text2); font-weight: 500; }
+.l-compare-bad  { color: rgba(248,113,113,0.7); }
+.l-compare-bad::before  { content: '✕  '; }
+.l-compare-good { color: #4ade80; font-weight: 600; }
+.l-compare-good::before { content: '✓  '; }
+
+/* ==============================================
+   LANDING — FAQ
+   ============================================== */
+.l-faq { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
+.l-faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.l-faq-item:first-child { border-top: 1px solid var(--border); }
+.l-faq-btn {
+  width: 100%; background: none; border: none; padding: 20px 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+  text-align: left; transition: color 0.15s;
+}
+.l-faq-btn:hover { color: #c4b5fd; }
+.l-faq-btn svg { flex-shrink: 0; transition: transform 0.2s; color: var(--text2); }
+.l-faq-btn.open svg { transform: rotate(45deg); color: #a78bfa; }
+.l-faq-body {
+  font-size: 14px; color: var(--text2); line-height: 1.7;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.l-faq-body.open { max-height: 300px; padding-bottom: 18px; }
+
+/* ==============================================
    LANDING — CTA FINAL
    ============================================== */
 .l-cta { text-align: center; background: var(--bg2); }
@@ -4570,6 +4699,7 @@ body, #app { background: #07050f; }
         <span class="l-badge">Videos en minutos</span>
         <span class="l-badge">↗ Listo para publicar</span>
       </div>
+      <div class="l-hero-nocc">Sin tarjeta de crédito · Cancelás cuando querés</div>
     </div>
   </section>
 
@@ -4587,6 +4717,26 @@ body, #app { background: #07050f; }
   <!-- Marquee -->
   <div class="l-marquee">
     <div class="l-marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="l-stats-bar">
+    <div class="l-stat-item">
+      <div class="l-stat-num">1.200+</div>
+      <div class="l-stat-label">Videos generados</div>
+    </div>
+    <div class="l-stat-item">
+      <div class="l-stat-num">+38%</div>
+      <div class="l-stat-label">ROAS promedio</div>
+    </div>
+    <div class="l-stat-item">
+      <div class="l-stat-num">8 min</div>
+      <div class="l-stat-label">Por video</div>
+    </div>
+    <div class="l-stat-item">
+      <div class="l-stat-num">$0</div>
+      <div class="l-stat-label">En producción</div>
+    </div>
   </div>
 
   <!-- How it works -->
@@ -4668,19 +4818,71 @@ body, #app { background: #07050f; }
     </div>
     <div class="l-testi-grid">
       <div class="l-testi-card">
+        <div class="l-testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="l-testi-platform">Meta Ads</div>
         <div class="l-testi-avatar">MR</div>
-        <p class="l-testi-quote">"Antes gastaba $800 por video con productoras. Ahora genero 12 videos por mes por $29. El ROAS subió 40% el primer mes."</p>
+        <p class="l-testi-quote">"Antes gastaba $800 por video con productoras. Ahora genero 12 videos por mes. El ROAS subió 40% el primer mes."</p>
         <div class="l-testi-name">Martín R. · Tienda de indumentaria, Buenos Aires</div>
       </div>
       <div class="l-testi-card">
+        <div class="l-testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="l-testi-platform">TikTok Ads</div>
         <div class="l-testi-avatar">LS</div>
         <p class="l-testi-quote">"Los actores IA se ven increíblemente reales. Mis clientes no pueden creer que no es una producción profesional."</p>
         <div class="l-testi-name">Lucía S. · Cosmética natural, Córdoba</div>
       </div>
       <div class="l-testi-card">
+        <div class="l-testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="l-testi-platform">Instagram Ads</div>
         <div class="l-testi-avatar">FG</div>
-        <p class="l-testi-quote">"En 20 minutos tenía 4 variaciones de un anuncio. La que funcionó mejor me generó 3x el retorno esperado."</p>
+        <p class="l-testi-quote">"En 20 minutos tenía 4 variaciones del mismo anuncio. La que funcionó mejor me generó 3x el retorno esperado."</p>
         <div class="l-testi-name">Federico G. · Suplementos deportivos, Rosario</div>
+      </div>
+      <div class="l-testi-card">
+        <div class="l-testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="l-testi-platform">Meta Ads</div>
+        <div class="l-testi-avatar">VA</div>
+        <p class="l-testi-quote">"Probé 6 herramientas distintas. Ninguna daba el resultado de Futuriads. Los videos parecen filmados por una productora real."</p>
+        <div class="l-testi-name">Valentina A. · Accesorios de moda, Mendoza</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison -->
+  <section class="l-section l-section-alt l-section-center">
+    <div class="l-section-label">Comparación</div>
+    <h2 class="l-section-title">Dejá de pagar de más <em>por videos</em></h2>
+    <p class="l-section-sub" style="margin-bottom:40px;">Lo que antes costaba semanas y miles de dólares, hoy lo hacés en minutos.</p>
+    <div class="l-compare-wrap">
+      <div class="l-compare-row l-compare-header">
+        <div></div>
+        <div>Productora tradicional</div>
+        <div>Futuriads</div>
+      </div>
+      <div class="l-compare-row">
+        <div class="l-compare-label">Tiempo por video</div>
+        <div class="l-compare-bad">1 a 2 semanas</div>
+        <div class="l-compare-good">~8 minutos</div>
+      </div>
+      <div class="l-compare-row">
+        <div class="l-compare-label">Costo por video</div>
+        <div class="l-compare-bad">$300 – $1.000</div>
+        <div class="l-compare-good">desde $2</div>
+      </div>
+      <div class="l-compare-row">
+        <div class="l-compare-label">Variaciones por campaña</div>
+        <div class="l-compare-bad">1 (cambios extra = $$$)</div>
+        <div class="l-compare-good">Ilimitadas</div>
+      </div>
+      <div class="l-compare-row">
+        <div class="l-compare-label">Equipo requerido</div>
+        <div class="l-compare-bad">Director, actor, edición</div>
+        <div class="l-compare-good">Solo vos</div>
+      </div>
+      <div class="l-compare-row">
+        <div class="l-compare-label">Listo para publicar</div>
+        <div class="l-compare-bad">Revisiones + espera</div>
+        <div class="l-compare-good">Directo a Meta/TikTok</div>
       </div>
     </div>
   </section>
@@ -4747,6 +4949,49 @@ body, #app { background: #07050f; }
         <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Scale</button>
       </div>
 
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="l-section l-section-alt l-section-center">
+    <div class="l-section-label">FAQ</div>
+    <h2 class="l-section-title">Preguntas <em>frecuentes</em></h2>
+    <div class="l-faq" style="margin-top:40px;">
+      <div class="l-faq-item">
+        <button class="l-faq-btn" onclick="toggleFaq(this)">
+          ¿Los actores IA se ven reales?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="l-faq-body">Sí. Los actores son generados con Seedance 2.0, uno de los modelos de video IA más avanzados. Tienen movimientos naturales, sincronización de labios precisa y expresiones faciales realistas. La gran mayoría de los usuarios no puede distinguirlos de videos reales.</div>
+      </div>
+      <div class="l-faq-item">
+        <button class="l-faq-btn" onclick="toggleFaq(this)">
+          ¿En cuánto tiempo tengo el video?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="l-faq-body">El proceso completo tarda entre 5 y 12 minutos dependiendo de la duración del video y la resolución elegida. Escribís el guión, elegís el actor y en minutos tenés un MP4 listo para descargar y publicar.</div>
+      </div>
+      <div class="l-faq-item">
+        <button class="l-faq-btn" onclick="toggleFaq(this)">
+          ¿Puedo subir imágenes de mi producto?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="l-faq-body">Sí. Podés subir imágenes de tu producto como referencia visual para el actor, y también imágenes para generar creativos de producto con IA. El costo del video es el mismo con o sin imágenes de referencia.</div>
+      </div>
+      <div class="l-faq-item">
+        <button class="l-faq-btn" onclick="toggleFaq(this)">
+          ¿Qué pasa si se me acaban los créditos?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="l-faq-body">Podés recargar créditos extra en cualquier momento desde el panel, con packs desde $10. Los créditos de recarga nunca caducan. Los créditos de suscripción se renuevan cada mes con tu plan.</div>
+      </div>
+      <div class="l-faq-item">
+        <button class="l-faq-btn" onclick="toggleFaq(this)">
+          ¿Puedo cancelar cuando quiera?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="l-faq-body">Sí, cancelás cuando querés sin penalidades. Seguís teniendo acceso hasta el final del período ya pagado. Tus videos y el historial de campañas quedan guardados.</div>
+      </div>
     </div>
   </section>
 
@@ -6293,9 +6538,19 @@ document.addEventListener('click', function(e) {
 });
 </script>
 <script>
+/* ---- FAQ accordion ---- */
+function toggleFaq(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.l-faq-body.open').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.l-faq-btn.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); btn.classList.add('open'); }
+}
+
 /* ---- Marquee ---- */
 (function(){
-  const items=['Actores IA realistas','Script a video en minutos','Meta · TikTok · Instagram','Prompts con IA incluidos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos'];
+  const items=['Actores IA realistas','Script a video en minutos','Meta · TikTok · Instagram · YouTube','Subtítulos automáticos','Formato 9:16 nativo','Audio sincronizado','Sin equipo de producción','Generá en minutos','Seedance 2.0','Imágenes IA de producto','Desde $2 por video','Listo para publicar'];
   const t=document.getElementById('marqueeTrack');
   [...items,...items,...items,...items].forEach(s=>{
     const el=document.createElement('span');
