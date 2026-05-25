@@ -4677,12 +4677,12 @@ body, #app { background: #07050f; }
   <!-- Hero -->
   <section class="l-hero" id="heroSection">
     <div class="l-hero-cards" id="heroCards">
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline preload="auto"></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline preload="auto"></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/Anuncio_Aveo_prueba_online-video-cutter.com_g1txgs.mp4" autoplay loop muted playsinline preload="auto"></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline preload="auto"></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/%C3%81NGULO_Unboxing_Forte_Max_2_hzpkyo.mp4" autoplay loop muted playsinline preload="auto"></video></div>
-      <div class="actor-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499304/Videos%20para%20la%20web/REEL_CHOQUE_FUTURIA_cvcikj.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+      <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
     </div>
     <div class="l-hero-center">
       <h1 class="l-hero-headline">
@@ -4778,9 +4778,9 @@ body, #app { background: #07050f; }
           <button class="btn-w" style="font-size:13px;padding:10px 20px;" onclick="goToApp()">Ver actores disponibles</button>
         </div>
         <div class="l-feat-video-row">
-          <div class="l-feat-vid-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499300/Videos%20para%20la%20web/siuvy2_online-video-cutter.com_rsdppc.mp4" autoplay loop muted playsinline></video></div>
-          <div class="l-feat-vid-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499301/Videos%20para%20la%20web/suby3_online-video-cutter.com_njo0zk.mp4" autoplay loop muted playsinline></video></div>
-          <div class="l-feat-vid-card"><video src="https://res.cloudinary.com/dzydsuaai/video/upload/v1777499303/Videos%20para%20la%20web/REEL_3_AGENCIA_FALTA_UPSCALEAR_jmzq1p.mp4" autoplay loop muted playsinline></video></div>
+          <div class="l-feat-vid-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+          <div class="l-feat-vid-card"><video data-src="" loop muted playsinline preload="none"></video></div>
+          <div class="l-feat-vid-card"><video data-src="" loop muted playsinline preload="none"></video></div>
         </div>
       </div>
       <div class="l-feats-row">
@@ -12233,13 +12233,85 @@ async function submitSignup() {
   }
 }
 
-// Forzar autoplay en videos del hero (algunos browsers lo bloquean)
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.actor-card video').forEach(function(v) {
-    v.muted = true;
-    v.play().catch(function() {});
+// ── Landing video lazy loader ─────────────────────────────────────────
+// Videos de la landing usan data-src en lugar de src.
+// Se cargan solo cuando el card entra en viewport → performance mucho mejor.
+// Para conectar un video: setLandingVideo(index, 'https://tu-url.mp4')
+// index: 0-5 = hero cards, 6-8 = feature cards
+(function() {
+  const LANDING_VIDEOS = [
+    // Hero cards (0-5)
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/759257c6-5426-4e12-8742-e1db8fcf7b1c.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/Anuncio%20Aveo%20prueba.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/DRAGGER%202%20-%201.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/Facu%20Prueba%201.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/final-1779505115659.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/siuvy2.mp4',
+    // Feature cards (6-8) — reutiliza 3 de los heroes
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/DRAGGER%202%20-%201.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/final-1779505115659.mp4',
+    'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-videos/siuvy2.mp4'
+  ];
+
+  var MAX_LOOP_S = 15;
+
+  function loadVideo(video, src) {
+    if (!src) return;
+    video.src = src;
+    video.muted = true;
+    video.loop = true;
+    video.load();
+    // Corte suave: si el video dura más de 15 s, vuelve al inicio desde JS
+    video.addEventListener('timeupdate', function() {
+      if (video.currentTime >= MAX_LOOP_S) {
+        video.currentTime = 0;
+      }
+    });
+    video.play().catch(function() {});
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = [
+      ...document.querySelectorAll('.actor-card'),
+      ...document.querySelectorAll('.l-feat-vid-card')
+    ];
+
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          const idx = cards.indexOf(entry.target);
+          const video = entry.target.querySelector('video');
+          if (video && idx >= 0 && LANDING_VIDEOS[idx]) {
+            loadVideo(video, LANDING_VIDEOS[idx]);
+          }
+          obs.unobserve(entry.target);
+        });
+      }, { threshold: 0.1, rootMargin: '100px' });
+
+      cards.forEach(function(card) { obs.observe(card); });
+    } else {
+      // Fallback: carga directa sin IntersectionObserver
+      cards.forEach(function(card, idx) {
+        const video = card.querySelector('video');
+        if (video && LANDING_VIDEOS[idx]) loadVideo(video, LANDING_VIDEOS[idx]);
+      });
+    }
   });
-});
+
+  // API pública para conectar videos sin editar el HTML
+  window.setLandingVideo = function(index, url) {
+    LANDING_VIDEOS[index] = url;
+    const cards = [
+      ...document.querySelectorAll('.actor-card'),
+      ...document.querySelectorAll('.l-feat-vid-card')
+    ];
+    if (cards[index]) {
+      const video = cards[index].querySelector('video');
+      if (video) loadVideo(video, url);
+    }
+  };
+})();
 
 /* ── Custom Video Player helpers ── */
 
