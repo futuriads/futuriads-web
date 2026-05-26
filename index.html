@@ -10169,17 +10169,18 @@ function renderUsagePeriod(period) {
   if (elCircle) elCircle.style.strokeDashoffset = (circumference * (1 - pct / 100)).toFixed(1);
   if (elAvg)    elAvg.textContent    = `Promedio diario: ${avgDaily.toLocaleString('es-AR')} créditos`;
 
+  // Derecha: siempre créditos restantes actuales (independiente del período)
+  if (elLeft)    elLeft.textContent    = totalLeft.toLocaleString('es-AR');
+  if (elLeftLbl) elLeftLbl.textContent = 'Créditos restantes';
+
+  // Pie: días restantes del ciclo si es período actual, o cantidad de generaciones si es otro
   if (isCurrent) {
     const daysLeft = _currentUser && _currentUser.period_end
       ? Math.max(1, Math.ceil((new Date(_currentUser.period_end) - now) / (1000*60*60*24)))
       : 0;
-    if (elLeft)    elLeft.textContent    = totalLeft.toLocaleString('es-AR');
-    if (elLeftLbl) elLeftLbl.textContent = 'Créditos restantes';
-    if (elDays)    elDays.textContent    = `${daysLeft} días restantes`;
+    if (elDays) elDays.textContent = `${daysLeft} días restantes`;
   } else {
-    if (elLeft)    elLeft.textContent    = items.length.toLocaleString('es-AR');
-    if (elLeftLbl) elLeftLbl.textContent = 'Generaciones';
-    if (elDays)    elDays.textContent    = `${items.length} creación${items.length !== 1 ? 'es' : ''} en el período`;
+    if (elDays) elDays.textContent = `${items.length} creación${items.length !== 1 ? 'es' : ''} en el período`;
   }
 }
 
