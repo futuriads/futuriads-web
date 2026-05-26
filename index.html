@@ -6971,46 +6971,6 @@ body, #app { background: #07050f; }
 
       </div><!-- /row 2 -->
 
-      <!-- INFORMACIÓN DE LA CUENTA -->
-      <div class="prof2-info-card">
-        <div class="prof2-card-title" style="margin-bottom:14px">Información de la cuenta</div>
-        <div class="prof2-info-cols">
-          <div class="prof2-info-col">
-            <div class="prof2-info-col-label">Tipo de cuenta</div>
-            <div class="prof2-info-col-val">Personal</div>
-          </div>
-          <div class="prof2-info-col">
-            <div class="prof2-info-col-label">ID de usuario</div>
-            <div class="prof2-info-col-val" id="profUserId" style="font-size:11px;letter-spacing:0.3px;opacity:0.7;font-family:monospace,monospace;">usr_—</div>
-          </div>
-          <div class="prof2-info-col">
-            <div class="prof2-info-col-label">Zona horaria</div>
-            <div class="prof2-info-col-val">
-              <div class="pf-dropdown" id="tzDropdown">
-                <button style="background:transparent;border:none;padding:0;color:#e0d4ff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;" onclick="pfToggleTzDd(event)">
-                  <span id="profTzLabel">(GMT-03:00) Bs. As.</span>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="pf-dd-menu" style="min-width:220px;bottom:auto;top:calc(100% + 6px);">
-                  <div class="pf-dd-opt pf-sel" onclick="pfSelectTz('America/Argentina/Buenos_Aires','(GMT-03:00) Bs. As.',event)">(GMT-03:00) Buenos Aires <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('America/New_York','(GMT-05:00) New York',event)">(GMT-05:00) New York <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('Europe/Madrid','(GMT+01:00) Madrid',event)">(GMT+01:00) Madrid <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Mexico_City','(GMT-06:00) México',event)">(GMT-06:00) México <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Bogota','(GMT-05:00) Bogotá',event)">(GMT-05:00) Bogotá <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('America/Santiago','(GMT-03:00) Santiago',event)">(GMT-03:00) Santiago <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                  <div class="pf-dd-opt" onclick="pfSelectTz('UTC','(GMT+00:00) UTC',event)">(GMT+00:00) UTC <svg class="pf-dd-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="prof2-info-col">
-            <div class="prof2-info-col-label">Idioma</div>
-            <div class="prof2-info-col-val">
-              <span style="color:#e0d4ff;font-size:13px;font-weight:500;">Español</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Hidden legacy IDs (kept for JS compatibility) -->
       <div style="display:none">
@@ -11323,10 +11283,6 @@ Vertical 9:16. Clean, trustworthy, conversion-optimized social proof aesthetic.`
     ratio: '9:16',
     quality: '720p',
     duration: '5s',
-    refImages: [
-      /* avatar  */ '',
-      /* product */ ''
-    ],
     prompt: `A young stylish female influencer @influencer_image1 is in a cozy modern apartment with soft natural daylight. She records herself using the front camera of her phone (selfie mode), holding the phone in one hand and @product_image1 in the other. The camera has slight natural hand movement, casual framing, and feels real and unpolished.
 She looks directly into the camera, relaxed and natural, like talking to a friend. While speaking, she casually rotates the product, shows it from different angles, and interacts with it naturally.
 
@@ -11401,18 +11357,6 @@ function openInspoDetail(idx) {
           <span class="inspo-detail-chip">${item.ratio}</span>
           ${extraChip}
         </div>
-        ${(Array.isArray(item.refImages) && item.refImages.filter(u=>u).length > 0) ? `
-        <div class="inspo-detail-label">Imágenes de referencia usadas</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
-          ${item.refImages.filter(u=>u).map((u,i) => `
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div style="width:72px;height:72px;border-radius:10px;overflow:hidden;border:1px solid rgba(139,92,246,0.35);cursor:pointer;"
-                   onclick="openImageModal('${u}','Imagen de referencia')">
-                <img src="${u}" alt="Ref ${i+1}" style="width:100%;height:100%;object-fit:cover;">
-              </div>
-              <span style="font-size:9px;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:0.5px;">${i===0?'Avatar':'Producto'}</span>
-            </div>`).join('')}
-        </div>` : ''}
         <div class="inspo-detail-label">Prompt</div>
         <textarea class="inspo-detail-prompt" readonly id="inspoDetailPrompt_${idx}">${item.prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
         <div class="inspo-detail-actions">
