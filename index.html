@@ -623,10 +623,10 @@ html.pre-landing #app { display: none !important; }
 .vp-mini-overlay {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0); transition: background 0.2s; pointer-events: none;
+  background: rgba(0,0,0,0); transition: background 0.15s; pointer-events: none;
 }
-.vp-mini:not(.playing) .vp-mini-overlay,
-.vp-mini:hover    .vp-mini-overlay { background: rgba(0,0,0,0.3); }
+.vp-mini:not(.playing) .vp-mini-overlay { background: rgba(0,0,0,0.35); }
+.vp-mini:hover .vp-mini-overlay { background: rgba(0,0,0,0.25); }
 .vp-mini.playing:not(:hover) .vp-mini-overlay { background: rgba(0,0,0,0); }
 .vp-mini-icon {
   width: 46px; height: 46px; border-radius: 50%;
@@ -634,19 +634,23 @@ html.pre-landing #app { display: none !important; }
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 18px; padding-left: 3px;
   box-shadow: 0 4px 20px rgba(109,40,217,0.55);
-  opacity: 0; transform: scale(0.75); transition: opacity 0.18s, transform 0.18s;
+  opacity: 0; transform: scale(0.75); transition: opacity 0.12s, transform 0.12s;
 }
-.vp-mini:not(.playing) .vp-mini-icon,
-.vp-mini:hover         .vp-mini-icon { opacity: 1; transform: scale(1); }
-.vp-mini.playing:not(:hover) .vp-mini-icon { opacity: 0; transform: scale(0.75); }
+/* Icon: show only when paused — disappears instantly when .playing is added */
+.vp-mini:not(.playing) .vp-mini-icon { opacity: 1; transform: scale(1); }
+.vp-mini.playing .vp-mini-icon { opacity: 0; transform: scale(0.75); }
 .vp-mini-bar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-  background: rgba(255,255,255,0.12); pointer-events: none;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: rgba(255,255,255,0.12); cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+  /* Make hit area bigger while keeping visual thin */
+  padding-top: 8px; margin-top: -8px;
 }
+.vp-mini-bar:hover { height: 6px; }
 .vp-mini-fill {
   height: 100%; width: 0%;
-  background: linear-gradient(90deg, #6d28d9, #9333ea);
-  transition: width 0.12s linear;
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  transition: width 0.1s linear; pointer-events: none;
 }
 
 /* ── Custom Video Player (vp-full: final assembled video) ── */
@@ -667,11 +671,11 @@ html.pre-landing #app { display: none !important; }
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 26px; padding-left: 4px;
   box-shadow: 0 4px 32px rgba(109,40,217,0.6);
-  opacity: 0; transform: scale(0.75); transition: opacity 0.2s, transform 0.2s;
+  opacity: 0; transform: scale(0.75); transition: opacity 0.12s, transform 0.12s;
 }
-.vp-full:not(.playing) .vp-full-big-icon,
-.vp-full:hover         .vp-full-big-icon { opacity: 1; transform: scale(1); }
-.vp-full.playing:not(:hover) .vp-full-big-icon { opacity: 0; transform: scale(0.75); }
+/* Show only when paused — disappears the moment .playing is added */
+.vp-full:not(.playing) .vp-full-big-icon { opacity: 1; transform: scale(1); }
+.vp-full.playing .vp-full-big-icon { opacity: 0; transform: scale(0.75); }
 /* Control bar */
 .vp-full-bar {
   position: absolute; bottom: 0; left: 0; right: 0;
@@ -688,9 +692,20 @@ html.pre-landing #app { display: none !important; }
 .vp-full-track:hover { height: 6px; }
 .vp-full-track:active { cursor: grabbing; }
 .vp-full-track-fill {
-  height: 100%; background: linear-gradient(90deg, #6d28d9, #9333ea);
+  height: 100%; background: linear-gradient(90deg, #7c3aed, #a855f7);
   border-radius: 4px; width: 0%; pointer-events: none;
-  transition: width 0.12s linear;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 6px rgba(167,85,247,0.5);
+}
+/* Fullscreen: center the video properly */
+.vp-full:fullscreen,
+.vp-full:-webkit-full-screen {
+  display: flex; align-items: center; justify-content: center;
+  background: #000; width: 100vw; height: 100vh; border-radius: 0;
+}
+.vp-full:fullscreen video,
+.vp-full:-webkit-full-screen video {
+  width: auto; height: 100%; max-width: 100vw; max-height: 100vh;
 }
 .vp-full-row { display: flex; align-items: center; gap: 10px; }
 .vp-full-btn {
@@ -724,7 +739,7 @@ html.pre-landing #app { display: none !important; }
 .zapcap-pos-btn { padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s; }
 .zapcap-pos-btn:hover  { border-color:rgba(109,40,217,0.5);color:var(--text); }
 .zapcap-pos-btn.active { border-color:#6d28d9;background:rgba(109,40,217,0.18);color:#fff;font-weight:600; }
-#campZapcapTemplates { display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:8px; }
+#campZapcapTemplates { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
 
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
@@ -8166,14 +8181,14 @@ function campZapcapRenderTemplates() {
     // Usar SOLO el GIF de cdn.zapcap.ai (público). El MP4 de cloudinary requiere auth.
     const zapcapGif = gif && gif.includes('cdn.zapcap.ai') ? gif : '';
     return `<div class="zapcap-tpl${i === 0 ? ' selected' : ''}" onclick="campZapcapSelectTemplate('${t.id}',this)" title="${name}">
-      <div style="width:100%;height:90px;border-radius:7px;margin-bottom:7px;overflow:hidden;background:#111;position:relative;">
+      <div style="width:100%;aspect-ratio:16/9;border-radius:8px;margin-bottom:7px;overflow:hidden;background:#0d0d1a;position:relative;">
         ${zapcapGif
-          ? `<img src="${zapcapGif}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"
-               onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.5)\\'>Aa</div>'">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(139,92,246,0.5);">Aa</div>`
+          ? `<img src="${zapcapGif}" style="width:100%;height:100%;object-fit:contain;display:block;" loading="lazy"
+               onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:rgba(139,92,246,0.4)\\'>Aa</div>'">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:rgba(139,92,246,0.4);">Aa</div>`
         }
       </div>
-      <div style="font-size:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);font-weight:500;">${name}</div>
+      <div style="font-size:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);font-weight:600;padding:0 2px;">${name}</div>
     </div>`;
   }).join('');
 }
@@ -9166,11 +9181,11 @@ function campUpdateClipCard(index, status, videoUrl) {
       '<div class="vp-mini" onclick="vpMiniToggle(this)">' +
         '<video src="' + videoUrl + '" playsinline></video>' +
         '<div class="vp-mini-overlay"><div class="vp-mini-icon">▶</div></div>' +
-        '<div class="vp-mini-bar"><div class="vp-mini-fill"></div></div>' +
+        '<div class="vp-mini-bar" onmousedown="vpMiniDragStart(event,this)" ontouchstart="vpMiniDragStart(event,this)"><div class="vp-mini-fill"></div></div>' +
       '</div>' +
       '<div class="camp-clip-badge">' + (index+1) + '</div>' +
       '<div class="camp-clip-actions">' +
-        '<a href="' + videoUrl + '" download="clip-' + (index+1) + '.mp4" class="camp-clip-action-btn" title="Descargar">↓</a>' +
+        '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + videoUrl + '\',\'clip-' + (index+1) + '\')" title="Descargar">↓</button>' +
         '<button class="camp-clip-action-btn" onclick="campRegenClip(' + index + ')" title="Regenerar">↻</button>' +
       '</div>';
     // Wire progress + state listeners
@@ -9515,11 +9530,11 @@ async function campOpenDetail(campaignId, title) {
           '<div class="vp-mini" onclick="vpMiniToggle(this)">' +
             '<video src="' + clip.video_url + '" playsinline></video>' +
             '<div class="vp-mini-overlay"><div class="vp-mini-icon">▶</div></div>' +
-            '<div class="vp-mini-bar"><div class="vp-mini-fill"></div></div>' +
+            '<div class="vp-mini-bar" onmousedown="vpMiniDragStart(event,this)" ontouchstart="vpMiniDragStart(event,this)"><div class="vp-mini-fill"></div></div>' +
           '</div>' +
           '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>' +
           '<div class="camp-clip-actions">' +
-            '<a href="' + clip.video_url + '" download="clip-' + (clip.clip_index+1) + '.mp4" class="camp-clip-action-btn" title="Descargar">↓</a>' +
+            '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + clip.video_url + '\',\'clip-' + (clip.clip_index+1) + '\')" title="Descargar">↓</button>' +
           '</div>';
         const vid = card.querySelector('video');
         const fill = card.querySelector('.vp-mini-fill');
@@ -12321,12 +12336,28 @@ function renderHistStats() {
     </div>`;
 }
 
-function downloadImageFile(url, name){
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `futuriads-${(name||'imagen').replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.png`;
-  a.target = '_blank';
-  a.click();
+async function downloadImageFile(url, name) {
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'futuriads-' + (name || 'imagen').replace(/[^a-z0-9]/gi, '_') + '-' + Date.now() + '.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 60000);
+  } catch(e) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'futuriads-' + (name || 'imagen') + '.png';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
 
 function openImageModal(url, title) {
@@ -12455,12 +12486,29 @@ async function imSaveRename(id) {
   }
 }
 
-function downloadVideo(url, name){
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `futuriads-${name}-${Date.now()}.mp4`;
-  a.target = '_blank';
-  a.click();
+async function downloadVideo(url, name) {
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'futuriads-' + (name || 'video').replace(/[^a-z0-9]/gi, '_') + '-' + Date.now() + '.mp4';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 60000);
+  } catch(e) {
+    // Fallback: abrir en nueva pestaña si el fetch falla (CORS restrictivo)
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'futuriads-' + (name || 'video') + '.mp4';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
 
 /* =====================================================
@@ -13275,42 +13323,69 @@ function vpFullTick(videoId, fillId, timeId) {
   if(time) time.textContent = _vpFmt(vid.currentTime) + ' / ' + _vpFmt(vid.duration);
 }
 
-// Full player: seek on track click/drag
-let _vpDragTrack = null, _vpDragVideoId = null;
+// ── Unified drag-to-seek for all custom video players ──
+let _vpDragBar = null, _vpDragVid = null, _vpDragWasPaused = false;
 
-function vpFullDragStart(e, trackEl, videoId) {
-  e.stopPropagation();
-  e.preventDefault();
-  _vpDragTrack = trackEl;
-  _vpDragVideoId = videoId;
-  _vpSeekAt(e, trackEl, videoId);
-}
-
-function _vpSeekAt(e, trackEl, videoId) {
-  const vid = document.getElementById(videoId);
+function _vpSeekAtBar(e, barEl, vid) {
   if (!vid || !vid.duration) return;
-  const rect = trackEl.getBoundingClientRect();
+  const rect = barEl.getBoundingClientRect();
   const clientX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
   vid.currentTime = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)) * vid.duration;
 }
 
+// Called by vp-full track (onmousedown/ontouchstart)
+function vpFullDragStart(e, trackEl, videoId) {
+  e.stopPropagation(); e.preventDefault();
+  const vid = document.getElementById(videoId);
+  _vpDragWasPaused = vid ? vid.paused : true;
+  if (vid && !vid.paused) vid.pause(); // freeze while scrubbing
+  _vpDragBar = trackEl;
+  _vpDragVid = vid;
+  _vpSeekAtBar(e, trackEl, vid);
+}
+
+// Called by vp-mini bar (onmousedown/ontouchstart)
+function vpMiniDragStart(e, barEl) {
+  e.stopPropagation(); e.preventDefault();
+  const mini = barEl.closest('.vp-mini');
+  const vid  = mini ? mini.querySelector('video') : null;
+  _vpDragWasPaused = vid ? vid.paused : true;
+  if (vid && !vid.paused) vid.pause();
+  _vpDragBar = barEl;
+  _vpDragVid = vid;
+  _vpSeekAtBar(e, barEl, vid);
+}
+
 document.addEventListener('mousemove', function(e) {
-  if (_vpDragTrack) _vpSeekAt(e, _vpDragTrack, _vpDragVideoId);
+  if (_vpDragBar) _vpSeekAtBar(e, _vpDragBar, _vpDragVid);
 });
 document.addEventListener('touchmove', function(e) {
-  if (_vpDragTrack) { e.preventDefault(); _vpSeekAt(e, _vpDragTrack, _vpDragVideoId); }
+  if (_vpDragBar) { e.preventDefault(); _vpSeekAtBar(e, _vpDragBar, _vpDragVid); }
 }, { passive: false });
-document.addEventListener('mouseup',  function() { _vpDragTrack = null; _vpDragVideoId = null; });
-document.addEventListener('touchend', function() { _vpDragTrack = null; _vpDragVideoId = null; });
 
-// Mantener vpFullSeek como alias por compatibilidad con llamadas onclick existentes
+function _vpDragEnd() {
+  if (_vpDragBar && !_vpDragWasPaused && _vpDragVid) {
+    _vpDragVid.play().catch(function(){});
+  }
+  _vpDragBar = null; _vpDragVid = null; _vpDragWasPaused = false;
+}
+document.addEventListener('mouseup',  _vpDragEnd);
+document.addEventListener('touchend', _vpDragEnd);
+
+// Legacy alias
 function vpFullSeek(e, trackEl, videoId) { vpFullDragStart(e, trackEl, videoId); }
 
-// Full player: request fullscreen
+// Full player: request fullscreen — use the video element so the browser
+// handles aspect ratio correctly and doesn't stretch the container
 function vpFullscreen(vpEl) {
-  if(document.fullscreenElement) { document.exitFullscreen(); }
-  else if(vpEl.requestFullscreen) { vpEl.requestFullscreen(); }
-  else if(vpEl.webkitRequestFullscreen) { vpEl.webkitRequestFullscreen(); }
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+    return;
+  }
+  const vid = vpEl.querySelector('video') || vpEl;
+  if (vid.requestFullscreen) vid.requestFullscreen();
+  else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
+  else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen(); // iOS
 }
 
 function _vpFmt(s) {
