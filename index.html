@@ -721,6 +721,7 @@ html.pre-landing #app { display: none !important; }
 .zapcap-pos-btn { padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--hover);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s; }
 .zapcap-pos-btn:hover  { border-color:rgba(109,40,217,0.5);color:var(--text); }
 .zapcap-pos-btn.active { border-color:#6d28d9;background:rgba(109,40,217,0.18);color:#fff;font-weight:600; }
+#campZapcapTemplates { display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:8px; }
 
 .camp-gen-mode { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .camp-mode-card {
@@ -6145,8 +6146,10 @@ body, #app { background: #07050f; }
               <div class="camp-chunks-list" id="campClipsList"></div>
               <!-- Costo -->
               <div class="camp-cost-banner">
-                
-                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · audio incluido</span>
+                <div id="campAudioCostRow" style="display:none;font-size:11px;color:var(--text3);margin-bottom:5px;">
+                  Audio IA (ElevenLabs): <strong id="campAudioCostNum">—</strong> cr &nbsp;+&nbsp; Clips: <strong id="campClipsCostNum">—</strong> cr
+                </div>
+                <span>Total estimado: <span class="camp-cost-num" id="campTotalCost">—</span> créditos · <span id="campTotalClips">—</span> clips · <span id="campCostModeLabel">audio incluido</span></span>
               </div>
               <!-- Modo de generación -->
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modo de generación</div>
@@ -6259,7 +6262,7 @@ body, #app { background: #07050f; }
               <!-- Template picker -->
               <div>
                 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Estilo de subtítulo</div>
-                <div id="campZapcapTemplates" style="border-radius:12px;overflow:hidden;"></div>
+                <div id="campZapcapTemplates"></div>
               </div>
 
               <!-- Nota de posición/fuente -->
@@ -8719,15 +8722,18 @@ function campRenderTalkingClips() {
     list.appendChild(item);
   });
 
-  // Costo
+  // Costo — modo talking: solo clips, sin costo de audio ElevenLabs
   const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
   const rate = rateMap[_camp.resolution] || 93.5;
   const clipsCost = _camp.chunks.reduce((acc, c) => acc + Math.round((c.estimatedSeconds || 10) * rate), 0);
-  const totalVariants = Math.floor((_camp.chunks.length - 1) / 4) + 1;
-  const variantCost = 48 * totalVariants;
-  const totalCost = Math.round(clipsCost + variantCost);
+  const totalCost = Math.round(clipsCost);
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.chunks.length;
+  // Sin audio ElevenLabs en modo talking
+  const audioRow = document.getElementById('campAudioCostRow');
+  if (audioRow) audioRow.style.display = 'none';
+  const modeLabel = document.getElementById('campCostModeLabel');
+  if (modeLabel) modeLabel.textContent = 'solo clips';
 }
 
 async function campLoadAudioAndClips() {
@@ -8895,6 +8901,16 @@ function campUpdateCostSummaryV2() {
 
   document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.audioClips.length;
+
+  // Mostrar desglose de costo de audio ElevenLabs
+  const audioRow = document.getElementById('campAudioCostRow');
+  const audioNum = document.getElementById('campAudioCostNum');
+  const clipsNum = document.getElementById('campClipsCostNum');
+  const modeLabel = document.getElementById('campCostModeLabel');
+  if (audioRow) audioRow.style.display = 'block';
+  if (audioNum) audioNum.textContent = audioCost.toLocaleString('es-AR');
+  if (clipsNum) clipsNum.textContent = clipsCost.toLocaleString('es-AR');
+  if (modeLabel) modeLabel.textContent = 'ElevenLabs incluido';
 }
 
 function campSelectMode(mode) {
