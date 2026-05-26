@@ -10138,21 +10138,16 @@ function renderUsagePeriod(period) {
     periodDays = Math.max(1, Math.ceil((pEnd - dateFrom) / (1000*60*60*24)));
   }
 
-  // Filtrar historyData por rango
+  // Filtrar historyData por rango — siempre la misma fuente para todos los períodos
   const items = (historyData || []).filter(v => {
     if (!v.created_at) return false;
     const d = new Date(v.created_at);
     return d >= dateFrom && d <= dateTo && (v.credits_total || 0) > 0;
   });
 
-  // Créditos usados: suma de credits_total en el período
-  // Para el período actual, preferimos el cálculo exacto del plan (sub consumido = planCredits - sub)
-  let used;
-  if (isCurrent && pInfo.credits > 0) {
-    used = Math.max(0, pInfo.credits - sub);
-  } else {
-    used = items.reduce((acc, v) => acc + (v.credits_total || 0), 0);
-  }
+  // Créditos usados: suma de credits_total en historyData para el rango dado
+  // Mismo método para TODOS los períodos → números siempre consistentes entre sí
+  const used = items.reduce((acc, v) => acc + (v.credits_total || 0), 0);
 
   const chartMax = pInfo.credits > 0 ? pInfo.credits : Math.max(used, 1);
   const pct = Math.min(100, Math.round(used / chartMax * 100));
