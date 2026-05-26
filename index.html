@@ -2360,6 +2360,14 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .inspo-card-meta { display: flex; flex-direction: column; gap: 2px; }
 .inspo-card-type { font-size: 12px; font-weight: 600; color: var(--text); }
 .inspo-card-info { font-size: 10px; color: var(--text2); }
+/* Overlay expand en hover */
+.inspo-card-img-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0); transition: background 0.2s; cursor: pointer;
+}
+.inspo-card-img-wrap:hover .inspo-card-img-overlay { background: rgba(0,0,0,0.35); }
+.inspo-card-img-overlay svg { opacity: 0; transform: scale(0.8); transition: opacity 0.2s, transform 0.2s; }
+.inspo-card-img-wrap:hover .inspo-card-img-overlay svg { opacity: 1; transform: scale(1); }
 /* Botón Replicar */
 .inspo-replicar-btn {
   background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.4);
@@ -2371,6 +2379,118 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
   background: rgba(109,40,217,0.35); border-color: rgba(139,92,246,0.7);
   color: #e0d4ff;
 }
+/* Modal de detalle de inspiración */
+.inspo-detail-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 10100; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); padding: 20px; box-sizing: border-box;
+}
+.inspo-detail-modal {
+  background: #0e0c18; border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 20px; width: 900px; max-width: 98vw; max-height: 90vh;
+  overflow: hidden; display: flex; flex-direction: row;
+}
+.inspo-detail-img-side {
+  flex: 0 0 auto; width: 340px; background: #070510;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  border-right: 1px solid rgba(139,92,246,0.15);
+}
+.inspo-detail-img-side img {
+  width: 100%; height: 100%; object-fit: contain; max-height: 90vh;
+}
+.inspo-detail-info-side {
+  flex: 1; display: flex; flex-direction: column; overflow-y: auto;
+  padding: 28px 24px;
+}
+.inspo-detail-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px; gap: 12px;
+}
+.inspo-detail-title { font-size: 17px; font-weight: 700; color: #f0ecff; }
+.inspo-detail-close {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: rgba(255,255,255,0.5); font-size: 15px;
+  cursor: pointer; padding: 5px 10px; flex-shrink: 0; transition: background 0.15s;
+}
+.inspo-detail-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.inspo-detail-chips { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 20px; }
+.inspo-detail-chip {
+  background: rgba(109,40,217,0.15); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 11px; font-weight: 600; color: rgba(167,139,250,0.85);
+}
+.inspo-detail-label {
+  font-size: 9px; font-weight: 700; color: rgba(167,139,250,0.45);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.inspo-detail-prompt {
+  width: 100%; background: rgba(109,40,217,0.07); border: 1px solid rgba(139,92,246,0.18);
+  border-radius: 10px; padding: 12px; font-size: 11.5px; color: rgba(255,255,255,0.55);
+  line-height: 1.7; resize: vertical; min-height: 160px; max-height: 300px;
+  font-family: inherit; box-sizing: border-box; outline: none;
+  margin-bottom: 20px; flex: 1;
+}
+.inspo-detail-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 16px; }
+.inspo-detail-copy-btn {
+  flex: 1; padding: 10px; font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s;
+}
+.inspo-detail-copy-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.inspo-detail-replicar-btn {
+  flex: 2; padding: 10px; font-size: 13px; font-weight: 700;
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  border: none; border-radius: 10px; color: #fff; cursor: pointer;
+  transition: opacity 0.15s; letter-spacing: 0.2px;
+}
+.inspo-detail-replicar-btn:hover { opacity: 0.88; }
+/* Popup de aviso de referencia */
+.inspo-ref-popup-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 10200; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.inspo-ref-popup {
+  background: #12101e; border: 1px solid rgba(139,92,246,0.35);
+  border-radius: 18px; padding: 28px 28px 24px; width: 380px; max-width: 95vw;
+  text-align: center;
+}
+.inspo-ref-popup-icon {
+  font-size: 32px; margin-bottom: 12px;
+}
+.inspo-ref-popup-title {
+  font-size: 15px; font-weight: 700; color: #f0ecff; margin-bottom: 8px;
+}
+.inspo-ref-popup-text {
+  font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 22px;
+}
+.inspo-ref-popup-steps {
+  background: rgba(109,40,217,0.1); border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 10px; padding: 14px 16px; text-align: left;
+  margin-bottom: 22px; display: flex; flex-direction: column; gap: 8px;
+}
+.inspo-ref-popup-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.4;
+}
+.inspo-ref-popup-step-num {
+  background: rgba(139,92,246,0.3); border-radius: 50%;
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #c4b5fd;
+}
+.inspo-ref-popup-actions { display: flex; gap: 10px; }
+.inspo-ref-popup-cancel {
+  flex: 1; padding: 10px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+  color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.inspo-ref-popup-go {
+  flex: 2; padding: 10px; background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  border: none; border-radius: 10px; color: #fff;
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+}
+.inspo-ref-popup-go:hover { opacity: 0.88; }
 /* ==============================================
    IDENTIDAD VISUAL — VIOLETA / GLASSMORPHISM
    ============================================== */
@@ -5716,7 +5836,7 @@ body, #app { background: #07050f; }
         <div class="inspo-modal" onclick="event.stopPropagation()">
           <div class="inspo-modal-header">
             <div>
-              <div class="inspo-modal-title">✦ Inspiración</div>
+              <div class="inspo-modal-title">Inspiración</div>
               <div class="inspo-modal-subtitle">Usá estos anuncios como base · Agregá tu imagen de referencia y replicá el estilo</div>
             </div>
             <button class="inspo-modal-close" onclick="closeInspoModal()">✕</button>
@@ -5725,9 +5845,10 @@ body, #app { background: #07050f; }
 
             <!-- 1: Comparativa Nosotros vs Ellos -->
             <div class="inspo-card">
-              <div class="inspo-card-img-wrap">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(0)" title="Ver detalle">
                 <img src="https://d2i9jqncnkplwq.cloudfront.net/images/db2b55cb-3704-4886-b57f-3ba19aff580c.png" alt="Comparativa" loading="lazy">
                 <div class="inspo-card-badge">Comparativa</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
                 <div class="inspo-card-meta">
@@ -5740,9 +5861,10 @@ body, #app { background: #07050f; }
 
             <!-- 2: Foto de producto con mano -->
             <div class="inspo-card">
-              <div class="inspo-card-img-wrap">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(1)" title="Ver detalle">
                 <img src="https://d2i9jqncnkplwq.cloudfront.net/images/bf6cfa3f-6e19-41f4-8270-5e5467f7fda3.png" alt="Producto con mano" loading="lazy">
                 <div class="inspo-card-badge">Foto de producto</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
                 <div class="inspo-card-meta">
@@ -5755,9 +5877,10 @@ body, #app { background: #07050f; }
 
             <!-- 3: UGC Lifestyle -->
             <div class="inspo-card">
-              <div class="inspo-card-img-wrap">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(2)" title="Ver detalle">
                 <img src="https://d2i9jqncnkplwq.cloudfront.net/images/de425e69-8568-454b-801d-2b8c55c2230a.png" alt="UGC Lifestyle" loading="lazy">
                 <div class="inspo-card-badge">UGC</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
                 <div class="inspo-card-meta">
@@ -5770,9 +5893,10 @@ body, #app { background: #07050f; }
 
             <!-- 4: Lifestyle Editorial -->
             <div class="inspo-card">
-              <div class="inspo-card-img-wrap">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(3)" title="Ver detalle">
                 <img src="https://d2i9jqncnkplwq.cloudfront.net/images/986712e4-5e87-41ce-8a49-48eab9b70fff.png" alt="Lifestyle Editorial" loading="lazy">
                 <div class="inspo-card-badge">Editorial</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
                 <div class="inspo-card-meta">
@@ -5785,9 +5909,10 @@ body, #app { background: #07050f; }
 
             <!-- 5: Prueba Social / Antes-Después -->
             <div class="inspo-card">
-              <div class="inspo-card-img-wrap">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(4)" title="Ver detalle">
                 <img src="https://d2i9jqncnkplwq.cloudfront.net/images/3b1745d3-1c5b-418b-b903-50eb017b363c.png" alt="Prueba Social" loading="lazy">
                 <div class="inspo-card-badge">Prueba social</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
                 <div class="inspo-card-meta">
@@ -11149,19 +11274,116 @@ Vertical 9:16. Clean, trustworthy, conversion-optimized social proof aesthetic.`
   }
 ];
 
+/* Abre el modal de detalle de una inspiración */
+function openInspoDetail(idx) {
+  const item = INSPO_DATA[idx];
+  if (!item) return;
+
+  const INSPO_IMGS = [
+    'https://d2i9jqncnkplwq.cloudfront.net/images/db2b55cb-3704-4886-b57f-3ba19aff580c.png',
+    'https://d2i9jqncnkplwq.cloudfront.net/images/bf6cfa3f-6e19-41f4-8270-5e5467f7fda3.png',
+    'https://d2i9jqncnkplwq.cloudfront.net/images/de425e69-8568-454b-801d-2b8c55c2230a.png',
+    'https://d2i9jqncnkplwq.cloudfront.net/images/986712e4-5e87-41ce-8a49-48eab9b70fff.png',
+    'https://d2i9jqncnkplwq.cloudfront.net/images/3b1745d3-1c5b-418b-b903-50eb017b363c.png'
+  ];
+  const INSPO_BADGES = ['Comparativa','Foto de producto','UGC','Editorial','Prueba social'];
+
+  const old = document.getElementById('inspoDetailModal');
+  if (old) old.remove();
+
+  const el = document.createElement('div');
+  el.className = 'inspo-detail-backdrop';
+  el.id = 'inspoDetailModal';
+  el.onclick = e => { if (e.target === el) el.remove(); };
+
+  el.innerHTML = `
+    <div class="inspo-detail-modal">
+      <div class="inspo-detail-img-side">
+        <img src="${INSPO_IMGS[idx]}" alt="${item.label}">
+      </div>
+      <div class="inspo-detail-info-side">
+        <div class="inspo-detail-header">
+          <div>
+            <div class="inspo-detail-title">${item.label}</div>
+          </div>
+          <button class="inspo-detail-close" onclick="document.getElementById('inspoDetailModal').remove()">✕</button>
+        </div>
+        <div class="inspo-detail-chips">
+          <span class="inspo-detail-chip">${INSPO_BADGES[idx]}</span>
+          <span class="inspo-detail-chip">${item.model === 'gpt-image-2' ? 'GPT Image 2' : 'Nano Banana 2'}</span>
+          <span class="inspo-detail-chip">${item.ratio}</span>
+          <span class="inspo-detail-chip">${item.quality}</span>
+        </div>
+        <div class="inspo-detail-label">Prompt</div>
+        <textarea class="inspo-detail-prompt" readonly id="inspoDetailPrompt_${idx}">${item.prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+        <div class="inspo-detail-actions">
+          <button class="inspo-detail-copy-btn" onclick="
+            navigator.clipboard.writeText(document.getElementById('inspoDetailPrompt_${idx}').value)
+              .then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar prompt',1800)})
+          ">Copiar prompt</button>
+          <button class="inspo-detail-replicar-btn" onclick="document.getElementById('inspoDetailModal').remove();replicarInspo(${idx})">
+            ↗ Replicar este anuncio
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(el);
+}
+
+/* Muestra popup de aviso → luego ejecuta el flujo de replicar */
 function replicarInspo(idx) {
   const item = INSPO_DATA[idx];
   if (!item) return;
 
+  // Cerrar modales de inspiración si están abiertos
+  const detail = document.getElementById('inspoDetailModal');
+  if (detail) detail.remove();
+
+  const old = document.getElementById('inspoRefPopup');
+  if (old) old.remove();
+
+  const popup = document.createElement('div');
+  popup.className = 'inspo-ref-popup-backdrop';
+  popup.id = 'inspoRefPopup';
+
+  popup.innerHTML = `
+    <div class="inspo-ref-popup">
+      <div class="inspo-ref-popup-icon">🖼️</div>
+      <div class="inspo-ref-popup-title">Para replicar este anuncio</div>
+      <div class="inspo-ref-popup-text">El prompt ya va a estar cargado. Para obtener el mejor resultado necesitás:</div>
+      <div class="inspo-ref-popup-steps">
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">1</div>
+          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón 🖼️</span>
+        </div>
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">2</div>
+          <span>Ajustá los textos del prompt si querés personalizar el anuncio para tu marca</span>
+        </div>
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">3</div>
+          <span>Hacé click en <strong style="color:#c4b5fd;">Generar imagen</strong></span>
+        </div>
+      </div>
+      <div class="inspo-ref-popup-actions">
+        <button class="inspo-ref-popup-cancel" onclick="document.getElementById('inspoRefPopup').remove()">Cancelar</button>
+        <button class="inspo-ref-popup-go" onclick="document.getElementById('inspoRefPopup').remove();_ejecutarReplicar(${idx})">Entendido, ir al formulario →</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(popup);
+}
+
+/* Ejecuta el pre-llenado del formulario después del popup */
+function _ejecutarReplicar(idx) {
+  const item = INSPO_DATA[idx];
+  if (!item) return;
+
   closeInspoModal();
-
-  // Asegurar que estamos en el panel principal del dashboard
   if (typeof showDashPanel === 'function') showDashPanel(0);
-
-  // Cambiar al tab de imagen
   if (typeof switchGenTab === 'function') switchGenTab('image');
 
-  // Pre-llenar el textarea con el prompt
   const ta = document.getElementById('genTextarea');
   if (ta) {
     ta.value = item.prompt;
@@ -11169,23 +11391,18 @@ function replicarInspo(idx) {
     ta.focus();
   }
 
-  // Seleccionar modelo
   setTimeout(() => {
     document.querySelectorAll('#cs-img-model .custom-select-option').forEach(o => {
       if (o.dataset.value === item.model) selectCustomOption('cs-img-model', o);
     });
-    // Seleccionar ratio
     document.querySelectorAll('#cs-img-aspect .custom-select-option').forEach(o => {
       if (o.dataset.value === item.ratio) selectCustomOption('cs-img-aspect', o);
     });
-    // Seleccionar calidad
     document.querySelectorAll('#cs-img-quality .custom-select-option').forEach(o => {
       if (o.dataset.value === item.quality) selectCustomOption('cs-img-quality', o);
     });
-    updateDashCreditPreview();
+    if (typeof updateDashCreditPreview === 'function') updateDashCreditPreview();
   }, 50);
-
-  showToast('Prompt cargado · Subí tu imagen de referencia y generá ↑', 'info');
 }
 
 /* ---- Modal de video tutorial ---- */
