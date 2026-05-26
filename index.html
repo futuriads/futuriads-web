@@ -11208,10 +11208,10 @@ var _dashSelectedActor = null;
 var _dashCustomActorUrl = null; // URL pública en Supabase (Enhancor necesita URL, no base64)
 
 var DASH_ACTORS = [
-  { name: 'Facu', tag: 'Joven · Casual', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png' },
-  { name: 'Sofi', tag: 'Lifestyle · Hogar', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848267/1f013c9f-cc14-482e-9403-7cdf6321892b_i8mfoa.png' },
-  { name: 'Paula', tag: 'Dinámica · Directa', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848276/039554c7-cbd4-47ab-bebd-9745abd578cd_xjao54.png' },
-  { name: 'José', tag: 'Maduro · Confiable', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848290/f35ac469-a2c2-436c-bdb1-908b6898e05a_h7oo1o.png' }
+  { name: 'Facu', tag: 'Joven · Casual', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/ChatGPT%20Image%2025%20may%202026,%2021_31_24.png' },
+  { name: 'Sofi', tag: 'Lifestyle · Hogar', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/ChatGPT%20Image%2025%20may%202026,%2021_31_30.png' },
+  { name: 'Paula', tag: 'Dinámica · Directa', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/ChatGPT%20Image%2025%20may%202026,%2021_31_35.png' },
+  { name: 'José', tag: 'Maduro · Confiable', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/ChatGPT%20Image%2025%20may%202026,%2021_33_04.png' }
 ];
 
 function showDashPanel(n) {
@@ -11231,7 +11231,7 @@ function initDashActorStrip() {
     card.dataset.actor = actor.name;
     var initials = actor.name.charAt(0).toUpperCase();
     card.innerHTML =
-      '<img src="' + actor.img + '" alt="' + actor.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+      '<img src="' + actor.img + '" alt="' + actor.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
       '<div class="dash-actor-pick-fallback" style="display:none;">' + initials + '</div>' +
       '<div class="dash-actor-pick-name">' + actor.name + '</div>';
     card.onclick = function() { dashSelectActor(card, actor.name); };
@@ -11266,28 +11266,41 @@ async function handleDashCustomActor(input) {
   }
 
   try {
-    // 1. Subir a Supabase Storage para obtener URL pública (Enhancor necesita URL)
-    var session = await supa.auth.getSession();
-    var token = (session.data && session.data.session && session.data.session.access_token) || SUPA_KEY;
-    var ext = file.name.split('.').pop() || 'jpg';
-    var filename = 'custom-actor-' + Date.now() + '.' + ext;
-
-    var uploadRes = await fetch(SUPA_URL + '/storage/v1/object/landing-assets/' + filename, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPA_KEY,
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': file.type || 'image/jpeg',
-        'x-upsert': 'true'
-      },
-      body: file
+    // 1. Convertir a base64 (el backend sube a Supabase con service role key)
+    var base64 = await new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        // reader.result = "data:image/jpeg;base64,XXXX..." → tomamos solo la parte base64
+        var parts = reader.result.split(',');
+        resolve(parts[1] || parts[0]);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
 
-    if (!uploadRes.ok) throw new Error('No se pudo subir la imagen');
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    var filename = 'custom-actor-' + Date.now() + '.' + ext;
 
-    _dashCustomActorUrl = SUPA_URL + '/storage/v1/object/public/landing-assets/' + filename;
+    // 2. Enviar al backend (más seguro: no expone service key al cliente)
+    var uploadRes = await fetch(BACKEND_URL + '/api/upload-actor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: base64,
+        mimeType: file.type || 'image/jpeg',
+        filename: filename
+      })
+    });
 
-    // 2. Mostrar preview con la imagen subida
+    if (!uploadRes.ok) {
+      var errData = await uploadRes.json().catch(function() { return {}; });
+      throw new Error(errData.error || 'No se pudo subir la imagen');
+    }
+
+    var uploadData = await uploadRes.json();
+    _dashCustomActorUrl = uploadData.url;
+
+    // 3. Mostrar preview con la imagen subida
     if (addCard) {
       addCard.style.pointerEvents = '';
       addCard.className = 'dash-actor-pick';
