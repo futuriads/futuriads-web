@@ -11122,7 +11122,7 @@ function loadDashRecent() {
         <div class="dash-recent-info">
           <div class="dash-recent-name">${name}</div>
           <div class="dash-recent-meta">${specs}</div>
-          ${recentRefs.length > 0 ? `<div class="recent-ref-strip">${recentRefs.slice(0,3).map(u=>`<img src="${u}" class="recent-ref-img" onclick="event.stopPropagation();openImageModal('${u.replace(/'/g,'%27')}','Imagen de referencia')" title="Ver referencia">`).join('')}${recentRefs.length > 3 ? `<span style="font-size:10px;color:var(--text2);font-weight:600;">+${recentRefs.length-3}</span>` : ''}</div>` : ''}
+          ${recentRefs.length > 0 ? `<div class="recent-ref-strip">${recentRefs.slice(0,3).map(u=>`<img src="${u}" class="recent-ref-img" onclick="event.stopPropagation();openImageModal('${u.replace(/'/g,'%27')}','Imagen de referencia')" title="Ver referencia" onerror="var p=this.parentNode;this.remove();if(p&&!p.querySelector('img'))p.style.display='none';">`).join('')}${recentRefs.length > 3 ? `<span style="font-size:10px;color:var(--text2);font-weight:600;">+${recentRefs.length-3}</span>` : ''}</div>` : ''}
         </div>
         <div class="dash-recent-right">
           <span class="dash-recent-badge ${badgeClass}">${badgeLabel}</span>
@@ -13001,7 +13001,7 @@ function renderHistory(){
             <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status, v.created_at)}</span>
           </div>
           <div class="hist-card-prompt">${escH(v.script || '')}</div>
-          ${refImgs.length > 0 ? `<div class="hist-ref-strip"><span class="hist-ref-label">Ref</span>${refImgs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${refImgs.length > 4 ? `<span class="hist-ref-more">+${refImgs.length-4}</span>` : ''}</div>` : ''}
+          ${refImgs.length > 0 ? `<div class="hist-ref-strip"><span class="hist-ref-label">Ref</span>${refImgs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia" onerror="var p=this.parentNode;this.remove();if(p&&!p.querySelector('img'))p.style.display='none';">`).join('')}${refImgs.length > 4 ? `<span class="hist-ref-more">+${refImgs.length-4}</span>` : ''}</div>` : ''}
           <div class="hist-card-footer">
             <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
             <span class="hist-card-time">${timeAgo(v.created_at)}</span>
@@ -13035,7 +13035,7 @@ function renderHistory(){
         <div class="hist-list-info">
           <div class="hist-list-name">${escH(title)}</div>
           <div class="hist-list-meta">${specs}</div>
-          ${listRefs.length > 0 ? `<div class="hist-ref-strip" style="margin-top:4px;"><span class="hist-ref-label">Ref</span>${listRefs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${listRefs.length > 4 ? `<span class="hist-ref-more">+${listRefs.length-4}</span>` : ''}</div>` : ''}
+          ${listRefs.length > 0 ? `<div class="hist-ref-strip" style="margin-top:4px;"><span class="hist-ref-label">Ref</span>${listRefs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia" onerror="var p=this.parentNode;this.remove();if(p&&!p.querySelector('img'))p.style.display='none';">`).join('')}${listRefs.length > 4 ? `<span class="hist-ref-more">+${listRefs.length-4}</span>` : ''}</div>` : ''}
         </div>
         <div class="hist-list-right">
           <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status, v.created_at)}</span>
