@@ -11777,6 +11777,7 @@ function handleRefUpload(type, input) {
     }
     updateRefBtn();
     updateRefHint();
+    _updateDashGenBtn(); // habilitar botón si hay producto aunque no haya actor
   };
   reader.readAsDataURL(file);
 }
@@ -11797,6 +11798,22 @@ function clearRefSlot(type) {
   if (fileInput) fileInput.value = '';
   updateRefBtn();
   updateRefHint();
+  _updateDashGenBtn(); // re-evaluar si sigue habilitado
+}
+
+// Habilita el botón de generar video si hay actor O imagen de producto
+function _updateDashGenBtn() {
+  var btn = document.getElementById('dashGenBtn');
+  if (!btn) return;
+  var canGen = !!_dashSelectedActor || !!_dashRefProductB64;
+  btn.disabled = !canGen;
+  btn.style.opacity = canGen ? '1' : '0.35';
+  btn.style.cursor  = canGen ? 'pointer' : 'not-allowed';
+  if (_dashRefProductB64 && !_dashSelectedActor) {
+    btn.textContent = 'Generar video de producto';
+  } else {
+    btn.textContent = 'Generar video';
+  }
 }
 
 function updateRefBtn() {
@@ -12032,7 +12049,10 @@ function startFromDashboard() {
 }
 
 async function runDashGen() {
-  if (!_dashSelectedActor) return;
+  // Permite sin actor si hay imagen de producto
+  var hasProduct = !!_dashRefProductB64;
+  if (!_dashSelectedActor && !hasProduct) return;
+
   var prompt = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
   if (!prompt) { showToast('Sin prompt', 'info'); return; }
 
@@ -12072,14 +12092,49 @@ async function runDashGen() {
     if (statusEl) statusEl.textContent = 'Preparando tu video...';
     if (hintEl) hintEl.textContent = '';
     await setBar(30, 600);
-    if (statusEl) statusEl.textContent = 'Enviando a Seedance 2.0...';
-    await setBar(58, 500);
 
     var userId = null;
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
 
-    var body = { script: prompt, avatar: _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor, duration: durVal, aspectRatio: ratioVal, resolution: resVal, userId: userId };
-    if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
+    // ── Subir imagen de producto si hay ──
+    var productImageUrl = null;
+    if (_dashRefProductB64) {
+      try {
+        if (statusEl) statusEl.textContent = 'Subiendo imagen de producto...';
+        var upRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64: _dashRefProductB64, mimeType: 'image/jpeg' })
+        });
+        var upData = await upRes.json();
+        if (upRes.ok && upData.url) {
+          productImageUrl = upData.url;
+          console.log('[DashGen] Producto subido:', productImageUrl);
+        } else {
+          console.warn('[DashGen] No se pudo subir producto:', upData.error);
+        }
+      } catch(upErr) {
+        console.warn('[DashGen] Error subiendo producto:', upErr.message);
+      }
+    }
+
+    if (statusEl) statusEl.textContent = 'Enviando a Seedance 2.0...';
+    await setBar(58, 500);
+
+    // ── Armar el body según modo ──
+    var noActor = !_dashSelectedActor; // sin actor = modo producto puro
+    var body = {
+      script: prompt,
+      duration: durVal,
+      aspectRatio: ratioVal,
+      resolution: resVal,
+      userId: userId,
+      noActor: noActor
+    };
+    if (!noActor) {
+      body.avatar = _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor;
+      if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
+    }
+    if (productImageUrl) body.productImageUrl = productImageUrl;
 
     var genRes = await fetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
