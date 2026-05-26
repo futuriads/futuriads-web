@@ -12036,12 +12036,26 @@ function startFromDashboard() {
   if (!prompt) { showToast('Escribí un prompt antes de continuar', 'info'); return; }
 
   if (isVideo) {
-    initDashActorStrip();
-    _dashSelectedActor = null;
-    _dashCustomActorUrl = null;
-    var btn = document.getElementById('dashGenBtn');
-    if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed'; }
-    showDashPanel(1);
+    if (_dashRefAvatarB64) {
+      // Avatar subido en el ref slot → saltar panel 1, usarlo como influencer
+      _dashSelectedActor = '_refavatar';
+      _dashCustomActorUrl = null;
+      showDashPanel(2);
+      runDashGen();
+    } else if (_dashRefProductB64) {
+      // Solo producto, sin avatar → modo producto puro, saltar panel 1
+      _dashSelectedActor = null;
+      showDashPanel(2);
+      runDashGen();
+    } else {
+      // Sin referencias → flujo normal: elegir actor en panel 1
+      initDashActorStrip();
+      _dashSelectedActor = null;
+      _dashCustomActorUrl = null;
+      var btn = document.getElementById('dashGenBtn');
+      if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed'; }
+      showDashPanel(1);
+    }
   } else {
     showDashPanel(2);
     runDashGenImage();
@@ -12096,6 +12110,27 @@ async function runDashGen() {
     var userId = null;
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
 
+    // ── Subir avatar del ref slot si viene de ahí ──
+    var avatarRefUrl = null;
+    if (_dashSelectedActor === '_refavatar' && _dashRefAvatarB64) {
+      try {
+        if (statusEl) statusEl.textContent = 'Subiendo imagen de avatar...';
+        var avUp = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64: _dashRefAvatarB64, mimeType: 'image/jpeg' })
+        });
+        var avData = await avUp.json();
+        if (avUp.ok && avData.url) {
+          avatarRefUrl = avData.url;
+          console.log('[DashGen] Avatar subido:', avatarRefUrl);
+        } else {
+          console.warn('[DashGen] No se pudo subir avatar:', avData.error);
+        }
+      } catch(avErr) {
+        console.warn('[DashGen] Error subiendo avatar:', avErr.message);
+      }
+    }
+
     // ── Subir imagen de producto si hay ──
     var productImageUrl = null;
     if (_dashRefProductB64) {
@@ -12121,6 +12156,7 @@ async function runDashGen() {
     await setBar(58, 500);
 
     // ── Armar el body según modo ──
+    var isRefAvatar = _dashSelectedActor === '_refavatar';
     var noActor = !_dashSelectedActor; // sin actor = modo producto puro
     var body = {
       script: prompt,
@@ -12128,9 +12164,14 @@ async function runDashGen() {
       aspectRatio: ratioVal,
       resolution: resVal,
       userId: userId,
-      noActor: noActor
+      noActor: noActor && !isRefAvatar
     };
-    if (!noActor) {
+    if (isRefAvatar && avatarRefUrl) {
+      // Avatar del ref slot → UGC con la imagen subida
+      body.avatar = 'custom';
+      body.avatarRef = avatarRefUrl;
+    } else if (!noActor) {
+      // Actor seleccionado del strip
       body.avatar = _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor;
       if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
     }
