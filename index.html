@@ -1982,7 +1982,7 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 }
 .a-gen-btn:hover { opacity: 0.88; }
 .a-gen-opts { display: none; }
-.a-gen-opts.active { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; overflow: visible; }
+.a-gen-opts.active { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; overflow: visible; height: 36px; }
 
 /* ---- Dashboard bottom grid ---- */
 .dash-bottom-grid {
@@ -3870,6 +3870,12 @@ body, #app { background: #07050f; }
   border: 1px dashed rgba(255,255,255,0.4);
 }
 .custom-select-trigger .ar-visual { gap: 8px; }
+/* ar-box en triggers del gen-bar → más pequeño para no agrandar el selector */
+.custom-select-trigger .ar-box.ar-9-16  { width: 8px !important; height: 13px !important; }
+.custom-select-trigger .ar-box.ar-16-9  { width: 13px !important; height: 7px !important; }
+.custom-select-trigger .ar-box.ar-1-1   { width: 11px !important; height: 11px !important; }
+.custom-select-trigger .ar-box.ar-4-5   { width: 9px !important; height: 11px !important; }
+.custom-select-trigger .ar-box.ar-3-4   { width: 9px !important; height: 12px !important; }
 
 .img-ref-thumb {
   position: relative; width: 80px; height: 80px;
@@ -5562,9 +5568,9 @@ body, #app { background: #07050f; }
           <div class="dash-result-specs-row" id="dashResultSpecs"></div>
         </div>
         <div class="dash-result-btns">
-          <button class="dash-result-btn-dl" id="dashResultDlBtn">⬇ Descargar</button>
-          <button class="dash-result-btn-redo" onclick="dashRehacer()">↻ Rehacer con mismo prompt</button>
-          <button class="dash-result-btn-new" onclick="showDashPanel(0)">+ Generar otro</button>
+          <button class="dash-result-btn-dl" id="dashResultDlBtn">Descargar video</button>
+          <button class="dash-result-btn-redo" onclick="dashRehacer()">Rehacer con mismo prompt</button>
+          <button class="dash-result-btn-new" onclick="showDashPanel(0)">Generar otro</button>
         </div>
       </div>
     </div>
@@ -11042,6 +11048,9 @@ function _doSwitchGenTab(tab){
   document.getElementById('tabImage').classList.toggle('active', tab==='image');
   document.getElementById('videoOpts').classList.toggle('active', tab==='video');
   document.getElementById('imageOpts').classList.toggle('active', tab==='image');
+  // Volver siempre al panel 0 para que el resultado de una generación no persista
+  showDashPanel(0);
+  if (_dashPollTimer) { clearInterval(_dashPollTimer); _dashPollTimer = null; }
   const refBtn = document.getElementById('refAddBtn');
   if (refBtn) refBtn.style.visibility = tab==='video' ? 'visible' : 'hidden';
   const refPop = document.getElementById('refPopover');
@@ -11584,7 +11593,7 @@ function showDashResultPanel(row) {
 
   // Descargar
   if (dlBtn) {
-    dlBtn.textContent = isImage ? '⬇ Descargar imagen' : '⬇ Descargar MP4';
+    dlBtn.textContent = isImage ? 'Descargar imagen' : 'Descargar video';
     dlBtn.onclick = function() {
       if (isImage) downloadImageFile(row.video_url, row.actor || 'imagen');
       else downloadVideo(row.video_url, row.actor || 'video');
@@ -11604,7 +11613,7 @@ function showDashResultFallback() {
   if (mediaEl) mediaEl.innerHTML = '<div style="width:120px;height:200px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.07);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div>';
   if (promptEl && _dashLastConfig) promptEl.textContent = _dashLastConfig.prompt || '—';
   if (specsEl) specsEl.innerHTML = '<span class="dash-result-spec">Procesando en Seedance...</span>';
-  if (dlBtn) { dlBtn.textContent = '📂 Ver en historial'; dlBtn.onclick = function() { showScreen('historial'); }; }
+  if (dlBtn) { dlBtn.textContent = 'Ver en historial'; dlBtn.onclick = function() { showScreen('historial'); }; }
 }
 
 // Restaura el prompt y la config anterior para regenerar
