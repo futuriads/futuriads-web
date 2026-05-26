@@ -6201,7 +6201,7 @@ body, #app { background: #07050f; }
       <!-- Vista: generación en curso -->
       <div id="campView-generating" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
-          <button class="btn-ghost-sm" onclick="campBackToList()">Mis campañas</button>
+          <button class="btn-ghost-sm" onclick="campBackToList()">Mis anuncios</button>
           <div style="font-size:13px;color:var(--text2);" id="campGenCampaignTitle">—</div>
         </div>
         <div style="margin-bottom:24px;">
@@ -6225,7 +6225,7 @@ body, #app { background: #07050f; }
 
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
             <button class="btn-w" onclick="campAssemble()" id="campAssembleBtn" style="font-size:13px;padding:10px 22px;">Ensamblar video final</button>
-            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">Volver a mis campañas</button>
+            <button class="btn-ghost-sm" onclick="campBackToList()" style="font-size:13px;padding:10px 22px;">Volver a mis anuncios</button>
           </div>
           <div id="campAssembleStatus" style="display:none;margin-top:16px;padding:16px;background:var(--hover);border:1px solid var(--border);border-radius:var(--r-md);">
             <div class="camp-clip-spinner" style="margin:0 auto 12px;"></div>
@@ -8430,6 +8430,22 @@ function campZapcapDone(downloadUrl) {
   btn.disabled    = false;
   btn.textContent = '↺ Regenerar subtítulos';
   showToast('Subtítulos listos');
+
+  // Persistir la URL del video con subtítulos en la base de datos
+  // para que al volver al anuncio se muestre el video con subtítulos
+  if (_camp.campaignId && _currentUser && downloadUrl) {
+    fetch(BACKEND_URL + '/api/campaign/update-final-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: _camp.campaignId,
+        userId:     _currentUser.userId,
+        videoUrl:   downloadUrl
+      })
+    }).catch(function(e) {
+      console.warn('[zapcap] No se pudo guardar la URL del video subtitulado:', e.message);
+    });
+  }
 }
 
 function campBackToList() {
