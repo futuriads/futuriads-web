@@ -12744,13 +12744,7 @@ async function handleImgRefUpload(event){
   event.target.value = '';
   if (!files.length) return;
 
-  let userId = null;
-  try {
-    const { data: sess } = await supa.auth.getSession();
-    userId = sess?.session?.user?.id || null;
-  } catch(e) {}
-  if (!userId) { showToast('Tenés que iniciar sesión para subir imágenes'); return; }
-
+  // Sin chequeo de sesión — el backend no lo necesita para guardar la imagen temporal
   if (imgRefUrls.length + files.length > 14) {
     showToast('Máximo 14 imágenes de referencia');
     return;
@@ -12764,46 +12758,51 @@ async function handleImgRefUpload(event){
       continue;
     }
 
-    // Thumb: sólo shimmer, sin preview — así el usuario sabe que aún no está listo
+    // Crear thumb con shimmer + texto "Subiendo…"
     const thumbEl = document.createElement('div');
     thumbEl.className = 'img-ref-thumb uploading';
-    thumbEl.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.4);">Subiendo…</div>`;
+    thumbEl.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5);text-align:center;padding:4px;">Subiendo…</div>`;
     list.appendChild(thumbEl);
     _updateImgRefStatus();
 
+    // Leer como base64
+    let base64;
     try {
-      // Leer como base64
-      const base64 = await new Promise((resolve, reject) => {
+      base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
         reader.readAsDataURL(file);
       });
+    } catch(readErr) {
+      thumbEl.remove();
+      _updateImgRefStatus();
+      _showRefError('No se pudo leer el archivo: ' + readErr.message);
+      continue;
+    }
 
-      console.log('[RefUpload] Enviando al backend, tamaño base64:', Math.round(base64.length / 1024) + 'KB');
-
+    // Enviar al backend
+    try {
       const uploadRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ base64, mimeType: file.type || 'image/jpeg', userId })
+        body: JSON.stringify({ base64, mimeType: file.type || 'image/jpeg' })
       });
 
-      if (!uploadRes.ok) {
-        const errData = await uploadRes.json().catch(() => ({}));
-        console.error('[RefUpload] Error del backend:', uploadRes.status, errData);
-        throw new Error(errData.error || `Error ${uploadRes.status}`);
+      let resData;
+      try { resData = await uploadRes.json(); } catch(e) { resData = {}; }
+
+      if (!uploadRes.ok || !resData.url) {
+        throw new Error(resData.error || `Error HTTP ${uploadRes.status}`);
       }
 
-      const resData = await uploadRes.json();
       const url = resData.url;
-      if (!url) throw new Error('El backend no devolvió URL');
 
-      console.log('[RefUpload] ✓ URL recibida:', url);
-
-      // Ahora sí: mostrar preview real
+      // ✓ Upload exitoso: mostrar preview con URL pública
       imgRefUrls.push(url);
+      const localPreview = URL.createObjectURL(file);
       thumbEl.classList.remove('uploading');
-      thumbEl.innerHTML = `<img src="${url}" alt="" onerror="this.src='${URL.createObjectURL(file)}'">`;
+      thumbEl.innerHTML = `<img src="${localPreview}" alt="">`;
 
       const removeBtn = document.createElement('div');
       removeBtn.className = 'img-ref-remove';
@@ -12812,14 +12811,20 @@ async function handleImgRefUpload(event){
       thumbEl.appendChild(removeBtn);
 
       _updateImgRefStatus();
-      showToast('✓ Imagen de referencia lista');
 
     } catch (err) {
-      console.error('[RefUpload] Falló:', err.message);
       thumbEl.remove();
       _updateImgRefStatus();
-      showToast('Error al subir imagen: ' + err.message);
+      _showRefError('Error al subir: ' + err.message);
     }
+  }
+}
+
+function _showRefError(msg) {
+  const statusEl = document.getElementById('imgRefStatus');
+  if (statusEl) {
+    statusEl.textContent = '✗ ' + msg;
+    statusEl.style.color = '#f87171';
   }
 }
 
