@@ -2433,34 +2433,44 @@ body, #app { background: #07050f; }
 .dash-panel-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
 
 /* Actor strip */
+.dash-panel-1-inner {
+  display: flex; flex-direction: column; flex: 1; justify-content: space-between;
+}
 .dash-actor-strip {
-  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px;
+  display: flex; gap: 10px; overflow-x: auto;
+  padding: 14px 0;
   scrollbar-width: thin; scrollbar-color: rgba(109,40,217,0.3) transparent;
 }
 .dash-actor-strip::-webkit-scrollbar { height: 3px; }
 .dash-actor-strip::-webkit-scrollbar-thumb { background: rgba(109,40,217,0.3); border-radius: 2px; }
 .dash-actor-pick {
-  flex-shrink: 0; width: 76px; cursor: pointer;
-  border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.07);
+  flex-shrink: 0; width: 108px; cursor: pointer;
+  border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.07);
   background: rgba(255,255,255,0.03);
   transition: border-color 0.2s, transform 0.2s, background 0.2s; overflow: hidden;
 }
-.dash-actor-pick:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-2px); }
+.dash-actor-pick:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-3px); }
 .dash-actor-pick.selected { border-color: rgba(139,92,246,0.75); background: rgba(109,40,217,0.14); box-shadow: 0 0 0 3px rgba(109,40,217,0.12); }
 .dash-actor-pick img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
-.dash-actor-pick-name { font-size: 11px; text-align: center; padding: 5px 4px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-actor-pick-fallback {
+  width: 100%; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 800; color: rgba(167,139,250,0.8);
+  background: linear-gradient(145deg, rgba(40,12,90,0.9), rgba(20,6,50,0.95));
+}
+.dash-actor-pick-name { font-size: 12px; text-align: center; padding: 7px 4px 6px; color: rgba(255,255,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
 .dash-actor-pick.selected .dash-actor-pick-name { color: #c4b5fd; }
 .dash-actor-add {
-  flex-shrink: 0; width: 76px; cursor: pointer;
-  border-radius: 12px; border: 1.5px dashed rgba(139,92,246,0.22);
+  flex-shrink: 0; width: 108px; cursor: pointer;
+  border-radius: 14px; border: 1.5px dashed rgba(139,92,246,0.25);
   background: rgba(109,40,217,0.05);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 5px; aspect-ratio: 3/5;
+  gap: 6px; aspect-ratio: 3/4;
   transition: border-color 0.2s, background 0.2s;
 }
-.dash-actor-add:hover { border-color: rgba(139,92,246,0.5); background: rgba(109,40,217,0.12); }
-.dash-actor-add-icon { font-size: 22px; color: rgba(139,92,246,0.6); line-height: 1; font-weight: 300; }
-.dash-actor-add-text { font-size: 10px; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.3; }
+.dash-actor-add:hover { border-color: rgba(139,92,246,0.55); background: rgba(109,40,217,0.13); }
+.dash-actor-add-icon { font-size: 26px; color: rgba(139,92,246,0.65); line-height: 1; font-weight: 300; }
+.dash-actor-add-text { font-size: 11px; color: rgba(255,255,255,0.32); text-align: center; line-height: 1.4; }
+.dash-actor-uploading { font-size: 11px; color: rgba(167,139,250,0.7); text-align: center; padding: 16px 8px; }
 
 /* Generating panel */
 .dash-generating-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 16px 0; text-align: center; }
@@ -5450,8 +5460,10 @@ body, #app { background: #07050f; }
       </button>
       <span class="dash-panel-title">Elegí tu actor</span>
     </div>
-    <div class="dash-actor-strip" id="dashActorStrip"></div>
-    <button class="a-gen-btn" id="dashGenBtn" onclick="runDashGen()" disabled style="opacity:0.35;cursor:not-allowed;margin-top:auto;">Generar video</button>
+    <div class="dash-panel-1-inner">
+      <div class="dash-actor-strip" id="dashActorStrip"></div>
+      <button class="a-gen-btn" id="dashGenBtn" onclick="runDashGen()" disabled style="opacity:0.35;cursor:not-allowed;">Generar video</button>
+    </div>
   </div><!-- /dash-panel-1 -->
 
   <!-- PANEL 2: Generating -->
@@ -11193,7 +11205,7 @@ function backFromGen() {
 // ── Inline dashboard generation ─────────────────────────────────────
 
 var _dashSelectedActor = null;
-var _dashCustomActorB64 = null;
+var _dashCustomActorUrl = null; // URL pública en Supabase (Enhancor necesita URL, no base64)
 
 var DASH_ACTORS = [
   { name: 'Facu', tag: 'Joven · Casual', img: 'https://res.cloudinary.com/dzydsuaai/image/upload/v1777848262/e4fb1243-45b2-42a2-adf5-99b1117b65fe_tas1p4.png' },
@@ -11217,7 +11229,11 @@ function initDashActorStrip() {
     var card = document.createElement('div');
     card.className = 'dash-actor-pick';
     card.dataset.actor = actor.name;
-    card.innerHTML = '<img src="' + actor.img + '" alt="' + actor.name + '" loading="lazy"><div class="dash-actor-pick-name">' + actor.name + '</div>';
+    var initials = actor.name.charAt(0).toUpperCase();
+    card.innerHTML =
+      '<img src="' + actor.img + '" alt="' + actor.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+      '<div class="dash-actor-pick-fallback" style="display:none;">' + initials + '</div>' +
+      '<div class="dash-actor-pick-name">' + actor.name + '</div>';
     card.onclick = function() { dashSelectActor(card, actor.name); };
     strip.appendChild(card);
   });
@@ -11238,21 +11254,60 @@ function dashSelectActor(card, name) {
   if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'Generar video'; }
 }
 
-function handleDashCustomActor(input) {
+async function handleDashCustomActor(input) {
   var file = input.files[0];
   if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    _dashCustomActorB64 = e.target.result;
-    var addCard = document.getElementById('dashActorAddCard');
+  var addCard = document.getElementById('dashActorAddCard');
+
+  // Mostrar estado "subiendo"
+  if (addCard) {
+    addCard.style.pointerEvents = 'none';
+    addCard.innerHTML = '<div class="dash-actor-uploading">Subiendo...</div>';
+  }
+
+  try {
+    // 1. Subir a Supabase Storage para obtener URL pública (Enhancor necesita URL)
+    var session = await supa.auth.getSession();
+    var token = (session.data && session.data.session && session.data.session.access_token) || SUPA_KEY;
+    var ext = file.name.split('.').pop() || 'jpg';
+    var filename = 'custom-actor-' + Date.now() + '.' + ext;
+
+    var uploadRes = await fetch(SUPA_URL + '/storage/v1/object/landing-assets/' + filename, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': file.type || 'image/jpeg',
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+
+    if (!uploadRes.ok) throw new Error('No se pudo subir la imagen');
+
+    _dashCustomActorUrl = SUPA_URL + '/storage/v1/object/public/landing-assets/' + filename;
+
+    // 2. Mostrar preview con la imagen subida
     if (addCard) {
+      addCard.style.pointerEvents = '';
       addCard.className = 'dash-actor-pick';
-      addCard.innerHTML = '<img src="' + e.target.result + '" alt="Mi actor" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;"><div class="dash-actor-pick-name">Mi actor</div>';
+      addCard.innerHTML =
+        '<img src="' + _dashCustomActorUrl + '" alt="Mi actor" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;">' +
+        '<div class="dash-actor-pick-name">Mi actor</div>';
       addCard.onclick = function() { dashSelectActor(addCard, '_custom'); };
       dashSelectActor(addCard, '_custom');
     }
-  };
-  reader.readAsDataURL(file);
+
+  } catch(err) {
+    console.error('handleDashCustomActor error:', err);
+    showToast('Error al subir la imagen: ' + (err.message || 'intentá de nuevo'), 'error');
+    if (addCard) {
+      addCard.style.pointerEvents = '';
+      addCard.className = 'dash-actor-add';
+      addCard.innerHTML = '<input type="file" accept="image/*" id="dashCustomActorFile" style="display:none;" onchange="handleDashCustomActor(this)"><div class="dash-actor-add-icon">!</div><div class="dash-actor-add-text">Error, reintentar</div>';
+      addCard.onclick = function() { document.getElementById('dashCustomActorFile').click(); };
+    }
+  }
 }
 
 function startFromDashboard() {
@@ -11263,6 +11318,7 @@ function startFromDashboard() {
   if (isVideo) {
     initDashActorStrip();
     _dashSelectedActor = null;
+    _dashCustomActorUrl = null;
     var btn = document.getElementById('dashGenBtn');
     if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; btn.style.cursor = 'not-allowed'; }
     showDashPanel(1);
@@ -11311,7 +11367,7 @@ async function runDashGen() {
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
 
     var body = { script: prompt, avatar: _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor, duration: durVal, aspectRatio: ratioVal, resolution: resVal, userId: userId };
-    if (_dashSelectedActor === '_custom' && _dashCustomActorB64) body.avatarRef = _dashCustomActorB64;
+    if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
 
     var genRes = await fetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
