@@ -4434,6 +4434,67 @@ body, #app { background: #07050f; }
 .prof2-sec-name { font-size:12px; font-weight:600; color:#e0d4ff; }
 .prof2-sec-desc { font-size:10px; color:rgba(192,168,255,0.32); margin-top:1px; }
 .prof2-sec-arrow { color:rgba(192,168,255,0.18); flex-shrink:0; }
+.prof2-sec-item-danger:hover { background:rgba(180,30,30,0.09); }
+
+/* ---- Filas de pagos en modales ---- */
+.pf-pay-row {
+  display:flex; align-items:center; gap:12px; padding:11px 4px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.pf-pay-row:last-child { border-bottom:none; }
+.pf-pay-empty {
+  display:flex; flex-direction:column; align-items:center;
+  padding:36px 16px; gap:0;
+}
+
+/* ---- NOTIFICACIONES ---- */
+.prof2-notif-row { margin-top:0; }
+.prof2-notif-card { width:100% !important; }
+.prof2-notif-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.prof2-notif-title-wrap { display:flex; align-items:center; gap:10px; }
+.prof2-notif-unread-badge {
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px;
+  background:rgba(109,40,217,0.35); border:1px solid rgba(139,92,246,0.45); color:#c4b5fd;
+}
+.prof2-notif-mark-all {
+  font-size:11px; font-weight:600; color:rgba(139,92,246,0.7); cursor:pointer;
+  background:none; border:none; padding:0; transition:color 0.15s;
+}
+.prof2-notif-mark-all:hover { color:#a78bfa; }
+.prof2-notif-list { display:flex; flex-direction:column; gap:0; }
+.prof2-notif-item {
+  display:flex; align-items:flex-start; gap:13px; padding:13px 8px; border-radius:10px;
+  border-bottom:1px solid rgba(255,255,255,0.045); cursor:default; transition:background 0.15s;
+  position:relative;
+}
+.prof2-notif-item:last-child { border-bottom:none; }
+.prof2-notif-item.unread { background:rgba(109,40,217,0.07); }
+.prof2-notif-item.unread:hover { background:rgba(109,40,217,0.12); }
+.prof2-notif-dot {
+  position:absolute; top:16px; left:-2px; width:6px; height:6px; border-radius:50%;
+  background:#7c3aed; display:none;
+}
+.prof2-notif-item.unread .prof2-notif-dot { display:block; }
+.prof2-notif-icon {
+  width:34px; height:34px; border-radius:10px; flex-shrink:0;
+  background:rgba(109,40,217,0.13); border:1px solid rgba(109,40,217,0.2);
+  display:flex; align-items:center; justify-content:center; color:rgba(167,139,250,0.7);
+  margin-top:1px;
+}
+.prof2-notif-icon.type-update { background:rgba(109,40,217,0.18); border-color:rgba(139,92,246,0.3); color:#a78bfa; }
+.prof2-notif-icon.type-weekly { background:rgba(16,110,68,0.15); border-color:rgba(52,211,153,0.25); color:#6ee7b7; }
+.prof2-notif-icon.type-monthly { background:rgba(14,116,144,0.15); border-color:rgba(34,211,238,0.25); color:#67e8f9; }
+.prof2-notif-body { flex:1; min-width:0; }
+.prof2-notif-name { font-size:12px; font-weight:700; color:#e0d4ff; line-height:1.4; }
+.prof2-notif-text { font-size:11px; color:rgba(192,168,255,0.55); margin-top:3px; line-height:1.5; }
+.prof2-notif-time { font-size:10px; color:rgba(192,168,255,0.28); margin-top:5px; }
+.prof2-notif-empty {
+  display:flex; flex-direction:column; align-items:center; gap:10px; padding:36px 16px;
+  color:rgba(192,168,255,0.3); text-align:center;
+}
+.prof2-notif-empty svg { opacity:0.3; }
+.prof2-notif-empty-title { font-size:13px; font-weight:600; color:rgba(192,168,255,0.4); }
+.prof2-notif-empty-sub { font-size:11px; color:rgba(192,168,255,0.25); }
 
 /* INFORMACIÓN DE LA CUENTA */
 .prof2-info-card {
@@ -6851,9 +6912,8 @@ body, #app { background: #07050f; }
               </div>
               <div style="flex:1;min-width:0;">
                 <div class="prof2-bill-name">Métodos de pago</div>
-                <div class="prof2-bill-sub">Visa terminada en 4242</div>
+                <div class="prof2-bill-sub" id="profPayMethodsSub">Cargando...</div>
               </div>
-              <span class="prof2-bill-badge">Pred.</span>
               <svg class="prof2-bill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
@@ -6951,29 +7011,15 @@ body, #app { background: #07050f; }
               <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
-            <div class="prof2-sec-item" onclick="openTwoFAModal()">
-              <div class="prof2-sec-icon">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="prof2-sec-item prof2-sec-item-danger" onclick="openSignOutModal()">
+              <div class="prof2-sec-icon" style="color:rgba(248,113,113,0.7);">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               </div>
               <div style="flex:1;min-width:0;">
-                <div class="prof2-sec-name">Autenticación 2FA</div>
-                <div class="prof2-sec-desc">Verificación en dos pasos</div>
+                <div class="prof2-sec-name" style="color:rgba(248,113,113,0.85);">Cerrar sesión</div>
+                <div class="prof2-sec-desc">Salir de tu cuenta en este dispositivo</div>
               </div>
-              <label class="prof2-toggle" onclick="event.stopPropagation()">
-                <input type="checkbox" id="toggle2fa" onchange="pfToggle2FA(this)">
-                <span class="prof2-toggle-track"><span class="prof2-toggle-thumb"></span></span>
-              </label>
-            </div>
-
-            <div class="prof2-sec-item" onclick="openDevicesModal()">
-              <div class="prof2-sec-icon">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
-              </div>
-              <div style="flex:1;min-width:0;">
-                <div class="prof2-sec-name">Dispositivos conectados</div>
-                <div class="prof2-sec-desc">Sesiones activas en tus dispositivos</div>
-              </div>
-              <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg class="prof2-sec-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,113,113,0.5)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
           </div>
@@ -6981,6 +7027,24 @@ body, #app { background: #07050f; }
 
       </div><!-- /row 2 -->
 
+      <!-- Row 3: NOTIFICACIONES -->
+      <div class="prof2-row prof2-notif-row">
+        <div class="prof2-card prof2-notif-card">
+          <div class="prof2-notif-header">
+            <div class="prof2-notif-title-wrap">
+              <div class="prof2-card-title" style="margin-bottom:0">Notificaciones</div>
+              <span class="prof2-notif-unread-badge" id="profNotifBadge" style="display:none;"></span>
+            </div>
+            <button class="prof2-notif-mark-all" id="profNotifMarkAll" onclick="profMarkAllRead()" style="display:none;">Marcar todo como leído</button>
+          </div>
+          <div class="prof2-notif-list" id="profNotifList">
+            <div class="prof2-notif-empty">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <div class="prof2-notif-empty-title">Cargando notificaciones...</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row 3 -->
 
       <!-- Hidden legacy IDs (kept for JS compatibility) -->
       <div style="display:none">
@@ -7735,6 +7799,9 @@ async function loadProfile() {
     loadHistory();
     loadDashTips();
     initPrefToggles();
+    // Cargar notificaciones y métodos de pago en paralelo (no bloquean el resto)
+    loadNotifications();
+    loadPaymentMethods();
   } catch (e) {
     console.error('Error en loadProfile:', e);
   }
@@ -10231,14 +10298,77 @@ function confirmChangePlan(planId, event) {
 }
 
 /* --- Payment modals --- */
-function openPayHistModal() {
+async function openPayHistModal() {
   const el = document.getElementById('profPayHistModal');
-  if (el) el.classList.add('open');
+  if (!el) return;
+  el.classList.add('open');
+  const body = document.getElementById('profPayHistBody');
+  if (!body) return;
+  body.innerHTML = `<div style="text-align:center;padding:28px;color:rgba(192,168,255,0.4);font-size:13px;">Cargando...</div>`;
+  try {
+    const resp = await apiFetch(BACKEND_URL + '/api/payment-history', { method: 'POST' });
+    if (!resp.ok) throw new Error();
+    const { payments } = await resp.json();
+    if (!payments.length) {
+      body.innerHTML = `<div class="pf-pay-empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="opacity:.3"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <div style="font-size:13px;font-weight:600;color:rgba(192,168,255,0.4);margin-top:8px;">Sin transacciones todavía</div>
+        <div style="font-size:11px;color:rgba(192,168,255,0.25);margin-top:4px;">Tus pagos y recargas aparecerán acá.</div>
+      </div>`;
+      return;
+    }
+    const fmt = d => new Date(d).toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' });
+    const typeLabel = { topup:'Recarga', subscription:'Suscripción', refund:'Reembolso' };
+    body.innerHTML = payments.map(p => `
+      <div class="pf-pay-row">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:#e0d4ff;">${escapeHtml(p.description || typeLabel[p.type] || 'Pago')}</div>
+          <div style="font-size:10px;color:rgba(192,168,255,0.35);margin-top:2px;">${fmt(p.created_at)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:700;color:${p.type==='refund'?'#6ee7b7':'#e0d4ff'};">
+            ${p.type==='refund'?'+':''}$${Number(p.amount_usd||0).toFixed(2)}
+          </div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-top:2px;color:${p.status==='completed'?'rgba(110,231,183,0.7)':'rgba(248,113,113,0.7)'};">
+            ${p.status==='completed'?'Completado':p.status==='pending'?'Pendiente':'Fallido'}
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    body.innerHTML = `<div style="text-align:center;padding:28px;color:rgba(248,113,113,0.6);font-size:12px;">Error cargando historial</div>`;
+  }
 }
 
-function openPayMethodsModal() {
+async function openPayMethodsModal() {
   const el = document.getElementById('profPayMethodsModal');
-  if (el) el.classList.add('open');
+  if (!el) return;
+  el.classList.add('open');
+  const body = document.getElementById('profPayMethodsBody');
+  if (!body) return;
+  body.innerHTML = `<div style="text-align:center;padding:28px;color:rgba(192,168,255,0.4);font-size:13px;">Cargando...</div>`;
+  try {
+    const resp = await apiFetch(BACKEND_URL + '/api/payment-methods', { method: 'POST' });
+    if (!resp.ok) throw new Error();
+    const { methods } = await resp.json();
+    if (!methods.length) {
+      body.innerHTML = `<div class="pf-pay-empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="opacity:.3"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="2"/></svg>
+        <div style="font-size:13px;font-weight:600;color:rgba(192,168,255,0.4);margin-top:8px;">Sin métodos de pago</div>
+        <div style="font-size:11px;color:rgba(192,168,255,0.25);margin-top:4px;max-width:220px;text-align:center;">Los métodos de pago se van a agregar cuando conectemos el sistema de pagos.</div>
+      </div>`;
+      return;
+    }
+    body.innerHTML = methods.map(m => `
+      <div class="pf-pay-row">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:#e0d4ff;">${escapeHtml(m.label || 'Método de pago')}</div>
+          <div style="font-size:10px;color:rgba(192,168,255,0.35);margin-top:2px;">${escapeHtml(m.type || '')}</div>
+        </div>
+        ${m.is_default ? `<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;background:rgba(109,40,217,0.25);border:1px solid rgba(139,92,246,0.35);color:#c4b5fd;letter-spacing:.4px;">PRED.</span>` : ''}
+      </div>`).join('');
+  } catch(e) {
+    body.innerHTML = `<div style="text-align:center;padding:28px;color:rgba(248,113,113,0.6);font-size:12px;">Error cargando métodos</div>`;
+  }
 }
 
 function openCancelMembershipModal() {
@@ -10416,6 +10546,116 @@ function initPrefToggles() {
       if (el && prefs[id] !== undefined) el.checked = prefs[id];
     });
   } catch(_) {}
+}
+
+/* ================================================================
+   NOTIFICACIONES
+   ================================================================ */
+
+const _notifTypeIcons = {
+  update:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>`,
+  weekly:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  monthly: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  general: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`
+};
+
+async function loadNotifications() {
+  const list = document.getElementById('profNotifList');
+  const badge = document.getElementById('profNotifBadge');
+  const markAll = document.getElementById('profNotifMarkAll');
+  if (!list) return;
+
+  try {
+    const resp = await apiFetch(BACKEND_URL + '/api/notifications', { method: 'POST' });
+    if (!resp.ok) throw new Error('Error cargando notificaciones');
+    const { notifications, unread } = await resp.json();
+
+    // Badge de no leídas
+    if (unread > 0) {
+      badge.textContent = unread + ' nueva' + (unread !== 1 ? 's' : '');
+      badge.style.display = '';
+      markAll.style.display = '';
+    } else {
+      badge.style.display = 'none';
+      markAll.style.display = 'none';
+    }
+
+    if (!notifications.length) {
+      list.innerHTML = `<div class="prof2-notif-empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="prof2-notif-empty-title">Sin notificaciones</div>
+        <div class="prof2-notif-empty-sub">Acá vas a ver actualizaciones y resúmenes de la plataforma.</div>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = notifications.map(n => {
+      const icon = _notifTypeIcons[n.type] || _notifTypeIcons.general;
+      const typeClass = 'type-' + (n.type || 'general');
+      const unreadClass = n.read ? '' : ' unread';
+      const ago = timeAgo(n.created_at);
+      return `<div class="prof2-notif-item${unreadClass}" data-notif-id="${n.id}">
+        <div class="prof2-notif-dot"></div>
+        <div class="prof2-notif-icon ${typeClass}">${icon}</div>
+        <div class="prof2-notif-body">
+          <div class="prof2-notif-name">${escapeHtml(n.title)}</div>
+          <div class="prof2-notif-text">${escapeHtml(n.body)}</div>
+          <div class="prof2-notif-time">${ago}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    console.warn('[notifications]', e.message);
+    list.innerHTML = `<div class="prof2-notif-empty">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="prof2-notif-empty-title">Sin notificaciones por ahora</div>
+      <div class="prof2-notif-empty-sub">Acá vas a ver actualizaciones y resúmenes de la plataforma.</div>
+    </div>`;
+  }
+}
+
+async function profMarkAllRead() {
+  try {
+    await apiFetch(BACKEND_URL + '/api/notifications/mark-read', {
+      method: 'POST',
+      body: JSON.stringify({})
+    });
+    // Refrescar UI
+    document.querySelectorAll('.prof2-notif-item.unread').forEach(el => el.classList.remove('unread'));
+    const badge = document.getElementById('profNotifBadge');
+    const markAll = document.getElementById('profNotifMarkAll');
+    if (badge) badge.style.display = 'none';
+    if (markAll) markAll.style.display = 'none';
+  } catch(e) {
+    console.warn('[mark-read]', e.message);
+  }
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ================================================================
+   MÉTODOS DE PAGO
+   ================================================================ */
+
+async function loadPaymentMethods() {
+  const sub = document.getElementById('profPayMethodsSub');
+  if (!sub) return;
+  try {
+    const resp = await apiFetch(BACKEND_URL + '/api/payment-methods', { method: 'POST' });
+    if (!resp.ok) throw new Error();
+    const { methods } = await resp.json();
+    if (!methods.length) {
+      sub.textContent = 'Sin métodos registrados';
+    } else {
+      const def = methods.find(m => m.is_default) || methods[0];
+      sub.textContent = def.label || 'Ver métodos';
+    }
+  } catch(e) {
+    sub.textContent = 'Sin métodos registrados';
+  }
 }
 
 /* ================================================================
@@ -14417,20 +14657,13 @@ localStorage.removeItem('sidebarWidth');
 
 <!-- Payment History -->
 <div class="pf-modal" id="profPayHistModal" onclick="closeProfModal('profPayHistModal',event)">
-  <div class="pf-modal-card" style="max-width:540px;">
+  <div class="pf-modal-card" style="max-width:520px;">
     <div class="pf-modal-header">
       <div class="pf-modal-title">Historial de pagos</div>
       <button class="pf-modal-close" onclick="closeProfModal('profPayHistModal')">&times;</button>
     </div>
-    <div class="pf-modal-sub">Todos tus movimientos y facturas.</div>
-    <div style="overflow-x:auto;">
-      <table class="pf-table">
-        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Estado</th></tr></thead>
-        <tbody id="pfPayHistBody">
-          <tr><td colspan="4" style="text-align:center;padding:28px;color:rgba(192,168,255,0.3);">No hay transacciones disponibles.</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="pf-modal-sub">Todos tus movimientos y recargas.</div>
+    <div id="profPayHistBody" style="min-height:80px;"></div>
     <div class="pf-modal-btns" style="justify-content:flex-end;">
       <button class="pf-btn-cancel" onclick="closeProfModal('profPayHistModal')">Cerrar</button>
     </div>
@@ -14444,16 +14677,8 @@ localStorage.removeItem('sidebarWidth');
       <div class="pf-modal-title">Métodos de pago</div>
       <button class="pf-modal-close" onclick="closeProfModal('profPayMethodsModal')">&times;</button>
     </div>
-    <div class="pf-modal-sub">Tus tarjetas y métodos de pago guardados.</div>
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px;">
-      <svg width="36" height="26" viewBox="0 0 36 26" fill="none"><rect width="36" height="26" rx="4" fill="rgba(109,40,217,0.2)"/><rect x="0" y="7" width="36" height="6" fill="rgba(139,92,246,0.4)"/><rect x="4" y="17" width="8" height="3" rx="1" fill="rgba(192,168,255,0.5)"/></svg>
-      <div style="flex:1;">
-        <div style="font-size:13px;color:#e0d4ff;font-weight:600;">•••• •••• •••• 4242</div>
-        <div style="font-size:11px;color:rgba(192,168,255,0.4);margin-top:2px;">Vence 12/27 · Principal</div>
-      </div>
-      <div style="font-size:10px;background:rgba(34,197,94,0.12);color:#86efac;border-radius:5px;padding:3px 8px;border:1px solid rgba(34,197,94,0.2);">Activa</div>
-    </div>
-    <button style="width:100%;background:transparent;border:1.5px dashed rgba(139,92,246,0.3);border-radius:12px;padding:13px;color:rgba(192,168,255,0.5);font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(139,92,246,0.6)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(139,92,246,0.3)';this.style.color='rgba(192,168,255,0.5)'" onclick="showToast('Redirigiendo al portal de pagos…','info')">+ Agregar tarjeta</button>
+    <div class="pf-modal-sub">Tus métodos de pago registrados.</div>
+    <div id="profPayMethodsBody" style="min-height:80px;"></div>
     <div class="pf-modal-btns" style="justify-content:flex-end;">
       <button class="pf-btn-cancel" onclick="closeProfModal('profPayMethodsModal')">Cerrar</button>
     </div>
