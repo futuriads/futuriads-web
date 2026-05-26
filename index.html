@@ -6797,11 +6797,11 @@ body, #app { background: #07050f; }
           </div>
           <div class="prof2-usage-nums">
             <div>
-              <div class="prof2-usage-num-label">Créditos usados</div>
+              <div class="prof2-usage-num-label" id="profUsageUsedLabel">Créditos usados</div>
               <div class="prof2-usage-num-val" id="profUsageUsed">—</div>
             </div>
             <div style="text-align:right">
-              <div class="prof2-usage-num-label">Créditos restantes</div>
+              <div class="prof2-usage-num-label" id="profUsageLeftLabel">Créditos restantes</div>
               <div class="prof2-usage-num-val" id="profUsageLeft">—</div>
             </div>
           </div>
@@ -7494,6 +7494,10 @@ async function loadHistory() {
   renderHistory();
   updateDashMetrics();
   loadDashRecent();
+  // Refrescar el widget "Uso del mes" con el período actualmente seleccionado
+  // (ahora que historyData está disponible para calcular los otros períodos)
+  const activePeriod = _currentUsagePeriod || 'current';
+  renderUsagePeriod(activePeriod);
 }
 
 async function updateDashMetrics() {
@@ -7909,11 +7913,16 @@ function updateCreditsUI(me) {
   const usageDays  = document.getElementById('profUsageDays');
   const usageMonth = document.getElementById('profUsageMonthLabel');
 
-  // Month label
+  // Month label — mostrar rango del ciclo de facturación
   if (usageMonth) {
-    const n = new Date(), y = n.getFullYear(), m = n.getMonth();
-    const fmt = d => d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
-    usageMonth.textContent = `${fmt(new Date(y,m,1))} – ${fmt(new Date(y,m+1,0))}`;
+    if (me && me.period_start && me.period_end) {
+      const fmt = d => new Date(d).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+      usageMonth.textContent = `${fmt(me.period_start)} – ${fmt(me.period_end)}`;
+    } else {
+      const n = new Date(), y = n.getFullYear(), mo = n.getMonth();
+      const fmt = d => d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+      usageMonth.textContent = `${fmt(new Date(y,mo,1))} – ${fmt(new Date(y,mo+1,0))}`;
+    }
   }
 
   if (plan !== 'none' && planInfo.credits > 0) {
@@ -10080,8 +10089,11 @@ function pfToggleDd(id, e) {
 }
 
 /* --- USO DEL MES dropdown --- */
+let _currentUsagePeriod = 'current';
+
 function pfSelectUsage(period, label, e) {
   if (e) e.stopPropagation();
+  _currentUsagePeriod = period;
   const dd = document.getElementById('usageDropdown');
   const lbl = document.getElementById('profUsageMonthLabel');
   if (lbl) lbl.textContent = label;
@@ -10090,7 +10102,90 @@ function pfSelectUsage(period, label, e) {
     if (e && e.currentTarget) e.currentTarget.classList.add('pf-sel');
     dd.classList.remove('open');
   }
-  showToast('Período: ' + label, 'info');
+  renderUsagePeriod(period);
+}
+
+function renderUsagePeriod(period) {
+  const now   = new Date();
+  const plan  = (_currentUser && _currentUser.plan) || 'none';
+  const pInfo = getPlanInfo(plan);
+  const sub   = (_currentUser && _currentUser.subscription_credits) || 0;
+  const top   = (_currentUser && _currentUser.topup_credits)        || 0;
+  const totalLeft = sub + top;
+
+  // Definir rango de fechas según período
+  let dateFrom, dateTo, periodDays, isCurrent = false;
+  if (period === 'week') {
+    dateFrom = new Date(now); dateFrom.setDate(dateFrom.getDate() - 7);
+    dateTo = now; periodDays = 7;
+  } else if (period === 'last') {
+    dateFrom = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    dateTo   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    periodDays = Math.ceil((dateTo - dateFrom) / (1000*60*60*24));
+  } else if (period === 'quarter') {
+    dateFrom = new Date(now); dateFrom.setDate(dateFrom.getDate() - 90);
+    dateTo = now; periodDays = 90;
+  } else {
+    // 'current' — ciclo de suscripción actual
+    isCurrent = true;
+    dateFrom = _currentUser && _currentUser.period_start
+      ? new Date(_currentUser.period_start)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
+    dateTo = now;
+    const pEnd = _currentUser && _currentUser.period_end
+      ? new Date(_currentUser.period_end)
+      : new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    periodDays = Math.max(1, Math.ceil((pEnd - dateFrom) / (1000*60*60*24)));
+  }
+
+  // Filtrar historyData por rango
+  const items = (historyData || []).filter(v => {
+    if (!v.created_at) return false;
+    const d = new Date(v.created_at);
+    return d >= dateFrom && d <= dateTo && (v.credits_total || 0) > 0;
+  });
+
+  // Créditos usados: suma de credits_total en el período
+  // Para el período actual, preferimos el cálculo exacto del plan (sub consumido = planCredits - sub)
+  let used;
+  if (isCurrent && pInfo.credits > 0) {
+    used = Math.max(0, pInfo.credits - sub);
+  } else {
+    used = items.reduce((acc, v) => acc + (v.credits_total || 0), 0);
+  }
+
+  const chartMax = pInfo.credits > 0 ? pInfo.credits : Math.max(used, 1);
+  const pct = Math.min(100, Math.round(used / chartMax * 100));
+  const circumference = 289.0;
+  const daysElapsed = Math.max(1, Math.ceil((dateTo - dateFrom) / (1000*60*60*24)));
+  const avgDaily = Math.round(used / daysElapsed);
+
+  // Actualizar UI
+  const elUsed    = document.getElementById('profUsageUsed');
+  const elLeft    = document.getElementById('profUsageLeft');
+  const elPct     = document.getElementById('profUsagePct');
+  const elCircle  = document.getElementById('profUsageCircle');
+  const elAvg     = document.getElementById('profUsageAvg');
+  const elDays    = document.getElementById('profUsageDays');
+  const elLeftLbl = document.getElementById('profUsageLeftLabel');
+
+  if (elUsed)   elUsed.textContent   = used.toLocaleString('es-AR');
+  if (elPct)    elPct.textContent    = pct + '%';
+  if (elCircle) elCircle.style.strokeDashoffset = (circumference * (1 - pct / 100)).toFixed(1);
+  if (elAvg)    elAvg.textContent    = `Promedio diario: ${avgDaily.toLocaleString('es-AR')} créditos`;
+
+  if (isCurrent) {
+    const daysLeft = _currentUser && _currentUser.period_end
+      ? Math.max(1, Math.ceil((new Date(_currentUser.period_end) - now) / (1000*60*60*24)))
+      : 0;
+    if (elLeft)    elLeft.textContent    = totalLeft.toLocaleString('es-AR');
+    if (elLeftLbl) elLeftLbl.textContent = 'Créditos restantes';
+    if (elDays)    elDays.textContent    = `${daysLeft} días restantes`;
+  } else {
+    if (elLeft)    elLeft.textContent    = items.length.toLocaleString('es-AR');
+    if (elLeftLbl) elLeftLbl.textContent = 'Generaciones';
+    if (elDays)    elDays.textContent    = `${items.length} creación${items.length !== 1 ? 'es' : ''} en el período`;
+  }
 }
 
 /* --- Language dropdown --- */
