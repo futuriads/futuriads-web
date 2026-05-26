@@ -5603,7 +5603,7 @@ body, #app { background: #07050f; }
         <!-- Columna derecha: Borradores recientes -->
         <div class="dash-recent-card">
           <div class="dash-recent-header">
-            <div class="dash-tips-title">Borradores recientes</div>
+            <div class="dash-tips-title">Recientes</div>
             <button class="dash-tips-more" onclick="showScreen('historial')">Ver todos</button>
           </div>
           <div class="dash-recent-list" id="dashRecentList">
@@ -11261,8 +11261,8 @@ function updateDashCreditPreview() {
     const model   = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
     const quality = document.querySelector('#cs-img-quality .custom-select-option.selected')?.dataset.value || '2K';
     const imgCosts = {
-      'gpt-image-2':   { '1K': 250, '2K': 250, '4K': 300, 'auto': 250 },
-      'nano-banana-2': { '1K': 300, '2K': 300, '4K': 300, 'auto': 300 }
+      'gpt-image-2':   { '1K': 150, '2K': 250, '4K': 400, 'auto': 250 },
+      'nano-banana-2': { '1K': 150, '2K': 250, '4K': 400, 'auto': 250 }
     };
     credits = (imgCosts[model] || imgCosts['gpt-image-2'])[quality] || 250;
     el.textContent = '≈ ' + credits.toLocaleString('es-AR') + ' créditos';
@@ -11533,7 +11533,8 @@ async function runDashGen() {
     // ── Video listo ──────────────────────────────────────────────────
     if (barEl) { barEl.classList.remove('waiting'); }
     await setBar(100, 350);
-    loadHistory(); // refrescar historial en background
+    loadHistory();
+    loadDashRecent();
 
     showDashResultPanel(videoData);
     showDashPanel(3);
@@ -11659,32 +11660,39 @@ function dashRehacer() {
 }
 
 async function runDashGenImage() {
-  var prompt   = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
-  var model    = (document.querySelector('#cs-img-model .custom-select-option.selected') && document.querySelector('#cs-img-model .custom-select-option.selected').dataset.value) || 'gpt-image-2';
-  var quality  = (document.querySelector('#cs-img-quality .custom-select-option.selected') && document.querySelector('#cs-img-quality .custom-select-option.selected').dataset.value) || '2K';
-  var ratio    = (document.querySelector('#cs-img-aspect .custom-select-option.selected') && document.querySelector('#cs-img-aspect .custom-select-option.selected').dataset.value) || '1:1';
+  var prompt  = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
+  var model   = (document.querySelector('#cs-img-model .custom-select-option.selected') && document.querySelector('#cs-img-model .custom-select-option.selected').dataset.value) || 'gpt-image-2';
+  var quality = (document.querySelector('#cs-img-quality .custom-select-option.selected') && document.querySelector('#cs-img-quality .custom-select-option.selected').dataset.value) || '2K';
+  var ratio   = (document.querySelector('#cs-img-aspect .custom-select-option.selected') && document.querySelector('#cs-img-aspect .custom-select-option.selected').dataset.value) || '1:1';
 
   var statusEl = document.getElementById('dashGenStatus');
   var hintEl   = document.getElementById('dashGenHint');
   var barEl    = document.getElementById('dashProgBar');
-  if (barEl) barEl.style.width = '0%';
+  if (barEl) { barEl.style.width = '0%'; barEl.classList.remove('waiting'); }
 
   var prog = 0;
-  var interval = setInterval(function() {
-    prog = Math.min(prog + Math.random() * 10, 90);
-    if (barEl) barEl.style.width = prog + '%';
-  }, 700);
+  function setBar(target, ms) {
+    return new Promise(function(resolve) {
+      var from = prog, t0 = Date.now();
+      function anim() {
+        var t = Math.min((Date.now() - t0) / ms, 1);
+        prog = from + (target - from) * t;
+        if (barEl) barEl.style.width = prog + '%';
+        if (t < 1) requestAnimationFrame(anim); else resolve();
+      }
+      anim();
+    });
+  }
 
   try {
     if (statusEl) statusEl.textContent = 'Generando imagen...';
     if (hintEl) hintEl.textContent = 'Esto puede tardar unos segundos.';
+    await setBar(50, 600);
 
     var userId = null;
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
 
     var response = await fetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: model, prompt: prompt, aspectRatio: ratio, resolution: quality, userId: userId }) });
-
-    clearInterval(interval);
 
     if (response.status === 402) {
       var errData = await response.json().catch(function() { return {}; });
@@ -11694,16 +11702,66 @@ async function runDashGenImage() {
     }
     if (!response.ok) throw new Error('Error al generar imagen');
 
-    if (barEl) barEl.style.width = '100%';
+    var genData = await response.json();
+    var requestId = genData.requestId;
     refreshCredits();
 
-    if (document.getElementById('dashDoneTitle')) document.getElementById('dashDoneTitle').textContent = '¡Imagen en proceso!';
-    if (document.getElementById('dashDoneSub')) document.getElementById('dashDoneSub').textContent = 'Tu imagen se está procesando. La encontrás en el Historial en unos minutos.';
+    await setBar(65, 300);
+
+    // ── Polling: esperar a que la imagen esté lista ──────────────────
+    if (statusEl) statusEl.textContent = 'Procesando imagen...';
+    if (hintEl) hintEl.textContent = 'Generalmente tarda menos de 1 minuto.';
+    if (barEl) barEl.classList.add('waiting');
+
+    var pollMax = 40; // 40 × 5s = ~3 min
+    var pollCount = 0;
+    var crawlPer = (93 - 65) / pollMax;
+
+    var imgData = await new Promise(function(resolveImg, rejectImg) {
+      if (_dashPollTimer) clearInterval(_dashPollTimer);
+      _dashPollTimer = setInterval(async function() {
+        pollCount++;
+        prog = Math.min(65 + crawlPer * pollCount, 93);
+        if (barEl) barEl.style.width = prog + '%';
+
+        if (pollCount > pollMax) {
+          clearInterval(_dashPollTimer); _dashPollTimer = null;
+          rejectImg(new Error('timeout'));
+          return;
+        }
+        try {
+          var { data: row } = await supa.from('videos').select('*').eq('request_id', requestId).single();
+          if (row && row.status === 'COMPLETED' && row.video_url) {
+            clearInterval(_dashPollTimer); _dashPollTimer = null;
+            resolveImg(row);
+          } else if (row && row.status === 'FAILED') {
+            clearInterval(_dashPollTimer); _dashPollTimer = null;
+            rejectImg(new Error('La generación de imagen falló'));
+          }
+        } catch(e) { /* sigue intentando */ }
+      }, 5000);
+    });
+
+    // ── Imagen lista ─────────────────────────────────────────────────
+    if (barEl) barEl.classList.remove('waiting');
+    await setBar(100, 300);
+    loadHistory();
+    loadDashRecent();
+
+    showDashResultPanel(imgData);
     showDashPanel(3);
 
   } catch(err) {
-    clearInterval(interval);
+    if (_dashPollTimer) { clearInterval(_dashPollTimer); _dashPollTimer = null; }
     console.error('runDashGenImage error:', err);
+
+    if (err.message === 'timeout') {
+      if (barEl) barEl.classList.remove('waiting');
+      showDashResultFallback();
+      showDashPanel(3);
+      return;
+    }
+
     if (statusEl) { statusEl.textContent = '⚠ ' + (err.message || 'Ocurrió un error'); statusEl.style.color = '#f87171'; }
     setTimeout(function() { if (statusEl) statusEl.style.color = ''; showDashPanel(0); }, 3000);
   }
