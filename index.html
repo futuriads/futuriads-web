@@ -3356,6 +3356,16 @@ body, #app { background: #07050f; }
 }
 .hist-card-dl:hover { background: rgba(109,40,217,0.35); border-color: rgba(139,92,246,0.7); color: #e0d4ff; }
 
+/* Botón quitar de carpeta */
+.hist-card-rm-folder {
+  position: absolute; top: 6px; right: 6px; z-index: 10;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(10,5,25,0.72); border: 1px solid rgba(255,255,255,0.14);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2); transition: all 0.15s;
+}
+.hist-card-rm-folder:hover { background: rgba(160,25,25,0.7); border-color: rgba(255,90,90,0.45); color: #fff; }
+
 /* Pending state */
 .hist-pending-thumb {
   width: 100%; height: 100%;
@@ -10598,13 +10608,22 @@ function openFolder(idx) {
   document.getElementById('folderViewCount').textContent =
     `${items.length} elemento${items.length !== 1 ? 's' : ''}`;
 
-  renderHistGrid(items, document.getElementById('folderViewBody'));
+  renderHistGrid(items, document.getElementById('folderViewBody'), idx);
   requestAnimationFrame(() => modal.classList.add('open'));
 }
 
 function closeFolderView() {
   const modal = document.getElementById('folderViewModal');
   if (modal) modal.classList.remove('open');
+}
+
+function removeFromFolder(itemId, folderIdx) {
+  const key = `hist_folder_items_${folderIdx}`;
+  const items = JSON.parse(localStorage.getItem(key) || '[]');
+  const updated = items.filter(id => String(id) !== String(itemId));
+  localStorage.setItem(key, JSON.stringify(updated));
+  // Refrescar la vista de la carpeta con los items actualizados
+  openFolder(folderIdx);
 }
 
 function deleteFolder(idx, e) {
@@ -10633,7 +10652,7 @@ function deleteFolder(idx, e) {
   );
 }
 
-function renderHistGrid(items, c) {
+function renderHistGrid(items, c, folderIdx) {
   const esc  = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
   const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'||s==='ERROR'?'failed':'pending');
@@ -10702,6 +10721,7 @@ function renderHistGrid(items, c) {
         <div class="hist-card-checkbox">
           <svg class="hist-card-checkbox-check" width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 3.5,6.5 7.5,2"/></svg>
         </div>
+        ${folderIdx !== undefined ? `<button class="hist-card-rm-folder" onclick="event.stopPropagation();removeFromFolder('${v.id}',${folderIdx})" title="Quitar de carpeta"><svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M1 1l8 8M9 1L1 9"/></svg></button>` : ''}
         ${thumb}
       </div>
       <div class="hist-card-info">
