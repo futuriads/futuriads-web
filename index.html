@@ -640,16 +640,15 @@ html.pre-landing #app { display: none !important; }
 .vp-mini:not(.playing) .vp-mini-icon { opacity: 1; transform: scale(1); }
 .vp-mini.playing .vp-mini-icon { opacity: 0; transform: scale(0.75); }
 .vp-mini-bar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-  background: rgba(255,255,255,0.12); cursor: pointer;
-  user-select: none; -webkit-user-select: none;
-  /* Make hit area bigger while keeping visual thin */
-  padding-top: 8px; margin-top: -8px;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 5px;
+  background: rgba(255,255,255,0.18); cursor: pointer;
+  user-select: none; -webkit-user-select: none; z-index: 2;
 }
-.vp-mini-bar:hover { height: 6px; }
+.vp-mini-bar:hover { height: 7px; }
 .vp-mini-fill {
   height: 100%; width: 0%;
   background: linear-gradient(90deg, #7c3aed, #a855f7);
+  box-shadow: 0 0 5px rgba(167,85,247,0.6);
   transition: width 0.1s linear; pointer-events: none;
 }
 
@@ -8090,13 +8089,7 @@ async function campAssemble() {
     const vid = document.getElementById('campFinalPlayer');
     vid.src = data.finalVideoUrl;
     document.getElementById('campFinalDownload').href = data.finalVideoUrl;
-    vid.addEventListener('timeupdate', () => vpFullTick('campFinalPlayer','campFinalFill','campFinalTime'));
-    vid.addEventListener('play',  () => document.getElementById('campFinalVP').classList.add('playing'));
-    vid.addEventListener('pause', () => document.getElementById('campFinalVP').classList.remove('playing'));
-    vid.addEventListener('loadedmetadata', () => {
-      _camp.finalVideoDuration = vid.duration;
-      campZapcapUpdateCost();
-    });
+    _campWirePlayer(vid);
     document.getElementById('campFinalVP').querySelector('.vp-full-btn').textContent = '▶';
 
     btn.textContent = 'Video ensamblado';
@@ -8112,6 +8105,40 @@ async function campAssemble() {
     btn.disabled = false;
     btn.textContent = 'Ensamblar video final';
   }
+}
+
+// ─── Helper: cablear todos los listeners del campFinalPlayer ────────────────
+// Llamado tanto desde campAssemble (primera vez) como desde campOpenDetail
+// (al restaurar un anuncio ya ensamblado).
+// Usa un flag en el elemento para no duplicar listeners si se llama dos veces.
+function _campWirePlayer(vid) {
+  if (!vid || vid._campWired) return;
+  vid._campWired = true;
+  vid.addEventListener('timeupdate', function() {
+    vpFullTick('campFinalPlayer', 'campFinalFill', 'campFinalTime');
+  });
+  vid.addEventListener('play', function() {
+    const vp = document.getElementById('campFinalVP');
+    if (vp) vp.classList.add('playing');
+    const btn = vp && vp.querySelector('.vp-full-row .vp-full-btn');
+    if (btn) btn.textContent = '⏸';
+  });
+  vid.addEventListener('pause', function() {
+    const vp = document.getElementById('campFinalVP');
+    if (vp) vp.classList.remove('playing');
+    const btn = vp && vp.querySelector('.vp-full-row .vp-full-btn');
+    if (btn) btn.textContent = '▶';
+  });
+  vid.addEventListener('ended', function() {
+    const vp = document.getElementById('campFinalVP');
+    if (vp) vp.classList.remove('playing');
+    const btn = vp && vp.querySelector('.vp-full-row .vp-full-btn');
+    if (btn) btn.textContent = '▶';
+  });
+  vid.addEventListener('loadedmetadata', function() {
+    _camp.finalVideoDuration = vid.duration;
+    campZapcapUpdateCost();
+  });
 }
 
 // =============================================
@@ -9577,12 +9604,9 @@ async function campOpenDetail(campaignId, title) {
       const assembleBtn = document.getElementById('campAssembleBtn');
       if (player) {
         player.src = campaign.final_video_url;
-        // Actualizar precio de subtítulos en cuanto se carguen los metadatos del video
-        player.addEventListener('loadedmetadata', function onMeta() {
-          player.removeEventListener('loadedmetadata', onMeta);
-          _camp.finalVideoDuration = player.duration;
-          campZapcapUpdateCost();
-        });
+        // Cablear todos los listeners del player (play/pause/timeupdate/metadata)
+        // Igual que en campAssemble — necesario porque campOpenDetail no pasa por ese flujo
+        _campWirePlayer(player);
       }
       if (dlLink) { dlLink.href = campaign.final_video_url; dlLink.download = (campaign.title || 'creativo') + '.mp4'; }
       if (assembleBtn) { assembleBtn.textContent = 'Re-ensamblar'; assembleBtn.disabled = false; }
