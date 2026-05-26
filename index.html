@@ -6317,6 +6317,17 @@ body, #app { background: #07050f; }
             </button>
           </div>
         </div>
+        <!-- Banner borrador en progreso -->
+        <div id="campDraftBanner" style="display:none;margin-bottom:16px;padding:14px 18px;background:rgba(109,40,217,0.1);border:1px solid rgba(109,40,217,0.25);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:rgba(192,168,255,.9);">Tenés un anuncio en progreso</div>
+            <div style="font-size:12px;color:rgba(192,168,255,.5);margin-top:2px;" id="campDraftBannerSub"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button onclick="campResumeDraft()" style="background:rgba(109,40,217,0.6);border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;">Continuar</button>
+            <button onclick="campClearDraft(true)" style="background:none;border:1px solid rgba(109,40,217,0.25);border-radius:8px;padding:7px 12px;font-size:12px;color:rgba(192,168,255,.4);cursor:pointer;">Descartar</button>
+          </div>
+        </div>
         <div id="campListContainer"></div>
       </div>
 
@@ -8859,11 +8870,110 @@ function campBackToList() {
   campLoadList();
 }
 
+// ── Persistencia de borrador de campaña ───────────────────────────────────────
+const CAMP_DRAFT_KEY = 'futuriads_camp_draft';
+const CAMP_DRAFT_TTL = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+function campSaveDraft() {
+  if (!_camp.campaignId) return;
+  try {
+    localStorage.setItem(CAMP_DRAFT_KEY, JSON.stringify({
+      campaignId:    _camp.campaignId,
+      title:         _camp.title,
+      script:        _camp.script,
+      videoMode:     _camp.videoMode,
+      voice:         _camp.voice,
+      voiceSettings: _camp.voiceSettings,
+      aspectRatio:   _camp.aspectRatio,
+      resolution:    _camp.resolution,
+      step:          _camp.step,
+      audioUrl:      _camp.audioUrl,
+      audioDuration: _camp.audioDuration,
+      audioClips:    _camp.audioClips,
+      visualPrompts: _camp.visualPrompts,
+      chunks:        _camp.chunks,
+      savedAt:       Date.now()
+    }));
+  } catch(e) {}
+}
+
+function campClearDraft(confirm) {
+  try { localStorage.removeItem(CAMP_DRAFT_KEY); } catch(e) {}
+  const banner = document.getElementById('campDraftBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+function campCheckDraft() {
+  const banner = document.getElementById('campDraftBanner');
+  if (!banner) return;
+  try {
+    const raw = localStorage.getItem(CAMP_DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    if (!draft || !draft.campaignId) return;
+    // TTL check
+    if (Date.now() - draft.savedAt > CAMP_DRAFT_TTL) { campClearDraft(); return; }
+    // Solo mostrar si no estamos generando esa campaña ahora mismo
+    if (_camp.campaignId === draft.campaignId) return;
+
+    const stepLabels = ['Configuración', 'Fotos del avatar', 'Selección de voz', 'Revisá los clips'];
+    const stepLbl = stepLabels[draft.step] || 'Paso ' + (draft.step + 1);
+    const sub = (draft.title ? '"' + draft.title + '" · ' : '') + stepLbl;
+    document.getElementById('campDraftBannerSub').textContent = sub;
+    banner.style.display = 'flex';
+  } catch(e) {}
+}
+
+function campResumeDraft() {
+  try {
+    const draft = JSON.parse(localStorage.getItem(CAMP_DRAFT_KEY) || 'null');
+    if (!draft || !draft.campaignId) return;
+
+    // Restaurar estado
+    _camp.campaignId    = draft.campaignId;
+    _camp.title         = draft.title        || '';
+    _camp.script        = draft.script       || '';
+    _camp.videoMode     = draft.videoMode    || 'voiceover';
+    _camp.voice         = draft.voice        || 'female';
+    _camp.voiceSettings = draft.voiceSettings || null;
+    _camp.aspectRatio   = draft.aspectRatio  || '9:16';
+    _camp.resolution    = draft.resolution   || '480p';
+    _camp.audioUrl      = draft.audioUrl     || null;
+    _camp.audioDuration = draft.audioDuration || 0;
+    _camp.audioClips    = draft.audioClips   || [];
+    _camp.visualPrompts = draft.visualPrompts || [];
+    _camp.chunks        = draft.chunks       || [];
+
+    const banner = document.getElementById('campDraftBanner');
+    if (banner) banner.style.display = 'none';
+
+    // Mostrar wizard
+    document.getElementById('campView-list').style.display = 'none';
+    document.getElementById('campView-wizard').style.display = 'block';
+    document.getElementById('campView-generating').style.display = 'none';
+
+    const step = draft.step || 0;
+
+    // Si había audio generado, restaurar directamente al paso 4
+    if (_camp.audioUrl && _camp.audioClips.length > 0 && step >= 3) {
+      campGoStep(3);
+      campRenderAudioClips();
+    } else {
+      campGoStep(step);
+    }
+
+    showToast('Borrador restaurado. Continuá desde donde lo dejaste.', 'success');
+  } catch(e) {
+    showToast('No se pudo restaurar el borrador.');
+  }
+}
+
 function campGoStep(n) {
   document.querySelectorAll('.camp-wizard-step').forEach(s => s.classList.remove('active'));
   const el = document.getElementById('campStep-' + n);
   if(el) el.classList.add('active');
   _camp.step = n;
+  campSaveDraft();
   
   // Adaptar paso 2 según modo
   if (n === 2) {
@@ -9212,6 +9322,7 @@ async function campLoadChunksTalking() {
       prompt: campBuildMasterPrompt().replace('[CHUNK]', c.text)
     }));
 
+    campSaveDraft(); // persistir antes de mostrar
     campRenderTalkingClips();
   } catch (e) {
     showToast('Error: ' + e.message);
@@ -9298,6 +9409,7 @@ async function campLoadAudioAndClips() {
       const createData = await createResp.json();
       if (!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
       _camp.campaignId = createData.campaign.id;
+      campSaveDraft(); // guardar ID apenas se crea la campaña
     }
 
     // Paso 2: Generar audio con timestamps
@@ -9337,6 +9449,7 @@ async function campLoadAudioAndClips() {
     if (!promptResp.ok) throw new Error(promptData.error || 'Error generando prompts');
 
     _camp.visualPrompts = promptData.visualPrompts;
+    campSaveDraft(); // persistir antes de mostrar
 
     // Mostrar resultado
     campRenderAudioClips();
@@ -9499,8 +9612,10 @@ async function campLaunchTalking() {
       const createData = await createResp.json();
       if (!createResp.ok) throw new Error(createData.error || 'Error creando campaña');
       _camp.campaignId = createData.campaign.id;
+      campSaveDraft();
     }
 
+    campClearDraft(); // campaña ensamblándose, ya no necesita borrador
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
     document.getElementById('campGenCampaignTitle').textContent = _camp.title;
@@ -10175,6 +10290,7 @@ function showScreen(name, instant){
     document.getElementById('campView-list').style.display='block';
     document.getElementById('campView-wizard').style.display='none';
     document.getElementById('campView-generating').style.display='none';
+    campCheckDraft(); // mostrar banner si hay borrador pendiente
   }
   if(name==='nueva-imagen') {
     rebuildRatioDropdown();
