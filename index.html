@@ -7354,6 +7354,26 @@ const supa = {
 
 const BACKEND_URL = 'https://futuriads-backend-production.up.railway.app';
 
+// ── Helper: fetch autenticado con JWT de Supabase ────────────────────────────
+// Agrega automáticamente el header Authorization: Bearer <token> en todas las
+// llamadas al backend para que el servidor pueda verificar la identidad real
+// del usuario sin depender del userId enviado en el body.
+async function apiFetch(url, options) {
+  options = options || {};
+  try {
+    var _s = await supa.auth.getSession();
+    var _tok = (_s && _s.data && _s.data.session) ? _s.data.session.access_token : null;
+    options.headers = Object.assign(
+      { 'Content-Type': 'application/json' },
+      options.headers || {},
+      _tok ? { 'Authorization': 'Bearer ' + _tok } : {}
+    );
+  } catch (e) {
+    options.headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+  }
+  return fetch(url, options);
+}
+
 // ─── App loader (purple orb) ───────────────────────────────────────
 function appLoader(minH = '260px', label = 'Cargando...') {
   const dots = [
@@ -7664,7 +7684,7 @@ async function loadProfile() {
     //    y devuelve los datos completos (perfil + créditos + plan).
     let me = null;
     try {
-      const resp = await fetch(BACKEND_URL + '/api/me', {
+      const resp = await apiFetch(BACKEND_URL + '/api/me', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId })
@@ -7717,7 +7737,7 @@ async function loadProfile() {
 async function refreshCredits() {
   if (!_currentUser || !_currentUser.userId) return;
   try {
-    const resp = await fetch(BACKEND_URL + '/api/me', {
+    const resp = await apiFetch(BACKEND_URL + '/api/me', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: _currentUser.userId })
@@ -8288,7 +8308,7 @@ async function campAssemble() {
   document.getElementById('campFinalVideo').style.display = 'none';
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/assemble', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/assemble', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -8399,7 +8419,7 @@ async function campZapcapLoad() {
 
   // Cargar templates desde backend
   try {
-    const resp = await fetch(BACKEND_URL + '/api/zapcap/templates');
+    const resp = await apiFetch(BACKEND_URL + '/api/zapcap/templates');
     const data = await resp.json();
     _zapcapTemplates = Array.isArray(data.templates) ? data.templates : [];
     campZapcapRenderTemplates();
@@ -8474,7 +8494,7 @@ async function campZapcapStart() {
   document.getElementById('campZapcapSuccess').style.display  = 'none';
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/zapcap/start', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/zapcap/start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -8626,7 +8646,7 @@ async function campZapcapApprove(videoId, taskId, captions) {
   document.getElementById('campZapcapProgress').querySelector('div:last-child').textContent = 'Renderizando video con subtítulos...';
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/zapcap/approve', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/zapcap/approve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ videoId, taskId, captions })
@@ -8662,7 +8682,7 @@ function campZapcapDone(downloadUrl) {
   // Persistir la URL del video con subtítulos en la base de datos
   // para que al volver al anuncio se muestre el video con subtítulos
   if (_camp.campaignId && _currentUser && downloadUrl) {
-    fetch(BACKEND_URL + '/api/campaign/update-final-video', {
+    apiFetch(BACKEND_URL + '/api/campaign/update-final-video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -8721,7 +8741,7 @@ async function campGenerateScript() {
   const btn = document.getElementById('campGenScriptBtn');
   btn.textContent = 'Generando...'; btn.disabled = true;
   try {
-    const resp = await fetch(BACKEND_URL + '/api/generate-script', {
+    const resp = await apiFetch(BACKEND_URL + '/api/generate-script', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ product, tone: 'Entusiasta y cercano', duration: '60', language: 'español rioplatense' })
     });
@@ -8936,7 +8956,7 @@ async function campLoadChunksTalking() {
   document.getElementById('campAudioLoadingMsg').textContent = 'Dividiendo el guión en clips...';
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/chunk-script', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/chunk-script', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ script: _camp.script })
     });
@@ -9041,7 +9061,7 @@ async function campLoadAudioAndClips() {
   try {
     // Paso 1: Crear campaña primero (necesitamos el ID)
     if (!_camp.campaignId) {
-      const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
+      const createResp = await apiFetch(BACKEND_URL + '/api/campaign/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: _currentUser.userId, title: _camp.title, script: _camp.script,
@@ -9055,7 +9075,7 @@ async function campLoadAudioAndClips() {
 
     // Paso 2: Generar audio con timestamps
     document.getElementById('campAudioLoadingMsg').textContent = 'Generando audio con IA de voz...';
-    const audioResp = await fetch(BACKEND_URL + '/api/campaign/generate-audio-with-timestamps', {
+    const audioResp = await apiFetch(BACKEND_URL + '/api/campaign/generate-audio-with-timestamps', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId, script: _camp.script,
@@ -9076,7 +9096,7 @@ async function campLoadAudioAndClips() {
 
     // Paso 3: Generar prompts visuales con Claude
     document.getElementById('campAudioLoadingMsg').textContent = 'Creando escenas visuales sincronizadas...';
-    const promptResp = await fetch(BACKEND_URL + '/api/campaign/generate-visual-prompts', {
+    const promptResp = await apiFetch(BACKEND_URL + '/api/campaign/generate-visual-prompts', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clips: _camp.audioClips,
@@ -9161,7 +9181,7 @@ async function campRegenPrompt(clipIndex) {
   btn.textContent = 'Generando...'; btn.disabled = true;
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/regenerate-prompt', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/regenerate-prompt', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clip,
@@ -9233,7 +9253,7 @@ async function campLaunchTalking() {
   try {
     // Crear campaña si no existe
     if (!_camp.campaignId) {
-      const createResp = await fetch(BACKEND_URL + '/api/campaign/create', {
+      const createResp = await apiFetch(BACKEND_URL + '/api/campaign/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: _currentUser.userId, title: _camp.title, script: _camp.script,
@@ -9332,7 +9352,7 @@ async function campGenerateOneClipV2(index) {
   campUpdateClipCard(index, 'generating', null);
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId,
@@ -9389,7 +9409,7 @@ function campStartPolling() {
 async function campPollStatus() {
   if(!_camp.campaignId || !_currentUser) return;
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/status', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaignId: _camp.campaignId, userId: _currentUser.userId })
     });
@@ -9525,7 +9545,7 @@ async function campGenerateOneClip(index) {
   const masterPrompt = campBuildMasterPrompt();
   
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/generate-clip', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
@@ -9646,7 +9666,7 @@ function deleteCampaign(id, e) {
     'Eliminar anuncio',
     async () => {
       try {
-        await fetch(BACKEND_URL + '/api/campaign/delete', {
+        await apiFetch(BACKEND_URL + '/api/campaign/delete', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ campaignId: id, userId: _currentUser.userId })
         });
@@ -9744,7 +9764,7 @@ async function campLoadList() {
   container.innerHTML = appLoader('320px');
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/list', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/list', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: _currentUser.userId })
     });
@@ -9769,7 +9789,7 @@ async function campOpenDetail(campaignId, title) {
   document.getElementById('campClipsGrid').innerHTML = '';
 
   try {
-    const resp = await fetch(BACKEND_URL + '/api/campaign/status', {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaignId, userId: _currentUser.userId })
     });
@@ -12082,7 +12102,7 @@ async function handleDashCustomActor(input) {
     var filename = 'custom-actor-' + Date.now() + '.' + ext;
 
     // 2. Enviar al backend (más seguro: no expone service key al cliente)
-    var uploadRes = await fetch(BACKEND_URL + '/api/upload-actor', {
+    var uploadRes = await apiFetch(BACKEND_URL + '/api/upload-actor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -12208,7 +12228,7 @@ async function runDashGen() {
     if (_dashSelectedActor === '_refavatar' && _dashRefAvatarB64) {
       try {
         if (statusEl) statusEl.textContent = 'Subiendo imagen de avatar...';
-        var avUp = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+        var avUp = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: _dashRefAvatarB64, mimeType: 'image/jpeg' })
         });
@@ -12229,7 +12249,7 @@ async function runDashGen() {
     if (_dashRefProductB64) {
       try {
         if (statusEl) statusEl.textContent = 'Subiendo imagen de producto...';
-        var upRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+        var upRes = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: _dashRefProductB64, mimeType: 'image/jpeg' })
         });
@@ -12270,7 +12290,7 @@ async function runDashGen() {
     }
     if (productImageUrl) body.productImageUrl = productImageUrl;
 
-    var genRes = await fetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var genRes = await apiFetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
     if (genRes.status === 402) {
       var errData = await genRes.json().catch(function() { return {}; });
@@ -12513,7 +12533,7 @@ async function runDashGenImage() {
     if (_dashImgRefB64) {
       try {
         if (statusEl) statusEl.textContent = 'Subiendo imagen de referencia...';
-        var upRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+        var upRes = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: _dashImgRefB64, mimeType: 'image/jpeg' })
@@ -12533,7 +12553,7 @@ async function runDashGenImage() {
 
     var genBody = { model: model, prompt: prompt, aspectRatio: ratio, resolution: quality, userId: userId };
     if (dashInputImages) genBody.inputImages = dashInputImages;
-    var response = await fetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(genBody) });
+    var response = await apiFetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(genBody) });
 
     if (response.status === 402) {
       var errData = await response.json().catch(function() { return {}; });
@@ -12716,7 +12736,7 @@ async function runGeneration(){
     msgEl.textContent = ' Enviando a Seedance 2.0...';
     await setBar(50, 600);
 
-    const genRes = await fetch(BACKEND_URL + '/api/generate-video', {
+    const genRes = await apiFetch(BACKEND_URL + '/api/generate-video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -13467,7 +13487,7 @@ async function handleImgRefUpload(event){
 
     // Enviar al backend
     try {
-      const uploadRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+      const uploadRes = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ base64, mimeType: file.type || 'image/jpeg' })
@@ -13562,7 +13582,7 @@ async function generateImage(){
       ? `Preparando tu imagen con ${refSnapshot.length} referencia${refSnapshot.length > 1 ? 's' : ''}…`
       : 'Preparando tu imagen...';
 
-    const response = await fetch(BACKEND_URL + '/api/generate-image', {
+    const response = await apiFetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
