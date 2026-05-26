@@ -12460,7 +12460,32 @@ function openImageModal(url, title) {
             </div>
           </div>
         </div>
-        ${item.script ? `<div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.65;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">${item.script}</div>` : ''}
+        ${item.script ? `
+          <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:9px;font-weight:700;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:1px;">Prompt</span>
+              <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.value).then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar',1800)})"
+                style="font-size:10px;font-weight:600;color:rgba(167,139,250,0.7);background:rgba(109,40,217,0.15);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all 0.15s;white-space:nowrap;">Copiar</button>
+            </div>
+            <textarea readonly rows="4"
+              style="width:100%;resize:vertical;background:rgba(109,40,217,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;
+                     padding:9px 10px;font-size:11px;color:rgba(255,255,255,0.55);line-height:1.65;outline:none;
+                     font-family:inherit;box-sizing:border-box;min-height:80px;"
+            >${item.script.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+          </div>` : ''}
+        ${(Array.isArray(item.input_images) && item.input_images.length > 0) ? `
+          <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:9px;font-weight:700;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Imagen de referencia</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;">
+              ${item.input_images.map(u => `
+                <div style="position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid rgba(139,92,246,0.3);cursor:pointer;flex-shrink:0;"
+                     onclick="document.getElementById('imageModal').remove();setTimeout(()=>openImageModal('${u.replace(/'/g,'%27')}','Imagen de referencia'),80)">
+                  <img src="${u}" alt="Ref" style="width:100%;height:100%;object-fit:cover;">
+                  <div style="position:absolute;inset:0;background:rgba(109,40,217,0);transition:background 0.15s;"
+                       onmouseover="this.style.background='rgba(109,40,217,0.25)'" onmouseout="this.style.background='rgba(109,40,217,0)'"></div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
         ${rows.map(([label, val]) => `
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
             <span style="font-size:10px;color:rgba(167,139,250,0.45);">${label}</span>
@@ -13024,7 +13049,19 @@ function openVideoModal(url, actor) {
             </div>
           </div>
         </div>
-        ${item.script ? `<div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.65;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">${item.script}</div>` : ''}
+        ${item.script ? `
+          <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:9px;font-weight:700;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:1px;">Prompt / Guión</span>
+              <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.value).then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar',1800)})"
+                style="font-size:10px;font-weight:600;color:rgba(167,139,250,0.7);background:rgba(109,40,217,0.15);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all 0.15s;white-space:nowrap;">Copiar</button>
+            </div>
+            <textarea readonly rows="4"
+              style="width:100%;resize:vertical;background:rgba(109,40,217,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;
+                     padding:9px 10px;font-size:11px;color:rgba(255,255,255,0.55);line-height:1.65;outline:none;
+                     font-family:inherit;box-sizing:border-box;min-height:80px;"
+            >${item.script.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+          </div>` : ''}
         ${rows.map(([label, val]) => `
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
             <span style="font-size:10px;color:rgba(167,139,250,0.45);">${label}</span>
