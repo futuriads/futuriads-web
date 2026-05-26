@@ -2659,6 +2659,16 @@ body, #app { background: #07050f; }
 .dash-recent-badge { background: rgba(34,197,94,0.12) !important; color: #4ade80 !important; }
 .dash-recent-item:hover { background: rgba(139,92,246,0.07) !important; }
 
+/* ── Imágenes de referencia — historial y recientes ── */
+.hist-ref-strip { display:flex; align-items:center; gap:5px; margin-top:6px; flex-wrap:wrap; }
+.hist-ref-label { font-size:10px; color:var(--text2); font-weight:600; letter-spacing:0.3px; text-transform:uppercase; flex-shrink:0; }
+.hist-ref-img { width:30px; height:30px; border-radius:5px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); cursor:pointer; transition:border-color 0.15s, transform 0.15s; flex-shrink:0; }
+.hist-ref-img:hover { border-color:rgba(139,92,246,0.55); transform:scale(1.08); }
+.hist-ref-more { font-size:10px; color:var(--text2); font-weight:600; }
+.recent-ref-strip { display:flex; align-items:center; gap:4px; margin-top:3px; flex-wrap:wrap; }
+.recent-ref-img { width:22px; height:22px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); cursor:pointer; transition:border-color 0.15s; flex-shrink:0; }
+.recent-ref-img:hover { border-color:rgba(139,92,246,0.5); }
+
 /* ── Historial cards ── */
 .a-hist-card {
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -5917,7 +5927,7 @@ body, #app { background: #07050f; }
           <button class="btn-outline" id="imgRefBtn" style="border-radius:var(--r-sm);font-size:13px;" onclick="document.getElementById('imgRefInput').click()">
             + Subir imagen de referencia
           </button>
-          <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 30MB cada una</div>
+          <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 7MB cada una</div>
         </div>
 
         <div style="display:flex;gap:10px;margin-top:24px;">
@@ -10850,6 +10860,7 @@ function loadDashRecent() {
       v.aspect_ratio || null,
       modelLabel || null
     ].filter(Boolean).join(' · ');
+    const recentRefs = Array.isArray(v.input_images) && v.input_images.length > 0 ? v.input_images : [];
     // Badge estado
     const status = v.status || 'COMPLETED';
     const badgeClass = status === 'COMPLETED' ? '' : status === 'FAILED' ? 'failed' : 'pending';
@@ -10865,6 +10876,7 @@ function loadDashRecent() {
         <div class="dash-recent-info">
           <div class="dash-recent-name">${name}</div>
           <div class="dash-recent-meta">${specs}</div>
+          ${recentRefs.length > 0 ? `<div class="recent-ref-strip">${recentRefs.slice(0,3).map(u=>`<img src="${u}" class="recent-ref-img" onclick="event.stopPropagation();openImageModal('${u.replace(/'/g,'%27')}','Imagen de referencia')" title="Ver referencia">`).join('')}${recentRefs.length > 3 ? `<span style="font-size:10px;color:var(--text2);font-weight:600;">+${recentRefs.length-3}</span>` : ''}</div>` : ''}
         </div>
         <div class="dash-recent-right">
           <span class="dash-recent-badge ${badgeClass}">${badgeLabel}</span>
@@ -12239,6 +12251,7 @@ function renderHistory(){
         v.resolution || (isImage ? '2K' : '720p'),
         modelLabel(v.model) || null
       ].filter(Boolean);
+      const refImgs  = Array.isArray(v.input_images) && v.input_images.length > 0 ? v.input_images : [];
 
       // Calcular aspect-ratio CSS según tipo y ratio guardado
       const ratioMap = {
@@ -12289,6 +12302,7 @@ function renderHistory(){
             <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
           </div>
           <div class="hist-card-prompt">${escH(v.script || '')}</div>
+          ${refImgs.length > 0 ? `<div class="hist-ref-strip"><span class="hist-ref-label">Ref</span>${refImgs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${refImgs.length > 4 ? `<span class="hist-ref-more">+${refImgs.length-4}</span>` : ''}</div>` : ''}
           <div class="hist-card-footer">
             <div class="hist-card-specs">${specs.map(s=>`<span class="hist-card-spec">${s}</span>`).join('')}</div>
             <span class="hist-card-time">${timeAgo(v.created_at)}</span>
@@ -12311,6 +12325,7 @@ function renderHistory(){
       const openFn   = isImage ? 'openImageModal' : 'openVideoModal';
       const dlFn     = isImage ? 'downloadImageFile' : 'downloadVideo';
       const specs    = [timeAgo(v.created_at), v.aspect_ratio, v.resolution || (isImage?'2K':'720p'), modelLabel(v.model)].filter(Boolean).join(' · ');
+      const listRefs = Array.isArray(v.input_images) && v.input_images.length > 0 ? v.input_images : [];
       let thumb = done
         ? (isImage ? `<img src="${v.video_url}" alt="">` : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`)
         : `<div class="hist-pending-thumb"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v4l2 1.5" stroke-linecap="round"/></svg></div>`;
@@ -12320,6 +12335,7 @@ function renderHistory(){
         <div class="hist-list-info">
           <div class="hist-list-name">${escH(title)}</div>
           <div class="hist-list-meta">${specs}</div>
+          ${listRefs.length > 0 ? `<div class="hist-ref-strip" style="margin-top:4px;"><span class="hist-ref-label">Ref</span>${listRefs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${listRefs.length > 4 ? `<span class="hist-ref-more">+${listRefs.length-4}</span>` : ''}</div>` : ''}
         </div>
         <div class="hist-list-right">
           <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
@@ -12760,6 +12776,7 @@ async function handleImgRefUpload(event){
       // Guardar URL pública y actualizar el thumb
       imgRefUrls.push(url);
       thumbEl.classList.remove('uploading');
+      showToast('✓ Imagen de referencia cargada');
 
       // Agregar botón de remover
       const removeBtn = document.createElement('div');
