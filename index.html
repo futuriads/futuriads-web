@@ -11321,23 +11321,18 @@ Vertical 9:16. Clean, trustworthy, conversion-optimized social proof aesthetic.`
     ratio: '9:16',
     quality: '720p',
     duration: '5s',
-    prompt: `@influencer_image1 está sentada en un escritorio moderno con buena iluminación natural. Tiene frente a ella una caja de cartón sin abrir con un moño decorativo. La cámara empieza en un plano medio.
+    refImages: [
+      /* avatar  */ '',
+      /* product */ ''
+    ],
+    prompt: `A young stylish female influencer @influencer_image1 is in a cozy modern apartment with soft natural daylight. She records herself using the front camera of her phone (selfie mode), holding the phone in one hand and @product_image1 in the other. The camera has slight natural hand movement, casual framing, and feels real and unpolished.
+She looks directly into the camera, relaxed and natural, like talking to a friend. While speaking, she casually rotates the product, shows it from different angles, and interacts with it naturally.
 
-La chica mira a cámara con expresión emocionada y dice:
-"Chicos, les juro que estaba esperando ESTE paquete hace días. Mirá lo que me llegó."
-
-Abre la caja con cuidado, saca papel tissue y revela @product_image1. Lo sostiene en alto mirando a cámara.
-
-"Acá está. Dios, quedó re linda. Yo ya tenía una pero la perdí y fui directo por otra. No me imagino el día sin esto."
-
-Gira el producto mostrando todos los lados a cámara.
-
-"Literal lo llevo a todos lados. Al gym, a la facu, al trabajo... siempre frío, siempre perfecto. Nada que ver con los termos comunes."
-
-Mira directo a cámara con una sonrisa genuina y dice:
-"Si estás dudando, no lo dudes más. Te va a cambiar la rutina."
-
-Hace un gesto con la mano señalando hacia abajo como indicando "el link está abajo".`
+Dialogue (natural, calm, Argentine Spanish, ~15 sec):
+"La vengo usando todos los días y la verdad que no esperaba que me iba a gustar tanto.
+Lo que más me sorprendió es que mantiene la temperatura todo el día, en serio, todo el día.
+No pierde nada, entra perfecto en el auto, y es muy cómoda para llevar.
+Ya la llevo a todos lados."`
   }
 ];
 
@@ -11402,6 +11397,18 @@ function openInspoDetail(idx) {
           <span class="inspo-detail-chip">${item.ratio}</span>
           ${extraChip}
         </div>
+        ${(Array.isArray(item.refImages) && item.refImages.filter(u=>u).length > 0) ? `
+        <div class="inspo-detail-label">Imágenes de referencia usadas</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+          ${item.refImages.filter(u=>u).map((u,i) => `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+              <div style="width:72px;height:72px;border-radius:10px;overflow:hidden;border:1px solid rgba(139,92,246,0.35);cursor:pointer;"
+                   onclick="openImageModal('${u}','Imagen de referencia')">
+                <img src="${u}" alt="Ref ${i+1}" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+              <span style="font-size:9px;color:rgba(167,139,250,0.5);text-transform:uppercase;letter-spacing:0.5px;">${i===0?'Avatar':'Producto'}</span>
+            </div>`).join('')}
+        </div>` : ''}
         <div class="inspo-detail-label">Prompt</div>
         <textarea class="inspo-detail-prompt" readonly id="inspoDetailPrompt_${idx}">${item.prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
         <div class="inspo-detail-actions">
