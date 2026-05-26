@@ -5927,7 +5927,8 @@ body, #app { background: #07050f; }
           <button class="btn-outline" id="imgRefBtn" style="border-radius:var(--r-sm);font-size:13px;" onclick="document.getElementById('imgRefInput').click()">
             + Subir imagen de referencia
           </button>
-          <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 7MB cada una</div>
+          <div style="font-size:11px;color:#666;margin-top:6px;">Hasta 14 imágenes · JPG/PNG/WEBP · Máx 20MB cada una</div>
+          <div id="imgRefStatus" style="font-size:12px;font-weight:600;margin-top:5px;min-height:16px;transition:color 0.2s;"></div>
         </div>
 
         <div style="display:flex;gap:10px;margin-top:24px;">
@@ -12719,6 +12720,7 @@ function goImgStep(step){
 
 function resetImageGenerator(){
   imgRefUrls = [];
+  _updateImgRefStatus();
   imgSelectedRatio = '1:1';
   imgSelectedRes = '2K';
   _generatedImageUrl = null;
@@ -12739,16 +12741,15 @@ function resetImageGenerator(){
 /* ----- Upload imagen de referencia via backend ----- */
 async function handleImgRefUpload(event){
   const files = Array.from(event.target.files || []);
-  event.target.value = ''; // reset para poder subir el mismo archivo de nuevo
+  event.target.value = '';
   if (!files.length) return;
 
-  // Verificar sesión
-  const { data: sess } = await supa.auth.getSession();
-  if (!sess?.session) {
-    showToast('Tenés que iniciar sesión para subir imágenes');
-    return;
-  }
-  const userId = sess.session.user.id;
+  let userId = null;
+  try {
+    const { data: sess } = await supa.auth.getSession();
+    userId = sess?.session?.user?.id || null;
+  } catch(e) {}
+  if (!userId) { showToast('Tenés que iniciar sesión para subir imágenes'); return; }
 
   if (imgRefUrls.length + files.length > 14) {
     showToast('Máximo 14 imágenes de referencia');
@@ -12758,20 +12759,20 @@ async function handleImgRefUpload(event){
   const list = document.getElementById('imgRefList');
 
   for (const file of files) {
-    if (file.size > 7 * 1024 * 1024) {
-      showToast(`"${file.name}" supera los 7MB`);
+    if (file.size > 20 * 1024 * 1024) {
+      showToast(`"${file.name}" supera los 20MB`);
       continue;
     }
 
-    // Crear thumb con shimmer mientras sube
+    // Thumb: sólo shimmer, sin preview — así el usuario sabe que aún no está listo
     const thumbEl = document.createElement('div');
     thumbEl.className = 'img-ref-thumb uploading';
-    const previewUrl = URL.createObjectURL(file);
-    thumbEl.innerHTML = `<img src="${previewUrl}" alt="">`;
+    thumbEl.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.4);">Subiendo…</div>`;
     list.appendChild(thumbEl);
+    _updateImgRefStatus();
 
     try {
-      // Leer archivo como base64
+      // Leer como base64
       const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
@@ -12779,43 +12780,55 @@ async function handleImgRefUpload(event){
         reader.readAsDataURL(file);
       });
 
-      // Subir via backend (usa service key, sin problemas de CORS ni permisos)
+      console.log('[RefUpload] Enviando al backend, tamaño base64:', Math.round(base64.length / 1024) + 'KB');
+
       const uploadRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          base64: base64,
-          mimeType: file.type || 'image/jpeg',
-          userId: userId
-        })
+        body: JSON.stringify({ base64, mimeType: file.type || 'image/jpeg', userId })
       });
 
       if (!uploadRes.ok) {
         const errData = await uploadRes.json().catch(() => ({}));
-        console.error('Upload error:', errData);
-        throw new Error(errData.error || 'Falló el upload');
+        console.error('[RefUpload] Error del backend:', uploadRes.status, errData);
+        throw new Error(errData.error || `Error ${uploadRes.status}`);
       }
 
-      const { url } = await uploadRes.json();
+      const resData = await uploadRes.json();
+      const url = resData.url;
+      if (!url) throw new Error('El backend no devolvió URL');
 
-      // Guardar URL pública y actualizar el thumb
+      console.log('[RefUpload] ✓ URL recibida:', url);
+
+      // Ahora sí: mostrar preview real
       imgRefUrls.push(url);
       thumbEl.classList.remove('uploading');
-      showToast('✓ Imagen de referencia cargada');
+      thumbEl.innerHTML = `<img src="${url}" alt="" onerror="this.src='${URL.createObjectURL(file)}'">`;
 
-      // Agregar botón de remover
       const removeBtn = document.createElement('div');
       removeBtn.className = 'img-ref-remove';
       removeBtn.textContent = '×';
-      removeBtn.onclick = () => removeImgRef(url, thumbEl);
+      removeBtn.onclick = () => { removeImgRef(url, thumbEl); _updateImgRefStatus(); };
       thumbEl.appendChild(removeBtn);
 
+      _updateImgRefStatus();
+      showToast('✓ Imagen de referencia lista');
+
     } catch (err) {
-      console.error('Error subiendo imagen:', err);
+      console.error('[RefUpload] Falló:', err.message);
       thumbEl.remove();
-      showToast('No se pudo subir "' + file.name + '"');
+      _updateImgRefStatus();
+      showToast('Error al subir imagen: ' + err.message);
     }
   }
+}
+
+function _updateImgRefStatus() {
+  const statusEl = document.getElementById('imgRefStatus');
+  if (!statusEl) return;
+  const count = imgRefUrls.length;
+  statusEl.textContent = count > 0 ? `✓ ${count} imagen${count > 1 ? 'es' : ''} de referencia lista${count > 1 ? 's' : ''}` : '';
+  statusEl.style.color = count > 0 ? '#4ade80' : 'transparent';
 }
 
 function removeImgRef(url, thumbEl){
@@ -12852,6 +12865,11 @@ async function generateImage(){
 
   try {
     msgEl.textContent = 'Preparando tu imagen...';
+
+    console.log('[GenerateImage] imgRefUrls al generar:', imgRefUrls);
+    if (imgRefUrls.length === 0) {
+      console.warn('[GenerateImage] ⚠ Sin imágenes de referencia — generando solo con prompt');
+    }
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
