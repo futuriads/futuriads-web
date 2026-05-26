@@ -2204,10 +2204,17 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .dash-recent-thumb {
   width: 72px; height: 52px; flex-shrink: 0;
   border-radius: 8px; overflow: hidden; background: var(--card2);
+  position: relative; cursor: pointer;
 }
 .dash-recent-thumb img, .dash-recent-thumb video {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
+/* Mini play overlay en recientes */
+.dash-recent-thumb .media-play-overlay { border-radius: 8px; }
+.dash-recent-thumb .media-play-btn { width: 26px; height: 26px; }
+.dash-recent-thumb .media-play-btn svg { width: 9px; height: 9px; }
+.dash-recent-thumb:hover .media-play-overlay { background: rgba(0,0,0,0.35); }
+.dash-recent-thumb:hover .media-play-btn { opacity: 1; transform: scale(1); }
 .dash-recent-info { flex: 1; min-width: 0; }
 .dash-recent-name {
   font-size: 13px; font-weight: 600; color: var(--text);
@@ -2480,12 +2487,33 @@ body, #app { background: #07050f; }
 /* El tamaño real (width/height) se setea dinámicamente en JS según el aspect ratio */
 .dash-result-media {
   flex-shrink: 0; border-radius: 12px; overflow: hidden;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.3); position: relative; cursor: pointer;
 }
 .dash-result-media video,
 .dash-result-media img {
   display: block; width: 100%; height: 100%; object-fit: cover;
 }
+/* Overlay de reproducción / zoom — aparece al hover */
+.media-play-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: inherit;
+  background: rgba(0,0,0,0); transition: background 0.2s;
+  pointer-events: none;
+}
+.dash-result-media:hover .media-play-overlay { background: rgba(0,0,0,0.28); }
+.media-play-btn {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: rgba(15,10,30,0.72);
+  border: 1px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.08) inset;
+  opacity: 0; transform: scale(0.82);
+  transition: opacity 0.2s, transform 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.dash-result-media:hover .media-play-btn { opacity: 1; transform: scale(1); }
+.media-play-btn svg { margin-left: 2px; } /* compensar óptico triángulo */
 .dash-result-side {
   flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0;
   overflow-y: auto; min-height: 0;
@@ -10708,10 +10736,11 @@ function loadDashRecent() {
   el.innerHTML = recent.map((v, idx) => {
     const isImage = v.type === 'image';
     // Thumbnail
+    const playOverlay = `<div class="media-play-overlay"><div class="media-play-btn"><svg width="9" height="9" viewBox="0 0 14 14" fill="white"><polygon points="3,1 13,7 3,13"/></svg></div></div>`;
     const thumb = v.video_url
       ? (isImage
           ? `<img src="${v.video_url}" alt="" onerror="this.style.display='none'">`
-          : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>`)
+          : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>${playOverlay}`)
       : '';
     // Nombre: actor si es video, modelo si es imagen
     const name = v.actor || (v.model ? v.model.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Creación');
@@ -10733,7 +10762,7 @@ function loadDashRecent() {
 
     return `
       <div class="dash-recent-item" id="dashRecent-${idx}">
-        <div class="dash-recent-thumb">${thumb}</div>
+        <div class="dash-recent-thumb" onclick="viewRecentItem('${viewUrl}','${isImage}')" title="Ver">${thumb}</div>
         <div class="dash-recent-info">
           <div class="dash-recent-name">${name}</div>
           <div class="dash-recent-meta">${specs}</div>
@@ -11570,27 +11599,38 @@ function showDashResultPanel(row) {
 
   // ── Tamaño del media según aspect ratio ─────────────────────────
   if (mediaEl) {
-    // Ratio numérico (ancho/alto)
     var ratioNum = {
       '9:16': 9/16, '16:9': 16/9, '1:1': 1,
       '4:5': 4/5, '3:4': 3/4, '2:3': 2/3, 'auto': 1
     }[row.aspect_ratio] || 9/16;
 
-    // Para portrait (ratio < 1): altura fija 220px → ancho proporcional
-    // Para landscape/square (ratio ≥ 1): altura fija 140px → ancho proporcional
-    var fixedH = ratioNum < 1 ? 220 : 140;
+    // Altura base: portrait más alto, landscape más bajo pero suficientemente grande
+    var fixedH = ratioNum < 1 ? 280 : 200;
     var calcW  = Math.round(fixedH * ratioNum);
 
     mediaEl.style.width  = calcW + 'px';
     mediaEl.style.height = fixedH + 'px';
 
+    // Overlay de play/zoom
+    var overlayHTML = '<div class="media-play-overlay"><div class="media-play-btn">' +
+      (isImage
+        ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 2h4M2 2v4M12 2h-4M12 2v4M2 12h4M2 12v-4M12 12h-4M12 12v-4"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 14 14" fill="white"><polygon points="3,1 13,7 3,13"/></svg>') +
+      '</div></div>';
+
     if (isImage) {
-      mediaEl.innerHTML = '<img src="' + row.video_url + '" alt="Resultado">';
+      mediaEl.innerHTML = '<img src="' + row.video_url + '" alt="Resultado">' + overlayHTML;
     } else {
-      mediaEl.innerHTML = '<video src="' + row.video_url + '" controls muted playsinline loop style="background:#000;"></video>';
+      mediaEl.innerHTML = '<video src="' + row.video_url + '" muted playsinline loop style="background:#000;"></video>' + overlayHTML;
       var vid = mediaEl.querySelector('video');
       if (vid) vid.play().catch(function(){});
     }
+
+    // Click → abrir modal igual que en historial
+    mediaEl.onclick = function() {
+      if (isImage) openImageModal(row.video_url, row.actor || 'imagen');
+      else openVideoModal(row.video_url, row.actor || 'video');
+    };
   }
 
   // Prompt
@@ -11626,7 +11666,10 @@ function showDashResultFallback() {
   var badge    = document.getElementById('dashResultBadge');
 
   if (badge) { badge.style.color = '#facc15'; badge.style.background = 'rgba(234,179,8,0.12)'; badge.innerHTML = '⏳ En proceso'; }
-  if (mediaEl) mediaEl.innerHTML = '<div style="width:120px;height:200px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.07);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div>';
+  if (mediaEl) {
+    mediaEl.style.width = '157px'; mediaEl.style.height = '280px';
+    mediaEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div>';
+  }
   if (promptEl && _dashLastConfig) promptEl.textContent = _dashLastConfig.prompt || '—';
   if (specsEl) specsEl.innerHTML = '<span class="dash-result-spec">Procesando en Seedance...</span>';
   if (dlBtn) { dlBtn.textContent = 'Ver en historial'; dlBtn.onclick = function() { showScreen('historial'); }; }
