@@ -12695,7 +12695,7 @@ function resetImageGenerator(){
   goImgStep(1);
 }
 
-/* ----- Upload a Supabase Storage ----- */
+/* ----- Upload imagen de referencia via backend ----- */
 async function handleImgRefUpload(event){
   const files = Array.from(event.target.files || []);
   event.target.value = ''; // reset para poder subir el mismo archivo de nuevo
@@ -12708,7 +12708,6 @@ async function handleImgRefUpload(event){
     return;
   }
   const userId = sess.session.user.id;
-  const accessToken = sess.session.access_token;
 
   if (imgRefUrls.length + files.length > 14) {
     showToast('Máximo 14 imágenes de referencia');
@@ -12718,8 +12717,8 @@ async function handleImgRefUpload(event){
   const list = document.getElementById('imgRefList');
 
   for (const file of files) {
-    if (file.size > 30 * 1024 * 1024) {
-      showToast(`"${file.name}" supera los 30MB`);
+    if (file.size > 7 * 1024 * 1024) {
+      showToast(`"${file.name}" supera los 7MB`);
       continue;
     }
 
@@ -12731,40 +12730,42 @@ async function handleImgRefUpload(event){
     list.appendChild(thumbEl);
 
     try {
-      // Generar nombre único: userId/timestamp_random.ext
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${userId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+      // Leer archivo como base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      // Upload directo a Supabase Storage vía REST
-      const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/user-uploads/${path}`, {
+      // Subir via backend (usa service key, sin problemas de CORS ni permisos)
+      const uploadRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': file.type || 'application/octet-stream',
-          'x-upsert': 'true'
-        },
-        body: file
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          base64: base64,
+          mimeType: file.type || 'image/jpeg',
+          userId: userId
+        })
       });
 
       if (!uploadRes.ok) {
-        const errTxt = await uploadRes.text();
-        console.error('Upload error:', errTxt);
-        throw new Error('Falló el upload');
+        const errData = await uploadRes.json().catch(() => ({}));
+        console.error('Upload error:', errData);
+        throw new Error(errData.error || 'Falló el upload');
       }
 
-      // Construir la URL pública del archivo
-      const publicUrl = `${SUPA_URL}/storage/v1/object/public/user-uploads/${path}`;
+      const { url } = await uploadRes.json();
 
-      // Guardar URL y actualizar el thumb
-      imgRefUrls.push(publicUrl);
+      // Guardar URL pública y actualizar el thumb
+      imgRefUrls.push(url);
       thumbEl.classList.remove('uploading');
 
       // Agregar botón de remover
-      const idx = imgRefUrls.length - 1;
       const removeBtn = document.createElement('div');
       removeBtn.className = 'img-ref-remove';
       removeBtn.textContent = '×';
-      removeBtn.onclick = () => removeImgRef(publicUrl, thumbEl);
+      removeBtn.onclick = () => removeImgRef(url, thumbEl);
       thumbEl.appendChild(removeBtn);
 
     } catch (err) {
