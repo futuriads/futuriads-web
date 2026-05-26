@@ -13005,10 +13005,10 @@ function openImageModal(url, title) {
               <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.value).then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar',1800)})"
                 style="font-size:10px;font-weight:600;color:rgba(167,139,250,0.7);background:rgba(109,40,217,0.15);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all 0.15s;white-space:nowrap;">Copiar</button>
             </div>
-            <textarea readonly rows="4"
+            <textarea readonly id="imPromptTa"
               style="width:100%;resize:vertical;background:rgba(109,40,217,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;
                      padding:9px 10px;font-size:11px;color:rgba(255,255,255,0.55);line-height:1.65;outline:none;
-                     font-family:inherit;box-sizing:border-box;min-height:80px;"
+                     font-family:inherit;box-sizing:border-box;min-height:80px;max-height:260px;overflow-y:auto;"
             >${item.script.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
           </div>` : ''}
         ${(Array.isArray(item.input_images) && item.input_images.length > 0) ? `
@@ -13075,6 +13075,10 @@ function openImageModal(url, title) {
   document.body.appendChild(modal);
   modal.querySelector('#imageModalImg').src = url;
   modal.querySelector('#imageModalDl').onclick = () => downloadImageFile(url, currentName);
+
+  // Auto-ajustar textarea al contenido
+  const imTa = modal.querySelector('#imPromptTa');
+  if (imTa) { imTa.style.height = 'auto'; imTa.style.height = Math.min(imTa.scrollHeight, 260) + 'px'; }
 }
 
 function imStartRename(id) {
@@ -13639,10 +13643,32 @@ function openVideoModal(url, actor) {
       border:1px solid rgba(109,40,217,0.35);
       box-shadow:0 0 0 1px rgba(109,40,217,0.15), 0 32px 80px rgba(0,0,0,0.7);
     ">
-      <!-- Panel izquierdo: video + controles -->
+      <!-- Panel izquierdo: video custom player -->
       <div style="display:flex;flex-direction:column;background:#05020f;flex-shrink:0;max-width:340px;width:40%;">
-        <video id="videoModalPlayer" controls autoplay
-          style="width:100%;flex:1;min-height:0;display:block;background:#000;"></video>
+        <div id="vmPlayerWrap" style="position:relative;flex:1;min-height:0;background:#000;cursor:pointer;overflow:hidden;" onclick="vmTogglePlay()">
+          <video id="videoModalPlayer" playsinline
+            style="width:100%;height:100%;display:block;object-fit:contain;"></video>
+          <!-- Overlay play/pause -->
+          <div id="vmOverlay" style="
+            position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            background:rgba(0,0,0,0.25);opacity:1;transition:opacity 0.25s;pointer-events:none;
+          ">
+            <div style="
+              width:58px;height:58px;border-radius:50%;
+              background:rgba(10,6,24,0.65);backdrop-filter:blur(10px);
+              border:1.5px solid rgba(255,255,255,0.22);
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 4px 24px rgba(0,0,0,0.5);
+            ">
+              <svg id="vmPlayIcon" width="18" height="18" viewBox="0 0 14 14" fill="white"><polygon points="3,1 13,7 3,13"/></svg>
+              <svg id="vmPauseIcon" width="18" height="18" viewBox="0 0 14 14" fill="white" style="display:none;"><rect x="2" y="1" width="4" height="12" rx="1"/><rect x="8" y="1" width="4" height="12" rx="1"/></svg>
+            </div>
+          </div>
+          <!-- Barra de progreso -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.1);">
+            <div id="vmProgress" style="height:100%;background:rgba(139,92,246,0.85);width:0%;"></div>
+          </div>
+        </div>
         <div style="padding:12px 14px;display:flex;gap:8px;background:#07041a;border-top:1px solid rgba(109,40,217,0.2);">
           <button id="videoModalDl"
             style="flex:1;padding:9px 14px;font-size:12px;font-weight:600;border-radius:9px;cursor:pointer;
@@ -13654,7 +13680,7 @@ function openVideoModal(url, actor) {
                    transition:all 0.15s;">Cerrar</button>
         </div>
       </div>
-      <!-- Panel derecho: config (sin gap, pegado al video) -->
+      <!-- Panel derecho: config -->
       <div style="
         flex:1;min-width:200px;background:#07041a;
         border-left:1px solid rgba(109,40,217,0.25);
@@ -13664,8 +13690,51 @@ function openVideoModal(url, actor) {
     <style>@keyframes vm-in{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}</style>`;
 
   document.body.appendChild(modal);
-  modal.querySelector('#videoModalPlayer').src = url;
+
+  // ── Player custom ──
+  const player   = modal.querySelector('#videoModalPlayer');
+  const overlay  = modal.querySelector('#vmOverlay');
+  const progress = modal.querySelector('#vmProgress');
+  const playIcon = modal.querySelector('#vmPlayIcon');
+  const pauseIcon= modal.querySelector('#vmPauseIcon');
+  const wrap     = modal.querySelector('#vmPlayerWrap');
+
+  // Mostrar overlay solo cuando está pausado / en hover
+  wrap.addEventListener('mouseenter', () => { overlay.style.opacity = '1'; });
+  wrap.addEventListener('mouseleave', () => { if (!player.paused) overlay.style.opacity = '0'; });
+
+  player.addEventListener('play', () => {
+    playIcon.style.display = 'none'; pauseIcon.style.display = 'block';
+    overlay.style.opacity = '0';
+  });
+  player.addEventListener('pause', () => {
+    playIcon.style.display = 'block'; pauseIcon.style.display = 'none';
+    overlay.style.opacity = '1';
+  });
+  player.addEventListener('ended', () => {
+    playIcon.style.display = 'block'; pauseIcon.style.display = 'none';
+    overlay.style.opacity = '1'; progress.style.width = '0%';
+  });
+  player.addEventListener('timeupdate', () => {
+    if (player.duration) progress.style.width = (player.currentTime / player.duration * 100) + '%';
+  });
+
+  // Función global para toggle
+  window.vmTogglePlay = () => { player.paused ? player.play() : player.pause(); };
+
+  player.src = url;
+  player.play().catch(() => {});
+
   modal.querySelector('#videoModalDl').onclick = () => downloadVideo(url, currentName);
+
+  // ── Auto-ajustar textarea al contenido ──
+  const ta = modal.querySelector('textarea');
+  if (ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 260) + 'px';
+    ta.style.maxHeight = '260px';
+    ta.style.overflowY = 'auto';
+  }
 }
 
 function vmStartRename(id) {
