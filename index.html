@@ -3348,13 +3348,13 @@ body, #app { background: #07050f; }
 
 /* Botón descarga — solo si está listo, compacto */
 .hist-card-dl {
-  width: 100%; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 7px;
+  width: 100%; background: rgba(109,40,217,0.18);
+  border: 1px solid rgba(139,92,246,0.4); border-radius: 7px;
   padding: 6px; text-align: center;
-  font-size: 10px; font-weight: 600; color: var(--text);
-  cursor: pointer; transition: background 0.15s;
+  font-size: 10px; font-weight: 700; color: rgba(167,139,250,0.95);
+  cursor: pointer; transition: all 0.15s;
 }
-.hist-card-dl:hover { background: rgba(255,255,255,0.1); }
+.hist-card-dl:hover { background: rgba(109,40,217,0.35); border-color: rgba(139,92,246,0.7); color: #e0d4ff; }
 
 /* Pending state */
 .hist-pending-thumb {
@@ -5860,7 +5860,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">Nosotros vs Ellos</div>
                   <div class="inspo-card-info">GPT Image 2 · 9:16</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(0)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(0)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -5876,7 +5876,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">Mano con producto</div>
                   <div class="inspo-card-info">GPT Image 2 · 4:5</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(1)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -5892,7 +5892,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">Lifestyle auténtico</div>
                   <div class="inspo-card-info">GPT Image 2 · 9:16</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(2)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(2)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -5908,7 +5908,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">Lifestyle con stats</div>
                   <div class="inspo-card-info">GPT Image 2 · 4:5</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(3)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(3)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -5924,7 +5924,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">Antes / Después</div>
                   <div class="inspo-card-info">GPT Image 2 · 9:16</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(4)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(4)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -5935,7 +5935,7 @@ body, #app { background: #07050f; }
                    onmouseleave="this.querySelector('video').pause()">
                 <video src="https://d2i9jqncnkplwq.cloudfront.net/videos/91b14282-49b2-46d5-904c-f226d30df746.mp4"
                        muted loop playsinline preload="metadata"></video>
-                <div class="inspo-card-badge inspo-card-badge-video">🎬 UGC Video</div>
+                <div class="inspo-card-badge inspo-card-badge-video"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-1px;margin-right:4px;"><rect x="2" y="7" width="15" height="10" rx="1"/><path d="M17 9l4-2v8l-4-2"/></svg>UGC Video</div>
                 <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
               </div>
               <div class="inspo-card-footer">
@@ -5943,7 +5943,7 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-type">UGC</div>
                   <div class="inspo-card-info">Seedance 2 · 9:16 · 5s</div>
                 </div>
-                <button class="inspo-replicar-btn" onclick="replicarInspo(5)">↗ Replicar</button>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(5)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar</button>
               </div>
             </div>
 
@@ -7501,7 +7501,7 @@ async function updateDashMetrics() {
   const dashSub = document.getElementById('dashSub');
   if (dashSub) {
     if (totalCreaciones > 0) {
-      dashSub.textContent = `Creaste ${totalCreaciones} pieza${totalCreaciones !== 1 ? 's' : ''} este mes — seguimos.`;
+      dashSub.textContent = `Creaste ${totalCreaciones} pieza${totalCreaciones !== 1 ? 's' : ''} este mes, seguimos.`;
     } else {
       dashSub.textContent = '¿Qué estás creando hoy?';
     }
@@ -11115,10 +11115,12 @@ function loadDashRecent() {
           ? `<img src="${v.video_url}" alt="" onerror="this.style.display='none'">`
           : `<video src="${v.video_url}" muted playsinline preload="metadata"></video>${playOverlay}`)
       : '';
-    // Nombre: actor si es video, modelo si es imagen
-    const name = v.actor || (v.model ? v.model.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Creación');
+    // Nombre: misma lógica que el historial para consistencia
+    const mlbl = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || (m ? m.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : '');
+    const rawActorR = v.actor && v.actor !== 'custom' ? v.actor : '';
+    const name = isImage ? (mlbl(v.model) || 'Imagen') : (rawActorR || mlbl(v.model) || 'Video generado');
     // Specs: duración (solo video) · ratio · modelo
-    const modelLabel = v.model ? v.model.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : '';
+    const modelLabel = mlbl(v.model);
     const specs = [
       !isImage && v.duration ? v.duration + 's' : null,
       v.aspect_ratio || null,
@@ -11365,13 +11367,15 @@ function openInspoDetail(idx) {
           var v=document.getElementById('inspoDetailVideo_${idx}');
           var b=document.getElementById('inspoDetailMuteBtn_${idx}');
           v.muted=!v.muted;
-          b.innerHTML=v.muted?'🔇':'🔊';
+          b.innerHTML=v.muted?'<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'white\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\'><polygon points=\\'11,5 6,9 2,9 2,15 6,15 11,19\\'/><line x1=\\'23\\' y1=\\'9\\' x2=\\'17\\' y2=\\'15\\'/><line x1=\\'17\\' y1=\\'9\\' x2=\\'23\\' y2=\\'15\\'/></svg>':'<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'white\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\'><polygon points=\\'11,5 6,9 2,9 2,15 6,15 11,19\\'/><path d=\\'M15.54 8.46a5 5 0 0 1 0 7.07\\'/><path d=\\'M19.07 4.93a10 10 0 0 1 0 14.14\\'/></svg>';
           b.title=v.muted?'Activar sonido':'Silenciar';
         })()"
           style="position:absolute;bottom:14px;right:14px;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);
                  border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:36px;height:36px;
-                 font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-                 transition:background 0.15s;" title="Silenciar">🔊</button>
+                 cursor:pointer;display:flex;align-items:center;justify-content:center;
+                 transition:background 0.15s;" title="Silenciar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button>
       </div>`
     : `<img src="${item.url}" alt="${item.label}">`;
 
@@ -11417,7 +11421,7 @@ function openInspoDetail(idx) {
               .then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar prompt',1800)})
           ">Copiar prompt</button>
           <button class="inspo-detail-replicar-btn" onclick="document.getElementById('inspoDetailModal').remove();replicarInspo(${idx})">
-            ↗ Replicar este anuncio
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px;"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>Replicar este anuncio
           </button>
         </div>
       </div>
@@ -11435,7 +11439,7 @@ function openInspoDetail(idx) {
         vid.muted = true;
         vid.play().catch(() => {});
         const btn = document.getElementById(`inspoDetailMuteBtn_${idx}`);
-        if (btn) { btn.innerHTML = '🔇'; btn.title = 'Activar sonido'; }
+        if (btn) { btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>'; btn.title = 'Activar sonido'; }
       });
     }
   }
@@ -11458,20 +11462,25 @@ function replicarInspo(idx) {
   popup.id = 'inspoRefPopup';
 
   const isVideoItem = item.type === 'video';
+  const _svgVideo = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="15" height="10" rx="1.5"/><path d="M17 9l4-2v8l-4-2"/></svg>`;
+  const _svgImg   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
+  const _svgPerson= `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-1px;margin-left:2px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+  const _svgFrame = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-1px;margin-left:2px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
+  const _svgArrow = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:5px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
   popup.innerHTML = `
     <div class="inspo-ref-popup">
-      <div class="inspo-ref-popup-icon">${isVideoItem ? '🎬' : '🖼️'}</div>
+      <div class="inspo-ref-popup-icon" style="color:rgba(167,139,250,0.85);">${isVideoItem ? _svgVideo : _svgImg}</div>
       <div class="inspo-ref-popup-title">Para replicar este anuncio</div>
       <div class="inspo-ref-popup-text">El prompt ya va a estar cargado. Para obtener el mejor resultado necesitás:</div>
       <div class="inspo-ref-popup-steps">
         ${isVideoItem ? `
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">1</div>
-          <span>Subí la <strong style="color:#c4b5fd;">foto del avatar/persona</strong> que va a protagonizar el video usando el botón de avatar 👤</span>
+          <span>Subí la <strong style="color:#c4b5fd;">foto del avatar/persona</strong> que va a protagonizar el video usando el botón de avatar${_svgPerson}</span>
         </div>
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">2</div>
-          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón de producto 🖼️</span>
+          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón de producto${_svgFrame}</span>
         </div>
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">3</div>
@@ -11479,7 +11488,7 @@ function replicarInspo(idx) {
         </div>` : `
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">1</div>
-          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón 🖼️</span>
+          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón${_svgFrame}</span>
         </div>
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">2</div>
@@ -11492,7 +11501,7 @@ function replicarInspo(idx) {
       </div>
       <div class="inspo-ref-popup-actions">
         <button class="inspo-ref-popup-cancel" onclick="document.getElementById('inspoRefPopup').remove()">Cancelar</button>
-        <button class="inspo-ref-popup-go" onclick="document.getElementById('inspoRefPopup').remove();_ejecutarReplicar(${idx})">Entendido, ir al formulario →</button>
+        <button class="inspo-ref-popup-go" onclick="document.getElementById('inspoRefPopup').remove();_ejecutarReplicar(${idx})">Entendido, ir al formulario${_svgArrow}</button>
       </div>
     </div>`;
 
@@ -12970,7 +12979,7 @@ function renderHistory(){
       const safeTitle= esc(title);
       const openFn   = isImage ? 'openImageModal' : 'openVideoModal';
       const dlFn     = isImage ? 'downloadImageFile' : 'downloadVideo';
-      const dlLabel  = isImage ? 'Descargar imagen' : 'Descargar MP4';
+      const dlLabel  = isImage ? 'Descargar imagen' : 'Descargar video';
       const specs    = [
         !isImage && v.duration ? v.duration+'s' : null,
         v.aspect_ratio || null,
