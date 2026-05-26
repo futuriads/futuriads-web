@@ -2472,6 +2472,70 @@ body, #app { background: #07050f; }
 .dash-actor-add-text { font-size: 11px; color: rgba(255,255,255,0.32); text-align: center; line-height: 1.4; }
 .dash-actor-uploading { font-size: 11px; color: rgba(167,139,250,0.7); text-align: center; padding: 16px 8px; }
 
+/* ── Panel 3: resultado inline ── */
+.dash-result-wrap {
+  display: flex; gap: 18px; flex: 1; min-height: 0; overflow: hidden; padding: 2px 0;
+}
+.dash-result-media {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: 14px; overflow: hidden; background: rgba(0,0,0,0.35);
+  max-height: 320px;
+}
+.dash-result-media video,
+.dash-result-media img {
+  display: block; max-height: 320px; max-width: 220px;
+  object-fit: contain; border-radius: 12px;
+}
+.dash-result-side {
+  flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; overflow-y: auto;
+}
+.dash-result-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; color: #4ade80;
+  background: rgba(34,197,94,0.12); border-radius: 20px;
+  padding: 3px 10px; width: fit-content;
+}
+.dash-result-label {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.28);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+}
+.dash-result-prompt {
+  font-size: 12.5px; color: rgba(255,255,255,0.72); line-height: 1.5;
+  max-height: 72px; overflow-y: auto;
+}
+.dash-result-specs-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.dash-result-spec {
+  font-size: 11px; color: rgba(255,255,255,0.48);
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 6px; padding: 3px 8px;
+}
+.dash-result-btns { display: flex; flex-direction: column; gap: 7px; margin-top: auto; padding-top: 6px; }
+.dash-result-btn-dl {
+  background: linear-gradient(135deg,#6d28d9,#7c3aed); color: #fff;
+  border: none; border-radius: 10px; padding: 10px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: opacity 0.18s;
+}
+.dash-result-btn-dl:hover { opacity: 0.82; }
+.dash-result-btn-redo {
+  background: rgba(109,40,217,0.13); color: #c4b5fd;
+  border: 1px solid rgba(109,40,217,0.3); border-radius: 10px;
+  padding: 9px 14px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: background 0.18s, border-color 0.18s;
+}
+.dash-result-btn-redo:hover { background: rgba(109,40,217,0.23); border-color: rgba(109,40,217,0.5); }
+.dash-result-btn-new {
+  background: transparent; color: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.09); border-radius: 10px;
+  padding: 8px 14px; font-size: 12px; cursor: pointer; font-family: inherit;
+  transition: color 0.18s, border-color 0.18s;
+}
+.dash-result-btn-new:hover { color: rgba(255,255,255,0.65); border-color: rgba(255,255,255,0.2); }
+/* Barra de progreso "en espera" — pulsa suavemente */
+@keyframes dashBarPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+.dash-prog-fill.waiting { animation: dashBarPulse 2s ease-in-out infinite; }
+
 /* Generating panel */
 .dash-generating-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 16px 0; text-align: center; }
 .dash-gen-spinner { margin-bottom: 4px; }
@@ -5343,12 +5407,12 @@ body, #app { background: #07050f; }
         </div>
         <div class="custom-select" id="cs-aspect">
           <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-aspect')">
-            <span>9:16</span>
+            <span><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
           </div>
           <div class="custom-select-dropdown">
-            <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-aspect', this)">9:16 — Vertical</div>
-            <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-aspect', this)">16:9 — Horizontal</div>
+            <div class="custom-select-option selected" data-value="9:16" onclick="selectCustomOption('cs-aspect', this)"><span class="ar-visual"><span class="ar-box ar-9-16"></span>9:16</span></div>
+            <div class="custom-select-option" data-value="16:9" onclick="selectCustomOption('cs-aspect', this)"><span class="ar-visual"><span class="ar-box ar-16-9"></span>16:9</span></div>
           </div>
         </div>
         <div class="custom-select" id="cs-res">
@@ -5478,17 +5542,30 @@ body, #app { background: #07050f; }
     </div>
   </div><!-- /dash-panel-2 -->
 
-  <!-- PANEL 3: Done -->
+  <!-- PANEL 3: Resultado inline -->
   <div id="dash-panel-3" class="dash-gen-panel">
-    <div class="dash-done-wrap">
-      <div class="dash-done-icon">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 11 9 16 18 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="dash-done-title" id="dashDoneTitle">¡En proceso!</div>
-      <div class="dash-done-sub" id="dashDoneSub">Tu generación está en cola. Encontrala en el Historial en unos minutos.</div>
-      <div class="dash-done-btns">
-        <button class="btn-outline" style="border-radius:var(--r-sm);font-size:13px;" onclick="showScreen('historial')">Ver historial</button>
-        <button class="btn-w" style="border-radius:var(--r-sm);font-size:13px;" onclick="showDashPanel(0)">Generar otro</button>
+    <div class="dash-result-wrap">
+      <!-- Media: video o imagen se inserta dinámicamente -->
+      <div class="dash-result-media" id="dashResultMedia"></div>
+      <!-- Info -->
+      <div class="dash-result-side">
+        <div class="dash-result-badge" id="dashResultBadge">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="1.5 6 4.5 9 10.5 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Listo
+        </div>
+        <div>
+          <div class="dash-result-label">Prompt</div>
+          <div class="dash-result-prompt" id="dashResultPrompt">—</div>
+        </div>
+        <div>
+          <div class="dash-result-label">Configuración</div>
+          <div class="dash-result-specs-row" id="dashResultSpecs"></div>
+        </div>
+        <div class="dash-result-btns">
+          <button class="dash-result-btn-dl" id="dashResultDlBtn">⬇ Descargar</button>
+          <button class="dash-result-btn-redo" onclick="dashRehacer()">↻ Rehacer con mismo prompt</button>
+          <button class="dash-result-btn-new" onclick="showDashPanel(0)">+ Generar otro</button>
+        </div>
       </div>
     </div>
   </div><!-- /dash-panel-3 -->
@@ -6739,7 +6816,7 @@ function selectCustomOption(selectId, optionEl) {
   optionEl.classList.add('selected');
   el.classList.remove('open');
   // Actualizar preview de créditos si el selector pertenece al dashboard
-  const dashSelects = ['cs-res','cs-dur','cs-img-model','cs-img-quality'];
+  const dashSelects = ['cs-res','cs-dur','cs-aspect','cs-img-model','cs-img-quality'];
   if (dashSelects.includes(selectId)) updateDashCreditPreview();
 }
 
@@ -11206,6 +11283,8 @@ function backFromGen() {
 
 var _dashSelectedActor = null;
 var _dashCustomActorUrl = null; // URL pública en Supabase (Enhancor necesita URL, no base64)
+var _dashLastConfig = null;     // Guarda última config para "Rehacer"
+var _dashPollTimer = null;      // Timer de polling de estado
 
 var DASH_ACTORS = [
   { name: 'Facu', tag: 'Joven · Casual', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/actor-facu.png' },
@@ -11350,10 +11429,19 @@ async function runDashGen() {
   var durVal   = (document.querySelector('#cs-dur .custom-select-option.selected') && document.querySelector('#cs-dur .custom-select-option.selected').dataset.value) || '5';
   var ratioVal = (document.querySelector('#cs-aspect .custom-select-option.selected') && document.querySelector('#cs-aspect .custom-select-option.selected').dataset.value) || '9:16';
 
+  // Guardar config para "Rehacer"
+  _dashLastConfig = {
+    prompt: prompt,
+    actor: _dashSelectedActor,
+    avatarRef: _dashCustomActorUrl,
+    res: resVal, dur: durVal, ratio: ratioVal
+  };
+
   showDashPanel(2);
   var statusEl = document.getElementById('dashGenStatus');
   var hintEl   = document.getElementById('dashGenHint');
   var barEl    = document.getElementById('dashProgBar');
+  if (barEl) { barEl.style.width = '0%'; barEl.classList.remove('waiting'); }
 
   var prog = 0;
   function setBar(target, ms) {
@@ -11372,9 +11460,9 @@ async function runDashGen() {
   try {
     if (statusEl) statusEl.textContent = 'Preparando tu video...';
     if (hintEl) hintEl.textContent = '';
-    await setBar(35, 600);
+    await setBar(30, 600);
     if (statusEl) statusEl.textContent = 'Enviando a Seedance 2.0...';
-    await setBar(65, 500);
+    await setBar(58, 500);
 
     var userId = null;
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
@@ -11392,18 +11480,173 @@ async function runDashGen() {
     }
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
 
-    await setBar(100, 400);
+    var genData = await genRes.json();
+    var requestId = genData.requestId;
     refreshCredits();
 
-    if (document.getElementById('dashDoneTitle')) document.getElementById('dashDoneTitle').textContent = '¡Video en proceso!';
-    if (document.getElementById('dashDoneSub')) document.getElementById('dashDoneSub').textContent = 'Tu video se está generando con Seedance 2.0. Lo encontrás en el Historial en 5-10 minutos.';
+    await setBar(68, 400);
+
+    // ── Polling: esperar a que Seedance termine ──────────────────────
+    if (statusEl) statusEl.textContent = 'Seedance 2.0 está generando tu video...';
+    if (hintEl) hintEl.textContent = 'Esto tarda entre 5 y 10 minutos. No cierres la app.';
+    if (barEl) barEl.classList.add('waiting');
+
+    // Crawl lento de 68% → 93% durante ~10 min
+    var pollMax = 120; // 120 × 5s = 10 min
+    var pollCount = 0;
+    var crawlPer = (93 - 68) / pollMax; // incremento por tick
+
+    var videoData = await new Promise(function(resolveVideo, rejectVideo) {
+      if (_dashPollTimer) clearInterval(_dashPollTimer);
+      _dashPollTimer = setInterval(async function() {
+        pollCount++;
+        prog = Math.min(68 + crawlPer * pollCount, 93);
+        if (barEl) barEl.style.width = prog + '%';
+
+        if (pollCount > pollMax) {
+          clearInterval(_dashPollTimer); _dashPollTimer = null;
+          rejectVideo(new Error('timeout'));
+          return;
+        }
+        try {
+          var { data: row } = await supa.from('videos').select('*').eq('request_id', requestId).single();
+          if (row && row.status === 'COMPLETED' && row.video_url) {
+            clearInterval(_dashPollTimer); _dashPollTimer = null;
+            resolveVideo(row);
+          } else if (row && row.status === 'FAILED') {
+            clearInterval(_dashPollTimer); _dashPollTimer = null;
+            rejectVideo(new Error('La generación falló en Seedance 2.0'));
+          }
+        } catch(e) { /* sigue intentando */ }
+      }, 5000);
+    });
+
+    // ── Video listo ──────────────────────────────────────────────────
+    if (barEl) { barEl.classList.remove('waiting'); }
+    await setBar(100, 350);
+    loadHistory(); // refrescar historial en background
+
+    showDashResultPanel(videoData);
     showDashPanel(3);
 
   } catch(err) {
+    if (_dashPollTimer) { clearInterval(_dashPollTimer); _dashPollTimer = null; }
     console.error('runDashGen error:', err);
+
+    // Timeout: el video sigue procesando, redirigir a historial
+    if (err.message === 'timeout') {
+      if (barEl) barEl.classList.remove('waiting');
+      showDashResultFallback();
+      showDashPanel(3);
+      return;
+    }
+
     if (statusEl) { statusEl.textContent = '⚠ ' + (err.message || 'Ocurrió un error'); statusEl.style.color = '#f87171'; }
     setTimeout(function() { if (statusEl) statusEl.style.color = ''; showDashPanel(1); }, 3000);
   }
+}
+
+// Muestra el panel 3 con el video real ya disponible
+function showDashResultPanel(row) {
+  var isImage  = row.type === 'image';
+  var mediaEl  = document.getElementById('dashResultMedia');
+  var promptEl = document.getElementById('dashResultPrompt');
+  var specsEl  = document.getElementById('dashResultSpecs');
+  var dlBtn    = document.getElementById('dashResultDlBtn');
+
+  // Media
+  if (mediaEl) {
+    var ratioMap = {'9:16':'9/16','16:9':'16/9','1:1':'1/1','4:5':'4/5','3:4':'3/4'};
+    var cssRatio = ratioMap[row.aspect_ratio] || '9/16';
+    if (isImage) {
+      mediaEl.innerHTML = '<img src="' + row.video_url + '" alt="Resultado" style="max-height:320px;max-width:220px;object-fit:contain;border-radius:12px;">';
+    } else {
+      mediaEl.innerHTML = '<video src="' + row.video_url + '" controls muted playsinline loop style="max-height:320px;max-width:220px;object-fit:contain;border-radius:12px;background:#000;"></video>';
+      // Autoplay
+      var vid = mediaEl.querySelector('video');
+      if (vid) vid.play().catch(function(){});
+    }
+  }
+
+  // Prompt
+  if (promptEl) promptEl.textContent = row.script || '—';
+
+  // Specs
+  if (specsEl) {
+    var specs = [
+      !isImage && row.duration ? row.duration + 's' : null,
+      row.aspect_ratio || null,
+      row.resolution || (isImage ? '2K' : '720p'),
+      row.actor && row.actor !== 'custom' ? row.actor : null
+    ].filter(Boolean);
+    specsEl.innerHTML = specs.map(function(s) { return '<span class="dash-result-spec">' + s + '</span>'; }).join('');
+  }
+
+  // Descargar
+  if (dlBtn) {
+    dlBtn.textContent = isImage ? '⬇ Descargar imagen' : '⬇ Descargar MP4';
+    dlBtn.onclick = function() {
+      if (isImage) downloadImageFile(row.video_url, row.actor || 'imagen');
+      else downloadVideo(row.video_url, row.actor || 'video');
+    };
+  }
+}
+
+// Fallback cuando hay timeout (>10 min): muestra panel 3 con botón historial
+function showDashResultFallback() {
+  var mediaEl  = document.getElementById('dashResultMedia');
+  var promptEl = document.getElementById('dashResultPrompt');
+  var specsEl  = document.getElementById('dashResultSpecs');
+  var dlBtn    = document.getElementById('dashResultDlBtn');
+  var badge    = document.getElementById('dashResultBadge');
+
+  if (badge) { badge.style.color = '#facc15'; badge.style.background = 'rgba(234,179,8,0.12)'; badge.innerHTML = '⏳ En proceso'; }
+  if (mediaEl) mediaEl.innerHTML = '<div style="width:120px;height:200px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.07);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div>';
+  if (promptEl && _dashLastConfig) promptEl.textContent = _dashLastConfig.prompt || '—';
+  if (specsEl) specsEl.innerHTML = '<span class="dash-result-spec">Procesando en Seedance...</span>';
+  if (dlBtn) { dlBtn.textContent = '📂 Ver en historial'; dlBtn.onclick = function() { showScreen('historial'); }; }
+}
+
+// Restaura el prompt y la config anterior para regenerar
+function dashRehacer() {
+  if (!_dashLastConfig) { showDashPanel(0); return; }
+  var cfg = _dashLastConfig;
+
+  // Restaurar prompt
+  var ta = document.getElementById('genTextarea');
+  if (ta) ta.value = cfg.prompt || '';
+
+  // Restaurar resolución
+  if (cfg.res) {
+    document.querySelectorAll('#cs-res .custom-select-option').forEach(function(o) {
+      if (o.dataset.value === cfg.res) selectCustomOption('cs-res', o);
+    });
+  }
+  // Restaurar duración
+  if (cfg.dur) {
+    document.querySelectorAll('#cs-dur .custom-select-option').forEach(function(o) {
+      if (o.dataset.value === cfg.dur) selectCustomOption('cs-dur', o);
+    });
+  }
+  // Restaurar aspect ratio
+  if (cfg.ratio) {
+    document.querySelectorAll('#cs-aspect .custom-select-option').forEach(function(o) {
+      if (o.dataset.value === cfg.ratio) selectCustomOption('cs-aspect', o);
+    });
+  }
+
+  // Ir al panel de actores con el mismo actor pre-seleccionado
+  initDashActorStrip();
+  _dashSelectedActor = null;
+  _dashCustomActorUrl = cfg.avatarRef || null;
+  showDashPanel(1);
+
+  // Pre-seleccionar el actor anterior
+  setTimeout(function() {
+    document.querySelectorAll('#dashActorStrip .dash-actor-pick').forEach(function(card) {
+      if (card.dataset.actor === cfg.actor) dashSelectActor(card, cfg.actor);
+    });
+  }, 50);
 }
 
 async function runDashGenImage() {
