@@ -11862,7 +11862,32 @@ async function runDashGenImage() {
     var userId = null;
     try { var s = await supa.auth.getSession(); userId = s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } catch(e) {}
 
-    var response = await fetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: model, prompt: prompt, aspectRatio: ratio, resolution: quality, userId: userId }) });
+    // Si hay imagen de referencia (base64), subirla al backend para obtener una URL
+    var dashInputImages = undefined;
+    if (_dashImgRefB64) {
+      try {
+        if (statusEl) statusEl.textContent = 'Subiendo imagen de referencia...';
+        var upRes = await fetch(BACKEND_URL + '/api/upload-ref-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64: _dashImgRefB64, mimeType: 'image/jpeg' })
+        });
+        var upData = await upRes.json();
+        if (upRes.ok && upData.url) {
+          dashInputImages = [upData.url];
+          console.log('[DashGenImage] Referencia subida:', upData.url);
+          if (statusEl) statusEl.textContent = 'Generando imagen...';
+        } else {
+          console.warn('[DashGenImage] No se pudo subir referencia:', upData.error);
+        }
+      } catch(upErr) {
+        console.warn('[DashGenImage] Error subiendo referencia:', upErr.message);
+      }
+    }
+
+    var genBody = { model: model, prompt: prompt, aspectRatio: ratio, resolution: quality, userId: userId };
+    if (dashInputImages) genBody.inputImages = dashInputImages;
+    var response = await fetch(BACKEND_URL + '/api/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(genBody) });
 
     if (response.status === 402) {
       var errData = await response.json().catch(function() { return {}; });
@@ -12856,6 +12881,11 @@ async function generateImage(){
     userId = sess?.session?.user?.id || null;
   } catch (e) { /* anónimo */ }
 
+  // Snapshot de las refs ANTES de goImgStep (por si el DOM las limpia al cambiar paso)
+  const refSnapshot = [...imgRefUrls];
+  console.log('[GenerateImage] refs al generar:', refSnapshot.length, refSnapshot);
+  if (refSnapshot.length === 0) console.warn('[GenerateImage] ⚠ Sin referencias — generando solo con prompt');
+
   goImgStep(2);
 
   const msgEl = document.getElementById('imgLoadingMsg');
@@ -12872,11 +12902,6 @@ async function generateImage(){
     msgEl.textContent = refSnapshot.length > 0
       ? `Preparando tu imagen con ${refSnapshot.length} referencia${refSnapshot.length > 1 ? 's' : ''}…`
       : 'Preparando tu imagen...';
-
-    // Snapshot de las refs ANTES de goImgStep (por si acaso el DOM las limpia)
-    const refSnapshot = [...imgRefUrls];
-    console.log('[GenerateImage] refs al generar:', refSnapshot.length, refSnapshot);
-    if (refSnapshot.length === 0) console.warn('[GenerateImage] ⚠ Sin referencias — generando solo con prompt');
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
