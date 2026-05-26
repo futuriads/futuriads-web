@@ -683,7 +683,10 @@ html.pre-landing #app { display: none !important; }
 .vp-full-track {
   width: 100%; height: 4px; background: rgba(255,255,255,0.2);
   border-radius: 4px; cursor: pointer; margin-bottom: 10px; position: relative;
+  user-select: none; -webkit-user-select: none;
 }
+.vp-full-track:hover { height: 6px; }
+.vp-full-track:active { cursor: grabbing; }
 .vp-full-track-fill {
   height: 100%; background: linear-gradient(90deg, #6d28d9, #9333ea);
   border-radius: 4px; width: 0%; pointer-events: none;
@@ -6229,7 +6232,7 @@ body, #app { background: #07050f; }
                   <div class="vp-full-big-icon">▶</div>
                 </div>
                 <div class="vp-full-bar" onclick="event.stopPropagation()">
-                  <div class="vp-full-track" id="campFinalTrack" onclick="vpFullSeek(event,this,'campFinalPlayer')">
+                  <div class="vp-full-track" id="campFinalTrack" onmousedown="vpFullDragStart(event,this,'campFinalPlayer')" ontouchstart="vpFullDragStart(event,this,'campFinalPlayer')">
                     <div class="vp-full-track-fill" id="campFinalFill"></div>
                   </div>
                   <div class="vp-full-row">
@@ -8109,6 +8112,14 @@ async function campZapcapLoad() {
   if (!section) return;
   section.style.display = 'block';
 
+  // Resetear estado de una sesión anterior — el mensaje de éxito solo debe aparecer
+  // cuando se crean subtítulos en el momento, no al abrir un anuncio ya existente
+  document.getElementById('campZapcapSuccess').style.display  = 'none';
+  document.getElementById('campZapcapProgress').style.display = 'none';
+  document.getElementById('campZapcapEditor').style.display   = 'none';
+  const zapBtn = document.getElementById('campZapcapBtn');
+  if (zapBtn) { zapBtn.disabled = false; zapBtn.textContent = 'Generar subtítulos'; }
+
   // Mostrar costo estimado (puede actualizarse después cuando el video carga metadata)
   campZapcapUpdateCost();
 
@@ -9549,7 +9560,15 @@ async function campOpenDetail(campaignId, title) {
       const player = document.getElementById('campFinalPlayer');
       const dlLink = document.getElementById('campFinalDownload');
       const assembleBtn = document.getElementById('campAssembleBtn');
-      if (player) player.src = campaign.final_video_url;
+      if (player) {
+        player.src = campaign.final_video_url;
+        // Actualizar precio de subtítulos en cuanto se carguen los metadatos del video
+        player.addEventListener('loadedmetadata', function onMeta() {
+          player.removeEventListener('loadedmetadata', onMeta);
+          _camp.finalVideoDuration = player.duration;
+          campZapcapUpdateCost();
+        });
+      }
       if (dlLink) { dlLink.href = campaign.final_video_url; dlLink.download = (campaign.title || 'creativo') + '.mp4'; }
       if (assembleBtn) { assembleBtn.textContent = 'Re-ensamblar'; assembleBtn.disabled = false; }
       if (finalVideoDiv) finalVideoDiv.style.display = 'block';
@@ -13256,14 +13275,36 @@ function vpFullTick(videoId, fillId, timeId) {
   if(time) time.textContent = _vpFmt(vid.currentTime) + ' / ' + _vpFmt(vid.duration);
 }
 
-// Full player: seek on track click
-function vpFullSeek(e, trackEl, videoId) {
+// Full player: seek on track click/drag
+let _vpDragTrack = null, _vpDragVideoId = null;
+
+function vpFullDragStart(e, trackEl, videoId) {
   e.stopPropagation();
-  const vid = document.getElementById(videoId);
-  if(!vid || !vid.duration) return;
-  const rect = trackEl.getBoundingClientRect();
-  vid.currentTime = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * vid.duration;
+  e.preventDefault();
+  _vpDragTrack = trackEl;
+  _vpDragVideoId = videoId;
+  _vpSeekAt(e, trackEl, videoId);
 }
+
+function _vpSeekAt(e, trackEl, videoId) {
+  const vid = document.getElementById(videoId);
+  if (!vid || !vid.duration) return;
+  const rect = trackEl.getBoundingClientRect();
+  const clientX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+  vid.currentTime = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)) * vid.duration;
+}
+
+document.addEventListener('mousemove', function(e) {
+  if (_vpDragTrack) _vpSeekAt(e, _vpDragTrack, _vpDragVideoId);
+});
+document.addEventListener('touchmove', function(e) {
+  if (_vpDragTrack) { e.preventDefault(); _vpSeekAt(e, _vpDragTrack, _vpDragVideoId); }
+}, { passive: false });
+document.addEventListener('mouseup',  function() { _vpDragTrack = null; _vpDragVideoId = null; });
+document.addEventListener('touchend', function() { _vpDragTrack = null; _vpDragVideoId = null; });
+
+// Mantener vpFullSeek como alias por compatibilidad con llamadas onclick existentes
+function vpFullSeek(e, trackEl, videoId) { vpFullDragStart(e, trackEl, videoId); }
 
 // Full player: request fullscreen
 function vpFullscreen(vpEl) {
