@@ -12864,12 +12864,14 @@ async function generateImage(){
   }, 800);
 
   try {
-    msgEl.textContent = 'Preparando tu imagen...';
+    msgEl.textContent = refSnapshot.length > 0
+      ? `Preparando tu imagen con ${refSnapshot.length} referencia${refSnapshot.length > 1 ? 's' : ''}…`
+      : 'Preparando tu imagen...';
 
-    console.log('[GenerateImage] imgRefUrls al generar:', imgRefUrls);
-    if (imgRefUrls.length === 0) {
-      console.warn('[GenerateImage] ⚠ Sin imágenes de referencia — generando solo con prompt');
-    }
+    // Snapshot de las refs ANTES de goImgStep (por si acaso el DOM las limpia)
+    const refSnapshot = [...imgRefUrls];
+    console.log('[GenerateImage] refs al generar:', refSnapshot.length, refSnapshot);
+    if (refSnapshot.length === 0) console.warn('[GenerateImage] ⚠ Sin referencias — generando solo con prompt');
 
     const response = await fetch(BACKEND_URL + '/api/generate-image', {
       method: 'POST',
@@ -12877,7 +12879,7 @@ async function generateImage(){
       body: JSON.stringify({
         model: imgSelectedModel,
         prompt: prompt,
-        inputImages: imgRefUrls.length > 0 ? imgRefUrls : undefined,
+        inputImages: refSnapshot.length > 0 ? refSnapshot : undefined,
         aspectRatio: ratio,
         resolution: res,
         userId: userId
