@@ -10618,12 +10618,29 @@ function closeFolderView() {
 }
 
 function removeFromFolder(itemId, folderIdx) {
-  const key = `hist_folder_items_${folderIdx}`;
-  const items = JSON.parse(localStorage.getItem(key) || '[]');
-  const updated = items.filter(id => String(id) !== String(itemId));
-  localStorage.setItem(key, JSON.stringify(updated));
-  // Refrescar la vista de la carpeta con los items actualizados
-  openFolder(folderIdx);
+  showConfirm(
+    'Quitar de carpeta',
+    '¿Querés quitar esta creación de la carpeta? No se borra, solo se desvincula.',
+    'Quitar',
+    () => {
+      // Actualizar lista de items de la carpeta
+      const key = `hist_folder_items_${folderIdx}`;
+      const items = JSON.parse(localStorage.getItem(key) || '[]');
+      const updated = items.filter(id => String(id) !== String(itemId));
+      localStorage.setItem(key, JSON.stringify(updated));
+
+      // Actualizar el contador en hist_folders para que el dock se vea actualizado
+      const folders = JSON.parse(localStorage.getItem('hist_folders') || '[]');
+      if (folders[folderIdx]) {
+        folders[folderIdx].items = updated.length;
+        localStorage.setItem('hist_folders', JSON.stringify(folders));
+      }
+
+      // Refrescar dock y vista de carpeta
+      loadFolders();
+      openFolder(folderIdx);
+    }
+  );
 }
 
 function deleteFolder(idx, e) {
