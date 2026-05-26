@@ -2300,40 +2300,76 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 
 /* Modal inspiración */
 .inspo-modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
   z-index: 10000; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
 }
 .inspo-modal {
-  background: #111; border: 1px solid var(--border);
-  border-radius: 16px; padding: 24px;
-  width: 720px; max-width: 95vw; max-height: 85vh;
-  overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+  background: #0e0c18; border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 20px; padding: 28px;
+  width: 820px; max-width: 95vw; max-height: 88vh;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 22px;
 }
 .inspo-modal-header {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
 }
-.inspo-modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.inspo-modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.inspo-modal-subtitle { font-size: 13px; color: var(--text2); line-height: 1.4; }
 .inspo-modal-close {
-  background: none; border: none; color: var(--text2);
-  font-size: 18px; cursor: pointer; padding: 4px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: var(--text2); font-size: 16px; cursor: pointer;
+  padding: 6px 10px; flex-shrink: 0; transition: background 0.15s;
 }
+.inspo-modal-close:hover { background: rgba(255,255,255,0.12); }
 .inspo-modal-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
 }
+/* Card base */
 .inspo-card {
-  border-radius: 10px; overflow: hidden;
-  background: var(--card2); border: 1px solid var(--border);
-  cursor: pointer; transition: border-color 0.15s;
+  border-radius: 12px; overflow: hidden;
+  background: var(--card2); border: 1px solid rgba(139,92,246,0.15);
+  display: flex; flex-direction: column;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
-.inspo-card:hover { border-color: rgba(255,255,255,0.25); }
-.inspo-card img {
-  width: 100%; aspect-ratio: 9/16; object-fit: cover; display: block;
+.inspo-card:hover {
+  border-color: rgba(139,92,246,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(109,40,217,0.18);
 }
-.inspo-card-label {
-  font-size: 11px; color: var(--text2); padding: 8px 10px;
+/* Imagen con badge encima */
+.inspo-card-img-wrap {
+  position: relative; overflow: hidden; flex-shrink: 0;
 }
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
+.inspo-card-img-wrap img {
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
+  transition: transform 0.3s;
+}
+.inspo-card:hover .inspo-card-img-wrap img { transform: scale(1.03); }
+.inspo-card-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 10px; font-weight: 600; color: #fff; letter-spacing: 0.3px;
+}
+/* Footer de la card */
+.inspo-card-footer {
+  padding: 12px 12px 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.inspo-card-meta { display: flex; flex-direction: column; gap: 2px; }
+.inspo-card-type { font-size: 12px; font-weight: 600; color: var(--text); }
+.inspo-card-info { font-size: 10px; color: var(--text2); }
+/* Botón Replicar */
+.inspo-replicar-btn {
+  background: rgba(109,40,217,0.18); border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 8px; color: rgba(167,139,250,0.9);
+  font-size: 11px; font-weight: 700; padding: 6px 12px;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s; flex-shrink: 0;
+}
+.inspo-replicar-btn:hover {
+  background: rgba(109,40,217,0.35); border-color: rgba(139,92,246,0.7);
+  color: #e0d4ff;
 }
 /* ==============================================
    IDENTIDAD VISUAL — VIOLETA / GLASSMORPHISM
@@ -5679,17 +5715,89 @@ body, #app { background: #07050f; }
       <div class="inspo-modal-backdrop" id="inspoModal" onclick="closeInspoModal()" style="display:none;">
         <div class="inspo-modal" onclick="event.stopPropagation()">
           <div class="inspo-modal-header">
-            <div class="inspo-modal-title">Galería de inspiración</div>
+            <div>
+              <div class="inspo-modal-title">✦ Inspiración</div>
+              <div class="inspo-modal-subtitle">Usá estos anuncios como base · Agregá tu imagen de referencia y replicá el estilo</div>
+            </div>
             <button class="inspo-modal-close" onclick="closeInspoModal()">✕</button>
           </div>
           <div class="inspo-modal-grid" id="inspoGrid">
-            <!-- hardcodeados -->
-            <div class="inspo-card"><img src="/inspo/inspo-1.jpg" alt=""><div class="inspo-card-label">Skincare · UGC</div></div>
-            <div class="inspo-card"><img src="/inspo/inspo-2.jpg" alt=""><div class="inspo-card-label">Suplementos · Demo</div></div>
-            <div class="inspo-card"><img src="/inspo/inspo-3.jpg" alt=""><div class="inspo-card-label">Moda · Lifestyle</div></div>
-            <div class="inspo-card"><img src="/inspo/inspo-4.jpg" alt=""><div class="inspo-card-label">Tech · Unboxing</div></div>
-            <div class="inspo-card"><img src="/inspo/inspo-5.jpg" alt=""><div class="inspo-card-label">Hogar · Antes/después</div></div>
-            <div class="inspo-card"><img src="/inspo/inspo-6.jpg" alt=""><div class="inspo-card-label">Fitness · Testimonial</div></div>
+
+            <!-- 1: Comparativa Nosotros vs Ellos -->
+            <div class="inspo-card">
+              <div class="inspo-card-img-wrap">
+                <img src="https://d2i9jqncnkplwq.cloudfront.net/images/db2b55cb-3704-4886-b57f-3ba19aff580c.png" alt="Comparativa" loading="lazy">
+                <div class="inspo-card-badge">Comparativa</div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">Nosotros vs Ellos</div>
+                  <div class="inspo-card-info">GPT Image 2 · 9:16</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(0)">↗ Replicar</button>
+              </div>
+            </div>
+
+            <!-- 2: Foto de producto con mano -->
+            <div class="inspo-card">
+              <div class="inspo-card-img-wrap">
+                <img src="https://d2i9jqncnkplwq.cloudfront.net/images/bf6cfa3f-6e19-41f4-8270-5e5467f7fda3.png" alt="Producto con mano" loading="lazy">
+                <div class="inspo-card-badge">Foto de producto</div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">Mano con producto</div>
+                  <div class="inspo-card-info">GPT Image 2 · 4:5</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(1)">↗ Replicar</button>
+              </div>
+            </div>
+
+            <!-- 3: UGC Lifestyle -->
+            <div class="inspo-card">
+              <div class="inspo-card-img-wrap">
+                <img src="https://d2i9jqncnkplwq.cloudfront.net/images/de425e69-8568-454b-801d-2b8c55c2230a.png" alt="UGC Lifestyle" loading="lazy">
+                <div class="inspo-card-badge">UGC</div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">Lifestyle auténtico</div>
+                  <div class="inspo-card-info">GPT Image 2 · 9:16</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(2)">↗ Replicar</button>
+              </div>
+            </div>
+
+            <!-- 4: Lifestyle Editorial -->
+            <div class="inspo-card">
+              <div class="inspo-card-img-wrap">
+                <img src="https://d2i9jqncnkplwq.cloudfront.net/images/986712e4-5e87-41ce-8a49-48eab9b70fff.png" alt="Lifestyle Editorial" loading="lazy">
+                <div class="inspo-card-badge">Editorial</div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">Lifestyle con stats</div>
+                  <div class="inspo-card-info">GPT Image 2 · 4:5</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(3)">↗ Replicar</button>
+              </div>
+            </div>
+
+            <!-- 5: Prueba Social / Antes-Después -->
+            <div class="inspo-card">
+              <div class="inspo-card-img-wrap">
+                <img src="https://d2i9jqncnkplwq.cloudfront.net/images/3b1745d3-1c5b-418b-b903-50eb017b363c.png" alt="Prueba Social" loading="lazy">
+                <div class="inspo-card-badge">Prueba social</div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">Antes / Después</div>
+                  <div class="inspo-card-info">GPT Image 2 · 9:16</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(4)">↗ Replicar</button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -10946,6 +11054,138 @@ function openInspoModal() {
 }
 function closeInspoModal() {
   document.getElementById('inspoModal').style.display = 'none';
+}
+
+/* ---- Datos de inspiración ---- */
+const INSPO_DATA = [
+  {
+    label: 'Nosotros vs Ellos',
+    model: 'gpt-image-2',
+    ratio: '9:16',
+    quality: '2K',
+    prompt: `Bold graphic design advertising layout. Vertical 9:16 format.
+
+The canvas is split vertically down the center by a dramatic jagged torn paper edge — the tear is uneven, organic, like ripped cardstock, with slight paper fiber texture on the edges and a thin white paper rim visible on both sides of the tear.
+
+LEFT HALF — background: deep forest green (#1A3C2E), slight matte texture:
+• Top area: "NOSOTROS" in massive extra-bold condensed white sans-serif, full caps, ~80px — dominates the top third.
+• Below it, the product centered and well-lit against the green.
+• Overlapping the product: a small pill-shaped badge in deep red (#C0392B) with white bold text "Ver precio".
+• Below the product, three benefit rows — each row: a filled green circle (#2ECC71) with a white checkmark icon, followed by white medium-weight sans-serif text (~20px): "100% ingredientes naturales" / "Textura ligera, absorción inmediata" / "Desinfla y nutre en profundidad".
+
+RIGHT HALF — background: off-white (#F5F5F0), clean:
+• Top area: "ELLOS" in massive extra-bold condensed dark gray (#1A1A1A) sans-serif, full caps, ~80px.
+• Below it, smaller text "Crema genérica" in light-weight italic gray (#999999), ~22px.
+• Below that, a plain unmarked generic white plastic cream jar, flat product shot.
+• Below the jar, three rows — each: a filled light red circle (#E74C3C) with white X icon, followed by dark gray medium-weight sans-serif text (~20px): "Rellenos y químicos artificiales" / "Espesa, grasosa, difícil de absorber" / "Solo hidratación superficial".
+
+Vertical 9:16. Sharp, modern, high contrast advertising aesthetic.`
+  },
+  {
+    label: 'Mano con producto',
+    model: 'gpt-image-2',
+    ratio: '4:5',
+    quality: '2K',
+    prompt: `Commercial beauty product photography. A feminine hand with a flawless short natural nude manicure rises from the bottom center of the frame, gracefully holding the product upright. The product occupies roughly 45% of the frame height, perfectly centered horizontally. Background: completely flat, matte, uniform blush pink (#F2A7BE), no gradients, no texture, no shadows on the background itself. Subtle soft drop shadow directly beneath the hand for grounding.
+
+Lighting: large softbox from above-front, perfectly even and diffused — no specular highlights on the background, gentle sheen on the product label.
+
+Typography overlay — all text rendered sharp and crisp directly on the image:
+• Top center above the product: the word "Zero" in extra-bold black sans-serif (~52px equivalent) immediately followed by "Azúcar" in regular-weight black sans-serif same size — bold/regular contrast on the same line, like a typographic statement.
+• Surrounding the product, 5 short benefit labels in small crisp white rounded sans-serif (~18px), each connected to the product by a thin elegant curved white arrow line (1.5px stroke): "Solo 2 por día" (upper left), "Zero Gluten" (lower left), "Mismo sabor original" (bottom left), "Tan rico como el original" (upper right), "Zero Grasa" (lower right). Labels have no background — text sits clean over the pink.
+
+Vertical 4:5 format. Ultra sharp focus on product label. Photorealistic, high-end commercial photography.`
+  },
+  {
+    label: 'Lifestyle auténtico',
+    model: 'gpt-image-2',
+    ratio: '9:16',
+    quality: '2K',
+    prompt: `Authentic UGC lifestyle photo. A young woman, mid-20s, with voluminous curly dark brown hair falling to her shoulders, sitting in the front seat of a modern black-interior luxury SUV. She faces the camera directly, smiling broadly and naturally — teeth showing, expression genuinely happy and relaxed. Her right arm is extended slightly toward the camera, confidently holding the product with the label facing forward.
+
+Outfit: white ribbed low-cut fitted tank top, thin gold layered chain bracelets on the wrist holding the product, small round diamond stud earrings. Makeup: dewy glowing skin, precisely defined brows, voluminous mascara, soft nude-rose lips, no heavy contouring — natural and fresh.
+
+Car interior: dark charcoal leather seats, modern dashboard barely visible. Sunlight floods through all windows — strong, warm, midday desert sun.
+
+Background through windshield: wide open sunny Arizona desert, two or three tall saguaro cacti, deep saturated blue sky with no clouds.
+
+Camera angle: selfie-style, slightly below eye level, tilted marginally upward — creates that intimate direct connection. Shallow depth of field: subject sharp, car interior and background softly blurred (f/1.8 equivalent). Natural VSCO-style color grade: slightly warm, slightly saturated, lifted shadows.
+
+Vertical 9:16. Photorealistic. No text overlay.`
+  },
+  {
+    label: 'Lifestyle con stats',
+    model: 'gpt-image-2',
+    ratio: '4:5',
+    quality: '2K',
+    prompt: `A graceful woman in her late 40s with straight shoulder-length blonde hair, wearing a relaxed light blue linen long-sleeve button-up shirt, leaning gently with her elbows resting on a white Calacatta marble kitchen counter. She holds a simple beige stoneware mug up to her lips with both hands, eyes gazing peacefully and thoughtfully toward a large window on the left. Expression: calm, reflective, content — a quiet morning moment. Kitchen background: sage green painted walls, warm natural wood cabinetry, open shelves with neutral ceramic vases and dishes, soft blurred depth. The product sits in the lower left foreground on the marble counter, label clearly visible, slightly soft in focus. On the right portion of the image, elegant white text overlay: brand name in small uppercase serif at the top right corner. Below in large serif font: "El 91% notó mayor enfoque diario". Below in smaller regular weight text: "de los adultos se sintieron con más energía y mente despejada". Then three lines each preceded by a white checkmark: "Energía sostenida durante todo el día", "Mayor enfoque y claridad mental", "Apoya la piel, el cabello y el bienestar general". At the very bottom right, a small white pill-shaped outlined button with text "Ingredientes inteligentes". Soft warm natural window light from the left, golden morning glow, no harsh shadows. Vertical 4:5 format. Photorealistic, magazine-quality lifestyle editorial photography.`
+  },
+  {
+    label: 'Antes / Después',
+    model: 'gpt-image-2',
+    ratio: '9:16',
+    quality: '2K',
+    prompt: `Social proof graphic design layout. Vertical 9:16 format. Background: clean white with a very subtle light gray grid pattern (graph paper texture, 20px grid, 0.5px lines at 15% opacity).
+
+TOP SECTION — Social media comment card:
+White rounded rectangle card (border-radius 16px), soft drop shadow (0 4px 20px rgba(0,0,0,0.08)). Inside: circular profile photo (blurred/pixelated for privacy, 44px diameter) on the left. To the right: a username with a strikethrough blur bar over it for anonymity (gray rectangle). Below the name, comment text in regular dark gray (#1C1C1E) sans-serif ~15px, line-height 1.5:
+"Estaba a punto de recurrir al Roaccutane, pero estoy MUY AGRADECIDA de haberle dado una oportunidad a esto. Después de años sufriendo el peor acné hormonal de mi vida, ¡esto lo cambió todo!! 🙌🏻"
+Below the text in small light gray (#8E8E93) sans-serif: "Me gusta  ·  Responder  ·  20h"
+
+MIDDLE SECTION — Before/After photos:
+Two side-by-side portrait photos, equal size, filling the middle 55% of the canvas. Both show a close-up of a young woman's face with brown hair pulled back.
+LEFT PHOTO: harsh unflattering direct flash, severe red inflamed cystic acne covering cheeks and chin, irritated raw-looking skin, redness, visible texture and scarring. Slightly cold, unflattering color treatment.
+RIGHT PHOTO: same woman, same angle, clean clear calm skin — dramatically improved, even tone, soft natural light, warm color grade.
+
+OVERLAID BADGES on photos:
+• Bottom-left of left photo: dark teal (#1D4E5F) rounded rectangle badge, white extra-bold sans-serif "Antes" ~22px, small white circle with X icon.
+• Bottom-right of right photo: bright yellow (#FFE600) rounded rectangle badge, near-black extra-bold sans-serif "Después" ~22px, small dark circle with checkmark icon.
+
+PRODUCT: centered at the bottom edge of the photos, overlapping down — the product bottle floats between the two images, drop shadow for depth.
+
+BOTTOM SECTION — Rating bar: five filled gold star icons in a row, bold dark gray "4.7" and regular gray text "· Más de 3.000 reseñas".
+
+Vertical 9:16. Clean, trustworthy, conversion-optimized social proof aesthetic.`
+  }
+];
+
+function replicarInspo(idx) {
+  const item = INSPO_DATA[idx];
+  if (!item) return;
+
+  closeInspoModal();
+
+  // Asegurar que estamos en el panel principal del dashboard
+  if (typeof showDashPanel === 'function') showDashPanel(0);
+
+  // Cambiar al tab de imagen
+  if (typeof switchGenTab === 'function') switchGenTab('image');
+
+  // Pre-llenar el textarea con el prompt
+  const ta = document.getElementById('genTextarea');
+  if (ta) {
+    ta.value = item.prompt;
+    ta.dispatchEvent(new Event('input'));
+    ta.focus();
+  }
+
+  // Seleccionar modelo
+  setTimeout(() => {
+    document.querySelectorAll('#cs-img-model .custom-select-option').forEach(o => {
+      if (o.dataset.value === item.model) selectCustomOption('cs-img-model', o);
+    });
+    // Seleccionar ratio
+    document.querySelectorAll('#cs-img-aspect .custom-select-option').forEach(o => {
+      if (o.dataset.value === item.ratio) selectCustomOption('cs-img-aspect', o);
+    });
+    // Seleccionar calidad
+    document.querySelectorAll('#cs-img-quality .custom-select-option').forEach(o => {
+      if (o.dataset.value === item.quality) selectCustomOption('cs-img-quality', o);
+    });
+    updateDashCreditPreview();
+  }, 50);
+
+  showToast('Prompt cargado · Subí tu imagen de referencia y generá ↑', 'info');
 }
 
 /* ---- Modal de video tutorial ---- */
