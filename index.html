@@ -9314,14 +9314,15 @@ async function campRegenClip(index) {
 }
 
 let campViewMode = localStorage.getItem('campViewMode') || 'grid';
+let _campListCache = null; // cached campaigns for view re-render without API call
 
 function campSetView(mode) {
   campViewMode = mode;
   localStorage.setItem('campViewMode', mode);
   document.getElementById('campBtnGrid')?.classList.toggle('active', mode === 'grid');
   document.getElementById('campBtnList')?.classList.toggle('active', mode === 'list');
-  const grid = document.querySelector('.camp-ads-grid');
-  if (grid) grid.classList.toggle('list-view', mode === 'list');
+  // Re-render cards with correct DOM structure for the new view mode
+  if (_campListCache) campRenderList(_campListCache);
 }
 
 function deleteCampaign(id, e) {
@@ -9343,6 +9344,81 @@ function deleteCampaign(id, e) {
   );
 }
 
+function campRenderList(campaigns) {
+  const container = document.getElementById('campListContainer');
+  if (!container) return;
+
+  if (!campaigns || !campaigns.length) {
+    container.innerHTML = `<div class="camp-empty">
+      <div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg></div>
+      <div class="camp-empty-title">Todavía no tenés anuncios</div>
+      <div class="camp-empty-sub">Creá tu primer anuncio en minutos. Solo necesitás tu guión y una foto.</div>
+      <button class="camp-new-btn" onclick="campStartNew()" style="margin:0 auto;">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 1v11M1 6.5h11"/></svg>
+        Nuevo anuncio
+      </button>
+    </div>`;
+    return;
+  }
+
+  const deleteSVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l8 8M9 1L1 9"/></svg>`;
+
+  function statusClass(s) {
+    if (s === 'completed' || s === 'assembled') return 'completed';
+    if (s === 'failed') return 'failed';
+    return 'pending';
+  }
+  function statusLabel(s) {
+    if (s === 'assembled') return 'Listo';
+    if (s === 'completed') return 'Listo';
+    if (s === 'failed') return 'Error';
+    return 'Pendiente';
+  }
+
+  const cards = campaigns.map(c => {
+    const safeId    = c.id.toString().replace(/'/g, '');
+    const safeTitle = (c.title || 'Sin título').replace(/'/g, "\\'");
+    const date      = new Date(c.created_at).toLocaleDateString('es-AR', { day:'numeric', month:'short' });
+    const sClass    = statusClass(c.status);
+    const sLabel    = statusLabel(c.status);
+    const isReady   = (c.status === 'assembled' || c.status === 'completed') && c.final_video_url;
+
+    const thumbMedia = isReady
+      ? `<video src="${c.final_video_url.replace(/'/g,'')}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
+      : `<div class="camp-ad-thumb-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg></div>`;
+
+    // ── GRID VIEW card (portrait, badge+delete sobre la imagen) ──
+    if (campViewMode !== 'list') {
+      return `<div class="camp-ad-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
+        <div class="camp-ad-thumb">
+          ${thumbMedia}
+          <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
+          <button class="camp-ad-delete" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+        </div>
+        <div class="camp-ad-body">
+          <div class="camp-ad-title">${c.title || 'Sin título'}</div>
+          <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
+        </div>
+      </div>`;
+    }
+
+    // ── LIST VIEW card (horizontal: thumb | texto | estado+delete) ──
+    return `<div class="camp-ad-card camp-list-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
+      <div class="camp-list-thumb">${thumbMedia}</div>
+      <div class="camp-list-body">
+        <div class="camp-ad-title">${c.title || 'Sin título'}</div>
+        <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
+      </div>
+      <div class="camp-list-right">
+        <span class="camp-ad-status-badge ${sClass}" style="position:static;backdrop-filter:none;">${sLabel}</span>
+        <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="camp-ads-grid${campViewMode === 'list' ? ' list-view' : ''}">${cards}</div>`;
+}
+
 async function campLoadList() {
   if(!_currentUser) {
     for(let i = 0; i < 25 && !_currentUser; i++) await new Promise(r => setTimeout(r, 200));
@@ -9361,75 +9437,8 @@ async function campLoadList() {
     });
     const data = await resp.json();
     const campaigns = data.campaigns || [];
-    if(!campaigns.length){
-      container.innerHTML = `<div class="camp-empty">
-        <div class="camp-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg></div>
-        <div class="camp-empty-title">Todavía no tenés anuncios</div>
-        <div class="camp-empty-sub">Creá tu primer anuncio en minutos. Solo necesitás tu guión y una foto.</div>
-        <button class="camp-new-btn" onclick="campStartNew()" style="margin:0 auto;">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 1v11M1 6.5h11"/></svg>
-          Nuevo anuncio
-        </button>
-      </div>`;
-      return;
-    }
-
-    const deleteSVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l8 8M9 1L1 9"/></svg>`;
-
-    function statusClass(s) {
-      if (s === 'completed' || s === 'assembled') return 'completed';
-      if (s === 'failed') return 'failed';
-      return 'pending';
-    }
-    function statusLabel(s) {
-      if (s === 'assembled') return 'Listo';
-      if (s === 'completed') return 'Listo';
-      if (s === 'failed') return 'Error';
-      return 'Pendiente';
-    }
-
-    const cards = campaigns.map(c => {
-      const safeId    = c.id.toString().replace(/'/g, '');
-      const safeTitle = (c.title || 'Sin título').replace(/'/g, "\\'");
-      const date      = new Date(c.created_at).toLocaleDateString('es-AR', { day:'numeric', month:'short' });
-      const sClass    = statusClass(c.status);
-      const sLabel    = statusLabel(c.status);
-      const isReady   = (c.status === 'assembled' || c.status === 'completed') && c.final_video_url;
-
-      const thumbMedia = isReady
-        ? `<video src="${c.final_video_url.replace(/'/g,'')}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-        : `<div class="camp-ad-thumb-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg></div>`;
-
-      // ── GRID VIEW card (portrait, badge+delete sobre la imagen) ──
-      if (campViewMode !== 'list') {
-        return `<div class="camp-ad-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
-          <div class="camp-ad-thumb">
-            ${thumbMedia}
-            <span class="camp-ad-status-badge ${sClass}">${sLabel}</span>
-            <button class="camp-ad-delete" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
-          </div>
-          <div class="camp-ad-body">
-            <div class="camp-ad-title">${c.title || 'Sin título'}</div>
-            <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
-          </div>
-        </div>`;
-      }
-
-      // ── LIST VIEW card (horizontal: thumb | texto | estado+delete) ──
-      return `<div class="camp-ad-card camp-list-card" onclick="campOpenDetail('${safeId}','${safeTitle}')">
-        <div class="camp-list-thumb">${thumbMedia}</div>
-        <div class="camp-list-body">
-          <div class="camp-ad-title">${c.title || 'Sin título'}</div>
-          <div class="camp-ad-meta">${date}${c.aspect_ratio ? ' · ' + c.aspect_ratio : ''}</div>
-        </div>
-        <div class="camp-list-right">
-          <span class="camp-ad-status-badge ${sClass}" style="position:static;backdrop-filter:none;">${sLabel}</span>
-          <button class="camp-ad-delete-inline" onclick="deleteCampaign('${safeId}',event)" title="Eliminar">${deleteSVG}</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    container.innerHTML = `<div class="camp-ads-grid${campViewMode === 'list' ? ' list-view' : ''}">${cards}</div>`;
+    _campListCache = campaigns; // cache for view switching
+    campRenderList(campaigns);
   } catch(e){ console.error('Error cargando anuncios:', e); }
 }
 
