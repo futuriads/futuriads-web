@@ -2307,7 +2307,7 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .inspo-modal {
   background: #0e0c18; border: 1px solid rgba(139,92,246,0.2);
   border-radius: 20px; padding: 28px;
-  width: 820px; max-width: 95vw; max-height: 88vh;
+  width: 900px; max-width: 96vw; max-height: 96vh;
   overflow-y: auto; display: flex; flex-direction: column; gap: 22px;
 }
 .inspo-modal-header {
@@ -2340,17 +2340,22 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .inspo-card-img-wrap {
   position: relative; overflow: hidden; flex-shrink: 0;
 }
-.inspo-card-img-wrap img {
+.inspo-card-img-wrap img,
+.inspo-card-img-wrap video {
   width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
   transition: transform 0.3s;
 }
-.inspo-card:hover .inspo-card-img-wrap img { transform: scale(1.03); }
+.inspo-card:hover .inspo-card-img-wrap img,
+.inspo-card:hover .inspo-card-img-wrap video { transform: scale(1.03); }
 .inspo-card-badge {
   position: absolute; top: 10px; left: 10px;
   background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 20px; padding: 3px 10px;
   font-size: 10px; font-weight: 600; color: #fff; letter-spacing: 0.3px;
+}
+.inspo-card-badge-video {
+  background: rgba(109,40,217,0.75); border-color: rgba(167,139,250,0.4);
 }
 /* Footer de la card */
 .inspo-card-footer {
@@ -5920,6 +5925,25 @@ body, #app { background: #07050f; }
                   <div class="inspo-card-info">GPT Image 2 · 9:16</div>
                 </div>
                 <button class="inspo-replicar-btn" onclick="replicarInspo(4)">↗ Replicar</button>
+              </div>
+            </div>
+
+            <!-- 6: UGC Video Unboxing -->
+            <div class="inspo-card inspo-card-video">
+              <div class="inspo-card-img-wrap" onclick="openInspoDetail(5)" title="Ver detalle"
+                   onmouseenter="this.querySelector('video').play()"
+                   onmouseleave="this.querySelector('video').pause()">
+                <video src="https://d2i9jqncnkplwq.cloudfront.net/videos/91b14282-49b2-46d5-904c-f226d30df746.mp4"
+                       muted loop playsinline preload="metadata"></video>
+                <div class="inspo-card-badge inspo-card-badge-video">🎬 UGC Video</div>
+                <div class="inspo-card-img-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+              </div>
+              <div class="inspo-card-footer">
+                <div class="inspo-card-meta">
+                  <div class="inspo-card-type">UGC Unboxing</div>
+                  <div class="inspo-card-info">Seedance 2 · 9:16 · 5s</div>
+                </div>
+                <button class="inspo-replicar-btn" onclick="replicarInspo(5)">↗ Replicar</button>
               </div>
             </div>
 
@@ -10632,8 +10656,14 @@ function deleteFolder(idx, e) {
 function renderHistGrid(items, c) {
   const esc  = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
   const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'?'failed':'pending');
-  const statusLabel = s => s==='COMPLETED'?'Listo':(s==='FAILED'?'Falló':(s==='IN_PROGRESS'?'Generando':'Pendiente'));
+  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'||s==='ERROR'?'failed':'pending');
+  const statusLabel = (s, createdAt) => {
+    if (s === 'COMPLETED') return 'Listo';
+    if (s === 'FAILED' || s === 'ERROR') return 'Falló';
+    if (s === 'IN_PROGRESS') return 'Generando';
+    if (s === 'PENDING' && createdAt && (Date.now() - new Date(createdAt).getTime()) > 30 * 60 * 1000) return 'Expirado';
+    return 'Pendiente';
+  };
   const modelLabel  = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
   const ratioMap = {'9:16':'9/16','16:9':'16/9','1:1':'1/1','4:5':'4/5','3:4':'3/4','2:3':'2/3','3:2':'3/2','auto':'1/1'};
 
@@ -10679,7 +10709,7 @@ function renderHistGrid(items, c) {
           </div>`;
       }
     } else {
-      thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
+      thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status, v.created_at)}</span></div>`;
     }
 
     return `<div class="hist-card${isImage?' is-image':''}"
@@ -10697,7 +10727,7 @@ function renderHistGrid(items, c) {
       <div class="hist-card-info">
         <div class="hist-card-header">
           <div class="hist-card-name">${title}</div>
-          <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+          <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status, v.created_at)}</span>
         </div>
         <div class="hist-card-prompt">${escH(v.script || '')}</div>
         <div class="hist-card-footer">
@@ -11184,6 +11214,8 @@ function closeInspoModal() {
 /* ---- Datos de inspiración ---- */
 const INSPO_DATA = [
   {
+    type: 'image',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/images/db2b55cb-3704-4886-b57f-3ba19aff580c.png',
     label: 'Nosotros vs Ellos',
     model: 'gpt-image-2',
     ratio: '9:16',
@@ -11207,6 +11239,8 @@ RIGHT HALF — background: off-white (#F5F5F0), clean:
 Vertical 9:16. Sharp, modern, high contrast advertising aesthetic.`
   },
   {
+    type: 'image',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/images/bf6cfa3f-6e19-41f4-8270-5e5467f7fda3.png',
     label: 'Mano con producto',
     model: 'gpt-image-2',
     ratio: '4:5',
@@ -11222,6 +11256,8 @@ Typography overlay — all text rendered sharp and crisp directly on the image:
 Vertical 4:5 format. Ultra sharp focus on product label. Photorealistic, high-end commercial photography.`
   },
   {
+    type: 'image',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/images/de425e69-8568-454b-801d-2b8c55c2230a.png',
     label: 'Lifestyle auténtico',
     model: 'gpt-image-2',
     ratio: '9:16',
@@ -11239,6 +11275,8 @@ Camera angle: selfie-style, slightly below eye level, tilted marginally upward �
 Vertical 9:16. Photorealistic. No text overlay.`
   },
   {
+    type: 'image',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/images/986712e4-5e87-41ce-8a49-48eab9b70fff.png',
     label: 'Lifestyle con stats',
     model: 'gpt-image-2',
     ratio: '4:5',
@@ -11246,6 +11284,8 @@ Vertical 9:16. Photorealistic. No text overlay.`
     prompt: `A graceful woman in her late 40s with straight shoulder-length blonde hair, wearing a relaxed light blue linen long-sleeve button-up shirt, leaning gently with her elbows resting on a white Calacatta marble kitchen counter. She holds a simple beige stoneware mug up to her lips with both hands, eyes gazing peacefully and thoughtfully toward a large window on the left. Expression: calm, reflective, content — a quiet morning moment. Kitchen background: sage green painted walls, warm natural wood cabinetry, open shelves with neutral ceramic vases and dishes, soft blurred depth. The product sits in the lower left foreground on the marble counter, label clearly visible, slightly soft in focus. On the right portion of the image, elegant white text overlay: brand name in small uppercase serif at the top right corner. Below in large serif font: "El 91% notó mayor enfoque diario". Below in smaller regular weight text: "de los adultos se sintieron con más energía y mente despejada". Then three lines each preceded by a white checkmark: "Energía sostenida durante todo el día", "Mayor enfoque y claridad mental", "Apoya la piel, el cabello y el bienestar general". At the very bottom right, a small white pill-shaped outlined button with text "Ingredientes inteligentes". Soft warm natural window light from the left, golden morning glow, no harsh shadows. Vertical 4:5 format. Photorealistic, magazine-quality lifestyle editorial photography.`
   },
   {
+    type: 'image',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/images/3b1745d3-1c5b-418b-b903-50eb017b363c.png',
     label: 'Antes / Después',
     model: 'gpt-image-2',
     ratio: '9:16',
@@ -11271,6 +11311,33 @@ PRODUCT: centered at the bottom edge of the photos, overlapping down — the pro
 BOTTOM SECTION — Rating bar: five filled gold star icons in a row, bold dark gray "4.7" and regular gray text "· Más de 3.000 reseñas".
 
 Vertical 9:16. Clean, trustworthy, conversion-optimized social proof aesthetic.`
+  },
+  {
+    type: 'video',
+    url: 'https://d2i9jqncnkplwq.cloudfront.net/videos/91b14282-49b2-46d5-904c-f226d30df746.mp4',
+    label: 'UGC Unboxing',
+    badge: 'UGC Video',
+    model: 'seedance-2',
+    ratio: '9:16',
+    quality: '720p',
+    duration: '5s',
+    prompt: `@influencer_image1 está sentada en un escritorio moderno con buena iluminación natural. Tiene frente a ella una caja de cartón sin abrir con un moño decorativo. La cámara empieza en un plano medio.
+
+La chica mira a cámara con expresión emocionada y dice:
+"Chicos, les juro que estaba esperando ESTE paquete hace días. Mirá lo que me llegó."
+
+Abre la caja con cuidado, saca papel tissue y revela @product_image1. Lo sostiene en alto mirando a cámara.
+
+"Acá está. Dios, quedó re linda. Yo ya tenía una pero la perdí y fui directo por otra. No me imagino el día sin esto."
+
+Gira el producto mostrando todos los lados a cámara.
+
+"Literal lo llevo a todos lados. Al gym, a la facu, al trabajo... siempre frío, siempre perfecto. Nada que ver con los termos comunes."
+
+Mira directo a cámara con una sonrisa genuina y dice:
+"Si estás dudando, no lo dudes más. Te va a cambiar la rutina."
+
+Hace un gesto con la mano señalando hacia abajo como indicando "el link está abajo".`
   }
 ];
 
@@ -11279,14 +11346,7 @@ function openInspoDetail(idx) {
   const item = INSPO_DATA[idx];
   if (!item) return;
 
-  const INSPO_IMGS = [
-    'https://d2i9jqncnkplwq.cloudfront.net/images/db2b55cb-3704-4886-b57f-3ba19aff580c.png',
-    'https://d2i9jqncnkplwq.cloudfront.net/images/bf6cfa3f-6e19-41f4-8270-5e5467f7fda3.png',
-    'https://d2i9jqncnkplwq.cloudfront.net/images/de425e69-8568-454b-801d-2b8c55c2230a.png',
-    'https://d2i9jqncnkplwq.cloudfront.net/images/986712e4-5e87-41ce-8a49-48eab9b70fff.png',
-    'https://d2i9jqncnkplwq.cloudfront.net/images/3b1745d3-1c5b-418b-b903-50eb017b363c.png'
-  ];
-  const INSPO_BADGES = ['Comparativa','Foto de producto','UGC','Editorial','Prueba social'];
+  const INSPO_BADGES = ['Comparativa','Foto de producto','UGC','Editorial','Prueba social','UGC Video'];
 
   const old = document.getElementById('inspoDetailModal');
   if (old) old.remove();
@@ -11296,10 +11356,24 @@ function openInspoDetail(idx) {
   el.id = 'inspoDetailModal';
   el.onclick = e => { if (e.target === el) el.remove(); };
 
+  const isVideo = item.type === 'video';
+  const badge = item.badge || INSPO_BADGES[idx] || '';
+  const modelLabel = item.model === 'gpt-image-2' ? 'GPT Image 2'
+                   : item.model === 'seedance-2' ? 'Seedance 2'
+                   : item.model;
+
+  const mediaSide = isVideo
+    ? `<video src="${item.url}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;max-height:90vh;"></video>`
+    : `<img src="${item.url}" alt="${item.label}">`;
+
+  const extraChip = isVideo
+    ? `<span class="inspo-detail-chip">${item.duration || ''}</span>`
+    : `<span class="inspo-detail-chip">${item.quality}</span>`;
+
   el.innerHTML = `
     <div class="inspo-detail-modal">
       <div class="inspo-detail-img-side">
-        <img src="${INSPO_IMGS[idx]}" alt="${item.label}">
+        ${mediaSide}
       </div>
       <div class="inspo-detail-info-side">
         <div class="inspo-detail-header">
@@ -11309,10 +11383,10 @@ function openInspoDetail(idx) {
           <button class="inspo-detail-close" onclick="document.getElementById('inspoDetailModal').remove()">✕</button>
         </div>
         <div class="inspo-detail-chips">
-          <span class="inspo-detail-chip">${INSPO_BADGES[idx]}</span>
-          <span class="inspo-detail-chip">${item.model === 'gpt-image-2' ? 'GPT Image 2' : 'Nano Banana 2'}</span>
+          <span class="inspo-detail-chip">${badge}</span>
+          <span class="inspo-detail-chip">${modelLabel}</span>
           <span class="inspo-detail-chip">${item.ratio}</span>
-          <span class="inspo-detail-chip">${item.quality}</span>
+          ${extraChip}
         </div>
         <div class="inspo-detail-label">Prompt</div>
         <textarea class="inspo-detail-prompt" readonly id="inspoDetailPrompt_${idx}">${item.prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
@@ -11347,12 +11421,26 @@ function replicarInspo(idx) {
   popup.className = 'inspo-ref-popup-backdrop';
   popup.id = 'inspoRefPopup';
 
+  const isVideoItem = item.type === 'video';
   popup.innerHTML = `
     <div class="inspo-ref-popup">
-      <div class="inspo-ref-popup-icon">🖼️</div>
+      <div class="inspo-ref-popup-icon">${isVideoItem ? '🎬' : '🖼️'}</div>
       <div class="inspo-ref-popup-title">Para replicar este anuncio</div>
       <div class="inspo-ref-popup-text">El prompt ya va a estar cargado. Para obtener el mejor resultado necesitás:</div>
       <div class="inspo-ref-popup-steps">
+        ${isVideoItem ? `
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">1</div>
+          <span>Subí la <strong style="color:#c4b5fd;">foto del avatar/persona</strong> que va a protagonizar el video usando el botón de avatar 👤</span>
+        </div>
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">2</div>
+          <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón de producto 🖼️</span>
+        </div>
+        <div class="inspo-ref-popup-step">
+          <div class="inspo-ref-popup-step-num">3</div>
+          <span>Personalizá el prompt con el nombre de tu marca y hacé click en <strong style="color:#c4b5fd;">Generar video</strong></span>
+        </div>` : `
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">1</div>
           <span>Subí la <strong style="color:#c4b5fd;">foto de tu producto</strong> como imagen de referencia usando el botón 🖼️</span>
@@ -11364,7 +11452,7 @@ function replicarInspo(idx) {
         <div class="inspo-ref-popup-step">
           <div class="inspo-ref-popup-step-num">3</div>
           <span>Hacé click en <strong style="color:#c4b5fd;">Generar imagen</strong></span>
-        </div>
+        </div>`}
       </div>
       <div class="inspo-ref-popup-actions">
         <button class="inspo-ref-popup-cancel" onclick="document.getElementById('inspoRefPopup').remove()">Cancelar</button>
@@ -11382,7 +11470,9 @@ function _ejecutarReplicar(idx) {
 
   closeInspoModal();
   if (typeof showDashPanel === 'function') showDashPanel(0);
-  if (typeof switchGenTab === 'function') switchGenTab('image');
+
+  const isVideo = item.type === 'video';
+  if (typeof switchGenTab === 'function') switchGenTab(isVideo ? 'video' : 'image');
 
   const ta = document.getElementById('genTextarea');
   if (ta) {
@@ -11392,15 +11482,29 @@ function _ejecutarReplicar(idx) {
   }
 
   setTimeout(() => {
-    document.querySelectorAll('#cs-img-model .custom-select-option').forEach(o => {
-      if (o.dataset.value === item.model) selectCustomOption('cs-img-model', o);
-    });
-    document.querySelectorAll('#cs-img-aspect .custom-select-option').forEach(o => {
-      if (o.dataset.value === item.ratio) selectCustomOption('cs-img-aspect', o);
-    });
-    document.querySelectorAll('#cs-img-quality .custom-select-option').forEach(o => {
-      if (o.dataset.value === item.quality) selectCustomOption('cs-img-quality', o);
-    });
+    if (isVideo) {
+      // Set video selectors: ratio, duration, resolution/quality
+      document.querySelectorAll('#cs-vid-aspect .custom-select-option').forEach(o => {
+        if (o.dataset.value === item.ratio) selectCustomOption('cs-vid-aspect', o);
+      });
+      document.querySelectorAll('#cs-vid-duration .custom-select-option').forEach(o => {
+        const durVal = item.duration ? item.duration.replace('s','') : '5';
+        if (o.dataset.value === durVal) selectCustomOption('cs-vid-duration', o);
+      });
+      document.querySelectorAll('#cs-vid-resolution .custom-select-option').forEach(o => {
+        if (o.dataset.value === item.quality) selectCustomOption('cs-vid-resolution', o);
+      });
+    } else {
+      document.querySelectorAll('#cs-img-model .custom-select-option').forEach(o => {
+        if (o.dataset.value === item.model) selectCustomOption('cs-img-model', o);
+      });
+      document.querySelectorAll('#cs-img-aspect .custom-select-option').forEach(o => {
+        if (o.dataset.value === item.ratio) selectCustomOption('cs-img-aspect', o);
+      });
+      document.querySelectorAll('#cs-img-quality .custom-select-option').forEach(o => {
+        if (o.dataset.value === item.quality) selectCustomOption('cs-img-quality', o);
+      });
+    }
     if (typeof updateDashCreditPreview === 'function') updateDashCreditPreview();
   }, 50);
 }
@@ -12808,8 +12912,14 @@ function renderHistory(){
 
   const esc  = s => String(s||'').replace(/"/g,'&quot;').replace(/'/g,"\\'");
   const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'?'failed':'pending');
-  const statusLabel = s => s==='COMPLETED'?'Listo':(s==='FAILED'?'Falló':(s==='IN_PROGRESS'?'Generando':'Pendiente'));
+  const statusClass = s => s==='COMPLETED'?'completed':(s==='FAILED'||s==='ERROR'?'failed':'pending');
+  const statusLabel = (s, createdAt) => {
+    if (s === 'COMPLETED') return 'Listo';
+    if (s === 'FAILED' || s === 'ERROR') return 'Falló';
+    if (s === 'IN_PROGRESS') return 'Generando';
+    if (s === 'PENDING' && createdAt && (Date.now() - new Date(createdAt).getTime()) > 30 * 60 * 1000) return 'Expirado';
+    return 'Pendiente';
+  };
   const modelLabel  = m => ({'seedance-2':'Seedance 2.0','gpt-image-2':'GPT Image 2','nano-banana-2':'Nano Banana 2'})[m] || m || '';
 
   if (histView === 'grid') {
@@ -12818,7 +12928,8 @@ function renderHistory(){
     gridDiv.innerHTML = data.map(v => {
       const isImage  = v.type === 'image';
       const done     = v.status === 'COMPLETED' && !!v.video_url;
-      const title    = isImage ? (modelLabel(v.model) || 'Imagen') : escH(v.actor || 'Actor');
+      const actorDisplay = v.actor && v.actor !== 'custom' ? v.actor : (v.model ? modelLabel(v.model) : '');
+      const title    = isImage ? (modelLabel(v.model) || 'Imagen') : escH(actorDisplay || 'Video generado');
       const safeUrl  = esc(v.video_url);
       const safeTitle= esc(title);
       const openFn   = isImage ? 'openImageModal' : 'openVideoModal';
@@ -12857,7 +12968,7 @@ function renderHistory(){
             </div>`;
         }
       } else {
-        thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status)}</span></div>`;
+        thumb = `<div class="hist-pending-thumb"><svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 2" stroke-linecap="round"/></svg><span>${statusLabel(v.status, v.created_at)}</span></div>`;
       }
 
       return `<div class="hist-card${isImage?' is-image':''}" 
@@ -12878,7 +12989,7 @@ function renderHistory(){
         <div class="hist-card-info">
           <div class="hist-card-header">
             <div class="hist-card-name">${title}</div>
-            <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+            <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status, v.created_at)}</span>
           </div>
           <div class="hist-card-prompt">${escH(v.script || '')}</div>
           ${refImgs.length > 0 ? `<div class="hist-ref-strip"><span class="hist-ref-label">Ref</span>${refImgs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${refImgs.length > 4 ? `<span class="hist-ref-more">+${refImgs.length-4}</span>` : ''}</div>` : ''}
@@ -12898,7 +13009,8 @@ function renderHistory(){
     c.innerHTML = '<div class="hist-list">' + data.map(v => {
       const isImage  = v.type === 'image';
       const done     = v.status === 'COMPLETED' && !!v.video_url;
-      const title    = isImage ? (modelLabel(v.model) || 'Imagen') : (v.actor || 'Actor');
+      const actorLbl = v.actor && v.actor !== 'custom' ? v.actor : (v.model ? modelLabel(v.model) : '');
+      const title    = isImage ? (modelLabel(v.model) || 'Imagen') : (actorLbl || 'Video generado');
       const safeUrl  = esc(v.video_url);
       const safeTitle= esc(title);
       const openFn   = isImage ? 'openImageModal' : 'openVideoModal';
@@ -12917,7 +13029,7 @@ function renderHistory(){
           ${listRefs.length > 0 ? `<div class="hist-ref-strip" style="margin-top:4px;"><span class="hist-ref-label">Ref</span>${listRefs.slice(0,4).map(u=>`<img src="${esc(u)}" class="hist-ref-img" onclick="event.stopPropagation();openImageModal('${esc(u)}','Imagen de referencia')" title="Ver referencia">`).join('')}${listRefs.length > 4 ? `<span class="hist-ref-more">+${listRefs.length-4}</span>` : ''}</div>` : ''}
         </div>
         <div class="hist-list-right">
-          <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status)}</span>
+          <span class="hist-card-status ${statusClass(v.status)}">${statusLabel(v.status, v.created_at)}</span>
           ${done ? `<button class="btn-ghost-sm" onclick="event.stopPropagation();${dlFn}('${safeUrl}','${safeTitle}')">Descargar</button>` : ''}
         </div>
       </div>`;
@@ -13009,7 +13121,8 @@ function openImageModal(url, title) {
   let currentName = title || '';
   if (item) {
     itemId = item.id || '';
-    currentName = item.actor || title || mlabel(item.model) || '';
+    const rawActor = item.actor && item.actor !== 'custom' ? item.actor : '';
+    currentName = rawActor || title || mlabel(item.model) || '';
     const rows = [
       ['Modelo',     mlabel(item.model)],
       ['Ratio',      item.aspect_ratio],
