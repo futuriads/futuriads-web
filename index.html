@@ -6708,10 +6708,13 @@ body, #app { background: #07050f; }
                 <div id="campZapcapTemplates"></div>
               </div>
 
-              <!-- Nota de posición/fuente -->
-              <div style="margin-top:14px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;">
-                <div style="font-size:11px;color:var(--text2);line-height:1.5;">
-                  El estilo visual (posición, fuente, tamaño, color) está definido por el template que elegís arriba. Elegí el que más se adapte a tu video.
+              <!-- Posición vertical de subtítulos -->
+              <div style="margin-top:16px;">
+                <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Posición</div>
+                <div style="display:flex;gap:8px;">
+                  <button class="zapcap-pos-btn" onclick="campZapcapSetPos('top', this)">Arriba</button>
+                  <button class="zapcap-pos-btn" onclick="campZapcapSetPos('center', this)">Centro</button>
+                  <button class="zapcap-pos-btn active" onclick="campZapcapSetPos('bottom', this)">Abajo</button>
                 </div>
               </div>
 
