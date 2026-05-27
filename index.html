@@ -8872,8 +8872,8 @@ function campZapcapDone(downloadUrl) {
   btn.textContent = '↺ Regenerar subtítulos';
   showToast('Subtítulos listos');
 
-  // Persistir la URL del video con subtítulos en la base de datos
-  // para que al volver al anuncio se muestre el video con subtítulos
+  // Persistir la URL del video con subtítulos en la base de datos.
+  // El backend descarga el video de ZapCap y lo re-sube a Supabase para una URL permanente.
   if (_camp.campaignId && _currentUser && downloadUrl) {
     apiFetch(BACKEND_URL + '/api/campaign/update-final-video', {
       method: 'POST',
@@ -8883,6 +8883,18 @@ function campZapcapDone(downloadUrl) {
         userId:     _currentUser.userId,
         videoUrl:   downloadUrl
       })
+    }).then(function(resp) {
+      if (!resp.ok) return;
+      return resp.json();
+    }).then(function(data) {
+      if (data && data.permanentUrl) {
+        // Actualizar el player y el botón de descarga con la URL permanente de Supabase
+        const vid = document.getElementById('campFinalPlayer');
+        if (vid) vid.src = data.permanentUrl;
+        const dl = document.getElementById('campFinalDownload');
+        if (dl) { dl.href = data.permanentUrl; dl.download = 'creativo-subtitulado.mp4'; }
+        console.log('[zapcap] URL permanente aplicada:', data.permanentUrl.substring(0, 80));
+      }
     }).catch(function(e) {
       console.warn('[zapcap] No se pudo guardar la URL del video subtitulado:', e.message);
     });
@@ -9604,21 +9616,15 @@ function campUpdateCostSummaryV2() {
   const rateMap = { '480p': 93.5, '720p': 207, '1080p': 521 };
   const rate = rateMap[_camp.resolution] || 93.5;
   const clipsCost = _camp.audioClips.reduce((acc, c) => acc + Math.round(Math.min(15, Math.ceil(c.duration)) * rate), 0);
-  const audioCost = Math.round(_camp.script.length * 0.2);
-  const totalCost = Math.round(clipsCost + audioCost);
 
-  document.getElementById('campTotalCost').textContent = totalCost.toLocaleString('es-AR');
+  document.getElementById('campTotalCost').textContent = clipsCost.toLocaleString('es-AR');
   document.getElementById('campTotalClips').textContent = _camp.audioClips.length;
 
-  // Mostrar desglose de costo de audio ElevenLabs
+  // Ocultar desglose de audio — solo mostrar costo de clips
   const audioRow = document.getElementById('campAudioCostRow');
-  const audioNum = document.getElementById('campAudioCostNum');
-  const clipsNum = document.getElementById('campClipsCostNum');
   const modeLabel = document.getElementById('campCostModeLabel');
-  if (audioRow) audioRow.style.display = 'block';
-  if (audioNum) audioNum.textContent = audioCost.toLocaleString('es-AR');
-  if (clipsNum) clipsNum.textContent = clipsCost.toLocaleString('es-AR');
-  if (modeLabel) modeLabel.textContent = 'ElevenLabs incluido';
+  if (audioRow) audioRow.style.display = 'none';
+  if (modeLabel) modeLabel.textContent = 'para generar todos los clips';
 }
 
 function campSelectMode(mode) {
@@ -9785,12 +9791,36 @@ function campRenderClipsGrid() {
   const grid = document.getElementById('campClipsGrid');
   grid.innerHTML = '';
   _camp.chunks.forEach((chunk, i) => {
+    const vp = _camp.visualPrompts ? _camp.visualPrompts.find(p => p.clipIndex === i) : null;
+    const promptText = vp ? vp.prompt : '';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'camp-clip-wrapper';
+    wrapper.id = 'campClipWrapper-' + i;
+    wrapper.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
     const card = document.createElement('div');
     card.className = 'camp-clip-card pending';
     card.id = 'campClip-' + i;
     card.innerHTML = '<div class="camp-clip-overlay"><div class="camp-clip-queue-icon">⏳</div><div class="camp-clip-status-label">En cola</div></div><div class="camp-clip-badge">' + (i+1) + '</div>';
-    grid.appendChild(card);
+
+    const promptBlock = document.createElement('div');
+    promptBlock.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+    promptBlock.innerHTML =
+      '<textarea id="campClipPromptTA-' + i + '" rows="3" ' +
+        'style="width:100%;box-sizing:border-box;font-size:11px;line-height:1.4;padding:7px 9px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text1);resize:vertical;font-family:inherit;" ' +
+        'placeholder="Prompt visual del clip ' + (i+1) + '">' + campEscapeTextarea(promptText) + '</textarea>' +
+      '<button onclick="campRegenClip(' + i + ')" ' +
+        'style="align-self:flex-end;font-size:11px;padding:5px 14px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:600;">Regenerar</button>';
+
+    wrapper.appendChild(card);
+    wrapper.appendChild(promptBlock);
+    grid.appendChild(wrapper);
   });
+}
+
+function campEscapeTextarea(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function campStartPolling() {
@@ -10034,6 +10064,16 @@ async function campRegenCurrentClip() {
 }
 
 async function campRegenClip(index) {
+  // Si hay textarea con prompt editado, actualizamos _camp.visualPrompts antes de regenerar
+  const ta = document.getElementById('campClipPromptTA-' + index);
+  if (ta && ta.value.trim()) {
+    const vp = _camp.visualPrompts ? _camp.visualPrompts.find(p => p.clipIndex === index) : null;
+    if (vp) {
+      vp.prompt = ta.value.trim();
+    } else if (_camp.visualPrompts) {
+      _camp.visualPrompts.push({ clipIndex: index, prompt: ta.value.trim() });
+    }
+  }
   _camp.clipEnqueued[index] = false;
   _camp.currentClipIndex = index;
   await campGenerateOneClipV2(index);
