@@ -6710,11 +6710,18 @@ body, #app { background: #07050f; }
 
               <!-- Posición vertical de subtítulos -->
               <div style="margin-top:16px;">
-                <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Posición</div>
-                <div style="display:flex;gap:8px;">
-                  <button class="zapcap-pos-btn" onclick="campZapcapSetPos('top', this)">Arriba</button>
-                  <button class="zapcap-pos-btn" onclick="campZapcapSetPos('center', this)">Centro</button>
-                  <button class="zapcap-pos-btn active" onclick="campZapcapSetPos('bottom', this)">Abajo</button>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Posición vertical</div>
+                  <span id="campZapcapPosLabel" style="font-size:12px;font-weight:700;color:#a78bfa;">Abajo (75)</span>
+                </div>
+                <input type="range" id="campZapcapPosSlider" min="0" max="100" step="5" value="75"
+                  oninput="campZapcapSetPosSlider(this.value)"
+                  style="width:100%;accent-color:#7c3aed;cursor:pointer;margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:8px;"><span>Arriba</span><span>Centro</span><span>Abajo</span></div>
+                <div style="display:flex;gap:6px;">
+                  <button class="zapcap-pos-btn" onclick="campZapcapSetPosSlider(15)" style="flex:1;text-align:center;">Arriba</button>
+                  <button class="zapcap-pos-btn" onclick="campZapcapSetPosSlider(50)" style="flex:1;text-align:center;">Centro</button>
+                  <button class="zapcap-pos-btn active" onclick="campZapcapSetPosSlider(75)" style="flex:1;text-align:center;">Abajo</button>
                 </div>
               </div>
 
@@ -8571,7 +8578,7 @@ function _campWirePlayer(vid) {
 let _zapcapTemplates        = [];
 let _zapcapSelectedTemplate = null;
 let _zapcapPollingInterval  = null;
-let _zapcapPosition         = 'bottom'; // top | center | bottom
+let _zapcapPosition         = 75; // valor numérico 0-100 (0=arriba, 100=abajo)
 
 async function campZapcapLoad() {
   const section = document.getElementById('campZapcapSection');
@@ -8650,10 +8657,20 @@ function campZapcapSelectTemplate(id, el) {
   el.classList.add('selected');
 }
 
-function campZapcapSetPos(pos, el) {
-  _zapcapPosition = pos;
+function campZapcapSetPosSlider(val) {
+  _zapcapPosition = parseInt(val);
+  const slider = document.getElementById('campZapcapPosSlider');
+  const label  = document.getElementById('campZapcapPosLabel');
+  if (slider) slider.value = _zapcapPosition;
+  if (label) {
+    const name = _zapcapPosition <= 30 ? 'Arriba' : _zapcapPosition <= 65 ? 'Centro' : 'Abajo';
+    label.textContent = name + ' (' + _zapcapPosition + ')';
+  }
+  // Resaltar botón de preset más cercano
   document.querySelectorAll('.zapcap-pos-btn').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
+  if (_zapcapPosition <= 30) document.querySelectorAll('.zapcap-pos-btn')[0]?.classList.add('active');
+  else if (_zapcapPosition <= 65) document.querySelectorAll('.zapcap-pos-btn')[1]?.classList.add('active');
+  else document.querySelectorAll('.zapcap-pos-btn')[2]?.classList.add('active');
 }
 
 async function campZapcapStart() {
@@ -8935,17 +8952,37 @@ function campCheckDraft() {
   } catch(e) {}
 }
 
-function campResumeDraft() {
-  try {
-    const draft = JSON.parse(localStorage.getItem(CAMP_DRAFT_KEY) || 'null');
-    if (!draft || !draft.campaignId) return;
+async function campResumeDraft() {
+  const draft = JSON.parse(localStorage.getItem(CAMP_DRAFT_KEY) || 'null');
+  if (!draft || !draft.campaignId) return;
 
-    // Restaurar estado
+  const banner = document.getElementById('campDraftBanner');
+  if (banner) banner.style.display = 'none';
+
+  // Verificar si la campaña ya fue ensamblada — si tiene video final, abrir detalle
+  try {
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaignId: draft.campaignId, userId: _currentUser.userId })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.campaign && data.campaign.final_video_url) {
+        // Ya ensamblado — limpiar draft y abrir vista de detalle con el video
+        campClearDraft();
+        campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
+        return;
+      }
+    }
+  } catch(e) { /* si falla la verificación, continuar con el wizard */ }
+
+  // Campaña no ensamblada — restaurar wizard
+  try {
     _camp.campaignId    = draft.campaignId;
     _camp.title         = draft.title        || '';
     _camp.script        = draft.script       || '';
     _camp.videoMode     = draft.videoMode    || 'voiceover';
-    _camp.voice         = draft.voice        || 'female';
+    _camp.voice         = draft.voice        || 'valeria';
     _camp.voiceSettings = draft.voiceSettings || null;
     _camp.aspectRatio   = draft.aspectRatio  || '9:16';
     _camp.resolution    = draft.resolution   || '480p';
@@ -8955,24 +8992,17 @@ function campResumeDraft() {
     _camp.visualPrompts = draft.visualPrompts || [];
     _camp.chunks        = draft.chunks       || [];
 
-    const banner = document.getElementById('campDraftBanner');
-    if (banner) banner.style.display = 'none';
-
-    // Mostrar wizard
     document.getElementById('campView-list').style.display = 'none';
     document.getElementById('campView-wizard').style.display = 'block';
     document.getElementById('campView-generating').style.display = 'none';
 
     const step = draft.step || 0;
-
-    // Si había audio generado, restaurar directamente al paso 4
     if (_camp.audioUrl && _camp.audioClips.length > 0 && step >= 3) {
       campGoStep(3);
       campRenderAudioClips();
     } else {
       campGoStep(step);
     }
-
     showToast('Borrador restaurado. Continuá desde donde lo dejaste.', 'success');
   } catch(e) {
     showToast('No se pudo restaurar el borrador.');
@@ -10139,6 +10169,7 @@ async function campLoadList() {
 }
 
 async function campOpenDetail(campaignId, title) {
+  campClearDraft(); // si había un draft de esta campaña, ya no es necesario
   _camp.campaignId = campaignId;
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'none';
