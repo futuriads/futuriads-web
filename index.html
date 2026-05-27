@@ -6437,13 +6437,21 @@ body, #app { background: #07050f; }
             <!-- Voz del audio (solo voiceover) -->
             <div id="campVoiceSection" style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Voz del audio</div>
-              <div class="camp-options-row" id="campVoiceOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this)">Mujer · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this)">Hombre · 20 años</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('female40', this)">Mujer · Mediana edad</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male40', this)">Hombre · Mediana edad</button>
+              <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Mujeres</div>
+              <div class="camp-options-row" id="campVoiceOptions" style="flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+                <button class="camp-option-btn selected" onclick="campSelectVoice('valeria', this)" title="Joven, enérgica · ideal para ads">Valeria · Enérgica</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('melanie', this)" title="Tono comercial · e-commerce">Melanie · Comercial</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('lucia', this)" title="Cálida y expresiva">Lucía · Cálida</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('female', this)" title="Voz suave y pareja">Melisa · Suave</button>
               </div>
-              <div style="font-size:12px;color:var(--text3);margin-top:6px;">El audio se genera con acento argentino real usando IA de voz.</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Hombres</div>
+              <div class="camp-options-row" style="flex-wrap:wrap;gap:8px;">
+                <button class="camp-option-btn" onclick="campSelectVoice('tomas', this)" title="La mejor voz del Río de la Plata">Tomás · Natural</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('agustin', this)" title="Acento Buenos Aires, potente">Agustín · Potente</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('javier', this)" title="Narrativo y confiado">Javier · Confiado</button>
+                <button class="camp-option-btn" onclick="campSelectVoice('male', this)" title="Voz masculina clásica">Masculino · Clásico</button>
+              </div>
+              <div style="font-size:12px;color:var(--text3);margin-top:8px;">Todas las voces tienen acento argentino. Ajustá la expresividad con los parámetros de voz.</div>
 
               <!-- Ajustes de voz avanzados -->
               <div style="margin-top:14px;">
@@ -8253,7 +8261,7 @@ const _camp = {
   photoBase64: null, photoUrl: null, photoUploading: false,
   productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
   clipDuration: 8, resolution: '480p', videoMode: 'talking',
-  aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
+  aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
   // V2: audio + visual prompts
   audioUrl: null, audioDuration: 0, audioClips: [], voiceSettings: null,
@@ -8270,7 +8278,7 @@ function campStartNew() {
     photoBase64: null, photoUrl: null, photoUploading: false,
     productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
     clipDuration: 8, resolution: '480p',
-    aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'female',
+    aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
     audioUrl: null, audioDuration: 0, audioClips: [], voiceSettings: null, visualPrompts: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
@@ -9182,7 +9190,8 @@ async function campUploadProductPhoto(file) {
 
 function campSelectVoice(voice, btn) {
   _camp.voice = voice;
-  document.querySelectorAll('#campVoiceOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  // Deseleccionar todos los botones de voz dentro de campVoiceSection
+  document.querySelectorAll('#campVoiceSection .camp-option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
 
