@@ -8971,7 +8971,23 @@ async function campResumeDraft() {
   const banner = document.getElementById('campDraftBanner');
   if (banner) banner.style.display = 'none';
 
-  // Verificar si la campaña ya fue ensamblada — si tiene video final, abrir detalle
+  // Restaurar _camp desde el draft YA (antes del check backend) para que
+  // visualPrompts, chunks, audioUrl etc. estén disponibles en campOpenDetail()
+  _camp.campaignId    = draft.campaignId;
+  _camp.title         = draft.title        || '';
+  _camp.script        = draft.script       || '';
+  _camp.videoMode     = draft.videoMode    || 'voiceover';
+  _camp.voice         = draft.voice        || 'valeria';
+  _camp.voiceSettings = draft.voiceSettings || null;
+  _camp.aspectRatio   = draft.aspectRatio  || '9:16';
+  _camp.resolution    = draft.resolution   || '480p';
+  _camp.audioUrl      = draft.audioUrl     || null;
+  _camp.audioDuration = draft.audioDuration || 0;
+  _camp.audioClips    = draft.audioClips   || [];
+  _camp.visualPrompts = draft.visualPrompts || [];
+  _camp.chunks        = draft.chunks       || [];
+
+  // Verificar estado actual en el backend
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -8979,46 +8995,37 @@ async function campResumeDraft() {
     });
     if (resp.ok) {
       const data = await resp.json();
+
+      // Ya ensamblado → abrir vista de detalle con el video final
       if (data.campaign && data.campaign.final_video_url) {
-        // Ya ensamblado — limpiar draft y abrir vista de detalle con el video
+        campClearDraft();
+        campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
+        return;
+      }
+
+      // Ya tiene clips generados (aunque estén fallidos) → ir a la vista de generación
+      // directamente, sin volver a pasar por el wizard de audio/prompts
+      if (data.clips && data.clips.length > 0) {
         campClearDraft();
         campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
         return;
       }
     }
-  } catch(e) { /* si falla la verificación, continuar con el wizard */ }
+  } catch(e) { /* si falla la verificación, restaurar el wizard */ }
 
-  // Campaña no ensamblada — restaurar wizard
-  try {
-    _camp.campaignId    = draft.campaignId;
-    _camp.title         = draft.title        || '';
-    _camp.script        = draft.script       || '';
-    _camp.videoMode     = draft.videoMode    || 'voiceover';
-    _camp.voice         = draft.voice        || 'valeria';
-    _camp.voiceSettings = draft.voiceSettings || null;
-    _camp.aspectRatio   = draft.aspectRatio  || '9:16';
-    _camp.resolution    = draft.resolution   || '480p';
-    _camp.audioUrl      = draft.audioUrl     || null;
-    _camp.audioDuration = draft.audioDuration || 0;
-    _camp.audioClips    = draft.audioClips   || [];
-    _camp.visualPrompts = draft.visualPrompts || [];
-    _camp.chunks        = draft.chunks       || [];
+  // Sin clips todavía → restaurar wizard en el paso correcto
+  document.getElementById('campView-list').style.display = 'none';
+  document.getElementById('campView-wizard').style.display = 'block';
+  document.getElementById('campView-generating').style.display = 'none';
 
-    document.getElementById('campView-list').style.display = 'none';
-    document.getElementById('campView-wizard').style.display = 'block';
-    document.getElementById('campView-generating').style.display = 'none';
-
-    const step = draft.step || 0;
-    if (_camp.audioUrl && _camp.audioClips.length > 0 && step >= 3) {
-      campGoStep(3);
-      campRenderAudioClips();
-    } else {
-      campGoStep(step);
-    }
-    showToast('Borrador restaurado. Continuá desde donde lo dejaste.', 'success');
-  } catch(e) {
-    showToast('No se pudo restaurar el borrador.');
+  const step = draft.step || 0;
+  if (_camp.audioUrl && _camp.audioClips.length > 0 && step >= 3) {
+    campGoStep(3);
+    campRenderAudioClips();
+  } else {
+    campGoStep(step);
   }
+  showToast('Borrador restaurado. Continuá desde donde lo dejaste.', 'success');
 }
 
 function campGoStep(n) {
@@ -10234,6 +10241,10 @@ async function campOpenDetail(campaignId, title) {
     // Detectar modo según si la campaña tiene audio_url (voiceover) o no (talking)
     _camp.videoMode = (campaign && campaign.audio_url) ? 'voiceover' : 'talking';
     _camp.title = title;
+    // Restaurar audioUrl desde la DB si no está ya en _camp (ej: abriendo desde el listado)
+    if (!_camp.audioUrl && campaign && campaign.audio_url) _camp.audioUrl = campaign.audio_url;
+    if (!_camp.resolution && campaign && campaign.resolution) _camp.resolution = campaign.resolution;
+    if (!_camp.aspectRatio && campaign && campaign.aspect_ratio) _camp.aspectRatio = campaign.aspect_ratio;
 
     // Renderizar grid de clips
     const grid = document.getElementById('campClipsGrid');
@@ -10246,10 +10257,20 @@ async function campOpenDetail(campaignId, title) {
     }
 
     clips.forEach((clip) => {
+      const i = clip.clip_index;
+      const vp = _camp.visualPrompts ? _camp.visualPrompts.find(p => p.clipIndex === i) : null;
+      const promptText = vp ? vp.prompt : '';
+
+      // Wrapper con card + textarea + botón Regenerar (igual que campRenderClipsGrid)
+      const wrapper = document.createElement('div');
+      wrapper.className = 'camp-clip-wrapper';
+      wrapper.id = 'campClipWrapper-' + i;
+      wrapper.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
       const card = document.createElement('div');
       card.className = 'camp-clip-card ' + clip.status;
-      card.id = 'campClip-' + clip.clip_index;
-      
+      card.id = 'campClip-' + i;
+
       if(clip.status === 'completed' && clip.video_url) {
         card.innerHTML =
           '<div class="vp-mini" onclick="vpMiniToggle(this)">' +
@@ -10257,9 +10278,10 @@ async function campOpenDetail(campaignId, title) {
             '<div class="vp-mini-overlay"><div class="vp-mini-icon">▶</div></div>' +
             '<div class="vp-mini-bar" onmousedown="vpMiniDragStart(event,this)" ontouchstart="vpMiniDragStart(event,this)"><div class="vp-mini-fill"></div></div>' +
           '</div>' +
-          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>' +
+          '<div class="camp-clip-badge">' + (i+1) + '</div>' +
           '<div class="camp-clip-actions">' +
-            '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + clip.video_url + '\',\'clip-' + (clip.clip_index+1) + '\')" title="Descargar">↓</button>' +
+            '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + clip.video_url + '\',\'clip-' + (i+1) + '\')" title="Descargar">↓</button>' +
+            '<button class="camp-clip-action-btn" onclick="campRegenClip(' + i + ')" title="Regenerar">↻</button>' +
           '</div>';
         const vid = card.querySelector('video');
         const fill = card.querySelector('.vp-mini-fill');
@@ -10275,16 +10297,29 @@ async function campOpenDetail(campaignId, title) {
             '<div class="camp-clip-fail-icon">✕</div>' +
             '<div class="camp-clip-status-label" style="color:#f87171;">Falló</div>' +
           '</div>' +
-          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>';
+          '<div class="camp-clip-badge">' + (i+1) + '</div>';
       } else {
         card.innerHTML =
           '<div class="camp-clip-overlay">' +
             '<div class="camp-clip-queue-icon">⏳</div>' +
             '<div class="camp-clip-status-label">' + clip.status + '</div>' +
           '</div>' +
-          '<div class="camp-clip-badge">' + (clip.clip_index+1) + '</div>';
+          '<div class="camp-clip-badge">' + (i+1) + '</div>';
       }
-      grid.appendChild(card);
+
+      // Bloque de prompt editable + Regenerar (siempre visible para poder reintentar)
+      const promptBlock = document.createElement('div');
+      promptBlock.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+      promptBlock.innerHTML =
+        '<textarea id="campClipPromptTA-' + i + '" rows="3" ' +
+          'style="width:100%;box-sizing:border-box;font-size:11px;line-height:1.4;padding:7px 9px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text1);resize:vertical;font-family:inherit;" ' +
+          'placeholder="Prompt visual del clip ' + (i+1) + '">' + campEscapeTextarea(promptText) + '</textarea>' +
+        '<button onclick="campRegenClip(' + i + ')" ' +
+          'style="align-self:flex-end;font-size:11px;padding:5px 14px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:600;">Regenerar</button>';
+
+      wrapper.appendChild(card);
+      wrapper.appendChild(promptBlock);
+      grid.appendChild(wrapper);
     });
 
     const clipsDone = clips.filter(c => c.status === 'completed').length;
