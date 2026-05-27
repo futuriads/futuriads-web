@@ -8952,21 +8952,23 @@ function campSaveDraft() {
   if (!_camp.campaignId) return;
   try {
     localStorage.setItem(CAMP_DRAFT_KEY, JSON.stringify({
-      campaignId:    _camp.campaignId,
-      title:         _camp.title,
-      script:        _camp.script,
-      videoMode:     _camp.videoMode,
-      voice:         _camp.voice,
-      voiceSettings: _camp.voiceSettings,
-      aspectRatio:   _camp.aspectRatio,
-      resolution:    _camp.resolution,
-      step:          _camp.step,
-      audioUrl:      _camp.audioUrl,
-      audioDuration: _camp.audioDuration,
-      audioClips:    _camp.audioClips,
-      visualPrompts: _camp.visualPrompts,
-      chunks:        _camp.chunks,
-      savedAt:       Date.now()
+      campaignId:      _camp.campaignId,
+      title:           _camp.title,
+      script:          _camp.script,
+      videoMode:       _camp.videoMode,
+      voice:           _camp.voice,
+      voiceSettings:   _camp.voiceSettings,
+      aspectRatio:     _camp.aspectRatio,
+      resolution:      _camp.resolution,
+      step:            _camp.step,
+      audioUrl:        _camp.audioUrl,
+      audioDuration:   _camp.audioDuration,
+      audioClips:      _camp.audioClips,
+      visualPrompts:   _camp.visualPrompts,
+      chunks:          _camp.chunks,
+      photoUrl:        _camp.photoUrl        || null,
+      productPhotoUrl: _camp.productPhotoUrl || null,
+      savedAt:         Date.now()
     }));
   } catch(e) {}
 }
@@ -9014,19 +9016,21 @@ async function campResumeDraft() {
 
   // Restaurar _camp desde el draft YA (antes del check backend) para que
   // visualPrompts, chunks, audioUrl etc. estén disponibles en campOpenDetail()
-  _camp.campaignId    = draft.campaignId;
-  _camp.title         = draft.title        || '';
-  _camp.script        = draft.script       || '';
-  _camp.videoMode     = draft.videoMode    || 'voiceover';
-  _camp.voice         = draft.voice        || 'valeria';
-  _camp.voiceSettings = draft.voiceSettings || null;
-  _camp.aspectRatio   = draft.aspectRatio  || '9:16';
-  _camp.resolution    = draft.resolution   || '480p';
-  _camp.audioUrl      = draft.audioUrl     || null;
-  _camp.audioDuration = draft.audioDuration || 0;
-  _camp.audioClips    = draft.audioClips   || [];
-  _camp.visualPrompts = draft.visualPrompts || [];
-  _camp.chunks        = draft.chunks       || [];
+  _camp.campaignId      = draft.campaignId;
+  _camp.title           = draft.title          || '';
+  _camp.script          = draft.script         || '';
+  _camp.videoMode       = draft.videoMode      || 'voiceover';
+  _camp.voice           = draft.voice          || 'valeria';
+  _camp.voiceSettings   = draft.voiceSettings  || null;
+  _camp.aspectRatio     = draft.aspectRatio    || '9:16';
+  _camp.resolution      = draft.resolution     || '480p';
+  _camp.audioUrl        = draft.audioUrl       || null;
+  _camp.audioDuration   = draft.audioDuration  || 0;
+  _camp.audioClips      = draft.audioClips     || [];
+  _camp.visualPrompts   = draft.visualPrompts  || [];
+  _camp.chunks          = draft.chunks         || [];
+  _camp.photoUrl        = draft.photoUrl       || null;
+  _camp.productPhotoUrl = draft.productPhotoUrl || null;
 
   // Verificar estado actual en el backend
   try {
@@ -9511,7 +9515,8 @@ async function campLoadAudioAndClips() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: _currentUser.userId, title: _camp.title, script: _camp.script,
-          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
+          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
+          avatarUrl: _camp.photoUrl || null, productUrl: _camp.productPhotoUrl || null
         })
       });
       const createData = await createResp.json();
@@ -9708,7 +9713,8 @@ async function campLaunchTalking() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: _currentUser.userId, title: _camp.title, script: _camp.script,
-          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio
+          clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
+          avatarUrl: _camp.photoUrl || null, productUrl: _camp.productPhotoUrl || null
         })
       });
       const createData = await createResp.json();
@@ -9804,6 +9810,12 @@ async function campGenerateOneClipV2(index) {
     return;
   }
 
+  // La foto del avatar es requerida por el backend
+  if (!_camp.photoUrl) {
+    showToast('Falta la foto del avatar para regenerar. Volvé al wizard para cargarla.');
+    return;
+  }
+
   // La duración viene de los audioClips; si no están disponibles (vista historial), usamos 15s
   const clip = (_camp.audioClips || [])[index];
   const clipDuration = clip ? Math.min(15, Math.ceil(clip.duration)) : 15;
@@ -9827,13 +9839,21 @@ async function campGenerateOneClipV2(index) {
       })
     });
 
-    if (resp.status === 409) return;
+    if (resp.status === 409) {
+      // El clip ya estaba siendo generado — no es un error
+      _camp.clipEnqueued[index] = false;
+      return;
+    }
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
       console.error('Error generando clip v2', index, err);
       _camp.clipEnqueued[index] = false;
       campUpdateClipCard(index, 'failed', null);
-      if (resp.status === 402) showToast('No tenés créditos suficientes.');
+      if (resp.status === 402) {
+        showToast('No tenés créditos suficientes.');
+      } else {
+        showToast('Error generando clip ' + (index + 1) + ': ' + (err.error || 'error desconocido'));
+      }
     }
   } catch (e) {
     console.error('Error clip v2', index, e);
@@ -10296,9 +10316,11 @@ async function campOpenDetail(campaignId, title) {
     _camp.videoMode = (campaign && campaign.audio_url) ? 'voiceover' : 'talking';
     _camp.title = title;
     // Restaurar campos desde la DB si no están ya en _camp (ej: abriendo desde el listado)
-    if (!_camp.audioUrl && campaign && campaign.audio_url) _camp.audioUrl = campaign.audio_url;
-    if (!_camp.resolution && campaign && campaign.resolution) _camp.resolution = campaign.resolution;
-    if (!_camp.aspectRatio && campaign && campaign.aspect_ratio) _camp.aspectRatio = campaign.aspect_ratio;
+    if (!_camp.audioUrl        && campaign && campaign.audio_url)    _camp.audioUrl        = campaign.audio_url;
+    if (!_camp.resolution      && campaign && campaign.resolution)   _camp.resolution      = campaign.resolution;
+    if (!_camp.aspectRatio     && campaign && campaign.aspect_ratio) _camp.aspectRatio     = campaign.aspect_ratio;
+    if (!_camp.photoUrl        && campaign && campaign.avatar_url)   _camp.photoUrl        = campaign.avatar_url;
+    if (!_camp.productPhotoUrl && campaign && campaign.product_url)  _camp.productPhotoUrl = campaign.product_url;
 
     // Poblar visualPrompts desde text_chunk de cada clip (guardado al generar)
     // Esto permite regenerar clips aunque no haya draft en localStorage
