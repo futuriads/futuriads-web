@@ -567,6 +567,29 @@ html.pre-landing #app { display: none !important; }
   color: rgba(192,168,255,0.5);
   letter-spacing: 0.6px;
 }
+/* ── Full-screen page loader overlay ── */
+#pageLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(12, 7, 26, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+#pageLoader.pl-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+#pageLoader .app-loader-orb-1 { width: 45vw; top: -10%; left: -8%; }
+#pageLoader .app-loader-orb-2 { width: 35vw; bottom: -8%; right: -4%; }
+#pageLoader .app-loader-orb-3 { width: 25vw; top: 40%; left: 55%; }
+#pageLoader .app-loader-ring  { width: 34px; height: 34px; border-width: 2.5px; }
+#pageLoader .app-loader-label { font-size: 12px; letter-spacing: 0.8px; margin-top: 2px; }
 /* ── Shimmer utility (small inline placeholders) ── */
 @keyframes sk-shimmer {
   0%   { background-position: 200% 0; }
@@ -5194,6 +5217,17 @@ body, #app { background: #07050f; }
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
 
+<!-- FULL-SCREEN PAGE LOADER OVERLAY -->
+<div id="pageLoader">
+  <div class="app-loader-orb app-loader-orb-1"></div>
+  <div class="app-loader-orb app-loader-orb-2"></div>
+  <div class="app-loader-orb app-loader-orb-3"></div>
+  <div class="app-loader-center">
+    <div class="app-loader-ring"></div>
+    <div id="pageLoaderLabel" class="app-loader-label">Cargando...</div>
+  </div>
+</div>
+
 <!-- CREDITS MODAL (recarga / topup) -->
 <div class="modal-overlay" id="creditsModal">
   <div class="modal-card" style="max-width:420px;">
@@ -7607,6 +7641,31 @@ function appLoader(minH = '260px', label = 'Cargando...') {
 function skMetric() {
   return `<div class="sk" style="height:28px;width:80px;border-radius:8px;margin-bottom:6px;"></div>
           <div class="sk" style="height:11px;width:55px;"></div>`;
+}
+
+// ─── Full-screen page loader ──────────────────────────────────────────────────
+let _pageLoaderTimer = null;
+
+function showPageLoader(label = 'Cargando...') {
+  const overlay = document.getElementById('pageLoader');
+  const lbl     = document.getElementById('pageLoaderLabel');
+  if (!overlay) return;
+  if (lbl) lbl.textContent = label;
+  overlay.style.display = 'flex';   // asegurar que sea flex aunque estuviera none
+  // micro-tick para que el navegador pinte el display:flex antes de aplicar la transición
+  requestAnimationFrame(() => overlay.classList.add('pl-visible'));
+  // Seguridad: forzar cierre después de 8s para evitar que se quede pegado
+  clearTimeout(_pageLoaderTimer);
+  _pageLoaderTimer = setTimeout(() => hidePageLoader(), 8000);
+}
+
+function hidePageLoader() {
+  clearTimeout(_pageLoaderTimer);
+  const overlay = document.getElementById('pageLoader');
+  if (!overlay) return;
+  overlay.classList.remove('pl-visible');
+  // Remover del flujo visual luego de la transición (250ms → 270ms)
+  setTimeout(() => { overlay.style.display = 'none'; }, 270);
 }
 
 
@@ -10463,9 +10522,18 @@ async function campOpenDetail(campaignId, title) {
 }
 
 /* ---- Screen nav ---- */
-function showScreen(name, instant){
+async function showScreen(name, instant){
   // Persistir la pantalla actual para recuperarla al refresh
   try { localStorage.setItem('futuriads_lastScreen', name); } catch(e) {}
+
+  // Pantallas que requieren carga de datos → mostrar overlay ANTES de la transición
+  const loaderLabels = {
+    historial: 'Cargando historial...',
+    campanas:  'Cargando anuncios...',
+    perfil:    'Cargando perfil...',
+  };
+  const needsLoader = name in loaderLabels;
+  if (needsLoader) showPageLoader(loaderLabels[name]);
 
   if (instant) {
     // Modo instantáneo (para el boot tras refresh): sin animación
@@ -10499,22 +10567,37 @@ function showScreen(name, instant){
     },210);
   }
 
-  if(name==='historial') { loadHistory(); loadFolders(); toggleFoldersBar(true); }
-  else { toggleFoldersBar(false); }
-  if(name==='perfil') { profLoadStats(); profLoadActivity(); }
-  if(name==='campanas'){
-    // Restaurar botones de vista desde el modo guardado
+  // Carpetas: mostrar/ocultar siempre (sincrónico)
+  if (name === 'historial') toggleFoldersBar(true);
+  else toggleFoldersBar(false);
+
+  // Ajustes sincrónicos de campanas
+  if (name === 'campanas') {
     document.getElementById('campBtnGrid')?.classList.toggle('active', campViewMode === 'grid');
     document.getElementById('campBtnList')?.classList.toggle('active', campViewMode === 'list');
-    campLoadList();
     document.getElementById('campView-list').style.display='block';
     document.getElementById('campView-wizard').style.display='none';
     document.getElementById('campView-generating').style.display='none';
-    campCheckDraft(); // mostrar banner si hay borrador pendiente
   }
-  if(name==='nueva-imagen') {
+  if (name === 'nueva-imagen') {
     rebuildRatioDropdown();
     rebuildResDropdown();
+  }
+
+  // Cargar datos y ocultar overlay al terminar
+  try {
+    if (name === 'historial') {
+      await Promise.all([loadHistory(), Promise.resolve(loadFolders())]);
+    } else if (name === 'campanas') {
+      await campLoadList();
+      campCheckDraft(); // mostrar banner si hay borrador pendiente
+    } else if (name === 'perfil') {
+      await Promise.all([profLoadStats(), Promise.resolve(profLoadActivity())]);
+    }
+  } catch(e) {
+    console.error('[showScreen] Error cargando sección', name, e);
+  } finally {
+    if (needsLoader) hidePageLoader();
   }
 }
 
