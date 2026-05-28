@@ -8533,7 +8533,7 @@ function campStartNew() {
     clipDuration: 8, resolution: '480p', videoMode: 'talking',
     aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
-    audioUrl: null, audioDuration: 0, audioClips: [], voiceSettings: null, visualPrompts: [],
+    audioUrl: null, audioDuration: 0, audioClips: [], audioWords: [], voiceSettings: null, visualPrompts: [],
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}
   });
@@ -9018,13 +9018,23 @@ function campZapcapShowEditor(transcript, videoId, taskId) {
       ? campZapcapBuildCaptions(_zapcapTranscript, editedText)
       : null;
     console.log('[zapcap] Aprobando. _zapcapTranscript length:', _zapcapTranscript?.length,
-      '| captions length:', captions?.length,
-      '| primer item:', JSON.stringify(captions?.[0]));
+      '| captions length:', captions?.length);
     campZapcapApprove(videoId, taskId, captions);
   };
 
-  if (Array.isArray(transcript)) {
-    // Array de objetos {text/word, start, end}
+  // ── Modo voiceover con timestamps de ElevenLabs disponibles ──────────────
+  // En voiceover ya tenemos los timestamps EXACTOS del audio de ElevenLabs guardados
+  // en _camp.audioWords. Usarlos en vez del transcript de ZapCap elimina errores de
+  // transcripción y garantiza sincronización perfecta.
+  if (_camp.videoMode === 'voiceover' && _camp.audioWords && _camp.audioWords.length > 0) {
+    _zapcapTranscript = _camp.audioWords;
+    wordsArea.value = _camp.audioWords.map(w => w.word || w.text || '').join(' ');
+    console.log('[zapcap] Usando timestamps de ElevenLabs (' + _camp.audioWords.length + ' palabras) — sync exacto garantizado.');
+    return;
+  }
+
+  // ── Fallback: usar transcript de ZapCap ──────────────────────────────────
+  if (Array.isArray(transcript) && transcript.length > 0) {
     _zapcapTranscript = transcript;
     wordsArea.value = transcript.map(w => w.text || w.word || '').join(' ');
 
@@ -9058,12 +9068,10 @@ function campZapcapShowEditor(transcript, videoId, taskId) {
       });
 
   } else if (typeof transcript === 'string' && transcript.trim()) {
-    // String de texto plano
     _zapcapTranscript = null;
     wordsArea.value = transcript;
 
   } else {
-    // Sin datos de transcript (null/undefined)
     _zapcapTranscript = null;
     wordsArea.value = '';
     wordsArea.placeholder = 'Transcript no disponible. Aprobá para renderizar con el texto automático.';
@@ -9074,11 +9082,37 @@ let _zapcapTranscript = null;
 
 function campZapcapBuildCaptions(original, editedText) {
   const editedWords = editedText.split(/\s+/).filter(Boolean);
-  return original.map((cap, i) => ({
-    ...cap,
-    text: editedWords[i] !== undefined ? editedWords[i] : (cap.text || cap.word || ''),
-    word: editedWords[i] !== undefined ? editedWords[i] : (cap.word || cap.text || ''),
-  }));
+  if (!editedWords.length || !original.length) return null;
+
+  // Caso 1: misma cantidad de palabras → mapeo 1:1, timestamps exactos preservados
+  if (editedWords.length === original.length) {
+    return original.map((cap, i) => ({
+      ...cap,
+      text: editedWords[i],
+      word: editedWords[i],
+    }));
+  }
+
+  // Caso 2: distinta cantidad de palabras → interpolar timestamps
+  // Se distribuye proporcionalmente en el timeline del transcript original.
+  // Esto evita que las palabras "vuelen" al inicio o fin del video.
+  const totalStart = original[0].start || 0;
+  const totalEnd   = (original[original.length - 1].end
+                   || original[original.length - 1].start
+                   || 1);
+  const totalDur   = Math.max(totalEnd - totalStart, 0.001);
+  const wordDur    = totalDur / editedWords.length;
+
+  console.log('[zapcap] Word count mismatch: original=' + original.length + ' edited=' + editedWords.length + ' — interpolando timestamps.');
+
+  return editedWords.map((word, i) => {
+    const start  = totalStart + i * wordDur;
+    const end    = totalStart + (i + 1) * wordDur;
+    // Copiar propiedades de estilo del word original proporcional (color, emphasis, etc.)
+    const origIdx = Math.round(i * (original.length - 1) / Math.max(editedWords.length - 1, 1));
+    const origCap = original[Math.min(origIdx, original.length - 1)];
+    return { ...origCap, text: word, word, start, end };
+  });
 }
 
 async function campZapcapApprove(videoId, taskId, captions) {
@@ -9807,6 +9841,7 @@ async function campLoadAudioAndClips() {
       _camp.audioUrl = audioData.audioUrl;
       _camp.audioDuration = audioData.totalDuration;
       _camp.audioClips = audioData.clips;
+      _camp.audioWords = audioData.words || [];  // timestamps palabra por palabra para subtítulos exactos
 
       await refreshCredits();
     } else {
@@ -10738,6 +10773,14 @@ async function campOpenDetail(campaignId, title) {
     if (!_camp.aspectRatio     && campaign && campaign.aspect_ratio) _camp.aspectRatio     = campaign.aspect_ratio;
     if (!_camp.photoUrl        && campaign && campaign.avatar_url)   _camp.photoUrl        = campaign.avatar_url;
     if (!_camp.productPhotoUrl && campaign && campaign.product_url)  _camp.productPhotoUrl = campaign.product_url;
+    // Restaurar timestamps de palabras ElevenLabs (para subtítulos con sincronización exacta)
+    if (campaign && campaign.audio_words) {
+      try {
+        _camp.audioWords = typeof campaign.audio_words === 'string'
+          ? JSON.parse(campaign.audio_words)
+          : (campaign.audio_words || []);
+      } catch(e) { _camp.audioWords = []; }
+    }
 
     // Poblar visualPrompts y URLs de avatar desde text_chunk de cada clip.
     // Formato nuevo: JSON.stringify({ prompt, avatarUrl, productUrl })
