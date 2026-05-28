@@ -8534,6 +8534,7 @@ function campStartNew() {
     aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
     audioUrl: null, audioDuration: 0, audioClips: [], audioWords: [], voiceSettings: null, visualPrompts: [],
+    avatarGender: null,
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}
   });
@@ -9454,6 +9455,9 @@ async function campUploadPhoto(file) {
     _camp.photoUploading = false;
     console.log('Foto subida OK:', _camp.photoUrl);
     showToast('Foto del avatar subida');
+
+    // Detectar género del avatar en background (para el master prompt en modo talking)
+    campDetectAvatarGender(_camp.photoUrl);
   } catch(err) {
     console.error('Error en upload:', err);
     showToast('Error subiendo la foto.');
@@ -10410,7 +10414,11 @@ async function campGenerateOneClip(index) {
 }
 
 function campBuildMasterPrompt() {
-  const isMale = _camp.voice === 'male' || _camp.voice === 'male40';
+  // Prioridad: género detectado por IA desde la foto > voz seleccionada > default female
+  const MALE_VOICES = ['male', 'male40', 'tomas', 'agustin', 'javier'];
+  const isMale = _camp.avatarGender
+    ? _camp.avatarGender === 'male'
+    : MALE_VOICES.includes(_camp.voice);
   const pronoun = isMale ? 'He' : 'She';
   const possessive = isMale ? 'his' : 'her';
   const person = isMale ? 'man' : 'woman';
@@ -10428,26 +10436,66 @@ function campBuildMasterPrompt() {
       'THE PRODUCT CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"';
   }
 
-  // Modo talking head: el avatar habla con acento
+  // Modo talking head: el avatar habla
+  // Instrucción de acento específica según selección (default: argentino rioplatense)
   const accentMap = {
-    'argentine': 'Argentine Rioplatense Spanish. ' + pronoun + ' MUST speak in Spanish with a strong Argentine accent throughout the entire clip, including technical words.',
-    'neutral': 'Neutral Latin American Spanish. ' + pronoun + ' MUST speak in Spanish with a neutral Latin American accent throughout the entire clip.'
+    'argentine': (
+      'LANGUAGE: Spanish from Buenos Aires, Argentina — Rioplatense accent. ' +
+      'CRITICAL: NOT Spain Spanish (Castilian), NOT Mexican, NOT neutral Latin American. ' +
+      pronoun + ' MUST speak exactly like a porteño/porteña from Buenos Aires: ' +
+      'uses "vos" instead of "tú", characteristic Río de la Plata rising intonation, ' +
+      'Argentine prosody and rhythm. Every single word pronounced with Buenos Aires accent.'
+    ),
+    'neutral': (
+      'LANGUAGE: Neutral Latin American Spanish. ' +
+      pronoun + ' MUST speak in clear, neutral Spanish — no regional accent, universally understood.'
+    )
   };
   const accentText = accentMap[_camp.accent] || accentMap['argentine'];
 
-  return 'STYLE: Authentic UGC (User Generated Content) video, casual, real, relatable. Not commercial, not polished. Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, shows the product, gestures naturally. NOT a static talking head.\n\n' +
-    'LANGUAGE & ACCENT: ' + accentText + ' Natural conversational tone, warm and close. Speaks directly to camera as if talking to a close friend.\n\n' +
-    'VISUAL DIRECTION: Multiple angles and scenes. Mix of: selfie angle talking to camera, close-up of product in ' + possessive + ' hand, reaction expressions, ' + person + ' holding/showing the product. Natural transitions. Handheld phone camera feel.\n\n' +
+  return (
+    'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
+    'Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, ' +
+    'gestures naturally, shows the product. NOT a static talking head.\n\n' +
+    accentText + '\n\n' +
+    'VISUAL DIRECTION: Mix of angles — selfie talking to camera, close-up of product in ' + possessive + ' hand, ' +
+    'reaction expressions. Natural transitions. Handheld phone camera feel.\n\n' +
     '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
     'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
     'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
-    pronoun + ' SAYS EXACTLY IN SPANISH: "[CHUNK]"';
+    pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
+  );
+}
+
+// Detecta el género del avatar llamando al backend (Claude Vision)
+// Se llama automáticamente después de subir la foto del avatar
+async function campDetectAvatarGender(imageUrl) {
+  if (!imageUrl) return;
+  try {
+    const session = supabase ? await supabase.auth.getSession() : null;
+    const token = session?.data?.session?.access_token || '';
+    const resp = await fetch(BACKEND_URL + '/api/detect-avatar-gender', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ imageUrl })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      _camp.avatarGender = data.gender || 'female';
+      console.log('[campDetectAvatarGender] Género detectado:', _camp.avatarGender);
+    }
+  } catch(e) {
+    console.warn('[campDetectAvatarGender] Error detectando género, usando female por defecto:', e.message);
+    _camp.avatarGender = 'female';
+  }
 }
 
 // Permite al usuario en modo talking elegir género para el prompt
 function campDetectGender() {
-  // Si hay selector de voz activo, usar eso
-  if (_camp.voice === 'male' || _camp.voice === 'male40') return 'male';
+  // Usar género detectado por IA si está disponible
+  if (_camp.avatarGender) return _camp.avatarGender;
+  const MALE_VOICES = ['male', 'male40', 'tomas', 'agustin', 'javier'];
+  if (MALE_VOICES.includes(_camp.voice)) return 'male';
   return 'female';
 }
 
