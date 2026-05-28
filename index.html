@@ -10405,8 +10405,10 @@ async function campGenerateOneClip(index) {
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
   
-  const masterPrompt = campBuildMasterPrompt();
-  
+  // Usar el prompt editado por el usuario si existe, sino construir desde master
+  const vp = (_camp.visualPrompts || []).find(p => p.clipIndex === index);
+  const masterPrompt = (vp && vp.prompt) ? vp.prompt : campBuildMasterPrompt();
+
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -10581,7 +10583,7 @@ async function campRegenClip(index) {
   // Reiniciar polling si se detuvo (ej: todos los clips ya estaban completos)
   if (!_camp.pollingInterval) campStartPolling();
 
-  await campGenerateOneClipV2(index);
+  await campGenerateNextClip(index);
 }
 
 let campViewMode = localStorage.getItem('campViewMode') || 'grid';
