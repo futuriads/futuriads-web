@@ -10051,7 +10051,8 @@ async function campLaunchTalking() {
         body: JSON.stringify({
           userId: _currentUser.userId, title: _camp.title, script: _camp.script,
           clipDuration: 15, resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
-          avatarUrl: _camp.photoUrl || null, productUrl: _camp.productPhotoUrl || null
+          avatarUrl: _camp.photoUrl || null, productUrl: _camp.productPhotoUrl || null,
+          totalClips: _camp.chunks.length  // guardar total desde el inicio, no solo cuando el clip 0 se genera
         })
       });
       const createData = await createResp.json();
@@ -10060,7 +10061,11 @@ async function campLaunchTalking() {
       campSaveDraft();
     }
 
-    campClearDraft(); // campaña ensamblándose, ya no necesita borrador
+    // Guardar draft con campaignId + chunks ANTES de empezar a generar clips.
+    // Esto permite recuperar el estado si se cierra la sesión o se recarga la página
+    // durante la generación. El draft se borra solo cuando TODOS los clips están listos.
+    campSaveDraft();
+
     document.getElementById('campView-wizard').style.display = 'none';
     document.getElementById('campView-generating').style.display = 'block';
     document.getElementById('campGenCampaignTitle').textContent = _camp.title;
@@ -10437,6 +10442,7 @@ async function campGenerateOneClip(index) {
       _camp.clipEnqueued[index] = false;
       campUpdateClipCard(index, 'failed', null);
       _camp.creditsDepleted = true; // detener generación automática de clips siguientes
+      campSaveDraft(); // guardar draft AHORA para preservar chunks y prompts aunque se cierre la sesión
       showToast('Sin créditos suficientes para generar el clip ' + (index + 1) + '. Recargá créditos y reintentá.');
       document.getElementById('campGenStatusTitle').textContent = 'Créditos insuficientes';
       document.getElementById('campGenStatusSub').textContent = 'Los clips generados se guardaron. Recargá créditos y reintentá los que fallaron.';
@@ -11103,7 +11109,9 @@ async function campOpenDetail(campaignId, title) {
     const pct = totalExpected > 0 ? Math.round((clipsDone / totalExpected) * 100) : 100;
     document.getElementById('campGenProgressBar').style.width = pct + '%';
 
-    const allDone = clipsDone >= totalExpected && clipsGenerating === 0;
+    // allDone solo si TODOS los clips esperados están en DB (completados o fallidos) y ninguno generándose.
+    // Evita declarar "listo" cuando clips fallaron con 402 y nunca se insertaron en DB.
+    const allDone = clipsDone >= totalExpected && clipsGenerating === 0 && clips.length >= totalExpected;
 
     if (allDone) {
       // Todo completo — ahora sí es seguro borrar el draft
