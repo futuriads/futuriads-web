@@ -9219,10 +9219,12 @@ function campSaveDraft() {
       audioUrl:          _camp.audioUrl,
       audioDuration:     _camp.audioDuration,
       audioClips:        _camp.audioClips,
+      audioWords:        _camp.audioWords       || [],
       visualPrompts:     _camp.visualPrompts,
       chunks:            _camp.chunks,
-      photoUrl:          _camp.photoUrl        || null,
-      productPhotoUrl:   _camp.productPhotoUrl || null,
+      photoUrl:          _camp.photoUrl         || null,
+      productPhotoUrl:   _camp.productPhotoUrl  || null,
+      avatarGender:      _camp.avatarGender     || null,
       savedAt:           Date.now()
     }));
   } catch(e) {}
@@ -9233,13 +9235,15 @@ function campClearDraft() {
 }
 
 function campCheckDraft() {
-  // Banner removido — el usuario accede a campañas en progreso desde la lista directamente
   try {
     const raw = localStorage.getItem(CAMP_DRAFT_KEY);
     if (!raw) return;
     const draft = JSON.parse(raw);
     if (!draft || !draft.campaignId) return;
-    if (Date.now() - draft.savedAt > CAMP_DRAFT_TTL) { campClearDraft(); }
+    if (Date.now() - draft.savedAt > CAMP_DRAFT_TTL) { campClearDraft(); return; }
+    // Hay un draft válido de una campaña en progreso → retomarla automáticamente
+    // (el usuario volvió después de cerrar sesión o refrescar la página)
+    campResumeDraft();
   } catch(e) {}
 }
 
@@ -9268,10 +9272,12 @@ async function campResumeDraft() {
   _camp.audioUrl         = draft.audioUrl        || null;
   _camp.audioDuration    = draft.audioDuration   || 0;
   _camp.audioClips       = draft.audioClips      || [];
+  _camp.audioWords       = draft.audioWords      || [];
   _camp.visualPrompts    = draft.visualPrompts   || [];
   _camp.chunks           = draft.chunks          || [];
   _camp.photoUrl         = draft.photoUrl        || null;
   _camp.productPhotoUrl  = draft.productPhotoUrl || null;
+  _camp.avatarGender     = draft.avatarGender    || null;
 
   // Verificar estado actual en el backend
   try {
@@ -10824,6 +10830,32 @@ async function campLoadList() {
 }
 
 async function campOpenDetail(campaignId, title) {
+  // Si _camp no tiene chunks (ej: abriendo desde historial después de re-login),
+  // intentar restaurar el draft si corresponde a esta misma campaña.
+  if (!_camp.chunks || _camp.chunks.length === 0) {
+    try {
+      const raw = localStorage.getItem(CAMP_DRAFT_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft && draft.campaignId === campaignId && Date.now() - draft.savedAt <= CAMP_DRAFT_TTL) {
+          _camp.chunks          = draft.chunks         || [];
+          _camp.visualPrompts   = Array.isArray(draft.visualPrompts) ? draft.visualPrompts : [];
+          _camp.audioClips      = draft.audioClips     || [];
+          _camp.audioWords      = draft.audioWords     || [];
+          _camp.genMode         = draft.genMode        || 'review';
+          _camp.currentClipIndex = draft.currentClipIndex != null ? draft.currentClipIndex : 0;
+          _camp.photoUrl        = _camp.photoUrl        || draft.photoUrl        || null;
+          _camp.productPhotoUrl = _camp.productPhotoUrl || draft.productPhotoUrl || null;
+          _camp.avatarGender    = _camp.avatarGender    || draft.avatarGender    || null;
+          _camp.videoMode       = _camp.videoMode       || draft.videoMode       || 'talking';
+          _camp.resolution      = _camp.resolution      || draft.resolution      || '480p';
+          _camp.aspectRatio     = _camp.aspectRatio     || draft.aspectRatio     || '9:16';
+          console.log('[campOpenDetail] Draft restaurado para campaña', campaignId, '— chunks:', _camp.chunks.length, '— prompts:', _camp.visualPrompts.length);
+        }
+      }
+    } catch(e) { console.warn('[campOpenDetail] No se pudo restaurar el draft:', e.message); }
+  }
+
   // NO borrar el draft aquí — puede tener chunks para clips aún no generados.
   // Se borra solo cuando la campaña está completamente terminada (abajo).
   _camp.campaignId = campaignId;
