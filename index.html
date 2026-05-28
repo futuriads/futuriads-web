@@ -454,7 +454,7 @@ html.pre-landing #app { display: none !important; }
   font-size: 13px; color: var(--text1); line-height: 1.65;
   width: 100%; background: rgba(109,40,217,0.06); border: 1px solid rgba(109,40,217,0.18); border-radius: 10px;
   outline: none; padding: 12px 14px; box-sizing: border-box;
-  resize: vertical; min-height: 100px;
+  resize: none; overflow: hidden; min-height: 72px;
   transition: border-color 0.2s, box-shadow 0.2s;
   font-family: inherit;
 }
@@ -510,15 +510,16 @@ html.pre-landing #app { display: none !important; }
   width: 100%;
   box-sizing: border-box;
   font-size: 12px;
+  resize: none;
+  overflow: hidden;
   line-height: 1.5;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid rgba(139, 92, 246, 0.25);
   background: rgba(12, 7, 26, 0.7);
   color: var(--text1);
-  resize: vertical;
   font-family: inherit;
-  min-height: 80px;
+  min-height: 60px;
   transition: border-color 0.2s;
   outline: none;
 }
@@ -10148,16 +10149,25 @@ function campRenderClipsGrid() {
     promptBlock.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
     promptBlock.innerHTML =
       '<textarea id="campClipPromptTA-' + i + '" ' +
-        'class="camp-chunk-text" style="min-height:90px;font-size:12px;" ' +
+        'class="camp-chunk-text" style="font-size:12px;" ' +
+        'oninput="campAutoResizeTA(this)" ' +
         'placeholder="Prompt visual del clip ' + (i+1) + '">' + campEscapeTextarea(promptText) + '</textarea>' +
       '<button onclick="campRegenClip(' + i + ')" ' +
         'style="align-self:flex-end;font-size:11px;padding:5px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;cursor:pointer;font-weight:600;transition:opacity .15s;" ' +
-        'onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">↺ Regenerar</button>';
+        'onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">↺ Regenerar clip</button>';
 
     wrapper.appendChild(card);
     wrapper.appendChild(promptBlock);
     grid.appendChild(wrapper);
+    // Auto-size al renderizar (después del append para que scrollHeight sea correcto)
+    const ta = promptBlock.querySelector('textarea');
+    if (ta) setTimeout(() => campAutoResizeTA(ta), 0);
   });
+}
+
+function campAutoResizeTA(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight + 2) + 'px';
 }
 
 function campEscapeTextarea(str) {
@@ -10241,7 +10251,6 @@ function campUpdateClipCard(index, status, videoUrl) {
       '<div class="camp-clip-badge">' + (index+1) + '</div>' +
       '<div class="camp-clip-actions">' +
         '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + videoUrl + '\',\'clip-' + (index+1) + '\')" title="Descargar">↓</button>' +
-        '<button class="camp-clip-action-btn" onclick="campRegenClip(' + index + ')" title="Regenerar">↻</button>' +
       '</div>';
     // Wire progress + state listeners
     const vid = card.querySelector('video');
@@ -10768,7 +10777,6 @@ async function campOpenDetail(campaignId, title) {
           '<div class="camp-clip-badge">' + (i+1) + '</div>' +
           '<div class="camp-clip-actions">' +
             '<button class="camp-clip-action-btn" onclick="downloadVideo(\'' + clip.video_url + '\',\'clip-' + (i+1) + '\')" title="Descargar">↓</button>' +
-            '<button class="camp-clip-action-btn" onclick="campRegenClip(' + i + ')" title="Regenerar">↻</button>' +
           '</div>';
         const vid = card.querySelector('video');
         const fill = card.querySelector('.vp-mini-fill');
@@ -10794,17 +10802,21 @@ async function campOpenDetail(campaignId, title) {
           '<div class="camp-clip-badge">' + (i+1) + '</div>';
       }
 
-      // Bloque de prompt editable + Regenerar (siempre visible para poder reintentar)
+      // Bloque de prompt editable + Regenerar clip (único botón, claro y sin ambigüedad)
       const promptBlock = document.createElement('div');
       promptBlock.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
       promptBlock.innerHTML =
         '<textarea id="campClipPromptTA-' + i + '" class="camp-clip-prompt-ta" ' +
+          'oninput="campAutoResizeTA(this)" ' +
           'placeholder="Prompt visual del clip ' + (i+1) + '">' + campEscapeTextarea(promptText) + '</textarea>' +
-        '<button onclick="campRegenClip(' + i + ')" class="camp-clip-regen-btn">Regenerar</button>';
+        '<button onclick="campRegenClip(' + i + ')" class="camp-clip-regen-btn">↺ Regenerar clip</button>';
 
       wrapper.appendChild(card);
       wrapper.appendChild(promptBlock);
       grid.appendChild(wrapper);
+      // Auto-size tras render
+      const ta = promptBlock.querySelector('textarea');
+      if (ta) setTimeout(() => campAutoResizeTA(ta), 0);
     });
 
     const clipsDone = clips.filter(c => c.status === 'completed').length;
