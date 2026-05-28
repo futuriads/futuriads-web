@@ -9205,23 +9205,25 @@ function campSaveDraft() {
   if (!_camp.campaignId) return;
   try {
     localStorage.setItem(CAMP_DRAFT_KEY, JSON.stringify({
-      campaignId:      _camp.campaignId,
-      title:           _camp.title,
-      script:          _camp.script,
-      videoMode:       _camp.videoMode,
-      voice:           _camp.voice,
-      voiceSettings:   _camp.voiceSettings,
-      aspectRatio:     _camp.aspectRatio,
-      resolution:      _camp.resolution,
-      step:            _camp.step,
-      audioUrl:        _camp.audioUrl,
-      audioDuration:   _camp.audioDuration,
-      audioClips:      _camp.audioClips,
-      visualPrompts:   _camp.visualPrompts,
-      chunks:          _camp.chunks,
-      photoUrl:        _camp.photoUrl        || null,
-      productPhotoUrl: _camp.productPhotoUrl || null,
-      savedAt:         Date.now()
+      campaignId:        _camp.campaignId,
+      title:             _camp.title,
+      script:            _camp.script,
+      videoMode:         _camp.videoMode,
+      voice:             _camp.voice,
+      voiceSettings:     _camp.voiceSettings,
+      aspectRatio:       _camp.aspectRatio,
+      resolution:        _camp.resolution,
+      step:              _camp.step,
+      genMode:           _camp.genMode,
+      currentClipIndex:  _camp.currentClipIndex,
+      audioUrl:          _camp.audioUrl,
+      audioDuration:     _camp.audioDuration,
+      audioClips:        _camp.audioClips,
+      visualPrompts:     _camp.visualPrompts,
+      chunks:            _camp.chunks,
+      photoUrl:          _camp.photoUrl        || null,
+      productPhotoUrl:   _camp.productPhotoUrl || null,
+      savedAt:           Date.now()
     }));
   } catch(e) {}
 }
@@ -9253,21 +9255,23 @@ async function campResumeDraft() {
 
   // Restaurar _camp desde el draft YA (antes del check backend) para que
   // visualPrompts, chunks, audioUrl etc. estén disponibles en campOpenDetail()
-  _camp.campaignId      = draft.campaignId;
-  _camp.title           = draft.title          || '';
-  _camp.script          = draft.script         || '';
-  _camp.videoMode       = draft.videoMode      || 'talking';
-  _camp.voice           = draft.voice          || 'valeria';
-  _camp.voiceSettings   = draft.voiceSettings  || null;
-  _camp.aspectRatio     = draft.aspectRatio    || '9:16';
-  _camp.resolution      = draft.resolution     || '480p';
-  _camp.audioUrl        = draft.audioUrl       || null;
-  _camp.audioDuration   = draft.audioDuration  || 0;
-  _camp.audioClips      = draft.audioClips     || [];
-  _camp.visualPrompts   = draft.visualPrompts  || [];
-  _camp.chunks          = draft.chunks         || [];
-  _camp.photoUrl        = draft.photoUrl       || null;
-  _camp.productPhotoUrl = draft.productPhotoUrl || null;
+  _camp.campaignId       = draft.campaignId;
+  _camp.title            = draft.title           || '';
+  _camp.script           = draft.script          || '';
+  _camp.videoMode        = draft.videoMode       || 'talking';
+  _camp.voice            = draft.voice           || 'valeria';
+  _camp.voiceSettings    = draft.voiceSettings   || null;
+  _camp.aspectRatio      = draft.aspectRatio     || '9:16';
+  _camp.resolution       = draft.resolution      || '480p';
+  _camp.genMode          = draft.genMode         || 'review';
+  _camp.currentClipIndex = draft.currentClipIndex != null ? draft.currentClipIndex : 0;
+  _camp.audioUrl         = draft.audioUrl        || null;
+  _camp.audioDuration    = draft.audioDuration   || 0;
+  _camp.audioClips       = draft.audioClips      || [];
+  _camp.visualPrompts    = draft.visualPrompts   || [];
+  _camp.chunks           = draft.chunks          || [];
+  _camp.photoUrl         = draft.photoUrl        || null;
+  _camp.productPhotoUrl  = draft.productPhotoUrl || null;
 
   // Verificar estado actual en el backend
   try {
@@ -10522,23 +10526,34 @@ function campShowReviewControls(index) {
   document.getElementById('campGenStatusTitle').textContent = 'Clip ' + (index+1) + ' de ' + _camp.chunks.length + ' listo para revisión';
 }
 
+// Genera el siguiente clip según el modo de video activo
+async function campGenerateNextClip(index) {
+  if (_camp.videoMode === 'voiceover') {
+    await campGenerateOneClipV2(index);
+  } else {
+    await campGenerateOneClip(index);
+  }
+}
+
 async function campApproveClip() {
   _camp.currentClipIndex++;
-  if(_camp.currentClipIndex >= _camp.audioClips.length){
+  const totalClips = (_camp.videoMode === 'voiceover' ? _camp.audioClips.length : _camp.chunks.length) || 0;
+  if (_camp.currentClipIndex >= totalClips) {
     document.getElementById('campReviewControls').style.display = 'none';
     document.getElementById('campAllDoneControls').style.display = 'block';
     clearInterval(_camp.pollingInterval); _camp.pollingInterval = null;
     return;
   }
   document.getElementById('campReviewControls').style.display = 'none';
-  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex + 1) + '...';
-  await campGenerateOneClipV2(_camp.currentClipIndex);
+  document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (_camp.currentClipIndex + 1) + ' de ' + totalClips + '...';
+  campSaveDraft(); // persistir posición actual antes de generar, por si hay refresh
+  await campGenerateNextClip(_camp.currentClipIndex);
 }
 
 async function campRegenCurrentClip() {
   _camp.clipEnqueued[_camp.currentClipIndex] = false;
-  await campGenerateOneClipV2(_camp.currentClipIndex);
   document.getElementById('campReviewControls').style.display = 'none';
+  await campGenerateNextClip(_camp.currentClipIndex);
 }
 
 async function campRegenClip(index) {
@@ -10952,12 +10967,92 @@ async function campOpenDetail(campaignId, title) {
       if (ta) setTimeout(() => campAutoResizeTA(ta), 0);
     });
 
-    const clipsDone = clips.filter(c => c.status === 'completed').length;
-    const clipsFailed = clips.filter(c => c.status === 'failed').length;
-    document.getElementById('campGenProgressBar').style.width = '100%';
-    document.getElementById('campGenStatusTitle').textContent = title;
-    document.getElementById('campGenStatusSub').textContent = clipsDone + ' clips completados' + (clipsFailed > 0 ? ' · ' + clipsFailed + ' fallidos' : '');
-    document.getElementById('campAllDoneControls').style.display = 'block';
+    const clipsDone      = clips.filter(c => c.status === 'completed').length;
+    const clipsGenerating = clips.filter(c => c.status === 'generating').length;
+    const clipsFailed    = clips.filter(c => c.status === 'failed').length;
+
+    // Total esperado: chunks del draft (si están disponibles) o la cantidad de clips en DB
+    const totalExpected = (_camp.chunks && _camp.chunks.length > 0)
+      ? _camp.chunks.length
+      : clips.length;
+
+    // Agregar tarjetas placeholder para clips que aún no se enviaron a generar
+    const dbIndices = new Set(clips.map(c => c.clip_index));
+    for (let i = 0; i < totalExpected; i++) {
+      if (!dbIndices.has(i)) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'camp-clip-wrapper';
+        wrapper.id = 'campClipWrapper-' + i;
+        wrapper.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
+        const card = document.createElement('div');
+        card.className = 'camp-clip-card pending';
+        card.id = 'campClip-' + i;
+        card.innerHTML =
+          '<div class="camp-clip-overlay">' +
+            '<div class="camp-clip-queue-icon">⏳</div>' +
+            '<div class="camp-clip-status-label">En cola</div>' +
+          '</div>' +
+          '<div class="camp-clip-badge">' + (i+1) + '</div>';
+
+        const vp = _camp.visualPrompts ? _camp.visualPrompts.find(p => p.clipIndex === i) : null;
+        const chunk = _camp.chunks ? _camp.chunks[i] : null;
+        const promptText = (vp && vp.prompt) ? vp.prompt : (chunk ? campBuildMasterPrompt().replace('[CHUNK]', chunk.text) : '');
+
+        const promptBlock = document.createElement('div');
+        promptBlock.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+        promptBlock.innerHTML =
+          '<textarea id="campClipPromptTA-' + i + '" class="camp-clip-prompt-ta" ' +
+            'oninput="campAutoResizeTA(this)" ' +
+            'placeholder="Prompt visual del clip ' + (i+1) + '">' + campEscapeTextarea(promptText) + '</textarea>' +
+          '<button onclick="campRegenClip(' + i + ')" class="camp-clip-regen-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>Regenerar clip</button>';
+
+        wrapper.appendChild(card);
+        wrapper.appendChild(promptBlock);
+        grid.appendChild(wrapper);
+        const ta = promptBlock.querySelector('textarea');
+        if (ta) setTimeout(() => campAutoResizeTA(ta), 0);
+      }
+    }
+
+    // Barra de progreso
+    const pct = totalExpected > 0 ? Math.round((clipsDone / totalExpected) * 100) : 100;
+    document.getElementById('campGenProgressBar').style.width = pct + '%';
+
+    const allDone = clipsDone >= totalExpected && clipsGenerating === 0;
+
+    if (allDone) {
+      // Todo completo
+      document.getElementById('campGenStatusTitle').textContent = title;
+      document.getElementById('campGenStatusSub').textContent = clipsDone + ' clips completados' + (clipsFailed > 0 ? ' · ' + clipsFailed + ' fallidos' : '');
+      document.getElementById('campAllDoneControls').style.display = 'block';
+    } else {
+      // Campaña en progreso — determinar posición de review
+      document.getElementById('campAllDoneControls').style.display = 'none';
+
+      if (clipsGenerating > 0) {
+        // Hay un clip generándose — arrancar polling y esperar
+        const generatingIdx = clips.find(c => c.status === 'generating')?.clip_index ?? 0;
+        document.getElementById('campGenStatusTitle').textContent = 'Generando clip ' + (generatingIdx + 1) + ' de ' + totalExpected + '...';
+        document.getElementById('campGenStatusSub').textContent = '';
+        _camp.currentClipIndex = generatingIdx;
+        _camp.genMode = _camp.genMode || 'review';
+        campStartPolling();
+      } else if (clipsDone > 0) {
+        // Hay clips completados pero ninguno generándose — el último completado espera aprobación
+        const lastDoneIdx = Math.max(...clips.filter(c => c.status === 'completed').map(c => c.clip_index));
+        _camp.currentClipIndex = lastDoneIdx;
+        _camp.genMode = 'review';
+        document.getElementById('campGenStatusTitle').textContent = 'Clip ' + (lastDoneIdx + 1) + ' listo para revisión';
+        document.getElementById('campGenStatusSub').textContent = clipsDone + ' de ' + totalExpected + ' clips completados';
+        campShowReviewControls(lastDoneIdx);
+        campStartPolling(); // en caso de webhooks tardíos
+      } else {
+        document.getElementById('campGenStatusTitle').textContent = 'Sin clips completados todavía';
+        document.getElementById('campGenStatusSub').textContent = '';
+        campStartPolling();
+      }
+    }
 
     // Si la campaña ya fue ensamblada, restaurar el video final automáticamente
     if (campaign && campaign.final_video_url && (campaign.status === 'assembled' || campaign.status === 'completed')) {
