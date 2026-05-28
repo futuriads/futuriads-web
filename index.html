@@ -9285,16 +9285,16 @@ async function campResumeDraft() {
       const data = await resp.json();
 
       // Ya ensamblado → abrir vista de detalle con el video final
+      // (campOpenDetail borrará el draft si detecta que todo está completo)
       if (data.campaign && data.campaign.final_video_url) {
-        campClearDraft();
         await campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
         return;
       }
 
       // Ya tiene clips generados (aunque estén fallidos) → ir a la vista de generación
       // directamente, sin volver a pasar por el wizard de audio/prompts
+      // Mantener el draft para que campOpenDetail pueda restaurar chunks y posición
       if (data.clips && data.clips.length > 0) {
-        campClearDraft();
         await campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
         return;
       }
@@ -10410,7 +10410,9 @@ async function campGenerateOneClip(index) {
         clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
         resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
         userId: _currentUser.userId,
-        masterPrompt: masterPrompt
+        masterPrompt: masterPrompt,
+        // Primer clip: guardar el total en la DB para poder resumir sin draft
+        totalClips: index === 0 ? _camp.chunks.length : undefined
       })
     });
     
@@ -10822,7 +10824,8 @@ async function campLoadList() {
 }
 
 async function campOpenDetail(campaignId, title) {
-  campClearDraft(); // si había un draft de esta campaña, ya no es necesario
+  // NO borrar el draft aquí — puede tener chunks para clips aún no generados.
+  // Se borra solo cuando la campaña está completamente terminada (abajo).
   _camp.campaignId = campaignId;
   document.getElementById('campView-list').style.display = 'none';
   document.getElementById('campView-wizard').style.display = 'none';
@@ -10971,10 +10974,13 @@ async function campOpenDetail(campaignId, title) {
     const clipsGenerating = clips.filter(c => c.status === 'generating').length;
     const clipsFailed    = clips.filter(c => c.status === 'failed').length;
 
-    // Total esperado: chunks del draft (si están disponibles) o la cantidad de clips en DB
+    // Total esperado — prioridad:
+    // 1. chunks en memoria (draft restaurado, sesión activa)
+    // 2. total_clips en la DB (guardado al generar el clip 0)
+    // 3. clips en DB como fallback (puede subestimar si faltan clips no iniciados)
     const totalExpected = (_camp.chunks && _camp.chunks.length > 0)
       ? _camp.chunks.length
-      : clips.length;
+      : (campaign && campaign.total_clips > 0 ? campaign.total_clips : clips.length);
 
     // Agregar tarjetas placeholder para clips que aún no se enviaron a generar
     const dbIndices = new Set(clips.map(c => c.clip_index));
@@ -11022,7 +11028,8 @@ async function campOpenDetail(campaignId, title) {
     const allDone = clipsDone >= totalExpected && clipsGenerating === 0;
 
     if (allDone) {
-      // Todo completo
+      // Todo completo — ahora sí es seguro borrar el draft
+      campClearDraft();
       document.getElementById('campGenStatusTitle').textContent = title;
       document.getElementById('campGenStatusSub').textContent = clipsDone + ' clips completados' + (clipsFailed > 0 ? ' · ' + clipsFailed + ' fallidos' : '');
       document.getElementById('campAllDoneControls').style.display = 'block';
@@ -11037,7 +11044,6 @@ async function campOpenDetail(campaignId, title) {
         document.getElementById('campGenStatusSub').textContent = '';
         _camp.currentClipIndex = generatingIdx;
         _camp.genMode = _camp.genMode || 'review';
-        campStartPolling();
       } else if (clipsDone > 0) {
         // Hay clips completados pero ninguno generándose — el último completado espera aprobación
         const lastDoneIdx = Math.max(...clips.filter(c => c.status === 'completed').map(c => c.clip_index));
@@ -11046,12 +11052,15 @@ async function campOpenDetail(campaignId, title) {
         document.getElementById('campGenStatusTitle').textContent = 'Clip ' + (lastDoneIdx + 1) + ' listo para revisión';
         document.getElementById('campGenStatusSub').textContent = clipsDone + ' de ' + totalExpected + ' clips completados';
         campShowReviewControls(lastDoneIdx);
-        campStartPolling(); // en caso de webhooks tardíos
       } else {
         document.getElementById('campGenStatusTitle').textContent = 'Sin clips completados todavía';
         document.getElementById('campGenStatusSub').textContent = '';
-        campStartPolling();
       }
+
+      // Re-persistir el draft con el estado actualizado (incluyendo chunks y posición actual)
+      // para que el próximo refresh lo restaure correctamente
+      campSaveDraft();
+      campStartPolling();
     }
 
     // Si la campaña ya fue ensamblada, restaurar el video final automáticamente
