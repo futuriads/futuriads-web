@@ -6576,14 +6576,18 @@ body, #app { background: #07050f; }
                 </div>
               </div>
               <div style="flex:1;min-width:200px;" id="campProductUploadSection">
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Producto</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:6px;">
+                  Producto
+                  <span id="campProductOptionalBadge" style="display:none;font-size:10px;font-weight:600;color:rgba(139,92,246,0.7);background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:4px;padding:1px 6px;text-transform:none;letter-spacing:0;">opcional</span>
+                </div>
                 <div class="camp-upload-zone" id="campUploadZoneProduct">
                   <input type="file" id="campProductPhotoInput" accept="image/*" onchange="campProductPhotoSelected(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
                   <div class="camp-upload-icon">P</div>
-                  <div class="camp-upload-label">Subí la foto del producto</div>
-                  <div class="camp-upload-sub">JPG o PNG · máx. 5MB</div>
+                  <div class="camp-upload-label" id="campProductUploadLabel">Subí la foto del producto</div>
+                  <div class="camp-upload-sub" id="campProductUploadSub">JPG o PNG · máx. 5MB</div>
                   <img class="camp-upload-preview" id="campProductPreview" alt="Preview">
                 </div>
+                <div id="campProductOptionalHint" style="display:none;font-size:11px;color:var(--text3);margin-top:6px;line-height:1.4;">Sin producto físico (servicio, app, web)? Podés continuar sin foto.</div>
               </div>
             </div>
             <div class="camp-nav-row">
@@ -9335,14 +9339,26 @@ function campGoStep(n) {
   if (n === 2) {
     const prodSection = document.getElementById('campProductUploadSection');
     if (prodSection) prodSection.style.display = 'block';
-    const title = document.getElementById('campStep2Title');
-    const sub = document.getElementById('campStep2Sub');
+    const title    = document.getElementById('campStep2Title');
+    const sub      = document.getElementById('campStep2Sub');
+    const badge    = document.getElementById('campProductOptionalBadge');
+    const hint     = document.getElementById('campProductOptionalHint');
+    const prodLbl  = document.getElementById('campProductUploadLabel');
+    const prodSub  = document.getElementById('campProductUploadSub');
     if (_camp.videoMode === 'talking') {
-      if (title) title.textContent = 'Fotos del avatar y el producto';
-      if (sub) sub.textContent = 'Subí la foto de la persona que va a hablar en el video. La foto del producto es opcional.';
+      if (title)   title.textContent   = 'Foto del avatar';
+      if (sub)     sub.textContent     = 'Subí la foto de la persona que va a hablar en el video. Si tu anuncio es para un servicio, app o web, podés saltearte la foto del producto.';
+      if (badge)   badge.style.display = 'inline';
+      if (hint)    hint.style.display  = 'block';
+      if (prodLbl) prodLbl.textContent = 'Foto del producto (si aplica)';
+      if (prodSub) prodSub.textContent = 'Opcional — saltear si es servicio/app/web';
     } else {
-      if (title) title.textContent = 'Fotos del avatar y el producto';
-      if (sub) sub.textContent = 'Subí la foto de la persona que va a protagonizar el video y una foto del producto.';
+      if (title)   title.textContent   = 'Fotos del avatar y el producto';
+      if (sub)     sub.textContent     = 'Subí la foto de la persona que va a protagonizar el video y una foto del producto.';
+      if (badge)   badge.style.display = 'none';
+      if (hint)    hint.style.display  = 'none';
+      if (prodLbl) prodLbl.textContent = 'Subí la foto del producto';
+      if (prodSub) prodSub.textContent = 'JPG o PNG · máx. 5MB';
     }
   }
 }
@@ -10419,25 +10435,42 @@ function campBuildMasterPrompt() {
   const isMale = _camp.avatarGender
     ? _camp.avatarGender === 'male'
     : MALE_VOICES.includes(_camp.voice);
-  const pronoun = isMale ? 'He' : 'She';
+  const pronoun   = isMale ? 'He' : 'She';
   const possessive = isMale ? 'his' : 'her';
-  const person = isMale ? 'man' : 'woman';
+  const person    = isMale ? 'man' : 'woman';
   const isVoiceover = _camp.videoMode === 'voiceover';
+  const hasProduct  = !!_camp.productPhotoUrl;
 
+  // ─── MODO VOICEOVER (avatar en silencio) ─────────────────────────────────
   if (isVoiceover) {
-    // Modo voz en off: el avatar NO habla, actúa en silencio
-    return '🚨 ABSOLUTE RULES — BOTH NON-NEGOTIABLE:\n' +
-      '1. NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point. ZERO mouth movement. ZERO dialogue. ZERO lip sync. Mouth CLOSED at all times.\n' +
-      '2. NO TEXT IN THE VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles, ZERO graphics, ZERO UI elements. Pure live footage only — no rendered text of any kind anywhere in the frame.\n\n' +
-      'STYLE: Authentic UGC product video filmed on a phone. Casual, real, unpolished. Silent visual storytelling — like a muted TikTok.\n\n' +
-      'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Holds and examines the product. Reacts with face — raised eyebrows, smile, nod, surprised look, satisfied expression. Shows the product to camera. Points at it. Reads the label. Uses it. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
-      'VISUAL DIRECTION: Dynamic angles. Selfie cam facing camera (mouth closed, eyebrows up, smiling). Close-up of product in ' + possessive + ' hands. Reaction shot (eyes wide, nodding). Product being applied/used. Handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
-      'TECHNICAL: No speaking. No text of any kind visible in the video. Lips sealed at all times. Indoor soft lighting. The voiceover audio is added separately — this clip is 100% silent.\n\n' +
-      'THE PRODUCT CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"';
+    if (hasProduct) {
+      // Voiceover CON producto: interactúa visualmente con el producto
+      return (
+        '🚨 ABSOLUTE RULES — BOTH NON-NEGOTIABLE:\n' +
+        '1. NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point. ZERO mouth movement. ZERO dialogue. ZERO lip sync. Mouth CLOSED at all times.\n' +
+        '2. NO TEXT IN THE VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles, ZERO graphics. Pure live footage only.\n\n' +
+        'STYLE: Authentic UGC product video filmed on a phone. Casual, real, unpolished. Silent visual storytelling.\n\n' +
+        'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Holds and examines the product. Reacts with face — raised eyebrows, smile, nod, surprised look. Shows the product to camera. Points at it. Uses it. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
+        'VISUAL DIRECTION: Dynamic angles. Selfie cam facing camera (mouth closed). Close-up of product in ' + possessive + ' hands. Reaction shot. Product being used. Handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
+        'TECHNICAL: No speaking. No text visible. Lips sealed at all times. Indoor soft lighting. Voiceover added separately — this clip is 100% silent.\n\n' +
+        'THE CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"'
+      );
+    } else {
+      // Voiceover SIN producto: servicio / app / web — el avatar actúa en contexto digital
+      return (
+        '🚨 ABSOLUTE RULES — BOTH NON-NEGOTIABLE:\n' +
+        '1. NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point. ZERO mouth movement. ZERO dialogue. ZERO lip sync. Mouth CLOSED at all times.\n' +
+        '2. NO TEXT IN THE VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles, ZERO graphics. Pure live footage only.\n\n' +
+        'STYLE: Authentic lifestyle/service UGC video filmed on a phone. Casual, real, unpolished. Silent visual storytelling — no physical product.\n\n' +
+        'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Uses a smartphone or laptop naturally. Looks at the screen with a satisfied, excited, or surprised expression. Reacts to what ' + pronoun.toLowerCase() + ' sees on the screen — smiles, nods, raises eyebrows. Points at the screen. Scrolls. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
+        'VISUAL DIRECTION: Selfie angle (mouth closed, eyebrows expressive). Over-the-shoulder looking at phone screen. Close-up of ' + possessive + ' face reacting to a screen. ' + pronoun + ' holds a phone naturally. Handheld feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
+        'TECHNICAL: No speaking. No text visible. Lips sealed at all times. Indoor natural lighting. Voiceover added separately — this clip is 100% silent.\n\n' +
+        'THE CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"'
+      );
+    }
   }
 
-  // Modo talking head: el avatar habla
-  // Instrucción de acento específica según selección (default: argentino rioplatense)
+  // ─── MODO TALKING HEAD (avatar habla a cámara) ────────────────────────────
   const accentMap = {
     'argentine': (
       'LANGUAGE: Spanish from Buenos Aires, Argentina — Rioplatense accent. ' +
@@ -10453,18 +10486,36 @@ function campBuildMasterPrompt() {
   };
   const accentText = accentMap[_camp.accent] || accentMap['argentine'];
 
-  return (
-    'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
-    'Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, ' +
-    'gestures naturally, shows the product. NOT a static talking head.\n\n' +
-    accentText + '\n\n' +
-    'VISUAL DIRECTION: Mix of angles — selfie talking to camera, close-up of product in ' + possessive + ' hand, ' +
-    'reaction expressions. Natural transitions. Handheld phone camera feel.\n\n' +
-    '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
-    'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
-    'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
-    pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
-  );
+  if (hasProduct) {
+    // Talking CON producto: habla a cámara e interactúa con el producto
+    return (
+      'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
+      'Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, ' +
+      'gestures naturally, holds and shows the product. NOT a static talking head.\n\n' +
+      accentText + '\n\n' +
+      'VISUAL DIRECTION: Mix of angles — selfie talking to camera, close-up of product in ' + possessive + ' hand, ' +
+      'reaction expressions, ' + person + ' using/showing the product. Natural transitions. Handheld phone camera feel.\n\n' +
+      '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
+      'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
+      'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
+      pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
+    );
+  } else {
+    // Talking SIN producto: servicio / app / web — habla a cámara, interactúa con teléfono/laptop
+    return (
+      'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
+      'Feels like a genuine recommendation from a friend. The ' + person + ' talks directly to camera — no physical product. ' +
+      'Dynamic scene changes, gestures naturally, occasionally glances at or holds a phone/laptop. NOT a static talking head.\n\n' +
+      accentText + '\n\n' +
+      'VISUAL DIRECTION: Mix of angles — selfie angle talking to camera, over-the-shoulder glancing at a phone screen, ' +
+      'expressive hand gestures while speaking, reaction close-ups. Natural transitions. Handheld phone camera feel.\n\n' +
+      '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
+      'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
+      'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' +
+      pronoun + ' speaks with energy and conviction, as if recommending a great app or service to a friend.\n\n' +
+      pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
+    );
+  }
 }
 
 // Detecta el género del avatar llamando al backend (Claude Vision)
