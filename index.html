@@ -8540,7 +8540,7 @@ function campStartNew() {
     audioUrl: null, audioDuration: 0, audioClips: [], audioWords: [], voiceSettings: null, visualPrompts: [],
     avatarGender: null,
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
-    clipsLaunched: false, clipEnqueued: {}
+    clipsLaunched: false, clipEnqueued: {}, creditsDepleted: false
   });
   // Reset UI de modo de video
   const btnTalking = document.getElementById('campVideoModeTalking');
@@ -10074,6 +10074,7 @@ async function campLaunchTalking() {
     // Iniciar polling y generar clips directamente (sin variantes)
     campStartPolling();
     _camp.clipsLaunched = false;
+    _camp.creditsDepleted = false;
     await campStartClipGeneration();
   } catch (e) {
     showToast('Error: ' + e.message);
@@ -10381,6 +10382,7 @@ async function campStartClipGeneration() {
     document.getElementById('campGenStatusTitle').textContent = 'Generando clips secuencialmente...';
     document.getElementById('campGenStatusSub').textContent = 'Esto puede tardar 1-2 minutos.';
     for(let i = 0; i < _camp.chunks.length; i++) {
+      if(_camp.creditsDepleted) break; // detener si se agotaron los créditos
       await campGenerateOneClip(i);
       if(i < _camp.chunks.length - 1) await new Promise(r => setTimeout(r, 2000));
     }
@@ -10429,6 +10431,15 @@ async function campGenerateOneClip(index) {
     // Si el backend rechaza por CLIP_ALREADY_EXISTS, no es error
     if(resp.status === 409) {
       console.log('Backend: clip ' + index + ' ya existía, ignorando.');
+      return;
+    }
+    if(resp.status === 402) {
+      _camp.clipEnqueued[index] = false;
+      campUpdateClipCard(index, 'failed', null);
+      _camp.creditsDepleted = true; // detener generación automática de clips siguientes
+      showToast('Sin créditos suficientes para generar el clip ' + (index + 1) + '. Recargá créditos y reintentá.');
+      document.getElementById('campGenStatusTitle').textContent = 'Créditos insuficientes';
+      document.getElementById('campGenStatusSub').textContent = 'Los clips generados se guardaron. Recargá créditos y reintentá los que fallaron.';
       return;
     }
     if(!resp.ok) {
