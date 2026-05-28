@@ -10322,13 +10322,33 @@ async function campOpenDetail(campaignId, title) {
     if (!_camp.photoUrl        && campaign && campaign.avatar_url)   _camp.photoUrl        = campaign.avatar_url;
     if (!_camp.productPhotoUrl && campaign && campaign.product_url)  _camp.productPhotoUrl = campaign.product_url;
 
-    // Poblar visualPrompts desde text_chunk de cada clip (guardado al generar)
-    // Esto permite regenerar clips aunque no haya draft en localStorage
+    // Poblar visualPrompts y URLs de avatar desde text_chunk de cada clip.
+    // Formato nuevo: JSON.stringify({ prompt, avatarUrl, productUrl })
+    // Formato viejo: texto plano (backward compat)
     if (!_camp.visualPrompts || _camp.visualPrompts.length === 0) {
-      _camp.visualPrompts = (clips || [])
-        .filter(c => c.text_chunk)
-        .map(c => ({ clipIndex: c.clip_index, prompt: c.text_chunk }));
+      _camp.visualPrompts = [];
     }
+    (clips || []).forEach(c => {
+      if (!c.text_chunk) return;
+      let prompt = c.text_chunk;
+      let clipAvatarUrl = null, clipProductUrl = null;
+      try {
+        const parsed = JSON.parse(c.text_chunk);
+        if (parsed && typeof parsed.prompt === 'string') {
+          prompt          = parsed.prompt;
+          clipAvatarUrl   = parsed.avatarUrl   || null;
+          clipProductUrl  = parsed.productUrl  || null;
+        }
+      } catch(e) { /* texto plano — backward compat */ }
+
+      // Actualizar visualPrompts solo si no viene del draft (más fresco)
+      const existing = _camp.visualPrompts.find(vp => vp.clipIndex === c.clip_index);
+      if (!existing) _camp.visualPrompts.push({ clipIndex: c.clip_index, prompt });
+
+      // Restaurar photoUrl/productPhotoUrl desde cualquier clip que los tenga
+      if (!_camp.photoUrl        && clipAvatarUrl)  _camp.photoUrl        = clipAvatarUrl;
+      if (!_camp.productPhotoUrl && clipProductUrl) _camp.productPhotoUrl = clipProductUrl;
+    });
 
     // Renderizar grid de clips
     const grid = document.getElementById('campClipsGrid');
