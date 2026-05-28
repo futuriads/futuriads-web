@@ -6694,8 +6694,8 @@ body, #app { background: #07050f; }
             <div id="campGenderSection" style="margin-bottom:20px;display:none;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Género del avatar</div>
               <div class="camp-options-row" id="campGenderOptions">
-                <button class="camp-option-btn selected" onclick="campSelectVoice('female', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Mujer</button>
-                <button class="camp-option-btn" onclick="campSelectVoice('male', this); document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected');">Hombre</button>
+                <button class="camp-option-btn selected" onclick="campSetAvatarGender('female', this)">Mujer</button>
+                <button class="camp-option-btn" onclick="campSetAvatarGender('male', this)">Hombre</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
             </div>
@@ -9706,7 +9706,8 @@ async function campLoadChunksTalking() {
     // No hay prompts visuales en modo talking — el prompt es el master prompt + chunk
     _camp.visualPrompts = _camp.chunks.map((c, i) => ({
       clipIndex: i,
-      prompt: campBuildMasterPrompt().replace('[CHUNK]', c.text)
+      prompt: campBuildMasterPrompt().replace('[CHUNK]', c.text),
+      userEdited: false  // marca si el usuario editó manualmente — impide sobreescritura al cambiar género
     }));
 
     campSaveDraft(); // persistir antes de mostrar
@@ -10405,9 +10406,10 @@ async function campGenerateOneClip(index) {
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
   
-  // Usar el prompt editado por el usuario si existe, sino construir desde master
+  // Usar el prompt editado por el usuario si lo editó explícitamente;
+  // sino, siempre reconstruir desde campBuildMasterPrompt() para respetar el género actual.
   const vp = (_camp.visualPrompts || []).find(p => p.clipIndex === index);
-  const masterPrompt = (vp && vp.prompt) ? vp.prompt : campBuildMasterPrompt();
+  const masterPrompt = (vp && vp.userEdited && vp.prompt) ? vp.prompt : campBuildMasterPrompt();
 
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
@@ -10512,8 +10514,17 @@ async function campDetectAvatarGender(imageUrl) {
     });
     if (resp.ok) {
       const data = await resp.json();
-      _camp.avatarGender = data.gender || 'female';
-      console.log('[campDetectAvatarGender] Género detectado:', _camp.avatarGender);
+      const detected = data.gender || 'female';
+      console.log('[campDetectAvatarGender] Género detectado:', detected);
+      // Actualizar botones del wizard para que reflejen el género detectado
+      const genderBtns = document.querySelectorAll('#campGenderOptions .camp-option-btn');
+      genderBtns.forEach(b => {
+        const isMatch = (detected === 'male' && b.textContent.trim() === 'Hombre') ||
+                        (detected === 'female' && b.textContent.trim() === 'Mujer');
+        b.classList.toggle('selected', isMatch);
+      });
+      // Usar campSetAvatarGender para también actualizar prompts cacheados
+      campSetAvatarGender(detected, null);
     }
   } catch(e) {
     console.warn('[campDetectAvatarGender] Error detectando género, usando female por defecto:', e.message);
@@ -10528,6 +10539,27 @@ function campDetectGender() {
   const MALE_VOICES = ['male', 'male40', 'tomas', 'agustin', 'javier'];
   if (MALE_VOICES.includes(_camp.voice)) return 'male';
   return 'female';
+}
+
+// Llamado por los botones "Mujer" / "Hombre" en el wizard
+// Setea _camp.avatarGender y reconstruye los prompts cacheados que no fueron editados por el usuario
+function campSetAvatarGender(gender, btn) {
+  _camp.avatarGender = gender;
+  // Actualizar selección visual del botón
+  document.querySelectorAll('#campGenderOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  if (btn) btn.classList.add('selected');
+  // Reconstruir prompts del paso 4 que no hayan sido editados manualmente
+  if (_camp.visualPrompts && _camp.visualPrompts.length > 0 && _camp.chunks && _camp.chunks.length > 0) {
+    _camp.visualPrompts.forEach(vp => {
+      if (vp.userEdited) return; // respetar ediciones manuales
+      const chunk = _camp.chunks[vp.clipIndex];
+      if (!chunk) return;
+      vp.prompt = campBuildMasterPrompt().replace('[CHUNK]', chunk.text);
+      // Actualizar el textarea si está visible
+      const ta = document.getElementById('campClipPromptTA-' + vp.clipIndex);
+      if (ta) ta.value = vp.prompt;
+    });
+  }
 }
 
 function campShowReviewControls(index) {
@@ -10573,8 +10605,9 @@ async function campRegenClip(index) {
     const vp = _camp.visualPrompts ? _camp.visualPrompts.find(p => p.clipIndex === index) : null;
     if (vp) {
       vp.prompt = ta.value.trim();
+      vp.userEdited = true; // marcar como editado para que campGenerateOneClip lo use
     } else if (_camp.visualPrompts) {
-      _camp.visualPrompts.push({ clipIndex: index, prompt: ta.value.trim() });
+      _camp.visualPrompts.push({ clipIndex: index, prompt: ta.value.trim(), userEdited: true });
     }
   }
   _camp.clipEnqueued[index] = false;
