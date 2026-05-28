@@ -7643,6 +7643,42 @@ function skMetric() {
           <div class="sk" style="height:11px;width:55px;"></div>`;
 }
 
+// ─── Esperar a que los <img> y <video> de un contenedor terminen de cargar ────
+// Resuelve cuando todos los medios cargaron O cuando se agota el timeout.
+// - imgs: espera el evento "load" (o "error" para no bloquearse en imágenes rotas)
+// - videos: espera "loadedmetadata" (suficiente para mostrar el primer frame)
+function waitForMedia(container, timeout = 3500) {
+  if (!container) return Promise.resolve();
+
+  const imgs = Array.from(container.querySelectorAll('img'));
+  const vids = Array.from(container.querySelectorAll('video'));
+
+  const imgPromises = imgs.map(img => {
+    if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+    return new Promise(res => {
+      img.addEventListener('load',  res, { once: true });
+      img.addEventListener('error', res, { once: true });
+    });
+  });
+
+  const vidPromises = vids.map(vid => {
+    if (vid.readyState >= 1) return Promise.resolve(); // HAVE_METADATA
+    return new Promise(res => {
+      vid.addEventListener('loadedmetadata', res, { once: true });
+      vid.addEventListener('error',          res, { once: true });
+    });
+  });
+
+  const all = [...imgPromises, ...vidPromises];
+  if (all.length === 0) return Promise.resolve();
+
+  const race = Promise.race([
+    Promise.all(all),
+    new Promise(res => setTimeout(res, timeout))  // fallback: no bloquear más de N ms
+  ]);
+  return race;
+}
+
 // ─── Full-screen page loader ──────────────────────────────────────────────────
 let _pageLoaderTimer = null;
 
@@ -10584,13 +10620,18 @@ async function showScreen(name, instant){
     rebuildResDropdown();
   }
 
-  // Cargar datos y ocultar overlay al terminar
+  // Cargar datos, esperar que los medios estén visibles, y ocultar overlay
   try {
     if (name === 'historial') {
-      await Promise.all([loadHistory(), Promise.resolve(loadFolders())]);
+      await loadHistory();
+      loadFolders();
+      // Esperar a que imágenes y videos del historial terminen de cargar
+      await waitForMedia(document.getElementById('histContent'));
     } else if (name === 'campanas') {
       await campLoadList();
-      campCheckDraft(); // mostrar banner si hay borrador pendiente
+      campCheckDraft();
+      // Esperar miniaturas de campañas
+      await waitForMedia(document.getElementById('campListContainer'));
     } else if (name === 'perfil') {
       await Promise.all([profLoadStats(), Promise.resolve(profLoadActivity())]);
     }
