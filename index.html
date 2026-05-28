@@ -10442,80 +10442,46 @@ function campBuildMasterPrompt() {
   const hasProduct  = !!_camp.productPhotoUrl;
 
   // ─── MODO VOICEOVER (avatar en silencio) ─────────────────────────────────
+  // El prompt va primero a lo que hace el avatar, luego reglas de silencio.
+  // Corto y directo — Seedance prioriza lo que lee primero.
   if (isVoiceover) {
+    const silentSuffix = 'Mouth CLOSED at all times — zero lip movement, zero speech, zero dialogue. No text overlays of any kind. Silent video, voiceover added in post. Handheld phone camera feel, vertical ' + (_camp.aspectRatio || '9:16') + ', indoor soft lighting.';
+
     if (hasProduct) {
-      // Voiceover CON producto: interactúa visualmente con el producto
       return (
-        '🚨 ABSOLUTE RULES — BOTH NON-NEGOTIABLE:\n' +
-        '1. NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point. ZERO mouth movement. ZERO dialogue. ZERO lip sync. Mouth CLOSED at all times.\n' +
-        '2. NO TEXT IN THE VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles, ZERO graphics. Pure live footage only.\n\n' +
-        'STYLE: Authentic UGC product video filmed on a phone. Casual, real, unpolished. Silent visual storytelling.\n\n' +
-        'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Holds and examines the product. Reacts with face — raised eyebrows, smile, nod, surprised look. Shows the product to camera. Points at it. Uses it. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
-        'VISUAL DIRECTION: Dynamic angles. Selfie cam facing camera (mouth closed). Close-up of product in ' + possessive + ' hands. Reaction shot. Product being used. Handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
-        'TECHNICAL: No speaking. No text visible. Lips sealed at all times. Indoor soft lighting. Voiceover added separately — this clip is 100% silent.\n\n' +
-        'THE CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"'
+        'The ' + person + ' from @Image1 silently holds, examines and shows the product from @Image2 to camera. ' +
+        pronoun + ' reacts with genuine expressions — raised eyebrows, smile, nod, surprised look — without opening ' + possessive + ' mouth. ' +
+        'Close-up of product in ' + possessive + ' hands, selfie angle, reaction shots. Authentic casual UGC style. ' +
+        silentSuffix
       );
     } else {
-      // Voiceover SIN producto: servicio / app / web — el avatar actúa en contexto digital
       return (
-        '🚨 ABSOLUTE RULES — BOTH NON-NEGOTIABLE:\n' +
-        '1. NO TALKING: The ' + person + ' MUST NOT open their mouth, speak, or move their lips at any point. ZERO mouth movement. ZERO dialogue. ZERO lip sync. Mouth CLOSED at all times.\n' +
-        '2. NO TEXT IN THE VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles, ZERO graphics. Pure live footage only.\n\n' +
-        'STYLE: Authentic lifestyle/service UGC video filmed on a phone. Casual, real, unpolished. Silent visual storytelling — no physical product.\n\n' +
-        'WHAT THE ' + person.toUpperCase() + ' DOES (silently): Uses a smartphone or laptop naturally. Looks at the screen with a satisfied, excited, or surprised expression. Reacts to what ' + pronoun.toLowerCase() + ' sees on the screen — smiles, nods, raises eyebrows. Points at the screen. Scrolls. Looks at camera with expression. ALL WITHOUT OPENING MOUTH.\n\n' +
-        'VISUAL DIRECTION: Selfie angle (mouth closed, eyebrows expressive). Over-the-shoulder looking at phone screen. Close-up of ' + possessive + ' face reacting to a screen. ' + pronoun + ' holds a phone naturally. Handheld feel, vertical ' + (_camp.aspectRatio || '9:16') + '.\n\n' +
-        'TECHNICAL: No speaking. No text visible. Lips sealed at all times. Indoor natural lighting. Voiceover added separately — this clip is 100% silent.\n\n' +
-        'THE CONTEXT (do NOT say this — only react to it silently): "[CHUNK]"'
+        'The ' + person + ' from @Image1 looks directly at camera with genuine, expressive reactions — smiles, nods, raised eyebrows, satisfied look. ' +
+        pronoun + ' gestures naturally, looks engaged and enthusiastic, without opening ' + possessive + ' mouth. ' +
+        'Selfie angle, close-up reaction shots, expressive face. Authentic casual UGC style. ' +
+        silentSuffix
       );
     }
   }
 
   // ─── MODO TALKING HEAD (avatar habla a cámara) ────────────────────────────
-  const accentMap = {
-    'argentine': (
-      'LANGUAGE: Spanish from Buenos Aires, Argentina — Rioplatense accent. ' +
-      'CRITICAL: NOT Spain Spanish (Castilian), NOT Mexican, NOT neutral Latin American. ' +
-      pronoun + ' MUST speak exactly like a porteño/porteña from Buenos Aires: ' +
-      'uses "vos" instead of "tú", characteristic Río de la Plata rising intonation, ' +
-      'Argentine prosody and rhythm. Every single word pronounced with Buenos Aires accent.'
-    ),
-    'neutral': (
-      'LANGUAGE: Neutral Latin American Spanish. ' +
-      pronoun + ' MUST speak in clear, neutral Spanish — no regional accent, universally understood.'
-    )
-  };
-  const accentText = accentMap[_camp.accent] || accentMap['argentine'];
+  // CRÍTICO: el diálogo va PRIMERO. Seedance lee el prompt de arriba abajo;
+  // si el texto que debe decir está al final, lo ignora.
+  const accentInstruction = (_camp.accent === 'neutral')
+    ? 'neutral Latin American Spanish'
+    : 'Buenos Aires Argentine Spanish — Rioplatense accent, NOT Castilian/Spain Spanish';
 
-  if (hasProduct) {
-    // Talking CON producto: habla a cámara e interactúa con el producto
-    return (
-      'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
-      'Feels like a genuine recommendation from a friend. Dynamic scene changes — the ' + person + ' talks to camera, ' +
-      'gestures naturally, holds and shows the product. NOT a static talking head.\n\n' +
-      accentText + '\n\n' +
-      'VISUAL DIRECTION: Mix of angles — selfie talking to camera, close-up of product in ' + possessive + ' hand, ' +
-      'reaction expressions, ' + person + ' using/showing the product. Natural transitions. Handheld phone camera feel.\n\n' +
-      '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
-      'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
-      'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' + pronoun + ' interacts with the product naturally.\n\n' +
-      pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
-    );
-  } else {
-    // Talking SIN producto: servicio / app / web — habla a cámara, interactúa con teléfono/laptop
-    return (
-      'STYLE: Authentic UGC (User Generated Content) video. Casual, real, relatable — NOT commercial, NOT polished. ' +
-      'Feels like a genuine recommendation from a friend. The ' + person + ' talks directly to camera — no physical product. ' +
-      'Dynamic scene changes, gestures naturally, occasionally glances at or holds a phone/laptop. NOT a static talking head.\n\n' +
-      accentText + '\n\n' +
-      'VISUAL DIRECTION: Mix of angles — selfie angle talking to camera, over-the-shoulder glancing at a phone screen, ' +
-      'expressive hand gestures while speaking, reaction close-ups. Natural transitions. Handheld phone camera feel.\n\n' +
-      '🚨 NO TEXT IN VIDEO: ZERO text overlays, ZERO captions, ZERO subtitles, ZERO on-screen text, ZERO watermarks, ZERO titles. Pure live footage only.\n\n' +
-      'TECHNICAL: Only ' + possessive + ' voice and ambient room sound. Vertical format ' + (_camp.aspectRatio || '9:16') + '. Indoor natural soft lighting.\n\n' +
-      'PERFORMANCE: Relaxed, natural facial expressions. Occasional natural pauses. Genuine delivery. ' +
-      pronoun + ' speaks with energy and conviction, as if recommending a great app or service to a friend.\n\n' +
-      pronoun + ' SAYS THE FOLLOWING IN SPANISH (Buenos Aires accent): "[CHUNK]"'
-    );
-  }
+  const dialogueLine = pronoun + ' says in ' + accentInstruction + ': "[CHUNK]"';
+
+  const styleInstruction = hasProduct
+    ? 'Authentic casual UGC video. ' + pronoun + ' talks to camera and naturally holds/shows the product. Selfie angle, expressive gestures, product close-ups. NOT a static talking head.'
+    : 'Authentic casual UGC video. ' + pronoun + ' talks directly to camera, gestures naturally, expressive face. No product. NOT a static talking head.';
+
+  return (
+    dialogueLine + '\n\n' +
+    styleInstruction + '\n' +
+    'No text overlays. Vertical ' + (_camp.aspectRatio || '9:16') + '. Indoor soft lighting.'
+  );
 }
 
 // Detecta el género del avatar llamando al backend (Claude Vision)
