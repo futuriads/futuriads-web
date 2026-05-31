@@ -6526,6 +6526,22 @@ body, #app { background: #07050f; }
               <div class="camp-step-sub">Elegí el tipo de video y pegá tu guión completo o describí tu producto y lo generamos con IA.</div>
             </div>
             <input class="camp-input" id="campTitleInput" placeholder="Nombre de la campaña (ej: Shampoo verano 2025)">
+            <!-- Selector de modelo — aparece primero porque condiciona las opciones de modo -->
+            <div style="margin-bottom:20px;">
+              <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Modelo de video</div>
+              <div style="display:flex;gap:8px;" id="campVideoProviderOptions">
+                <div class="camp-mode-card selected" id="campProviderSeedance" onclick="campSelectVideoProvider('enhancor', this)" style="flex:1;cursor:pointer;">
+                  <div class="camp-mode-card-title">Seedance 2.0</div>
+                  <div class="camp-mode-card-sub">Avatar habla o voz en off. El modelo más completo y probado.</div>
+                </div>
+                <div class="camp-mode-card" id="campProviderOmni" onclick="campSelectVideoProvider('kie', this)" style="flex:1;cursor:pointer;position:relative;">
+                  <div style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 6px;">PREMIUM</div>
+                  <div class="camp-mode-card-title">Gemini Omni Flash</div>
+                  <div class="camp-mode-card-sub">Solo voz en off. Mayor calidad visual multimodal. Growth y Scale.</div>
+                </div>
+              </div>
+            </div>
+
             <div style="margin-bottom:16px;">
               <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Tipo de video</div>
               <div style="display:flex;gap:8px;">
@@ -6703,16 +6719,6 @@ body, #app { background: #07050f; }
                 <button class="camp-option-btn" onclick="campSetAvatarGender('male', this)">Hombre</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
-            </div>
-            <div style="margin-bottom:20px;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modelo de video</div>
-              <div class="camp-options-row" id="campVideoProviderOptions" style="flex-wrap:wrap;gap:8px;">
-                <button class="camp-option-btn selected" onclick="campSelectVideoProvider('enhancor', this)">Seedance 2.0 <span style="font-size:11px;color:var(--text2);">· Hasta 15s/clip</span></button>
-                <button class="camp-option-btn" id="campOmniBtn" onclick="campSelectVideoProvider('kie', this)">Gemini Omni Flash <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 5px;margin-left:2px;">PREMIUM</span> <span style="font-size:11px;color:var(--text2);">· Hasta 10s/clip</span></button>
-              </div>
-              <div id="campOmniNote" style="display:none;font-size:12px;color:#a78bfa;margin-top:8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:8px 12px;">
-                Gemini Omni genera clips visuales de máx. 10s. El audio y el ensamblado son iguales. Solo disponible en modo Voiceover.
-              </div>
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
@@ -8534,7 +8540,7 @@ const _camp = {
   step: 1, title: '', script: '', scriptMode: 'manual',
   photoBase64: null, photoUrl: null, photoUploading: false,
   productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
-  clipDuration: 8, resolution: '480p', videoMode: 'talking',
+  clipDuration: 8, resolution: '480p', videoMode: 'talking', videoProvider: 'enhancor',
   aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
   chunks: [], hooks: [], bodyChunks: [], corrections: [],
   // V2: audio + visual prompts
@@ -8551,7 +8557,7 @@ function campStartNew() {
     step: 1, title: '', script: '', scriptMode: 'manual',
     photoBase64: null, photoUrl: null, photoUploading: false,
     productPhotoBase64: null, productPhotoUrl: null, productPhotoUploading: false,
-    clipDuration: 8, resolution: '480p', videoMode: 'talking',
+    clipDuration: 8, resolution: '480p', videoMode: 'talking', videoProvider: 'enhancor',
     aspectRatio: '9:16', genMode: 'review', accent: 'argentine', voice: 'valeria',
     chunks: [], hooks: [], bodyChunks: [], corrections: [],
     audioUrl: null, audioDuration: 0, audioClips: [], audioWords: [], voiceSettings: null, visualPrompts: [],
@@ -8559,11 +8565,18 @@ function campStartNew() {
     campaignId: null, variantsMap: {}, currentClipIndex: 0,
     clipsLaunched: false, clipEnqueued: {}, creditsDepleted: false
   });
-  // Reset UI de modo de video
+  // Reset UI de modo de video y modelo
   const btnTalking = document.getElementById('campVideoModeTalking');
   const btnVoiceover = document.getElementById('campVideoModeVoiceover');
-  if (btnTalking)   btnTalking.classList.add('selected');
+  if (btnTalking) {
+    btnTalking.classList.add('selected');
+    btnTalking.style.opacity = '';
+    btnTalking.style.pointerEvents = '';
+    btnTalking.querySelector('.camp-mode-card-sub').textContent = 'La persona habla directamente en el video. Ideal para testimonios y reviews.';
+  }
   if (btnVoiceover) btnVoiceover.classList.remove('selected');
+  document.getElementById('campProviderSeedance')?.classList.add('selected');
+  document.getElementById('campProviderOmni')?.classList.remove('selected');
   const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
   const si = document.getElementById('campScriptInput'); if(si) si.value = '';
   const pi = document.getElementById('campProductInput'); if(pi) pi.value = '';
@@ -9683,19 +9696,36 @@ function campSelectVideoProvider(provider, btn) {
     return;
   }
   _camp.videoProvider = provider;
-  document.querySelectorAll('#campVideoProviderOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
 
-  const note = document.getElementById('campOmniNote');
-  if (note) note.style.display = provider === 'kie' ? 'block' : 'none';
+  // Actualizar selección visual de las cards de modelo
+  document.getElementById('campProviderSeedance')?.classList.toggle('selected', provider === 'enhancor');
+  document.getElementById('campProviderOmni')?.classList.toggle('selected', provider === 'kie');
 
-  // Gemini Omni solo funciona en modo voiceover — forzarlo
-  if (provider === 'kie' && _camp.videoMode === 'talking') {
+  const talkingCard = document.getElementById('campVideoModeTalking');
+  const voiceoverCard = document.getElementById('campVideoModeVoiceover');
+
+  if (provider === 'kie') {
+    // Gemini Omni: solo voiceover — deshabilitar "Avatar habla a cámara"
+    if (talkingCard) {
+      talkingCard.classList.remove('selected');
+      talkingCard.style.opacity = '0.4';
+      talkingCard.style.pointerEvents = 'none';
+      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'No disponible con Gemini Omni Flash.';
+    }
+    if (voiceoverCard) {
+      voiceoverCard.classList.add('selected');
+    }
     _camp.videoMode = 'voiceover';
-    // Actualizar el toggle de modo si existe en el DOM
-    document.querySelectorAll('[data-video-mode]').forEach(el => {
-      el.classList.toggle('selected', el.dataset.videoMode === 'voiceover');
-    });
+  } else {
+    // Seedance: habilitar ambas opciones
+    if (talkingCard) {
+      talkingCard.style.opacity = '';
+      talkingCard.style.pointerEvents = '';
+      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'La persona habla directamente en el video. Ideal para testimonios y reviews.';
+    }
+    // Restaurar selección al modo actual
+    if (talkingCard)   talkingCard.classList.toggle('selected', _camp.videoMode === 'talking');
+    if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
   }
 
   // Ajustar opciones de resolución según proveedor
@@ -9965,7 +9995,8 @@ async function campLoadAudioAndClips() {
           clips: _camp.audioClips,
           avatarImageUrl: _camp.photoUrl,
           productImageUrl: _camp.productPhotoUrl,
-          aspectRatio: _camp.aspectRatio
+          aspectRatio: _camp.aspectRatio,
+          provider: _camp.videoProvider || 'enhancor'
         })
       });
       const promptData = await promptResp.json();
