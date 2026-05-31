@@ -5867,9 +5867,12 @@ body, #app { background: #07050f; }
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
           </div>
           <div class="custom-select-dropdown">
-            <div class="custom-select-option selected" data-value="5" onclick="selectCustomOption('cs-dur', this)">5s</div>
+            <div class="custom-select-option" data-value="4" data-omni-only style="display:none" onclick="selectCustomOption('cs-dur', this)">4s</div>
+            <div class="custom-select-option selected" data-value="5" data-seedance-only onclick="selectCustomOption('cs-dur', this)">5s</div>
+            <div class="custom-select-option" data-value="6" data-omni-only style="display:none" onclick="selectCustomOption('cs-dur', this)">6s</div>
+            <div class="custom-select-option" data-value="8" data-omni-only style="display:none" onclick="selectCustomOption('cs-dur', this)">8s</div>
             <div class="custom-select-option" data-value="10" onclick="selectCustomOption('cs-dur', this)">10s</div>
-            <div class="custom-select-option" data-value="15" onclick="selectCustomOption('cs-dur', this)">15s</div>
+            <div class="custom-select-option" data-value="15" data-seedance-only onclick="selectCustomOption('cs-dur', this)">15s</div>
           </div>
         </div>
         <div class="custom-select" id="cs-aspect">
@@ -5888,9 +5891,10 @@ body, #app { background: #07050f; }
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
           </div>
           <div class="custom-select-dropdown">
-            <div class="custom-select-option" data-value="480p" onclick="selectCustomOption('cs-res', this)">480p</div>
+            <div class="custom-select-option" data-value="480p" data-seedance-only onclick="selectCustomOption('cs-res', this)">480p</div>
             <div class="custom-select-option selected" data-value="720p" onclick="selectCustomOption('cs-res', this)">720p</div>
             <div class="custom-select-option" data-value="1080p" onclick="selectCustomOption('cs-res', this)">1080p</div>
+            <div class="custom-select-option" data-value="4k" data-omni-only style="display:none" onclick="selectCustomOption('cs-res', this)">4K</div>
           </div>
         </div>
         <div style="position:relative;">
@@ -6712,9 +6716,11 @@ body, #app { background: #07050f; }
             </div>
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
-              <div class="camp-options-row" id="campResOptions">
+              <div class="camp-options-row" id="campResOptions" style="flex-wrap:wrap;gap:8px;">
                 <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)" id="campRes480">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
                 <button class="camp-option-btn" onclick="campSelectRes('720p', this)" id="campRes720">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('1080p', this)" id="campRes1080" style="display:none">1080p <span style="font-size:11px;color:var(--text2);">· 360 cr/clip</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('4k', this)" id="campRes4k" style="display:none">4K <span style="font-size:11px;color:var(--text2);">· 600 cr/clip</span></button>
               </div>
             </div>
             <div style="margin-bottom:20px;">
@@ -9693,18 +9699,35 @@ function campSelectVideoProvider(provider, btn) {
   }
 
   // Ajustar opciones de resolución según proveedor
-  const res480 = document.getElementById('campRes480');
-  if (res480) {
-    if (provider === 'kie') {
-      // Kie.ai no tiene 480p — si está seleccionado, cambiar a 720p
-      res480.style.display = 'none';
-      if (_camp.resolution === '480p') {
-        _camp.resolution = '720p';
-        const btn720 = document.getElementById('campRes720');
-        if (btn720) { document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected')); btn720.classList.add('selected'); }
-      }
-    } else {
-      res480.style.display = '';
+  if (provider === 'kie') {
+    // Gemini Omni: ocultar 480p, mostrar 1080p y 4K
+    const r480 = document.getElementById('campRes480');
+    const r1080 = document.getElementById('campRes1080');
+    const r4k = document.getElementById('campRes4k');
+    if (r480)  r480.style.display  = 'none';
+    if (r1080) r1080.style.display = '';
+    if (r4k)   r4k.style.display   = '';
+    // Si 480p estaba seleccionado, cambiar a 720p
+    if (_camp.resolution === '480p') {
+      _camp.resolution = '720p';
+      document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+      const btn720 = document.getElementById('campRes720');
+      if (btn720) btn720.classList.add('selected');
+    }
+  } else {
+    // Seedance: mostrar 480p, ocultar 1080p y 4K
+    const r480 = document.getElementById('campRes480');
+    const r1080 = document.getElementById('campRes1080');
+    const r4k = document.getElementById('campRes4k');
+    if (r480)  r480.style.display  = '';
+    if (r1080) r1080.style.display = 'none';
+    if (r4k)   r4k.style.display   = 'none';
+    // Si 1080p o 4k estaba seleccionado, cambiar a 480p
+    if (_camp.resolution === '1080p' || _camp.resolution === '4k') {
+      _camp.resolution = '480p';
+      document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+      const btn480 = document.getElementById('campRes480');
+      if (btn480) btn480.classList.add('selected');
     }
   }
 }
@@ -13691,27 +13714,57 @@ function dashSelectOmni(el) {
   const plan = _currentUser?.plan || 'none';
   if (plan !== 'growth' && plan !== 'scale') {
     showToast('Gemini Omni Flash está disponible solo en planes Growth y Scale.', 'error');
-    return; // no cambiar selección
+    return;
   }
   selectCustomOption('cs-model', el);
-  // Ajustar duración: Kie.ai solo acepta 4, 6, 8, 10s → mostrar solo esas opciones
-  document.querySelectorAll('#cs-dur .custom-select-option').forEach(o => {
-    const v = parseInt(o.dataset.value);
-    o.style.display = (v === 5 || v === 15) ? 'none' : '';
-  });
-  // Si había 5s o 15s seleccionado, cambiar a 8s
+
+  // Duraciones: mostrar solo las de Kie.ai (4s, 6s, 8s, 10s), ocultar las de Seedance (5s, 15s)
+  document.querySelectorAll('#cs-dur .custom-select-option[data-omni-only]').forEach(o => o.style.display = '');
+  document.querySelectorAll('#cs-dur .custom-select-option[data-seedance-only]').forEach(o => o.style.display = 'none');
+  // Si la duración seleccionada no es válida para Omni, cambiar a 8s
   const curDur = parseInt(document.querySelector('#cs-dur .custom-select-option.selected')?.dataset.value);
   if (curDur === 5 || curDur === 15) {
-    const opt8 = document.querySelector('#cs-dur .custom-select-option[data-value="10"]');
+    const opt8 = document.querySelector('#cs-dur .custom-select-option[data-value="8"]');
     if (opt8) selectCustomOption('cs-dur', opt8);
   }
+
+  // Resoluciones: mostrar 4K, ocultar 480p
+  document.querySelectorAll('#cs-res .custom-select-option[data-omni-only]').forEach(o => o.style.display = '');
+  document.querySelectorAll('#cs-res .custom-select-option[data-seedance-only]').forEach(o => o.style.display = 'none');
+  // Si 480p estaba seleccionado, cambiar a 720p
+  const curRes = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value;
+  if (curRes === '480p') {
+    const opt720 = document.querySelector('#cs-res .custom-select-option[data-value="720p"]');
+    if (opt720) selectCustomOption('cs-res', opt720);
+  }
+
   updateDashCreditPreview();
 }
 
-// Restaurar opciones de duración de Seedance cuando vuelve a ese modelo
+// Restaurar opciones de Seedance cuando vuelve a ese modelo
 function dashSelectSeedance(el) {
   selectCustomOption('cs-model', el);
-  document.querySelectorAll('#cs-dur .custom-select-option').forEach(o => o.style.display = '');
+
+  // Duraciones: ocultar las de Omni (4s, 6s, 8s), mostrar las de Seedance (5s, 15s)
+  document.querySelectorAll('#cs-dur .custom-select-option[data-omni-only]').forEach(o => o.style.display = 'none');
+  document.querySelectorAll('#cs-dur .custom-select-option[data-seedance-only]').forEach(o => o.style.display = '');
+  // Si la duración seleccionada no es válida para Seedance (4s, 6s, 8s), cambiar a 5s
+  const curDur = parseInt(document.querySelector('#cs-dur .custom-select-option.selected')?.dataset.value);
+  if (curDur === 4 || curDur === 6 || curDur === 8) {
+    const opt5 = document.querySelector('#cs-dur .custom-select-option[data-value="5"]');
+    if (opt5) selectCustomOption('cs-dur', opt5);
+  }
+
+  // Resoluciones: ocultar 4K, mostrar 480p
+  document.querySelectorAll('#cs-res .custom-select-option[data-omni-only]').forEach(o => o.style.display = 'none');
+  document.querySelectorAll('#cs-res .custom-select-option[data-seedance-only]').forEach(o => o.style.display = '');
+  // Si 4k estaba seleccionado, cambiar a 720p
+  const curRes = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value;
+  if (curRes === '4k') {
+    const opt720 = document.querySelector('#cs-res .custom-select-option[data-value="720p"]');
+    if (opt720) selectCustomOption('cs-res', opt720);
+  }
+
   updateDashCreditPreview();
 }
 
