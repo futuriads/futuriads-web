@@ -5857,7 +5857,8 @@ body, #app { background: #07050f; }
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
           </div>
           <div class="custom-select-dropdown">
-            <div class="custom-select-option selected" onclick="selectCustomOption('cs-model', this)">Seedance 2.0</div>
+            <div class="custom-select-option selected" data-value="seedance-2" onclick="dashSelectSeedance(this)">Seedance 2.0</div>
+            <div class="custom-select-option" data-value="gemini-omni-video" onclick="dashSelectOmni(this)">Gemini Omni Flash <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">PREMIUM</span></div>
           </div>
         </div>
         <div class="custom-select" id="cs-dur">
@@ -6700,10 +6701,20 @@ body, #app { background: #07050f; }
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">Esto ajusta los pronombres y la dirección visual del prompt.</div>
             </div>
             <div style="margin-bottom:20px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Modelo de video</div>
+              <div class="camp-options-row" id="campVideoProviderOptions" style="flex-wrap:wrap;gap:8px;">
+                <button class="camp-option-btn selected" onclick="campSelectVideoProvider('enhancor', this)">Seedance 2.0 <span style="font-size:11px;color:var(--text2);">· Hasta 15s/clip</span></button>
+                <button class="camp-option-btn" id="campOmniBtn" onclick="campSelectVideoProvider('kie', this)">Gemini Omni Flash <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 5px;margin-left:2px;">PREMIUM</span> <span style="font-size:11px;color:var(--text2);">· Hasta 10s/clip</span></button>
+              </div>
+              <div id="campOmniNote" style="display:none;font-size:12px;color:#a78bfa;margin-top:8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:8px 12px;">
+                Gemini Omni genera clips visuales de máx. 10s. El audio y el ensamblado son iguales. Solo disponible en modo Voiceover.
+              </div>
+            </div>
+            <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
               <div class="camp-options-row" id="campResOptions">
-                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('720p', this)">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
+                <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)" id="campRes480">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('720p', this)" id="campRes720">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
               </div>
             </div>
             <div style="margin-bottom:20px;">
@@ -9209,6 +9220,7 @@ function campSaveDraft() {
       title:             _camp.title,
       script:            _camp.script,
       videoMode:         _camp.videoMode,
+      videoProvider:     _camp.videoProvider,
       voice:             _camp.voice,
       voiceSettings:     _camp.voiceSettings,
       aspectRatio:       _camp.aspectRatio,
@@ -9263,6 +9275,7 @@ async function campResumeDraft() {
   _camp.title            = draft.title           || '';
   _camp.script           = draft.script          || '';
   _camp.videoMode        = draft.videoMode       || 'talking';
+  _camp.videoProvider    = draft.videoProvider   || 'enhancor';
   _camp.voice            = draft.voice           || 'valeria';
   _camp.voiceSettings    = draft.voiceSettings   || null;
   _camp.aspectRatio      = draft.aspectRatio     || '9:16';
@@ -9657,6 +9670,45 @@ function campSelectRes(res, btn) {
   btn.classList.add('selected');
 }
 
+function campSelectVideoProvider(provider, btn) {
+  const plan = _currentUser?.plan || 'none';
+  if (provider === 'kie' && plan !== 'growth' && plan !== 'scale') {
+    showToast('Gemini Omni Flash está disponible solo en planes Growth y Scale.', 'error');
+    return;
+  }
+  _camp.videoProvider = provider;
+  document.querySelectorAll('#campVideoProviderOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  const note = document.getElementById('campOmniNote');
+  if (note) note.style.display = provider === 'kie' ? 'block' : 'none';
+
+  // Gemini Omni solo funciona en modo voiceover — forzarlo
+  if (provider === 'kie' && _camp.videoMode === 'talking') {
+    _camp.videoMode = 'voiceover';
+    // Actualizar el toggle de modo si existe en el DOM
+    document.querySelectorAll('[data-video-mode]').forEach(el => {
+      el.classList.toggle('selected', el.dataset.videoMode === 'voiceover');
+    });
+  }
+
+  // Ajustar opciones de resolución según proveedor
+  const res480 = document.getElementById('campRes480');
+  if (res480) {
+    if (provider === 'kie') {
+      // Kie.ai no tiene 480p — si está seleccionado, cambiar a 720p
+      res480.style.display = 'none';
+      if (_camp.resolution === '480p') {
+        _camp.resolution = '720p';
+        const btn720 = document.getElementById('campRes720');
+        if (btn720) { document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected')); btn720.classList.add('selected'); }
+      }
+    } else {
+      res480.style.display = '';
+    }
+  }
+}
+
 function campSelectAspect(aspect, btn) {
   _camp.aspectRatio = aspect;
   document.querySelectorAll('#campAspectOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
@@ -9857,7 +9909,8 @@ async function campLoadAudioAndClips() {
         body: JSON.stringify({
           campaignId: _camp.campaignId, script: _camp.script,
           voice: _camp.voice, userId: _currentUser.userId,
-          voiceSettings: _camp.voiceSettings || null
+          voiceSettings: _camp.voiceSettings || null,
+          maxClipSeconds: _camp.videoProvider === 'kie' ? 10 : 15
         })
       });
       const audioData = await audioResp.json();
@@ -10159,15 +10212,21 @@ async function campGenerateOneClipV2(index) {
     return;
   }
 
-  // La duración viene de los audioClips; si no están disponibles (vista historial), usamos 15s
+  // Duración máxima: 15s para Seedance, 10s para Gemini Omni (Kie.ai)
+  const isKie = _camp.videoProvider === 'kie';
+  const maxClipDur = isKie ? 10 : 15;
   const clip = (_camp.audioClips || [])[index];
-  const clipDuration = clip ? Math.min(15, Math.ceil(clip.duration)) : 15;
+  const clipDuration = clip ? Math.min(maxClipDur, Math.ceil(clip.duration)) : maxClipDur;
 
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
 
+  const clipEndpoint = isKie
+    ? '/api/campaign/generate-clip-omni'
+    : '/api/campaign/generate-clip-v2';
+
   try {
-    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip-v2', {
+    const resp = await apiFetch(BACKEND_URL + clipEndpoint, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaignId: _camp.campaignId,
@@ -10176,7 +10235,7 @@ async function campGenerateOneClipV2(index) {
         avatarImageUrl: _camp.photoUrl,
         productImageUrl: _camp.productPhotoUrl,
         clipDuration,
-        resolution: _camp.resolution || '480p',
+        resolution: _camp.resolution || (isKie ? '720p' : '480p'),
         aspectRatio: _camp.aspectRatio || '9:16',
         userId: _currentUser.userId
       })
@@ -13598,11 +13657,21 @@ function updateDashCreditPreview() {
   let credits = 0;
 
   if (isVideo) {
-    const resVal  = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value || '720p';
-    const durText = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim() || '5s';
-    const dur     = parseInt(durText) || 5;
-    const rates   = { '480p': 93.5, '720p': 207, '1080p': 521 };
-    credits = Math.ceil(dur * (rates[resVal] || 207));
+    const modelVal = document.querySelector('#cs-model .custom-select-option.selected')?.dataset.value || 'seedance-2';
+    const resVal   = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value || '720p';
+    const durText  = document.querySelector('#cs-dur .custom-select-option.selected')?.textContent?.trim() || '5s';
+    const dur      = parseInt(durText) || 5;
+    if (modelVal === 'gemini-omni-video') {
+      // Kie.ai cobra por clip, no por segundo. Redondear al valor permitido más cercano.
+      const allowed = [4, 6, 8, 10];
+      const snapped = allowed.reduce((p, c) => Math.abs(c - dur) < Math.abs(p - dur) ? c : p);
+      const omniCosts = { '720p': {4:1800,6:2400,8:3000,10:3600}, '1080p': {4:1800,6:2400,8:3000,10:3600}, '4k': {4:4200,6:4800,8:5400,10:6000} };
+      const resKey = resVal === '4k' ? '4k' : resVal === '1080p' ? '1080p' : '720p';
+      credits = (omniCosts[resKey] || omniCosts['720p'])[snapped] || 3600;
+    } else {
+      const rates = { '480p': 93.5, '720p': 207, '1080p': 521 };
+      credits = Math.ceil(dur * (rates[resVal] || 207));
+    }
     el.textContent = '≈ ' + credits.toLocaleString('es-AR') + ' créditos';
   } else {
     const model   = document.querySelector('#cs-img-model .custom-select-option.selected')?.dataset.value || 'gpt-image-2';
@@ -13614,6 +13683,36 @@ function updateDashCreditPreview() {
     credits = (imgCosts[model] || imgCosts['gpt-image-2'])[quality] || 250;
     el.textContent = '≈ ' + credits.toLocaleString('es-AR') + ' créditos';
   }
+}
+
+// ── Selección de Gemini Omni en el dashboard ─────────────────────────
+// Verifica plan antes de permitir la selección. Solo Growth y Scale.
+function dashSelectOmni(el) {
+  const plan = _currentUser?.plan || 'none';
+  if (plan !== 'growth' && plan !== 'scale') {
+    showToast('Gemini Omni Flash está disponible solo en planes Growth y Scale.', 'error');
+    return; // no cambiar selección
+  }
+  selectCustomOption('cs-model', el);
+  // Ajustar duración: Kie.ai solo acepta 4, 6, 8, 10s → mostrar solo esas opciones
+  document.querySelectorAll('#cs-dur .custom-select-option').forEach(o => {
+    const v = parseInt(o.dataset.value);
+    o.style.display = (v === 5 || v === 15) ? 'none' : '';
+  });
+  // Si había 5s o 15s seleccionado, cambiar a 8s
+  const curDur = parseInt(document.querySelector('#cs-dur .custom-select-option.selected')?.dataset.value);
+  if (curDur === 5 || curDur === 15) {
+    const opt8 = document.querySelector('#cs-dur .custom-select-option[data-value="10"]');
+    if (opt8) selectCustomOption('cs-dur', opt8);
+  }
+  updateDashCreditPreview();
+}
+
+// Restaurar opciones de duración de Seedance cuando vuelve a ese modelo
+function dashSelectSeedance(el) {
+  selectCustomOption('cs-model', el);
+  document.querySelectorAll('#cs-dur .custom-select-option').forEach(o => o.style.display = '');
+  updateDashCreditPreview();
 }
 
 // ── Volver desde generador sin perder configuración ──────────────────
@@ -13883,29 +13982,61 @@ async function runDashGen() {
     if (statusEl) statusEl.textContent = 'Preparando generación de video...';
     await setBar(58, 500);
 
-    // ── Armar el body según modo ──
-    var isRefAvatar = _dashSelectedActor === '_refavatar';
-    var noActor = !_dashSelectedActor; // sin actor = modo producto puro
-    var body = {
-      script: prompt,
-      duration: durVal,
-      aspectRatio: ratioVal,
-      resolution: resVal,
-      userId: userId,
-      noActor: noActor && !isRefAvatar
-    };
-    if (isRefAvatar && avatarRefUrl) {
-      // Avatar del ref slot → UGC con la imagen subida
-      body.avatar = 'custom';
-      body.avatarRef = avatarRefUrl;
-    } else if (!noActor) {
-      // Actor seleccionado del strip
-      body.avatar = _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor;
-      if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
-    }
-    if (productImageUrl) body.productImageUrl = productImageUrl;
+    var selectedModel = document.querySelector('#cs-model .custom-select-option.selected')?.dataset.value || 'seedance-2';
+    var isOmni = selectedModel === 'gemini-omni-video';
 
-    var genRes = await apiFetch(BACKEND_URL + '/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var genRes, genData, requestId;
+
+    if (isOmni) {
+      // ── Gemini Omni Flash (Kie.ai) ───────────────────────────────────
+      if (statusEl) statusEl.textContent = 'Generando video con Gemini Omni Flash...';
+      var imageUrls = [];
+      if (avatarRefUrl) imageUrls.push(avatarRefUrl);
+      if (productImageUrl) imageUrls.push(productImageUrl);
+
+      var omniBody = {
+        prompt: prompt,
+        duration: durVal,
+        aspectRatio: ratioVal,
+        resolution: resVal
+      };
+      if (imageUrls.length > 0) omniBody.imageUrls = imageUrls;
+
+      genRes = await apiFetch(BACKEND_URL + '/api/generate-video-omni', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(omniBody)
+      });
+
+      if (genRes.status === 403) {
+        showToast('Gemini Omni Flash requiere plan Growth o Scale.', 'error');
+        showDashPanel(0); return;
+      }
+    } else {
+      // ── Seedance 2.0 (Enhancor) ──────────────────────────────────────
+      var isRefAvatar = _dashSelectedActor === '_refavatar';
+      var noActor = !_dashSelectedActor;
+      var body = {
+        script: prompt,
+        duration: durVal,
+        aspectRatio: ratioVal,
+        resolution: resVal,
+        userId: userId,
+        noActor: noActor && !isRefAvatar
+      };
+      if (isRefAvatar && avatarRefUrl) {
+        body.avatar = 'custom';
+        body.avatarRef = avatarRefUrl;
+      } else if (!noActor) {
+        body.avatar = _dashSelectedActor === '_custom' ? 'custom' : _dashSelectedActor;
+        if (_dashSelectedActor === '_custom' && _dashCustomActorUrl) body.avatarRef = _dashCustomActorUrl;
+      }
+      if (productImageUrl) body.productImageUrl = productImageUrl;
+
+      genRes = await apiFetch(BACKEND_URL + '/api/generate-video', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
 
     if (genRes.status === 402) {
       var errData = await genRes.json().catch(function() { return {}; });
@@ -13915,14 +14046,14 @@ async function runDashGen() {
     }
     if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
 
-    var genData = await genRes.json();
-    var requestId = genData.requestId;
+    genData = await genRes.json();
+    requestId = genData.requestId;
     refreshCredits();
 
     await setBar(68, 400);
 
-    // ── Polling: esperar a que Seedance termine ──────────────────────
-    if (statusEl) statusEl.textContent = 'Generando tu video con IA...';
+    // ── Polling: esperar resultado ───────────────────────────────────
+    if (statusEl) statusEl.textContent = isOmni ? 'Generando con Gemini Omni Flash...' : 'Generando tu video con IA...';
     if (hintEl) hintEl.textContent = 'Esto tarda entre 5 y 10 minutos. No cierres la app.';
     if (barEl) barEl.classList.add('waiting');
 
