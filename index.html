@@ -6725,8 +6725,8 @@ body, #app { background: #07050f; }
               <div class="camp-options-row" id="campResOptions" style="flex-wrap:wrap;gap:8px;">
                 <button class="camp-option-btn selected" onclick="campSelectRes('480p', this)" id="campRes480">480p <span style="font-size:11px;color:var(--text2);">· 94 cr/seg</span></button>
                 <button class="camp-option-btn" onclick="campSelectRes('720p', this)" id="campRes720">720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('1080p', this)" id="campRes1080" style="display:none">1080p <span style="font-size:11px;color:var(--text2);">· 360 cr/clip</span></button>
-                <button class="camp-option-btn" onclick="campSelectRes('4k', this)" id="campRes4k" style="display:none">4K <span style="font-size:11px;color:var(--text2);">· 600 cr/clip</span></button>
+                <button class="camp-option-btn" onclick="campSelectRes('1080p', this)" id="campRes1080" style="display:none">1080p</button>
+                <button class="camp-option-btn" onclick="campSelectRes('4k', this)" id="campRes4k" style="display:none">4K</button>
               </div>
             </div>
             <div style="margin-bottom:20px;">
@@ -8586,7 +8586,7 @@ function campStartNew() {
   }
   // Resetear resolución y formato a estado Seedance (default)
   const r720Reset = document.getElementById('campRes720');
-  if (r720Reset) r720Reset.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>';
+  if (r720Reset) r720Reset.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>'; // Seedance default
   ['campRes480','campRes1080','campRes4k'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = id === 'campRes480' ? '' : 'none';
@@ -9775,7 +9775,7 @@ function campSelectVideoProvider(provider, btn) {
     if (r480)  r480.style.display  = 'none';
     if (r1080) r1080.style.display = '';
     if (r4k)   r4k.style.display   = '';
-    if (r720)  r720.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 3600 cr/clip</span>';
+    if (r720)  r720.innerHTML = '720p';
     // Si 480p estaba seleccionado, cambiar a 720p
     if (_camp.resolution === '480p') {
       _camp.resolution = '720p';
@@ -9796,7 +9796,7 @@ function campSelectVideoProvider(provider, btn) {
     if (r480)  r480.style.display  = '';
     if (r1080) r1080.style.display = 'none';
     if (r4k)   r4k.style.display   = 'none';
-    if (r720)  r720.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>';
+    if (r720)  r720.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>'; // Seedance label
     // Si 1080p o 4k estaba seleccionado, cambiar a 480p
     if (_camp.resolution === '1080p' || _camp.resolution === '4k') {
       _camp.resolution = '480p';
