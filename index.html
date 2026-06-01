@@ -9705,25 +9705,28 @@ function campSelectVideoProvider(provider, btn) {
   const voiceoverCard = document.getElementById('campVideoModeVoiceover');
 
   if (provider === 'kie') {
-    // Gemini Omni: solo voiceover — deshabilitar "Avatar habla a cámara"
+    // Gemini Omni: ambos modos disponibles, pero el audio lo genera el modelo automáticamente
     if (talkingCard) {
-      talkingCard.classList.remove('selected');
-      talkingCard.style.opacity = '0.4';
-      talkingCard.style.pointerEvents = 'none';
-      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'No disponible con Gemini Omni Flash.';
+      talkingCard.style.opacity = '';
+      talkingCard.style.pointerEvents = '';
+      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'El modelo genera el video con voz automáticamente. Solo necesitás la foto del avatar.';
     }
     if (voiceoverCard) {
-      voiceoverCard.classList.add('selected');
+      voiceoverCard.querySelector('.camp-mode-card-sub').textContent = 'Audio de ElevenLabs + clips visuales mudos ensamblados. Más control sobre la voz.';
     }
-    _camp.videoMode = 'voiceover';
+    // Mantener el modo que ya tenía seleccionado
+    if (talkingCard)   talkingCard.classList.toggle('selected', _camp.videoMode === 'talking');
+    if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
   } else {
-    // Seedance: habilitar ambas opciones
+    // Seedance: restaurar descripciones originales
     if (talkingCard) {
       talkingCard.style.opacity = '';
       talkingCard.style.pointerEvents = '';
       talkingCard.querySelector('.camp-mode-card-sub').textContent = 'La persona habla directamente en el video. Ideal para testimonios y reviews.';
     }
-    // Restaurar selección al modo actual
+    if (voiceoverCard) {
+      voiceoverCard.querySelector('.camp-mode-card-sub').textContent = 'Audio pregrabado + video visual con escenas y producto. Más dinámico y producido.';
+    }
     if (talkingCard)   talkingCard.classList.toggle('selected', _camp.videoMode === 'talking');
     if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
   }
@@ -10525,25 +10528,40 @@ async function campGenerateOneClip(index) {
 
   _camp.clipEnqueued[index] = true;
   campUpdateClipCard(index, 'generating', null);
-  
+
   // Usar el prompt editado por el usuario si lo editó explícitamente;
   // sino, siempre reconstruir desde campBuildMasterPrompt() para respetar el género actual.
   const vp = (_camp.visualPrompts || []).find(p => p.clipIndex === index);
   const masterPrompt = (vp && vp.userEdited && vp.prompt) ? vp.prompt : campBuildMasterPrompt();
 
+  const isKieTalking = _camp.videoProvider === 'kie';
+
   try {
-    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
+    // Gemini Omni en talking mode: usa generate-clip-omni con el prompt que incluye el diálogo
+    const endpoint = isKieTalking ? '/api/campaign/generate-clip-omni' : '/api/campaign/generate-clip';
+    const body = isKieTalking ? {
+      campaignId: _camp.campaignId,
+      clipIndex: index,
+      visualPrompt: masterPrompt.replace('[CHUNK]', chunk.text),
+      avatarImageUrl: variantImageUrl,
+      productImageUrl: _camp.productPhotoUrl || null,
+      clipDuration: Math.min(chunk.estimatedSeconds || _camp.clipDuration, 10),
+      resolution: _camp.resolution === '480p' ? '720p' : _camp.resolution,
+      aspectRatio: _camp.aspectRatio,
+      videoMode: 'talking'
+    } : {
+      campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
+      variantImageUrl, productImageUrl: _camp.productPhotoUrl || null,
+      clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
+      resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
+      userId: _currentUser.userId,
+      masterPrompt: masterPrompt,
+      totalClips: index === 0 ? _camp.chunks.length : undefined
+    };
+
+    const resp = await apiFetch(BACKEND_URL + endpoint, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: _camp.campaignId, clipIndex: index, textChunk: chunk.text,
-        variantImageUrl, productImageUrl: _camp.productPhotoUrl || null,
-        clipDuration: chunk.estimatedSeconds || _camp.clipDuration,
-        resolution: _camp.resolution, aspectRatio: _camp.aspectRatio,
-        userId: _currentUser.userId,
-        masterPrompt: masterPrompt,
-        // Primer clip: guardar el total en la DB para poder resumir sin draft
-        totalClips: index === 0 ? _camp.chunks.length : undefined
-      })
+      body: JSON.stringify(body)
     });
     
     // Si el backend rechaza por CLIP_ALREADY_EXISTS, no es error
@@ -10610,13 +10628,24 @@ function campBuildMasterPrompt() {
     }
   }
 
-  // ─── MODO TALKING HEAD (avatar habla a cámara) ────────────────────────────
-  // CRÍTICO: el diálogo va PRIMERO. Seedance lee el prompt de arriba abajo;
-  // si el texto que debe decir está al final, lo ignora.
+  // ─── MODO TALKING HEAD ──────────────────────────────────────────────────────
   const accentInstruction = (_camp.accent === 'neutral')
     ? 'neutral Latin American Spanish'
     : 'Buenos Aires Argentine Spanish — Rioplatense accent, NOT Castilian/Spain Spanish';
 
+  // Gemini Omni: prompt simple en lenguaje natural, sin referencias @Image
+  if (_camp.videoProvider === 'kie') {
+    const kieStyle = hasProduct
+      ? pronoun + ' looks at camera, holds and shows the product naturally, gestures with authenticity.'
+      : pronoun + ' looks directly at camera, natural gestures, expressive and engaged.';
+    return (
+      '[CHUNK] (' + accentInstruction + ')\n\n' +
+      kieStyle + ' ' +
+      'Authentic casual UGC style, indoor soft lighting, handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '. No text overlays.'
+    );
+  }
+
+  // Seedance: el diálogo va PRIMERO — Seedance prioriza lo que lee primero
   const dialogueLine = pronoun + ' says in ' + accentInstruction + ': "[CHUNK]"';
 
   const styleInstruction = hasProduct
