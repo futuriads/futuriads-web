@@ -8577,6 +8577,12 @@ function campStartNew() {
   if (btnVoiceover) btnVoiceover.classList.remove('selected');
   document.getElementById('campProviderSeedance')?.classList.add('selected');
   document.getElementById('campProviderOmni')?.classList.remove('selected');
+  // Quitar overlay de voiceover si quedó de una campaña Omni anterior
+  const voCard = document.getElementById('campVideoModeVoiceover');
+  if (voCard) {
+    voCard.style.pointerEvents = '';
+    voCard.querySelector('.camp-mode-lock-overlay')?.remove();
+  }
   const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
   const si = document.getElementById('campScriptInput'); if(si) si.value = '';
   const pi = document.getElementById('campProductInput'); if(pi) pi.value = '';
@@ -9705,27 +9711,36 @@ function campSelectVideoProvider(provider, btn) {
   const voiceoverCard = document.getElementById('campVideoModeVoiceover');
 
   if (provider === 'kie') {
-    // Gemini Omni: ambos modos disponibles, pero el audio lo genera el modelo automáticamente
+    // Gemini Omni: "Avatar habla a cámara" disponible, "Voz en off" bloqueado
     if (talkingCard) {
-      talkingCard.style.opacity = '';
-      talkingCard.style.pointerEvents = '';
-      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'El modelo genera el video con voz automáticamente. Solo necesitás la foto del avatar.';
+      talkingCard.classList.toggle('selected', _camp.videoMode !== 'voiceover');
+      if (_camp.videoMode === 'voiceover') {
+        _camp.videoMode = 'talking';
+        talkingCard.classList.add('selected');
+      }
     }
+    // Bloquear voiceover con overlay "Solo en Seedance 2.0"
     if (voiceoverCard) {
-      voiceoverCard.querySelector('.camp-mode-card-sub').textContent = 'Audio de ElevenLabs + clips visuales mudos ensamblados. Más control sobre la voz.';
+      voiceoverCard.classList.remove('selected');
+      voiceoverCard.style.position = 'relative';
+      voiceoverCard.style.pointerEvents = 'none';
+      // Crear overlay si no existe
+      if (!voiceoverCard.querySelector('.camp-mode-lock-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'camp-mode-lock-overlay';
+        overlay.innerHTML = '<span>Solo en Seedance 2.0</span>';
+        overlay.style.cssText = 'position:absolute;inset:0;background:rgba(10,10,20,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;border-radius:inherit;z-index:2;';
+        overlay.querySelector('span').style.cssText = 'font-size:11px;font-weight:700;color:rgba(192,168,255,0.7);letter-spacing:0.5px;text-transform:uppercase;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:4px 10px;';
+        voiceoverCard.appendChild(overlay);
+      }
     }
-    // Mantener el modo que ya tenía seleccionado
-    if (talkingCard)   talkingCard.classList.toggle('selected', _camp.videoMode === 'talking');
-    if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
+    _camp.videoMode = 'talking';
   } else {
-    // Seedance: restaurar descripciones originales
-    if (talkingCard) {
-      talkingCard.style.opacity = '';
-      talkingCard.style.pointerEvents = '';
-      talkingCard.querySelector('.camp-mode-card-sub').textContent = 'La persona habla directamente en el video. Ideal para testimonios y reviews.';
-    }
+    // Seedance: ambos modos disponibles, quitar overlay de voiceover
     if (voiceoverCard) {
-      voiceoverCard.querySelector('.camp-mode-card-sub').textContent = 'Audio pregrabado + video visual con escenas y producto. Más dinámico y producido.';
+      voiceoverCard.style.pointerEvents = '';
+      const overlay = voiceoverCard.querySelector('.camp-mode-lock-overlay');
+      if (overlay) overlay.remove();
     }
     if (talkingCard)   talkingCard.classList.toggle('selected', _camp.videoMode === 'talking');
     if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
