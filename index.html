@@ -9790,7 +9790,10 @@ async function campLoadChunksTalking() {
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/chunk-script', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ script: _camp.script })
+      body: JSON.stringify({
+        script: _camp.script,
+        maxClipSeconds: _camp.videoProvider === 'kie' ? 10 : 15
+      })
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Error del servidor');
@@ -10633,13 +10636,13 @@ function campBuildMasterPrompt() {
     ? 'neutral Latin American Spanish'
     : 'Buenos Aires Argentine Spanish — Rioplatense accent, NOT Castilian/Spain Spanish';
 
-  // Gemini Omni: prompt simple en lenguaje natural, sin referencias @Image
+  // Gemini Omni: prompt en lenguaje natural, sin referencias @Image
   if (_camp.videoProvider === 'kie') {
     const kieStyle = hasProduct
       ? pronoun + ' looks at camera, holds and shows the product naturally, gestures with authenticity.'
       : pronoun + ' looks directly at camera, natural gestures, expressive and engaged.';
     return (
-      '[CHUNK] (' + accentInstruction + ')\n\n' +
+      'The avatar says: "[CHUNK]" (' + accentInstruction + ')\n\n' +
       kieStyle + ' ' +
       'Authentic casual UGC style, indoor soft lighting, handheld phone feel, vertical ' + (_camp.aspectRatio || '9:16') + '. No text overlays.'
     );
