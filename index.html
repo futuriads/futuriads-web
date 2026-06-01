@@ -9836,7 +9836,8 @@ async function campLoadChunksTalking() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         script: _camp.script,
-        maxClipSeconds: _camp.videoProvider === 'kie' ? 10 : 15
+        maxClipSeconds:   _camp.videoProvider === 'kie' ? 10 : 15,
+        charsPerSecond:   _camp.videoProvider === 'kie' ? 15 : 20
       })
     });
     const data = await resp.json();
