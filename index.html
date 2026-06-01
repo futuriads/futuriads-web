@@ -10647,9 +10647,10 @@ function campUpdateClipCard(index, status, videoUrl, errorMessage) {
     const fixBtn = isContentError
       ? '<button class="camp-clip-retry-btn" style="background:rgba(139,92,246,0.3);border-color:rgba(139,92,246,0.5);margin-top:4px;" onclick="campFixUnsafeClip(' + index + ')">✦ Corregir guión</button>'
       : '';
-    const errDetail = isImageError
-      ? '<div style="font-size:10px;color:#fca5a5;margin-top:4px;max-width:140px;text-align:center;line-height:1.3;">' + errLabel + '</div>'
-      : '<div style="font-size:10px;color:#fca5a5;margin-top:4px;max-width:140px;text-align:center;line-height:1.3;">' + errLabel + '</div>';
+    const retryNote = isContentError
+      ? '<div style="font-size:10px;color:#94a3b8;margin-top:3px;max-width:140px;text-align:center;line-height:1.3;">A veces es intermitente — probá regenerar primero</div>'
+      : '';
+    const errDetail = '<div style="font-size:10px;color:#fca5a5;margin-top:4px;max-width:140px;text-align:center;line-height:1.3;">' + errLabel + '</div>' + retryNote;
     card.innerHTML =
       '<div class="camp-clip-overlay" style="padding:12px;">' +
         '<div class="camp-clip-fail-icon">✕</div>' +
