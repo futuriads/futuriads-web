@@ -6706,7 +6706,7 @@ body, #app { background: #07050f; }
             <div id="campAccentSection" style="margin-bottom:20px;display:none;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Acento del avatar</div>
               <div class="camp-options-row" id="campAccentOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">Rioplatense</button>
+                <button class="camp-option-btn selected" onclick="campSelectAccent('argentine', this)">Argentino</button>
                 <button class="camp-option-btn" onclick="campSelectAccent('neutral', this)">Neutro latinoamericano</button>
               </div>
               <div style="font-size:12px;color:var(--text3);margin-top:6px;">El acento puede variar en precisión según el idioma.</div>
@@ -6732,8 +6732,9 @@ body, #app { background: #07050f; }
             <div style="margin-bottom:20px;">
               <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Formato</div>
               <div class="camp-options-row" id="campAspectOptions">
-                <button class="camp-option-btn selected" onclick="campSelectAspect('9:16', this)">9:16 · Vertical (Reels)</button>
-                <button class="camp-option-btn" onclick="campSelectAspect('1:1', this)">1:1 · Cuadrado</button>
+                <button class="camp-option-btn selected" id="campAspect916" onclick="campSelectAspect('9:16', this)">9:16 · Vertical (Reels)</button>
+                <button class="camp-option-btn" id="campAspect169" onclick="campSelectAspect('16:9', this)">16:9 · Horizontal</button>
+                <button class="camp-option-btn" id="campAspect11" onclick="campSelectAspect('1:1', this)">1:1 · Cuadrado</button>
               </div>
             </div>
             <div class="camp-nav-row">
@@ -8583,6 +8584,21 @@ function campStartNew() {
     voCard.style.pointerEvents = '';
     voCard.querySelector('.camp-mode-lock-overlay')?.remove();
   }
+  // Resetear resolución y formato a estado Seedance (default)
+  const r720Reset = document.getElementById('campRes720');
+  if (r720Reset) r720Reset.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>';
+  ['campRes480','campRes1080','campRes4k'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === 'campRes480' ? '' : 'none';
+  });
+  // Formato: Seedance default (ocultar 1:1 al reiniciar no — mostrarlo, 16:9 también)
+  const a11r = document.getElementById('campAspect11');
+  const a169r = document.getElementById('campAspect169');
+  if (a11r)  a11r.style.display  = '';
+  if (a169r) a169r.style.display = '';
+  // Selección default: 9:16
+  document.querySelectorAll('#campAspectOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('campAspect916')?.classList.add('selected');
   const ti = document.getElementById('campTitleInput'); if(ti) ti.value = '';
   const si = document.getElementById('campScriptInput'); if(si) si.value = '';
   const pi = document.getElementById('campProductInput'); if(pi) pi.value = '';
@@ -9746,37 +9762,50 @@ function campSelectVideoProvider(provider, btn) {
     if (voiceoverCard) voiceoverCard.classList.toggle('selected', _camp.videoMode === 'voiceover');
   }
 
-  // Ajustar opciones de resolución según proveedor
+  // Ajustar opciones de resolución y formato según proveedor
+  const r480  = document.getElementById('campRes480');
+  const r720  = document.getElementById('campRes720');
+  const r1080 = document.getElementById('campRes1080');
+  const r4k   = document.getElementById('campRes4k');
+  const a11   = document.getElementById('campAspect11');
+  const a169  = document.getElementById('campAspect169');
+
   if (provider === 'kie') {
-    // Gemini Omni: ocultar 480p, mostrar 1080p y 4K
-    const r480 = document.getElementById('campRes480');
-    const r1080 = document.getElementById('campRes1080');
-    const r4k = document.getElementById('campRes4k');
+    // Resolución Omni: ocultar 480p, mostrar 1080p y 4K, actualizar label 720p
     if (r480)  r480.style.display  = 'none';
     if (r1080) r1080.style.display = '';
     if (r4k)   r4k.style.display   = '';
+    if (r720)  r720.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 3600 cr/clip</span>';
     // Si 480p estaba seleccionado, cambiar a 720p
     if (_camp.resolution === '480p') {
       _camp.resolution = '720p';
       document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
-      const btn720 = document.getElementById('campRes720');
-      if (btn720) btn720.classList.add('selected');
+      if (r720) r720.classList.add('selected');
+    }
+    // Formato Omni: mostrar 16:9, ocultar 1:1
+    if (a11)  a11.style.display  = 'none';
+    if (a169) a169.style.display = '';
+    // Si 1:1 estaba seleccionado, cambiar a 9:16
+    if (_camp.aspectRatio === '1:1') {
+      _camp.aspectRatio = '9:16';
+      document.querySelectorAll('#campAspectOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('campAspect916')?.classList.add('selected');
     }
   } else {
-    // Seedance: mostrar 480p, ocultar 1080p y 4K
-    const r480 = document.getElementById('campRes480');
-    const r1080 = document.getElementById('campRes1080');
-    const r4k = document.getElementById('campRes4k');
+    // Resolución Seedance: mostrar 480p, ocultar 1080p y 4K, restaurar label 720p
     if (r480)  r480.style.display  = '';
     if (r1080) r1080.style.display = 'none';
     if (r4k)   r4k.style.display   = 'none';
+    if (r720)  r720.innerHTML = '720p <span style="font-size:11px;color:var(--text2);">· 207 cr/seg</span>';
     // Si 1080p o 4k estaba seleccionado, cambiar a 480p
     if (_camp.resolution === '1080p' || _camp.resolution === '4k') {
       _camp.resolution = '480p';
       document.querySelectorAll('#campResOptions .camp-option-btn').forEach(b => b.classList.remove('selected'));
-      const btn480 = document.getElementById('campRes480');
-      if (btn480) btn480.classList.add('selected');
+      if (r480) r480.classList.add('selected');
     }
+    // Formato Seedance: mostrar todo incluyendo 1:1
+    if (a11)  a11.style.display  = '';
+    if (a169) a169.style.display = '';
   }
 }
 
