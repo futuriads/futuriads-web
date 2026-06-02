@@ -12774,13 +12774,17 @@ function selDelete() {
     'Eliminar',
     async () => {
       try {
-        await supa.from('videos').delete().in('id', [...selectedIds]);
+        const resp = await apiFetch(BACKEND_URL + '/api/history/delete', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: [...selectedIds] })
+        });
+        if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e.error || resp.status); }
         historyData = historyData.filter(v => !selectedIds.has(v.id));
         clearSelection();
         if (selModeActive) toggleSelectionMode();
         renderHistory(); updateDashMetrics();
         showToast(`${n} creación${n !== 1 ? 'es eliminadas' : ' eliminada'}`);
-      } catch(err) { showToast('Error al eliminar'); }
+      } catch(err) { showToast('Error al eliminar: ' + err.message); }
     }
   );
 }
@@ -13116,12 +13120,16 @@ function deleteRecentItem(id, idx) {
     'Eliminar',
     async () => {
       try {
-        await supa.from('videos').delete().eq('id', id);
+        const resp = await apiFetch(BACKEND_URL + '/api/history/delete', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: [id] })
+        });
+        if (!resp.ok) { const e = await resp.json().catch(() => ({})); throw new Error(e.error || resp.status); }
         historyData = historyData.filter(v => v.id !== id);
         loadDashRecent();
         updateDashMetrics();
       } catch (e) {
-        showToast('Error al eliminar');
+        showToast('Error al eliminar: ' + e.message);
       }
     }
   );
