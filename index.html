@@ -10460,12 +10460,23 @@ function campEscapeTextarea(str) {
 
 function campStartPolling() {
   if(_camp.pollingInterval) clearInterval(_camp.pollingInterval);
+  _camp._pollCount = 0;
   _camp.pollingInterval = setInterval(campPollStatus, 5000);
   campPollStatus();
 }
 
 async function campPollStatus() {
   if(!_camp.campaignId || !_currentUser) return;
+  _camp._pollCount = (_camp._pollCount || 0) + 1;
+
+  // Mensajes progresivos en el subtítulo de estado
+  const subEl = document.getElementById('campGenStatusSub');
+  if (subEl && !subEl.dataset.userMsg) {
+    if      (_camp._pollCount === 6)  { subEl.textContent = 'El proveedor puede estar con mucha carga hoy. Seguimos esperando...'; }
+    else if (_camp._pollCount === 24) { subEl.textContent = 'Está tardando más de lo habitual. Los clips van a aparecer en el historial cuando estén listos.'; }
+    else if (_camp._pollCount === 60) { subEl.innerHTML   = '⚠️ Más de 5 minutos. El proveedor puede estar con problemas. Los clips completados se van a guardar — podés cerrar y volver después.'; }
+  }
+
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -14347,9 +14358,10 @@ async function runDashGen() {
 
     // ── Polling: esperar resultado ───────────────────────────────────
     if (statusEl) statusEl.textContent = isOmni ? 'Generando con Gemini Omni Flash...' : 'Generando tu video con IA...';
-    if (hintEl) hintEl.textContent = 'Esto tarda entre 5 y 10 minutos. No cierres la app.';
+    if (hintEl) hintEl.textContent = 'Esto normalmente tarda entre 2 y 5 minutos.';
     if (barEl) barEl.classList.add('waiting');
 
+    var histLinkVid = '<a href="#" onclick="event.preventDefault();showScreen(\'historial\');" style="color:#c4b5fd;text-decoration:underline;">Historial</a>';
     // Crawl lento de 68% → 93% durante ~10 min
     var pollMax = 120; // 120 × 5s = 10 min
     var pollCount = 0;
@@ -14361,6 +14373,11 @@ async function runDashGen() {
         pollCount++;
         prog = Math.min(68 + crawlPer * pollCount, 93);
         if (barEl) barEl.style.width = prog + '%';
+
+        // Mensajes progresivos
+        if      (pollCount === 12) { if (hintEl) hintEl.textContent = 'El proveedor puede estar con mucha carga. Seguimos esperando...'; }
+        else if (pollCount === 36) { if (hintEl) hintEl.innerHTML   = 'Está tardando más de lo habitual. Si querés podés ir al ' + histLinkVid + ' — el video va a aparecer ahí cuando esté listo.'; }
+        else if (pollCount === 60) { if (hintEl) hintEl.innerHTML   = '⚠️ Ya pasaron 5 minutos. El resultado va a aparecer en el ' + histLinkVid + ' — podés cerrar esta pantalla.'; }
 
         if (pollCount > pollMax) {
           clearInterval(_dashPollTimer); _dashPollTimer = null;
@@ -15672,7 +15689,7 @@ async function generateImage(){
     // Refrescar contador de créditos en el sidebar después de descontar
     refreshCredits();
 
-    msgEl.textContent = ' Generando tu imagen, esto puede tardar entre 15 segundos y unos minutos...';
+    msgEl.textContent = 'Generando tu imagen, esto normalmente tarda menos de un minuto...';
 
     // Función auxiliar de polling — chequea Supabase por la fila con el request_id.
     // IMPORTANTE: la implementación custom de supa NO soporta .limit(); por eso
@@ -15729,16 +15746,21 @@ async function generateImage(){
     // Primer check rápido a los 3 segundos (a veces los modelos responden muy rápido)
     setTimeout(checkOnce, 3000);
 
-    // Polling cada 5 segundos
+    // Polling cada 5 segundos con mensajes progresivos
     let pollCount = 0;
     const MAX_POLLS = 120; // 120 * 5s = 10 minutos máximo
+    const histLink = '<a href="#" onclick="event.preventDefault();showScreen(\'historial\');" style="color:#c4b5fd;text-decoration:underline;">Historial</a>';
     _imageRefreshInterval = setInterval(async () => {
       pollCount++;
+      // Mensajes progresivos según tiempo transcurrido
+      if      (pollCount === 6)  { msgEl.textContent = 'El proveedor puede estar con mucha carga hoy. Seguimos esperando...'; }
+      else if (pollCount === 24) { msgEl.innerHTML   = 'Está tardando más de lo habitual. Si querés, podés ir al ' + histLink + ' y el resultado va a aparecer ahí cuando esté listo.'; }
+      else if (pollCount === 48) { msgEl.innerHTML   = '⚠️ Ya pasaron 4 minutos. El proveedor puede estar teniendo problemas. El resultado va a aparecer en el ' + histLink + ' — podés cerrar esta pantalla tranquilo.'; }
       if (pollCount > MAX_POLLS) {
         clearInterval(progInterval);
         clearInterval(_imageRefreshInterval);
         _imageRefreshInterval = null;
-        msgEl.innerHTML = '✓ Tu imagen sigue generándose en segundo plano. <br>La encontrarás en el <a href="#" onclick="event.preventDefault();showScreen(\'historial\');" style="color:#fff;text-decoration:underline;">Historial</a> cuando esté lista.';
+        msgEl.innerHTML = 'Tu imagen sigue generándose en segundo plano. La encontrarás en el ' + histLink + ' cuando esté lista.';
         return;
       }
       checkOnce();
