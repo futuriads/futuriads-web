@@ -16807,6 +16807,7 @@ async function cloneStartAnalysis() {
     _cloneSessionId = data.sessionId;
     _cloneAnalysis  = data.analysis;
     _cloneQuestions = data.questions || [];
+    try { sessionStorage.setItem('clone_session_id', data.sessionId); } catch(e) {}
     cloneRenderQuestions(data);
     cloneShowView('clone-v-questions');
   } catch (err) {
@@ -16956,6 +16957,9 @@ function cloneCollectAnswers() {
 
 async function cloneSubmitAnswers() {
   const answers = cloneCollectAnswers();
+  if (!_cloneSessionId) {
+    try { _cloneSessionId = sessionStorage.getItem('clone_session_id'); } catch(e) {}
+  }
   if (!_cloneSessionId) { showToast('Sesión expirada, volvé a subir el video', 'error'); return; }
   cloneShowView('clone-v-building');
   try {
