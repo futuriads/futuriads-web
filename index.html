@@ -16807,7 +16807,12 @@ async function cloneStartAnalysis() {
     _cloneSessionId = data.sessionId;
     _cloneAnalysis  = data.analysis;
     _cloneQuestions = data.questions || [];
-    try { sessionStorage.setItem('clone_session_id', data.sessionId); } catch(e) {}
+    try {
+      sessionStorage.setItem('clone_session_id',  data.sessionId);
+      sessionStorage.setItem('clone_transcript',   data.transcript  || '');
+      sessionStorage.setItem('clone_analysis',     JSON.stringify(data.analysis  || {}));
+      sessionStorage.setItem('clone_questions',    JSON.stringify(data.questions || []));
+    } catch(e) {}
     cloneRenderQuestions(data);
     cloneShowView('clone-v-questions');
   } catch (err) {
@@ -16961,16 +16966,27 @@ async function cloneSubmitAnswers() {
     try { _cloneSessionId = sessionStorage.getItem('clone_session_id'); } catch(e) {}
   }
   if (!_cloneSessionId) { showToast('Sesión expirada, volvé a subir el video', 'error'); return; }
+
+  // Datos de fallback en caso de que el backend haya perdido la sesión por restart
+  let fallbackTranscript = '', fallbackAnalysis = {}, fallbackQuestions = [];
+  try {
+    fallbackTranscript = sessionStorage.getItem('clone_transcript') || '';
+    fallbackAnalysis   = JSON.parse(sessionStorage.getItem('clone_analysis')  || '{}');
+    fallbackQuestions  = JSON.parse(sessionStorage.getItem('clone_questions') || '[]');
+  } catch(e) {}
   cloneShowView('clone-v-building');
   try {
     const data = await apiFetch(BACKEND_URL + '/api/clone/build-plan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sessionId: _cloneSessionId,
+        sessionId:         _cloneSessionId,
         answers,
-        avatarBase64: _cloneAvatarB64,
-        avatarMime:   _cloneAvatarMime
+        avatarBase64:      _cloneAvatarB64,
+        avatarMime:        _cloneAvatarMime,
+        fallbackTranscript,
+        fallbackAnalysis,
+        fallbackQuestions
       })
     });
     _clonePlan = data.plan;
