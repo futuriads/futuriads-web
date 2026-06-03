@@ -16969,12 +16969,11 @@ async function cloneSubmitAnswers() {
   }
   if (!_cloneSessionId) { showToast('Sesión expirada, volvé a subir el video', 'error'); return; }
 
-  // Datos de fallback en caso de que el backend haya perdido la sesión por restart
-  let fallbackTranscript = '', fallbackAnalysis = {}, fallbackQuestions = [];
+  // Leer transcript y analysis desde sessionStorage para enviarlo siempre al backend
+  let storedTranscript = '', storedAnalysis = {};
   try {
-    fallbackTranscript = sessionStorage.getItem('clone_transcript') || '';
-    fallbackAnalysis   = JSON.parse(sessionStorage.getItem('clone_analysis')  || '{}');
-    fallbackQuestions  = JSON.parse(sessionStorage.getItem('clone_questions') || '[]');
+    storedTranscript = sessionStorage.getItem('clone_transcript') || '';
+    storedAnalysis   = JSON.parse(sessionStorage.getItem('clone_analysis') || '{}');
   } catch(e) {}
   cloneShowView('clone-v-building');
   console.log('[clone] Llamando build-plan con sessionId:', _cloneSessionId);
@@ -16983,13 +16982,12 @@ async function cloneSubmitAnswers() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sessionId:         _cloneSessionId,
+        sessionId:    _cloneSessionId,
         answers,
-        avatarBase64:      _cloneAvatarB64,
-        avatarMime:        _cloneAvatarMime,
-        fallbackTranscript,
-        fallbackAnalysis,
-        fallbackQuestions
+        avatarBase64: _cloneAvatarB64,
+        avatarMime:   _cloneAvatarMime,
+        transcript:   storedTranscript,
+        analysis:     storedAnalysis
       })
     });
     _clonePlan = data.plan;
