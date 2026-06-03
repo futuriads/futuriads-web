@@ -16961,7 +16961,9 @@ function cloneCollectAnswers() {
 }
 
 async function cloneSubmitAnswers() {
+  console.log('[clone] cloneSubmitAnswers llamado');
   const answers = cloneCollectAnswers();
+  console.log('[clone] sessionId:', _cloneSessionId);
   if (!_cloneSessionId) {
     try { _cloneSessionId = sessionStorage.getItem('clone_session_id'); } catch(e) {}
   }
@@ -16975,6 +16977,7 @@ async function cloneSubmitAnswers() {
     fallbackQuestions  = JSON.parse(sessionStorage.getItem('clone_questions') || '[]');
   } catch(e) {}
   cloneShowView('clone-v-building');
+  console.log('[clone] Llamando build-plan con sessionId:', _cloneSessionId);
   try {
     const data = await apiFetch(BACKEND_URL + '/api/clone/build-plan', {
       method: 'POST',
@@ -16994,7 +16997,8 @@ async function cloneSubmitAnswers() {
     cloneRenderPlan(data);
     cloneShowView('clone-v-plan');
   } catch (err) {
-    showToast('Error generando el plan: ' + err.message, 'error');
+    console.error('[clone] build-plan error:', err);
+    showToast('Error: ' + err.message, 'error');
     cloneShowView('clone-v-questions');
   }
 }
