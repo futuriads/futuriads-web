@@ -16799,11 +16799,16 @@ async function cloneStartAnalysis() {
   setTimeout(() => cloneStepActive('cl-step-3'), 16000);
 
   try {
-    const data = await apiFetch(BACKEND_URL + '/api/clone/analyze', {
+    const resp = await apiFetch(BACKEND_URL + '/api/clone/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ videoBase64: _cloneVideoB64, mimeType: _cloneVideoMime })
     });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error analizando el video');
+    }
+    const data = await resp.json();
     _cloneSessionId = data.sessionId;
     _cloneAnalysis  = data.analysis;
     _cloneQuestions = data.questions || [];
@@ -16976,9 +16981,9 @@ async function cloneSubmitAnswers() {
     storedAnalysis   = JSON.parse(sessionStorage.getItem('clone_analysis') || '{}');
   } catch(e) {}
   cloneShowView('clone-v-building');
-  console.log('[clone] Llamando build-plan con sessionId:', _cloneSessionId);
+  console.log('[clone] Llamando build-plan con sessionId:', _cloneSessionId, 'transcript chars:', storedTranscript.length);
   try {
-    const data = await apiFetch(BACKEND_URL + '/api/clone/build-plan', {
+    const resp = await apiFetch(BACKEND_URL + '/api/clone/build-plan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -16990,8 +16995,13 @@ async function cloneSubmitAnswers() {
         analysis:     storedAnalysis
       })
     });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error generando el plan');
+    }
+    const data = await resp.json();
     _clonePlan = data.plan;
-    console.log('[clone] build-plan response:', JSON.stringify(data.plan));
+    console.log('[clone] build-plan OK, clips:', data.plan?.clips?.length);
     cloneRenderPlan(data);
     cloneShowView('clone-v-plan');
   } catch (err) {
@@ -17035,11 +17045,16 @@ async function cloneExecute() {
 
   try {
     // 1. Crear campaña en el backend
-    const execData = await apiFetch(BACKEND_URL + '/api/clone/execute', {
+    const execResp = await apiFetch(BACKEND_URL + '/api/clone/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: _cloneSessionId })
     });
+    if (!execResp.ok) {
+      const err = await execResp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error creando la campaña');
+    }
+    const execData = await execResp.json();
 
     _cloneCampaignId = execData.campaignId;
     const clips       = execData.clips || [];
