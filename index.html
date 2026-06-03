@@ -5763,6 +5763,10 @@ body, #app { background: #07050f; }
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="10" rx="2"/><path d="M7 5.5l4 2-4 2V5.5z" fill="currentColor" stroke="none"/></svg>
         <span class="a-nav-label">Anuncios largos</span>
       </div>
+      <div class="a-nav-item" id="nav-clonar" onclick="showScreen('clonar')" data-tooltip="Clonar">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3H3a1 1 0 00-1 1v8a1 1 0 001 1h6a1 1 0 001-1v-2"/><rect x="5.5" y="1" width="7" height="9" rx="1"/></svg>
+        <span class="a-nav-label">Clonar</span>
+      </div>
       <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
@@ -7123,6 +7127,104 @@ body, #app { background: #07050f; }
       <!-- Contenido scrolleable -->
       <div id="histContent"></div>
     </div><!-- /screen-historial -->
+
+    <!-- ── CLONAR ANUNCIO ── -->
+    <div class="screen" id="screen-clonar">
+      <div style="max-width:640px;margin:0 auto;padding:28px 24px;display:flex;flex-direction:column;gap:24px;">
+
+        <!-- VIEW 1: UPLOAD -->
+        <div id="clone-v-upload">
+          <div style="margin-bottom:24px;">
+            <h2 style="font-size:20px;font-weight:700;color:#fff;margin:0 0 8px;">Clonar anuncio</h2>
+            <p style="font-size:13px;color:var(--text2);margin:0;">Subí el anuncio de la competencia. La IA lo analiza, te pregunta qué querés cambiar y genera tu versión con tu avatar y producto.</p>
+          </div>
+          <div id="cloneDropZone" onclick="clonePickVideo()"
+               ondragover="event.preventDefault();document.getElementById('cloneDropZone').style.borderColor='rgba(139,92,246,0.7)'"
+               ondragleave="document.getElementById('cloneDropZone').style.borderColor='rgba(139,92,246,0.25)'"
+               ondrop="cloneHandleDrop(event)"
+               style="border:2px dashed rgba(139,92,246,0.25);border-radius:16px;padding:40px 24px;text-align:center;cursor:pointer;background:rgba(139,92,246,0.03);transition:border-color 0.2s;margin-bottom:16px;">
+            <input type="file" id="cloneVideoInput" accept="video/*" style="display:none" onchange="cloneHandleVideo(this)">
+            <div id="cloneDropInner">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.5" style="margin-bottom:12px;"><rect x="3" y="3" width="18" height="14" rx="3"/><path d="M10 8l4 3-4 3V8z" fill="rgba(139,92,246,0.5)" stroke="none"/><path d="M8 21h8M12 17v4" stroke-linecap="round"/></svg>
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Hacé clic o arrastrá el video acá</div>
+              <div style="font-size:11px;color:var(--text2);">MP4, MOV · máx 50MB</div>
+            </div>
+            <div id="cloneVideoPreview" style="display:none;">
+              <video id="cloneVideoEl" muted playsinline style="max-height:180px;border-radius:10px;margin-bottom:10px;"></video>
+              <div id="cloneVideoName" style="font-size:12px;color:var(--text2);"></div>
+              <div style="font-size:11px;color:rgba(139,92,246,0.7);margin-top:4px;">Clic para cambiar el video</div>
+            </div>
+          </div>
+          <button class="a-gen-btn" id="cloneAnalyzeBtn" onclick="cloneStartAnalysis()" disabled style="opacity:0.35;cursor:not-allowed;width:100%;justify-content:center;">
+            Analizar anuncio
+          </button>
+        </div>
+
+        <!-- VIEW 2: ANALYZING -->
+        <div id="clone-v-analyzing" style="display:none;text-align:center;padding:40px 0;">
+          <div style="width:44px;height:44px;border:3px solid rgba(139,92,246,0.2);border-top-color:#8b5cf6;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 24px;"></div>
+          <div style="font-size:16px;font-weight:600;color:#fff;margin-bottom:16px;">Analizando el anuncio...</div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;max-width:260px;margin:0 auto;">
+            <div id="cl-step-1" style="font-size:12px;color:rgba(192,168,255,0.4);display:flex;align-items:center;gap:8px;">
+              <span id="cl-step-1-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(139,92,246,0.3);flex-shrink:0;"></span>Extrayendo audio y frames
+            </div>
+            <div id="cl-step-2" style="font-size:12px;color:rgba(192,168,255,0.4);display:flex;align-items:center;gap:8px;">
+              <span id="cl-step-2-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(139,92,246,0.3);flex-shrink:0;"></span>Transcribiendo con Whisper
+            </div>
+            <div id="cl-step-3" style="font-size:12px;color:rgba(192,168,255,0.4);display:flex;align-items:center;gap:8px;">
+              <span id="cl-step-3-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(139,92,246,0.3);flex-shrink:0;"></span>Analizando con IA
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 3: QUESTIONS -->
+        <div id="clone-v-questions" style="display:none;">
+          <!-- Analysis badge -->
+          <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:14px 16px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Análisis del anuncio</div>
+            <div id="cloneAnalysisSummary" style="font-size:12px;color:var(--text2);display:flex;flex-wrap:wrap;gap:8px;"></div>
+          </div>
+          <!-- Questions -->
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;">¿Qué cambiamos?</div>
+          <div id="cloneQuestionsContainer" style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;"></div>
+          <button class="a-gen-btn" onclick="cloneSubmitAnswers()" style="width:100%;justify-content:center;">
+            Generar mi versión →
+          </button>
+        </div>
+
+        <!-- VIEW 4: BUILDING -->
+        <div id="clone-v-building" style="display:none;text-align:center;padding:40px 0;">
+          <div style="width:44px;height:44px;border:3px solid rgba(139,92,246,0.2);border-top-color:#8b5cf6;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 20px;"></div>
+          <div style="font-size:16px;font-weight:600;color:#fff;margin-bottom:6px;">Armando el guión...</div>
+          <div style="font-size:12px;color:var(--text2);">Claude está reescribiendo el anuncio con tu producto</div>
+        </div>
+
+        <!-- VIEW 5: PLAN -->
+        <div id="clone-v-plan" style="display:none;">
+          <div style="margin-bottom:20px;">
+            <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Tu anuncio clonado</div>
+            <div style="font-size:12px;color:var(--text2);">Revisá los clips antes de generar</div>
+          </div>
+          <div id="clonePlanClips" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+          <button class="a-gen-btn" id="cloneGenBtn" onclick="cloneExecute()" style="width:100%;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Generar anuncio
+          </button>
+          <button onclick="cloneShowView('clone-v-questions')" style="width:100%;text-align:center;font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-top:10px;padding:6px;">
+            ← Volver a las preguntas
+          </button>
+        </div>
+
+        <!-- VIEW 6: GENERATING -->
+        <div id="clone-v-generating" style="display:none;text-align:center;padding:40px 0;">
+          <div style="width:44px;height:44px;border:3px solid rgba(139,92,246,0.2);border-top-color:#8b5cf6;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 20px;"></div>
+          <div style="font-size:16px;font-weight:600;color:#fff;margin-bottom:6px;">Generando tu anuncio...</div>
+          <div id="cloneGenProgress" style="font-size:12px;color:var(--text2);margin-bottom:20px;"></div>
+          <div id="cloneGenClipStatus" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;max-width:280px;margin:0 auto;"></div>
+        </div>
+
+      </div>
+    </div><!-- /screen-clonar -->
 
     <!-- ---- PERFIL ---- -->
     <div class="screen" id="screen-perfil">
@@ -16628,6 +16730,332 @@ document.getElementById('confirmModal')?.addEventListener('click', function(e) {
     autoResize(ta);
   });
 })();
+
+// =============================================
+// AD CLONER
+// =============================================
+
+// Estado
+let _cloneVideoB64    = null;
+let _cloneVideoMime   = null;
+let _cloneSessionId   = null;
+let _cloneAnalysis    = null;
+let _cloneQuestions   = [];
+let _clonePlan        = null;
+let _cloneAvatarB64   = null;
+let _cloneAvatarMime  = null;
+let _cloneCampaignId  = null;
+
+function cloneShowView(id) {
+  ['clone-v-upload','clone-v-analyzing','clone-v-questions','clone-v-building','clone-v-plan','clone-v-generating']
+    .forEach(v => { const el = document.getElementById(v); if (el) el.style.display = 'none'; });
+  const target = document.getElementById(id);
+  if (target) target.style.display = '';
+}
+
+function clonePickVideo() {
+  document.getElementById('cloneVideoInput')?.click();
+}
+
+function cloneHandleDrop(e) {
+  e.preventDefault();
+  document.getElementById('cloneDropZone').style.borderColor = 'rgba(139,92,246,0.25)';
+  const file = e.dataTransfer?.files?.[0];
+  if (file) cloneLoadFile(file);
+}
+
+function cloneHandleVideo(input) {
+  const file = input.files?.[0];
+  if (file) cloneLoadFile(file);
+  input.value = '';
+}
+
+function cloneLoadFile(file) {
+  if (file.size > 52428800) { showToast('El video supera los 50MB', 'error'); return; }
+  _cloneVideoMime = file.type || 'video/mp4';
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    _cloneVideoB64 = e.target.result.split(',')[1]; // solo base64, sin el prefijo
+    // Preview
+    const videoEl = document.getElementById('cloneVideoEl');
+    if (videoEl) { videoEl.src = URL.createObjectURL(file); }
+    const nameEl = document.getElementById('cloneVideoName');
+    if (nameEl) nameEl.textContent = file.name;
+    document.getElementById('cloneDropInner').style.display = 'none';
+    document.getElementById('cloneVideoPreview').style.display = 'block';
+    // Habilitar botón
+    const btn = document.getElementById('cloneAnalyzeBtn');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function cloneStartAnalysis() {
+  if (!_cloneVideoB64) return;
+  cloneShowView('clone-v-analyzing');
+  // Animar pasos
+  setTimeout(() => cloneStepActive('cl-step-1'), 100);
+  setTimeout(() => cloneStepActive('cl-step-2'), 8000);
+  setTimeout(() => cloneStepActive('cl-step-3'), 16000);
+
+  try {
+    const data = await apiFetch(BACKEND_URL + '/api/clone/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ videoBase64: _cloneVideoB64, mimeType: _cloneVideoMime })
+    });
+    _cloneSessionId = data.sessionId;
+    _cloneAnalysis  = data.analysis;
+    _cloneQuestions = data.questions || [];
+    cloneRenderQuestions(data);
+    cloneShowView('clone-v-questions');
+  } catch (err) {
+    showToast('Error analizando el video: ' + err.message, 'error');
+    cloneShowView('clone-v-upload');
+  }
+}
+
+function cloneStepActive(id) {
+  const dot = document.getElementById(id + '-dot');
+  const row = document.getElementById(id);
+  if (dot) dot.style.background = '#8b5cf6';
+  if (row) row.style.color = 'rgba(192,168,255,0.9)';
+}
+
+function cloneRenderQuestions(data) {
+  // Analysis summary badges
+  const a = data.analysis || {};
+  const summaryEl = document.getElementById('cloneAnalysisSummary');
+  if (summaryEl) {
+    const tags = [
+      a.format && `<span style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:3px 8px;font-size:11px;color:rgba(192,168,255,0.8);">${a.format}</span>`,
+      a.hook_type && `<span style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:3px 8px;font-size:11px;color:rgba(192,168,255,0.8);">Hook: ${a.hook_type}</span>`,
+      a.selling_angle && `<span style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:3px 8px;font-size:11px;color:rgba(192,168,255,0.8);">${a.selling_angle}</span>`,
+      a.tone && `<span style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:3px 8px;font-size:11px;color:rgba(192,168,255,0.8);">Tono: ${a.tone}</span>`,
+    ].filter(Boolean).join('');
+    summaryEl.innerHTML = tags || '<span style="color:var(--text2);">Análisis completado</span>';
+  }
+
+  // Questions
+  const container = document.getElementById('cloneQuestionsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  (data.questions || []).forEach(q => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;';
+    wrap.innerHTML = `<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;">${q.question}</div>` + cloneBuildQuestionInput(q);
+    container.appendChild(wrap);
+  });
+}
+
+function cloneBuildQuestionInput(q) {
+  if (q.type === 'boolean_with_upload') {
+    return `
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button id="qbtn-yes-${q.id}" onclick="cloneToggleBool('${q.id}',true)" class="clone-q-btn active" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.15);color:#c4b5fd;font-size:12px;cursor:pointer;">Sí</button>
+        <button id="qbtn-no-${q.id}" onclick="cloneToggleBool('${q.id}',false)" class="clone-q-btn" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;">No</button>
+      </div>
+      <div id="qupload-${q.id}" style="margin-top:6px;">
+        <div onclick="clonePickQImage('${q.id}')" style="border:1.5px dashed rgba(139,92,246,0.3);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);">
+          <input type="file" id="qfile-${q.id}" accept="image/*" style="display:none" onchange="cloneHandleQImage('${q.id}',this)">
+          <span id="qfile-label-${q.id}">${q.upload_label || 'Subí tu foto'}</span>
+        </div>
+      </div>`;
+  }
+  if (q.type === 'product') {
+    return `
+      <input id="qproduct-name-${q.id}" placeholder="Nombre del producto" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:12px;color:#fff;margin-bottom:8px;">
+      <textarea id="qproduct-desc-${q.id}" placeholder="Descripción breve del producto y sus beneficios" rows="2" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:12px;color:#fff;resize:none;margin-bottom:8px;"></textarea>
+      <div onclick="clonePickQImage('${q.id}')" style="border:1.5px dashed rgba(139,92,246,0.2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);">
+        <input type="file" id="qfile-${q.id}" accept="image/*" style="display:none" onchange="cloneHandleQImage('${q.id}',this)">
+        <span id="qfile-label-${q.id}">Foto del producto (opcional)</span>
+      </div>`;
+  }
+  if (q.type === 'choice') {
+    return (q.options || []).map((opt, i) =>
+      `<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:6px;">
+        <input type="radio" name="qchoice-${q.id}" value="${opt}" ${i===0?'checked':''} style="accent-color:#8b5cf6;">
+        ${opt}
+      </label>`
+    ).join('');
+  }
+  if (q.type === 'text') {
+    return `<input id="qtext-${q.id}" placeholder="Tu respuesta..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;font-size:12px;color:#fff;">`;
+  }
+  return '';
+}
+
+function cloneToggleBool(id, val) {
+  document.getElementById(`qbtn-yes-${id}`).style.background = val ? 'rgba(139,92,246,0.15)' : 'transparent';
+  document.getElementById(`qbtn-yes-${id}`).style.borderColor = val ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)';
+  document.getElementById(`qbtn-yes-${id}`).style.color = val ? '#c4b5fd' : 'var(--text2)';
+  document.getElementById(`qbtn-no-${id}`).style.background = !val ? 'rgba(139,92,246,0.15)' : 'transparent';
+  document.getElementById(`qbtn-no-${id}`).style.borderColor = !val ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)';
+  document.getElementById(`qbtn-no-${id}`).style.color = !val ? '#c4b5fd' : 'var(--text2)';
+  const uploadEl = document.getElementById(`qupload-${id}`);
+  if (uploadEl) uploadEl.style.display = val ? 'block' : 'none';
+}
+
+function clonePickQImage(qid) { document.getElementById(`qfile-${qid}`)?.click(); }
+
+function cloneHandleQImage(qid, input) {
+  const file = input.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const b64 = e.target.result.split(',')[1];
+    const mime = file.type;
+    input.dataset.b64  = b64;
+    input.dataset.mime = mime;
+    const label = document.getElementById(`qfile-label-${qid}`);
+    if (label) label.textContent = '✓ ' + file.name;
+    // Si es avatar question, guardar globalmente
+    if (qid === 'avatar') { _cloneAvatarB64 = b64; _cloneAvatarMime = mime; }
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function cloneCollectAnswers() {
+  const answers = {};
+  _cloneQuestions.forEach(q => {
+    if (q.type === 'boolean_with_upload') {
+      const yesBtn = document.getElementById(`qbtn-yes-${q.id}`);
+      const val = yesBtn && yesBtn.style.background !== 'transparent' && yesBtn.style.background !== '';
+      answers[q.id] = val;
+      const fileInput = document.getElementById(`qfile-${q.id}`);
+      if (fileInput?.dataset.b64) {
+        answers[q.id + '_imageBase64'] = fileInput.dataset.b64;
+        answers[q.id + '_imageMime']   = fileInput.dataset.mime;
+        if (q.id === 'avatar') { _cloneAvatarB64 = fileInput.dataset.b64; _cloneAvatarMime = fileInput.dataset.mime; }
+      }
+    } else if (q.type === 'product') {
+      answers.productName        = document.getElementById(`qproduct-name-${q.id}`)?.value || '';
+      answers.productDescription = document.getElementById(`qproduct-desc-${q.id}`)?.value || '';
+      const fileInput = document.getElementById(`qfile-${q.id}`);
+      if (fileInput?.dataset.b64) {
+        answers.productImageBase64 = fileInput.dataset.b64;
+        answers.productImageMime   = fileInput.dataset.mime;
+      }
+    } else if (q.type === 'choice') {
+      const sel = document.querySelector(`input[name="qchoice-${q.id}"]:checked`);
+      answers[q.id] = sel?.value || '';
+    } else if (q.type === 'text') {
+      answers[q.id] = document.getElementById(`qtext-${q.id}`)?.value || '';
+    }
+  });
+  return answers;
+}
+
+async function cloneSubmitAnswers() {
+  const answers = cloneCollectAnswers();
+  if (!_cloneSessionId) { showToast('Sesión expirada, volvé a subir el video', 'error'); return; }
+  cloneShowView('clone-v-building');
+  try {
+    const data = await apiFetch(BACKEND_URL + '/api/clone/build-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: _cloneSessionId,
+        answers,
+        avatarBase64: _cloneAvatarB64,
+        avatarMime:   _cloneAvatarMime
+      })
+    });
+    _clonePlan = data.plan;
+    cloneRenderPlan(data);
+    cloneShowView('clone-v-plan');
+  } catch (err) {
+    showToast('Error generando el plan: ' + err.message, 'error');
+    cloneShowView('clone-v-questions');
+  }
+}
+
+function cloneRenderPlan(data) {
+  const container = document.getElementById('clonePlanClips');
+  if (!container || !data.plan?.clips) return;
+  container.innerHTML = data.plan.clips.map((clip, i) => `
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${clip.index || i+1}</span>
+        <span style="font-size:11px;color:var(--text2);">${clip.duration || 8}s</span>
+      </div>
+      <div style="font-size:13px;color:#fff;margin-bottom:6px;">"${clip.guion}"</div>
+      <div style="font-size:11px;color:var(--text2);font-style:italic;">${clip.prompt_visual || ''}</div>
+    </div>
+  `).join('');
+}
+
+async function cloneExecute() {
+  if (!_cloneSessionId || !_clonePlan) return;
+  const btn = document.getElementById('cloneGenBtn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+  cloneShowView('clone-v-generating');
+
+  try {
+    // 1. Crear campaña en el backend
+    const execData = await apiFetch(BACKEND_URL + '/api/clone/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: _cloneSessionId })
+    });
+
+    _cloneCampaignId = execData.campaignId;
+    const clips       = execData.clips || [];
+    const avatarUrl   = execData.avatarUrl;
+    const productUrl  = execData.productImageUrl;
+
+    // 2. Generar clips uno por uno
+    const statusEl = document.getElementById('cloneGenClipStatus');
+    const progEl   = document.getElementById('cloneGenProgress');
+    if (statusEl) statusEl.innerHTML = clips.map((c, i) =>
+      `<div id="clone-clip-row-${i}" style="font-size:12px;color:rgba(192,168,255,0.4);display:flex;align-items:center;gap:8px;">
+        <span id="clone-clip-dot-${i}" style="width:6px;height:6px;border-radius:50%;background:rgba(139,92,246,0.3);flex-shrink:0;"></span>
+        Clip ${c.index}
+      </div>`
+    ).join('');
+
+    for (let i = 0; i < clips.length; i++) {
+      const clip = clips[i];
+      if (progEl) progEl.textContent = `Generando clip ${i+1} de ${clips.length}...`;
+      const dot = document.getElementById(`clone-clip-dot-${i}`);
+      const row = document.getElementById(`clone-clip-row-${i}`);
+      if (dot) dot.style.background = '#8b5cf6';
+      if (row) row.style.color = 'rgba(192,168,255,0.9)';
+
+      const prompt = `${clip.prompt_visual}. The character says: "${clip.guion}" NO TEXT OVERLAYS.`;
+
+      await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaignId:      _cloneCampaignId,
+          clipIndex:       clip.index - 1,
+          textChunk:       clip.guion,
+          masterPrompt:    prompt,
+          variantImageUrl: avatarUrl,
+          productImageUrl: productUrl || null,
+          clipDuration:    clip.duration || 8,
+          resolution:      '720p',
+          aspectRatio:     '9:16',
+          totalClips:      clips.length
+        })
+      });
+
+      if (dot) dot.style.background = '#22c55e';
+      if (row) row.style.color = '#86efac';
+    }
+
+    if (progEl) progEl.textContent = 'Clips enviados a generar. ¡Listo!';
+    showToast('Clips enviados ✓ Los encontrás en Anuncios largos', 'success');
+    setTimeout(() => showScreen('campanas'), 2500);
+
+  } catch (err) {
+    showToast('Error generando: ' + err.message, 'error');
+    cloneShowView('clone-v-plan');
+    const btn2 = document.getElementById('cloneGenBtn');
+    if (btn2) { btn2.disabled = false; btn2.style.opacity = '1'; }
+  }
+}
 
 // Sidebar estático — limpiar cualquier ancho guardado de versiones anteriores
 localStorage.removeItem('sidebarWidth');
