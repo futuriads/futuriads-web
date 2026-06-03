@@ -2159,6 +2159,35 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .a-gen-opts { display: none; }
 .a-gen-opts.active { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; overflow: visible; height: 36px; }
 
+/* ---- AI Ad Maker ---- */
+.adm-step { max-width: 600px; }
+.adm-format-card {
+  padding: 14px 16px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  transition: border-color 0.2s, background 0.2s;
+}
+.adm-format-card:hover { border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.06); }
+.adm-format-card.selected { border-color: rgba(139,92,246,0.7); background: rgba(139,92,246,0.12); }
+.adm-dur-btn {
+  padding: 8px 18px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.1);
+  background: transparent; color: var(--text2); font-size: 13px; cursor: pointer;
+  transition: all 0.2s;
+}
+.adm-dur-btn:hover { border-color: rgba(139,92,246,0.5); color: #c4b5fd; }
+.adm-dur-btn.active { border-color: rgba(139,92,246,0.7); background: rgba(139,92,246,0.15); color: #c4b5fd; font-weight: 600; }
+.adm-clip-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 16px;
+}
+.adm-clip-dialogue {
+  width: 100%; box-sizing: border-box;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #fff;
+  resize: vertical; font-family: inherit; line-height: 1.6; min-height: 80px;
+}
+.adm-clip-dialogue:focus { outline: none; border-color: rgba(139,92,246,0.5); }
+
 /* ---- Dashboard bottom grid ---- */
 .dash-bottom-grid {
   display: grid;
@@ -5763,11 +5792,7 @@ body, #app { background: #07050f; }
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="10" rx="2"/><path d="M7 5.5l4 2-4 2V5.5z" fill="currentColor" stroke="none"/></svg>
         <span class="a-nav-label">Anuncios largos</span>
       </div>
-      <div class="a-nav-item" id="nav-clonar" onclick="showScreen('clonar')" data-tooltip="Clonar">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3H3a1 1 0 00-1 1v8a1 1 0 001 1h6a1 1 0 001-1v-2"/><rect x="5.5" y="1" width="7" height="9" rx="1"/></svg>
-        <span class="a-nav-label">Clonar</span>
-      </div>
-      <div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
+<div class="a-nav-item" id="nav-historial" onclick="showScreen('historial')" data-tooltip="Historial">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><path d="M4 5h7M4 7.5h5M4 10h6" stroke-linecap="round"/></svg>
         <span class="a-nav-label">Historial</span>
       </div>
@@ -6534,6 +6559,10 @@ body, #app { background: #07050f; }
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/><polyline points="10,11 12,13 15,10" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Seleccionar
             </button>
+            <button class="camp-new-btn" onclick="admStart()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);margin-right:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+              Crear con IA
+            </button>
             <button class="camp-new-btn" onclick="campStartNew()">
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 1v11M1 6.5h11"/></svg>
               Nuevo anuncio
@@ -7029,6 +7058,190 @@ body, #app { background: #07050f; }
 
         </div>
       </div><!-- /campView-generating -->
+
+      <!-- ── AI AD MAKER ─────────────────────────────────────────────── -->
+      <div id="campView-admaker" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+          <button class="btn-ghost-sm" onclick="campBackToList()">Volver</button>
+          <div style="font-size:13px;color:var(--text2);">Crear anuncio con IA</div>
+          <!-- Step indicator -->
+          <div style="margin-left:auto;display:flex;gap:6px;align-items:center;" id="admStepIndicator"></div>
+        </div>
+
+        <!-- STEP 1 — Idea + Producto -->
+        <div id="adm-s1" class="adm-step">
+          <div class="camp-step-header">
+            <div class="camp-step-num">Paso 1 de 4</div>
+            <div class="camp-step-title">Tu producto</div>
+            <div class="camp-step-sub">Contanos qué querés anunciar y qué hace tu producto.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;">¿Qué tenés en mente para este anuncio?</div>
+              <textarea id="adm-idea" rows="3" placeholder="Ej: Un anuncio donde el especialista muestra el antes y después del producto, generando urgencia al final." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;resize:none;font-family:inherit;"></textarea>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;">Nombre del producto <span style="color:#f87171;">*</span></div>
+              <input id="adm-product-name" placeholder="Ej: DomaPet" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;">
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;">Beneficios y descripción <span style="color:#f87171;">*</span></div>
+              <textarea id="adm-product-desc" rows="3" placeholder="Ej: Pasta dental natural para perros. Elimina el sarro en 2 semanas, sin químicos agresivos. Sabor a pollo que los perros aman." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;resize:none;font-family:inherit;"></textarea>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;">Foto del producto <span style="font-size:11px;color:rgba(255,255,255,0.3);">(recomendado)</span></div>
+              <div id="adm-product-slot" onclick="admPickProduct()" style="border:1.5px dashed rgba(139,92,246,0.3);border-radius:10px;padding:14px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(139,92,246,0.6)'" onmouseleave="this.style.borderColor='rgba(139,92,246,0.3)'">
+                <input type="file" id="adm-product-file" accept="image/*" style="display:none" onchange="admHandleProduct(this)">
+                <span id="adm-product-label">Subir foto del producto</span>
+              </div>
+            </div>
+          </div>
+          <div class="camp-nav-row" style="margin-top:24px;">
+            <button class="btn-w" onclick="admGoStep(2)">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2 — Avatar -->
+        <div id="adm-s2" class="adm-step" style="display:none;">
+          <div class="camp-step-header">
+            <div class="camp-step-num">Paso 2 de 4</div>
+            <div class="camp-step-title">Tu avatar</div>
+            <div class="camp-step-sub">La persona que va a aparecer en el anuncio. Debe ser una foto clara, de frente.</div>
+          </div>
+          <div id="adm-avatar-slot" onclick="admPickAvatar()" style="border:1.5px dashed rgba(139,92,246,0.3);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;max-width:260px;margin:0 auto;" onmouseenter="this.style.borderColor='rgba(139,92,246,0.7)'" onmouseleave="this.style.borderColor='rgba(139,92,246,0.3)'">
+            <input type="file" id="adm-avatar-file" accept="image/*" style="display:none" onchange="admHandleAvatar(this)">
+            <div id="adm-avatar-placeholder">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.5)" stroke-width="1.5" style="margin-bottom:10px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <div style="font-size:13px;color:var(--text2);">Subir foto del avatar</div>
+            </div>
+            <img id="adm-avatar-preview" style="display:none;width:120px;height:120px;object-fit:cover;border-radius:50%;margin:0 auto;" alt="">
+          </div>
+          <div class="camp-nav-row" style="margin-top:24px;">
+            <button class="btn-ghost-sm" onclick="admGoStep(1)">← Atrás</button>
+            <button class="btn-w" id="adm-s2-next" onclick="admGoStep(3)" disabled style="opacity:0.4;">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 — Formato -->
+        <div id="adm-s3" class="adm-step" style="display:none;">
+          <div class="camp-step-header">
+            <div class="camp-step-num">Paso 3 de 4</div>
+            <div class="camp-step-title">Formato del anuncio</div>
+            <div class="camp-step-sub">¿Cómo querés estructurar el anuncio?</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div class="adm-format-card" data-format="ugc_directo" onclick="admSelectFormat('ugc_directo',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">UGC Directo</div>
+              <div style="font-size:11px;color:var(--text2);">El avatar habla directo a cámara sobre el producto.</div>
+            </div>
+            <div class="adm-format-card" data-format="storytelling" onclick="admSelectFormat('storytelling',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Storytelling</div>
+              <div style="font-size:11px;color:var(--text2);">Problema → vivencia personal → solución con el producto.</div>
+            </div>
+            <div class="adm-format-card" data-format="demo" onclick="admSelectFormat('demo',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Demostración</div>
+              <div style="font-size:11px;color:var(--text2);">Muestra cómo funciona el producto paso a paso.</div>
+            </div>
+            <div class="adm-format-card" data-format="autoridad" onclick="admSelectFormat('autoridad',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Autoridad</div>
+              <div style="font-size:11px;color:var(--text2);">Un especialista explica por qué el producto funciona.</div>
+            </div>
+            <div class="adm-format-card" data-format="comparacion" onclick="admSelectFormat('comparacion',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Comparación</div>
+              <div style="font-size:11px;color:var(--text2);">Antes vs después, o el producto vs la alternativa.</div>
+            </div>
+            <div class="adm-format-card" data-format="urgencia" onclick="admSelectFormat('urgencia',this)">
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Urgencia</div>
+              <div style="font-size:11px;color:var(--text2);">Hook impactante + problema + CTA con escasez.</div>
+            </div>
+          </div>
+          <button id="adm-ai-format-btn" onclick="admSelectFormat('ai_choice',this)" style="width:100%;padding:12px;border-radius:10px;border:1.5px dashed rgba(139,92,246,0.4);background:rgba(139,92,246,0.05);color:#c4b5fd;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(139,92,246,0.7)'" onmouseleave="this.style.borderColor=_admFormat==='ai_choice'?'rgba(139,92,246,0.8)':'rgba(139,92,246,0.4)'">
+            ✨ La IA elige el mejor formato para mi producto
+          </button>
+          <div class="camp-nav-row" style="margin-top:24px;">
+            <button class="btn-ghost-sm" onclick="admGoStep(2)">← Atrás</button>
+            <button class="btn-w" id="adm-s3-next" onclick="admGoStep(4)" disabled style="opacity:0.4;">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4 — Ajustes -->
+        <div id="adm-s4" class="adm-step" style="display:none;">
+          <div class="camp-step-header">
+            <div class="camp-step-num">Paso 4 de 4</div>
+            <div class="camp-step-title">Ajustes</div>
+            <div class="camp-step-sub">Duración, calidad y modelo del anuncio.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Duración objetivo</div>
+              <div style="display:flex;gap:8px;">
+                <button class="adm-dur-btn active" data-dur="15" onclick="admSetDur(15,this)">15s</button>
+                <button class="adm-dur-btn" data-dur="30" onclick="admSetDur(30,this)">30s</button>
+                <button class="adm-dur-btn" data-dur="45" onclick="admSetDur(45,this)">45s</button>
+                <button class="adm-dur-btn" data-dur="60" onclick="admSetDur(60,this)">60s</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Resolución</div>
+              <div style="display:flex;gap:8px;">
+                <button class="adm-dur-btn" data-res="480p" onclick="admSetRes('480p',this)">480p</button>
+                <button class="adm-dur-btn active" data-res="720p" onclick="admSetRes('720p',this)">720p</button>
+                <button class="adm-dur-btn" data-res="1080p" onclick="admSetRes('1080p',this)">1080p</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Modelo</div>
+              <div style="display:flex;gap:8px;">
+                <button class="adm-dur-btn active" style="cursor:default;">Seedance 2.0</button>
+                <button class="adm-dur-btn" style="opacity:0.4;cursor:not-allowed;position:relative;" disabled>
+                  Gemini Omni <span style="font-size:9px;color:#a78bfa;margin-left:4px;">próx.</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="camp-nav-row" style="margin-top:32px;">
+            <button class="btn-ghost-sm" onclick="admGoStep(3)">← Atrás</button>
+            <button class="btn-w" onclick="admGenerateScript()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+              Generar guión con IA
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 5 — Revisión guión -->
+        <div id="adm-s5" class="adm-step" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:16px;font-weight:700;color:#fff;" id="adm-format-label">Tu anuncio</div>
+              <div style="font-size:12px;color:var(--text2);" id="adm-format-reason"></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--text2);">Costo estimado</div>
+              <div id="adm-total-cost" style="font-size:20px;font-weight:700;color:#c4b5fd;">— cr</div>
+              <div id="adm-total-dur" style="font-size:11px;color:var(--text2);">— segundos totales</div>
+            </div>
+          </div>
+          <div id="adm-clips-container" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;"></div>
+          <div class="camp-nav-row">
+            <button class="btn-ghost-sm" onclick="admGoStep(4)">← Ajustes</button>
+            <button class="btn-w" id="adm-gen-all-btn" onclick="admExecuteAll()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Generar todos los clips
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 6 — Generación -->
+        <div id="adm-s6" class="adm-step" style="display:none;">
+          <div style="margin-bottom:20px;">
+            <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Generando tu anuncio</div>
+            <div style="font-size:12px;color:var(--text2);">Los clips se generan en segundo plano. Podés cerrar esta pestaña y volver a verlos en el historial.</div>
+          </div>
+          <div id="adm-gen-status" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
+          <button class="btn-ghost-sm" onclick="campBackToList()" style="margin-top:8px;">Ver mis anuncios</button>
+        </div>
+
+      </div><!-- /campView-admaker -->
 
     </div><!-- /screen-campanas -->
 
@@ -9450,6 +9663,7 @@ function campBackToList() {
   document.getElementById('campView-list').style.display = 'block';
   document.getElementById('campView-wizard').style.display = 'none';
   document.getElementById('campView-generating').style.display = 'none';
+  document.getElementById('campView-admaker').style.display = 'none';
   campLoadList();
 }
 
@@ -17154,6 +17368,395 @@ async function cloneExecute() {
     const btn2 = document.getElementById('cloneGenBtn');
     if (btn2) { btn2.disabled = false; btn2.style.opacity = '1'; }
   }
+}
+
+// =============================================
+// AI AD MAKER
+// =============================================
+
+const _adm = {
+  idea: '', productName: '', productDesc: '',
+  productB64: null, productMime: null, productUrl: null,
+  avatarB64: null, avatarMime: null, avatarUrl: null,
+  format: null, targetDur: 15, resolution: '720p',
+  clips: [],          // [{index, guion, duration, prompt_visual, status, campaignId, clipIndex}]
+  campaignId: null,
+  formatLabel: '',
+  formatReason: ''
+};
+
+const ADM_RATES = { '480p': 93.5, '720p': 207, '1080p': 521 };
+const ADM_WPS   = 2.5; // palabras por segundo (español argentino)
+
+function admStart() {
+  Object.assign(_adm, {
+    idea:'', productName:'', productDesc:'',
+    productB64:null, productMime:null, productUrl:null,
+    avatarB64:null, avatarMime:null, avatarUrl:null,
+    format:null, targetDur:15, resolution:'720p',
+    clips:[], campaignId:null
+  });
+  // Limpiar campos
+  ['adm-idea','adm-product-name','adm-product-desc'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('adm-product-label').textContent = 'Subir foto del producto';
+  document.getElementById('adm-avatar-placeholder').style.display = 'block';
+  document.getElementById('adm-avatar-preview').style.display = 'none';
+  document.getElementById('adm-avatar-preview').src = '';
+  document.querySelectorAll('.adm-format-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('adm-ai-format-btn').style.borderColor = 'rgba(139,92,246,0.4)';
+  document.getElementById('adm-ai-format-btn').style.background  = 'rgba(139,92,246,0.05)';
+  document.getElementById('adm-s2-next').disabled = true;
+  document.getElementById('adm-s2-next').style.opacity = '0.4';
+  document.getElementById('adm-s3-next').disabled = true;
+  document.getElementById('adm-s3-next').style.opacity = '0.4';
+  // Resetear duracion/resolución
+  document.querySelectorAll('.adm-dur-btn[data-dur]').forEach(b => b.classList.toggle('active', b.dataset.dur === '15'));
+  document.querySelectorAll('.adm-dur-btn[data-res]').forEach(b => b.classList.toggle('active', b.dataset.res === '720p'));
+
+  document.getElementById('campView-list').style.display = 'none';
+  document.getElementById('campView-wizard').style.display = 'none';
+  document.getElementById('campView-generating').style.display = 'none';
+  document.getElementById('campView-admaker').style.display = 'block';
+  admGoStep(1);
+}
+
+function admGoStep(n) {
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById(`adm-s${i}`);
+    if (el) el.style.display = i === n ? '' : 'none';
+  }
+  admUpdateStepIndicator(n);
+}
+
+function admUpdateStepIndicator(current) {
+  const el = document.getElementById('admStepIndicator');
+  if (!el) return;
+  const labels = ['Producto','Avatar','Formato','Ajustes','Guión','Generando'];
+  el.innerHTML = labels.map((l,i) => {
+    const n = i + 1;
+    const active = n === current;
+    const done   = n < current;
+    return `<div style="display:flex;align-items:center;gap:4px;">
+      <div style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+        background:${active?'#8b5cf6':done?'rgba(139,92,246,0.4)':'rgba(255,255,255,0.08)'};
+        color:${active||done?'#fff':'var(--text2)'};">
+        ${done?'✓':n}
+      </div>
+      ${n < 6 ? '<div style="width:16px;height:1px;background:rgba(255,255,255,0.1);"></div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Uploads ──────────────────────────────────────────────────────────────────
+function admPickProduct() { document.getElementById('adm-product-file')?.click(); }
+function admHandleProduct(input) {
+  const file = input.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _adm.productB64  = e.target.result.split(',')[1];
+    _adm.productMime = file.type;
+    document.getElementById('adm-product-label').textContent = '✓ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function admPickAvatar() { document.getElementById('adm-avatar-file')?.click(); }
+function admHandleAvatar(input) {
+  const file = input.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _adm.avatarB64  = e.target.result.split(',')[1];
+    _adm.avatarMime = file.type;
+    const preview = document.getElementById('adm-avatar-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('adm-avatar-placeholder').style.display = 'none';
+    const btn = document.getElementById('adm-s2-next');
+    btn.disabled = false; btn.style.opacity = '1';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+// ── Formato ──────────────────────────────────────────────────────────────────
+const ADM_FORMAT_NAMES = {
+  ugc_directo: 'UGC Directo', storytelling: 'Storytelling',
+  demo: 'Demostración', autoridad: 'Autoridad',
+  comparacion: 'Comparación', urgencia: 'Urgencia', ai_choice: '✨ IA elige'
+};
+
+function admSelectFormat(format, el) {
+  _adm.format = format;
+  document.querySelectorAll('.adm-format-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('adm-ai-format-btn').style.borderColor = 'rgba(139,92,246,0.4)';
+  document.getElementById('adm-ai-format-btn').style.background  = 'rgba(139,92,246,0.05)';
+  if (format === 'ai_choice') {
+    el.style.borderColor = 'rgba(139,92,246,0.8)';
+    el.style.background  = 'rgba(139,92,246,0.12)';
+  } else {
+    el.classList.add('selected');
+  }
+  const btn = document.getElementById('adm-s3-next');
+  btn.disabled = false; btn.style.opacity = '1';
+}
+
+// ── Ajustes ──────────────────────────────────────────────────────────────────
+function admSetDur(n, el) {
+  _adm.targetDur = n;
+  document.querySelectorAll('.adm-dur-btn[data-dur]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function admSetRes(r, el) {
+  _adm.resolution = r;
+  document.querySelectorAll('.adm-dur-btn[data-res]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Validaciones de pasos ─────────────────────────────────────────────────────
+function admGoStep(n) {
+  if (n === 2) {
+    _adm.idea        = document.getElementById('adm-idea')?.value.trim() || '';
+    _adm.productName = document.getElementById('adm-product-name')?.value.trim() || '';
+    _adm.productDesc = document.getElementById('adm-product-desc')?.value.trim() || '';
+    if (!_adm.productName) { showToast('Ingresá el nombre del producto', 'error'); return; }
+    if (!_adm.productDesc)  { showToast('Describí el producto y sus beneficios', 'error'); return; }
+  }
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById(`adm-s${i}`);
+    if (el) el.style.display = i === n ? '' : 'none';
+  }
+  admUpdateStepIndicator(n);
+}
+
+// ── Cálculo duración a partir del diálogo ────────────────────────────────────
+function admCalcDuration(text) {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(4, Math.min(15, Math.ceil(words / ADM_WPS)));
+}
+
+function admCalcTotalCost(clips, resolution) {
+  const rate = ADM_RATES[resolution] || 207;
+  return Math.round(clips.reduce((sum, c) => sum + (c.duration * rate), 0));
+}
+
+// ── Generar guión con IA ─────────────────────────────────────────────────────
+async function admGenerateScript() {
+  _adm.idea        = document.getElementById('adm-idea')?.value.trim() || '';
+  _adm.productName = document.getElementById('adm-product-name')?.value.trim() || '';
+  _adm.productDesc = document.getElementById('adm-product-desc')?.value.trim() || '';
+
+  const genBtn = document.querySelector('#adm-s4 .btn-w');
+  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'Generando guión...'; }
+
+  try {
+    // Subir imágenes si hay
+    if (_adm.productB64 && !_adm.productUrl) {
+      const r = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ base64: _adm.productB64, mimeType: _adm.productMime || 'image/jpeg' })
+      });
+      if (r.ok) { const d = await r.json(); _adm.productUrl = d.url; }
+    }
+    if (_adm.avatarB64 && !_adm.avatarUrl) {
+      const r = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ base64: _adm.avatarB64, mimeType: _adm.avatarMime || 'image/jpeg' })
+      });
+      if (r.ok) { const d = await r.json(); _adm.avatarUrl = d.url; }
+    }
+
+    const resp = await apiFetch(BACKEND_URL + '/api/admaker/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idea:           _adm.idea,
+        productName:    _adm.productName,
+        productDesc:    _adm.productDesc,
+        productUrl:     _adm.productUrl,
+        avatarUrl:      _adm.avatarUrl,
+        format:         _adm.format,
+        targetDuration: _adm.targetDur,
+        resolution:     _adm.resolution
+      })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error generando el guión');
+    }
+    const data = await resp.json();
+
+    _adm.clips         = data.clips;
+    _adm.campaignId    = data.campaignId;
+    _adm.formatLabel   = data.format_label || ADM_FORMAT_NAMES[_adm.format] || 'Tu anuncio';
+    _adm.formatReason  = data.format_reason || '';
+
+    admRenderScript();
+    admGoStep(5);
+
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  } finally {
+    if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Generar guión con IA'; genBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> Generar guión con IA`; }
+  }
+}
+
+// ── Renderizar guión editable ─────────────────────────────────────────────────
+function admRenderScript() {
+  const container = document.getElementById('adm-clips-container');
+  if (!container) return;
+
+  document.getElementById('adm-format-label').textContent  = _adm.formatLabel;
+  document.getElementById('adm-format-reason').textContent = _adm.formatReason;
+
+  container.innerHTML = _adm.clips.map((clip, i) => `
+    <div class="adm-clip-card" id="adm-clip-card-${i}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${clip.index}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="adm-dur-${i}" style="font-size:12px;color:var(--text2);">${clip.duration}s</span>
+          <span id="adm-cost-${i}" style="font-size:11px;color:rgba(139,92,246,0.7);">${Math.round(clip.duration * (ADM_RATES[_adm.resolution]||207)).toLocaleString('es-AR')} cr</span>
+          <span id="adm-clip-status-${i}" style="font-size:11px;"></span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:rgba(192,168,255,0.4);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Diálogo del avatar</div>
+      <textarea class="adm-clip-dialogue" id="adm-dial-${i}" oninput="admOnDialogueEdit(${i})" rows="3">${clip.guion}</textarea>
+      <details style="margin-top:8px;">
+        <summary style="font-size:11px;color:var(--text2);cursor:pointer;user-select:none;">Prompt visual ▾</summary>
+        <textarea class="adm-clip-dialogue" id="adm-prompt-${i}" rows="4" style="margin-top:6px;font-size:12px;color:rgba(192,168,255,0.7);">${clip.prompt_visual}</textarea>
+      </details>
+      <div id="adm-clip-actions-${i}" style="margin-top:10px;">
+        <button onclick="admGenerateClip(${i})" id="adm-gen-clip-btn-${i}" style="font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.4);background:rgba(139,92,246,0.1);color:#c4b5fd;cursor:pointer;">
+          ▶ Generar este clip
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  admUpdateTotals();
+}
+
+function admOnDialogueEdit(i) {
+  const textarea = document.getElementById(`adm-dial-${i}`);
+  if (!textarea) return;
+  const newText = textarea.value;
+  const newDur  = admCalcDuration(newText);
+  _adm.clips[i].guion    = newText;
+  _adm.clips[i].duration = newDur;
+  const durEl  = document.getElementById(`adm-dur-${i}`);
+  const costEl = document.getElementById(`adm-cost-${i}`);
+  if (durEl)  durEl.textContent  = newDur + 's';
+  if (costEl) costEl.textContent = Math.round(newDur * (ADM_RATES[_adm.resolution]||207)).toLocaleString('es-AR') + ' cr';
+  admUpdateTotals();
+}
+
+function admUpdateTotals() {
+  const totalDur  = _adm.clips.reduce((s,c) => s + c.duration, 0);
+  const totalCost = admCalcTotalCost(_adm.clips, _adm.resolution);
+  const costEl = document.getElementById('adm-total-cost');
+  const durEl  = document.getElementById('adm-total-dur');
+  if (costEl) costEl.textContent = totalCost.toLocaleString('es-AR') + ' cr';
+  if (durEl)  durEl.textContent  = totalDur + ' segundos totales · ' + _adm.clips.length + ' clips';
+}
+
+// ── Generación de clips ────────────────────────────────────────────────────────
+async function admGenerateClip(i) {
+  const clip   = _adm.clips[i];
+  const guion  = document.getElementById(`adm-dial-${i}`)?.value || clip.guion;
+  const prompt = document.getElementById(`adm-prompt-${i}`)?.value || clip.prompt_visual;
+  const btn    = document.getElementById(`adm-gen-clip-btn-${i}`);
+  const status = document.getElementById(`adm-clip-status-${i}`);
+
+  if (btn)    { btn.disabled = true; btn.textContent = 'Generando...'; }
+  if (status) status.textContent = '⏳';
+
+  try {
+    const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
+    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId:      _adm.campaignId,
+        clipIndex:       clip.index - 1,
+        textChunk:       guion,
+        masterPrompt:    fullPrompt,
+        variantImageUrl: _adm.avatarUrl,
+        productImageUrl: _adm.productUrl || null,
+        clipDuration:    clip.duration,
+        resolution:      _adm.resolution,
+        aspectRatio:     '9:16',
+        totalClips:      _adm.clips.length
+      })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.message || err.error || 'Error generando clip');
+    }
+    if (status) status.innerHTML = '<span style="color:#22c55e;">✓ Enviado</span>';
+    if (btn)    { btn.textContent = '↺ Regenerar'; btn.disabled = false; }
+    clip.status = 'sent';
+  } catch (err) {
+    if (status) status.innerHTML = `<span style="color:#f87171;">✗ Error</span>`;
+    if (btn)    { btn.disabled = false; btn.textContent = '↺ Reintentar'; }
+    showToast('Error en clip ' + clip.index + ': ' + err.message, 'error');
+  }
+}
+
+async function admExecuteAll() {
+  const btn = document.getElementById('adm-gen-all-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+  admGoStep(6);
+
+  const statusContainer = document.getElementById('adm-gen-status');
+  if (statusContainer) {
+    statusContainer.innerHTML = _adm.clips.map((c,i) => `
+      <div id="adm-gs-${i}" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;">
+        <span id="adm-gs-dot-${i}" style="width:8px;height:8px;border-radius:50%;background:rgba(139,92,246,0.3);flex-shrink:0;"></span>
+        <span style="font-size:13px;color:var(--text2);">Clip ${c.index} — ${c.duration}s</span>
+        <span id="adm-gs-status-${i}" style="margin-left:auto;font-size:12px;color:var(--text2);">En cola</span>
+      </div>`).join('');
+  }
+
+  for (let i = 0; i < _adm.clips.length; i++) {
+    const clip   = _adm.clips[i];
+    const guion  = document.getElementById(`adm-dial-${i}`)?.value || clip.guion;
+    const prompt = document.getElementById(`adm-prompt-${i}`)?.value || clip.prompt_visual;
+    const dot    = document.getElementById(`adm-gs-dot-${i}`);
+    const st     = document.getElementById(`adm-gs-status-${i}`);
+
+    if (dot) dot.style.background = '#8b5cf6';
+    if (st)  st.textContent = 'Generando...';
+
+    try {
+      const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
+      const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaignId:      _adm.campaignId,
+          clipIndex:       clip.index - 1,
+          textChunk:       guion,
+          masterPrompt:    fullPrompt,
+          variantImageUrl: _adm.avatarUrl,
+          productImageUrl: _adm.productUrl || null,
+          clipDuration:    clip.duration,
+          resolution:      _adm.resolution,
+          aspectRatio:     '9:16',
+          totalClips:      _adm.clips.length
+        })
+      });
+      if (!resp.ok) throw new Error('Error');
+      if (dot) dot.style.background = '#22c55e';
+      if (st)  st.innerHTML = '<span style="color:#86efac;">Enviado ✓</span>';
+    } catch {
+      if (dot) dot.style.background = '#ef4444';
+      if (st)  st.innerHTML = '<span style="color:#fca5a5;">Error ✗</span>';
+    }
+  }
+
+  showToast('Clips enviados ✓ — los encontrás en Anuncios largos', 'success');
 }
 
 // Sidebar estático — limpiar cualquier ancho guardado de versiones anteriores
