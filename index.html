@@ -16974,6 +16974,7 @@ async function cloneSubmitAnswers() {
       })
     });
     _clonePlan = data.plan;
+    console.log('[clone] build-plan response:', JSON.stringify(data.plan));
     cloneRenderPlan(data);
     cloneShowView('clone-v-plan');
   } catch (err) {
@@ -16984,17 +16985,28 @@ async function cloneSubmitAnswers() {
 
 function cloneRenderPlan(data) {
   const container = document.getElementById('clonePlanClips');
-  if (!container || !data.plan?.clips) return;
-  container.innerHTML = data.plan.clips.map((clip, i) => `
+  if (!container) return;
+  const clips = data.plan?.clips || data.clips || [];
+  if (!clips.length) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--text2);text-align:center;padding:20px 0;">No se generaron clips. Intentá de nuevo.</div>';
+    return;
+  }
+  container.innerHTML = clips.map((clip, i) => {
+    // Compatibilidad con distintos nombres de campo que puede devolver Claude
+    const script   = clip.guion || clip.script || clip.dialogue || clip.text || '';
+    const visual   = clip.prompt_visual || clip.visual_prompt || clip.visual || clip.description || '';
+    const duration = clip.duration || clip.duracion || 8;
+    const index    = clip.index || i + 1;
+    return `
     <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${clip.index || i+1}</span>
-        <span style="font-size:11px;color:var(--text2);">${clip.duration || 8}s</span>
+        <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${index}</span>
+        <span style="font-size:11px;color:var(--text2);">${duration}s</span>
       </div>
-      <div style="font-size:13px;color:#fff;margin-bottom:6px;">"${clip.guion}"</div>
-      <div style="font-size:11px;color:var(--text2);font-style:italic;">${clip.prompt_visual || ''}</div>
-    </div>
-  `).join('');
+      ${script ? `<div style="font-size:13px;color:#fff;margin-bottom:6px;">"${script}"</div>` : ''}
+      ${visual  ? `<div style="font-size:11px;color:var(--text2);font-style:italic;">${visual}</div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 async function cloneExecute() {
