@@ -10465,7 +10465,10 @@ async function campLoadAudioAndClips() {
           avatarImageUrl: _camp.photoUrl,
           productImageUrl: _camp.productPhotoUrl,
           aspectRatio: _camp.aspectRatio,
-          provider: _camp.videoProvider || 'enhancor'
+          provider: _camp.videoProvider || 'enhancor',
+          avatarGender: _camp.avatarGender || null,
+          script: _camp.script || '',
+          title: _camp.title || ''
         })
       });
       const promptData = await promptResp.json();
@@ -10563,7 +10566,11 @@ async function campRegenPrompt(clipIndex) {
         avatarImageUrl: _camp.photoUrl,
         productImageUrl: _camp.productPhotoUrl,
         aspectRatio: _camp.aspectRatio,
-        currentPrompt
+        currentPrompt,
+        avatarGender: _camp.avatarGender || null,
+        script: _camp.script || '',
+        title: _camp.title || '',
+        provider: _camp.videoProvider || 'enhancor'
       })
     });
     const data = await resp.json();
