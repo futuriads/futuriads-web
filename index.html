@@ -16836,11 +16836,19 @@ function cloneRenderQuestions(data) {
     summaryEl.innerHTML = tags || '<span style="color:var(--text2);">Análisis completado</span>';
   }
 
-  // Questions
+  // Questions — siempre garantizar avatar y producto, sumar las de Claude
+  const defaultQuestions = [
+    { id: 'avatar',  type: 'boolean_with_upload', question: 'El anuncio tiene una persona hablando a cámara. ¿La reemplazamos con tu avatar?', upload_label: 'Subí tu foto', required: true },
+    { id: 'product', type: 'product', question: '¿Cuál es tu producto?', required: true }
+  ];
+  const aiQuestions = (data.questions || []).filter(q => q.id !== 'avatar' && q.id !== 'product');
+  const allQuestions = [...defaultQuestions, ...aiQuestions];
+  _cloneQuestions = allQuestions;
+
   const container = document.getElementById('cloneQuestionsContainer');
   if (!container) return;
   container.innerHTML = '';
-  (data.questions || []).forEach(q => {
+  allQuestions.forEach(q => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;';
     wrap.innerHTML = `<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;">${q.question}</div>` + cloneBuildQuestionInput(q);
