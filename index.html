@@ -5861,6 +5861,16 @@ body, #app { background: #07050f; }
             <div class="custom-select-option" data-value="gemini-omni-video" onclick="dashSelectOmni(this)">Gemini Omni Flash <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">PREMIUM</span></div>
           </div>
         </div>
+        <div class="custom-select" id="cs-video-mode" title="Modo de generación">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-video-mode')">
+            <span>Estándar</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 4 4 4 4-4"/></svg>
+          </div>
+          <div class="custom-select-dropdown">
+            <div class="custom-select-option selected" data-value="standard" onclick="dashSelectVideoMode('standard', this)">Estándar</div>
+            <div class="custom-select-option" data-value="first_n_last_frames" onclick="dashSelectVideoMode('first_n_last_frames', this)">Primer y último frame</div>
+          </div>
+        </div>
         <div class="custom-select" id="cs-dur">
           <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-dur')">
             <span>5s</span>
@@ -5981,6 +5991,38 @@ body, #app { background: #07050f; }
           </div>
         </div>
       </div>
+      <!-- Zona primer y último frame (visible solo en ese modo) -->
+      <div id="flfZone" style="display:none;margin-top:12px;padding:12px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:12px;">
+        <div style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.6);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Frames de referencia</div>
+        <div style="display:flex;gap:10px;">
+          <!-- Primer frame -->
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Primer frame <span style="color:#f87171;">*</span></div>
+            <div id="flfFirstSlot" onclick="flfPickFirst()" style="aspect-ratio:9/16;max-height:120px;border:1.5px dashed rgba(139,92,246,0.4);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(139,92,246,0.05);transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(139,92,246,0.7)'" onmouseleave="this.style.borderColor='rgba(139,92,246,0.4)'">
+              <div id="flfFirstPlaceholder" style="text-align:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.6)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>
+                <div style="font-size:10px;color:rgba(192,168,255,0.4);margin-top:4px;">Subir imagen</div>
+              </div>
+              <img id="flfFirstPreview" style="display:none;width:100%;height:100%;object-fit:cover;" alt="">
+            </div>
+            <input type="file" id="flfFirstInput" accept="image/*" style="display:none;" onchange="flfHandleFirst(this)">
+          </div>
+          <!-- Último frame -->
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Último frame <span style="font-size:10px;color:rgba(255,255,255,0.3);">(opcional)</span></div>
+            <div id="flfLastSlot" onclick="flfPickLast()" style="aspect-ratio:9/16;max-height:120px;border:1.5px dashed rgba(139,92,246,0.25);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(139,92,246,0.03);transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(139,92,246,0.5)'" onmouseleave="this.style.borderColor='rgba(139,92,246,0.25)'">
+              <div id="flfLastPlaceholder" style="text-align:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>
+                <div style="font-size:10px;color:rgba(192,168,255,0.3);margin-top:4px;">Subir imagen</div>
+              </div>
+              <img id="flfLastPreview" style="display:none;width:100%;height:100%;object-fit:cover;" alt="">
+            </div>
+            <input type="file" id="flfLastInput" accept="image/*" style="display:none;" onchange="flfHandleLast(this)">
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(192,168,255,0.35);margin-top:8px;">El modelo genera el video que conecta ambos frames. El prompt describe qué pasa en el medio.</div>
+      </div>
+
       <div id="dashCreditPreview" style="font-size:12px;color:rgba(167,139,250,0.7);margin-bottom:6px;min-height:16px;text-align:right;"></div>
       <button class="a-gen-btn" onclick="startFromDashboard()">Empezar</button>
     </div>
@@ -13976,6 +14018,10 @@ function dashSelectOmni(el) {
     return;
   }
   selectCustomOption('cs-model', el);
+  // Omni no tiene modos especiales — ocultar el dropdown de modo y resetear
+  document.getElementById('cs-video-mode').style.display = 'none';
+  document.getElementById('flfZone').style.display = 'none';
+  _dashVideoMode = 'standard';
 
   // Duraciones: mostrar solo las de Kie.ai (4s, 6s, 8s, 10s), ocultar las de Seedance (5s, 15s)
   document.querySelectorAll('#cs-dur .custom-select-option[data-omni-only]').forEach(o => o.style.display = '');
@@ -14003,6 +14049,7 @@ function dashSelectOmni(el) {
 // Restaurar opciones de Seedance cuando vuelve a ese modelo
 function dashSelectSeedance(el) {
   selectCustomOption('cs-model', el);
+  document.getElementById('cs-video-mode').style.display = ''; // restaurar dropdown de modo
 
   // Duraciones: ocultar las de Omni (4s, 6s, 8s), mostrar las de Seedance (5s, 15s)
   document.querySelectorAll('#cs-dur .custom-select-option[data-omni-only]').forEach(o => o.style.display = 'none');
@@ -14052,6 +14099,11 @@ var _dashSelectedActor = null;
 var _dashCustomActorUrl = null; // URL pública en Supabase (Enhancor necesita URL, no base64)
 var _dashLastConfig = null;     // Guarda última config para "Rehacer"
 var _dashPollTimer = null;      // Timer de polling de estado
+var _dashVideoMode = 'standard'; // 'standard' | 'first_n_last_frames'
+var _dashFlfFirstB64 = null;    // base64 del primer frame
+var _dashFlfLastB64  = null;    // base64 del último frame
+var _dashFlfFirstUrl = null;    // URL pública del primer frame (subida al backend)
+var _dashFlfLastUrl  = null;    // URL pública del último frame (subida al backend)
 
 var DASH_ACTORS = [
   { name: 'Facu', tag: 'Joven · Casual', img: 'https://qhnvketzicgkvbnhjgxv.supabase.co/storage/v1/object/public/landing-assets/actor-facu.png' },
@@ -14169,12 +14221,72 @@ async function handleDashCustomActor(input) {
   }
 }
 
+// ── Selector de modo de video (Estándar / Primer y último frame) ──────────────
+function dashSelectVideoMode(mode, el) {
+  _dashVideoMode = mode;
+  selectCustomOption('cs-video-mode', el);
+  const flfZone = document.getElementById('flfZone');
+  if (flfZone) flfZone.style.display = mode === 'first_n_last_frames' ? 'block' : 'none';
+  // En modo first_n_last_frames limpiar actor seleccionado
+  if (mode === 'first_n_last_frames') {
+    _dashSelectedActor = null;
+    _dashCustomActorUrl = null;
+  }
+  updateDashCreditPreview();
+}
+
+// ── Upload primer frame ──────────────────────────────────────────────────────
+function flfPickFirst() { document.getElementById('flfFirstInput')?.click(); }
+function flfPickLast()  { document.getElementById('flfLastInput')?.click(); }
+
+async function flfHandleFirst(input) {
+  const file = input.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    _dashFlfFirstB64 = e.target.result;
+    _dashFlfFirstUrl = null; // se sube al generar
+    const preview = document.getElementById('flfFirstPreview');
+    const placeholder = document.getElementById('flfFirstPlaceholder');
+    if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+    if (placeholder) placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+async function flfHandleLast(input) {
+  const file = input.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    _dashFlfLastB64 = e.target.result;
+    _dashFlfLastUrl = null;
+    const preview = document.getElementById('flfLastPreview');
+    const placeholder = document.getElementById('flfLastPlaceholder');
+    if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+    if (placeholder) placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
 function startFromDashboard() {
   var isVideo = document.getElementById('tabVideo') && document.getElementById('tabVideo').classList.contains('active');
   var prompt = (document.getElementById('genTextarea') && document.getElementById('genTextarea').value.trim()) || '';
   if (!prompt) { showToast('Escribí un prompt antes de continuar', 'info'); return; }
 
   if (isVideo) {
+    // ── Modo: Primer y último frame ──────────────────────────────────
+    if (_dashVideoMode === 'first_n_last_frames') {
+      if (!_dashFlfFirstB64) {
+        showToast('Subí al menos el primer frame antes de continuar', 'error');
+        return;
+      }
+      _dashSelectedActor = null;
+      showDashPanel(2);
+      runDashGen();
+      return;
+    }
+    // ── Modo estándar ─────────────────────────────────────────────────
     if (_dashRefAvatarB64) {
       // Avatar subido en el ref slot → saltar panel 1, usarlo como influencer
       _dashSelectedActor = '_refavatar';
@@ -14202,6 +14314,11 @@ function startFromDashboard() {
 }
 
 async function runDashGen() {
+  // ── Modo Primer y último frame ────────────────────────────────────────────
+  if (_dashVideoMode === 'first_n_last_frames') {
+    await runDashGenFlf();
+    return;
+  }
   // Permite sin actor si hay imagen de producto
   var hasProduct = !!_dashRefProductB64;
   if (!_dashSelectedActor && !hasProduct) return;
@@ -14557,6 +14674,135 @@ function dashRehacer() {
       if (card.dataset.actor === cfg.actor) dashSelectActor(card, cfg.actor);
     });
   }, 50);
+}
+
+// ── Generación en modo Primer y último frame ──────────────────────────────
+async function runDashGenFlf() {
+  var prompt   = (document.getElementById('genTextarea')?.value.trim()) || '';
+  var durVal   = document.querySelector('#cs-dur .custom-select-option.selected')?.dataset.value || '5';
+  var ratioVal = document.querySelector('#cs-aspect .custom-select-option.selected')?.dataset.value || '9:16';
+  var resVal   = document.querySelector('#cs-res .custom-select-option.selected')?.dataset.value || '720p';
+
+  var statusEl = document.getElementById('dashGenStatus');
+  var hintEl   = document.getElementById('dashGenHint');
+  var barEl    = document.getElementById('dashProgBar');
+
+  if (barEl) { barEl.style.width = '0%'; barEl.classList.remove('waiting'); }
+
+  var prog = 0;
+  async function setBar(to, ms) {
+    prog = to;
+    if (barEl) barEl.style.width = to + '%';
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+  try {
+    if (statusEl) statusEl.textContent = 'Subiendo imágenes de referencia...';
+    await setBar(20, 400);
+
+    // Subir primer frame
+    if (!_dashFlfFirstUrl && _dashFlfFirstB64) {
+      var r1 = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64: _dashFlfFirstB64, mimeType: 'image/jpeg' })
+      });
+      var d1 = await r1.json();
+      if (!r1.ok || !d1.url) throw new Error('Error subiendo primer frame: ' + (d1.error || ''));
+      _dashFlfFirstUrl = d1.url;
+    }
+
+    // Subir último frame (opcional)
+    if (!_dashFlfLastUrl && _dashFlfLastB64) {
+      var r2 = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64: _dashFlfLastB64, mimeType: 'image/jpeg' })
+      });
+      var d2 = await r2.json();
+      if (r2.ok && d2.url) _dashFlfLastUrl = d2.url;
+    }
+
+    await setBar(50, 300);
+    if (statusEl) statusEl.textContent = 'Generando video...';
+
+    var body = {
+      script: prompt,
+      duration: durVal,
+      aspectRatio: ratioVal,
+      resolution: resVal,
+      videoMode: 'first_n_last_frames',
+      firstFrameUrl: _dashFlfFirstUrl,
+      lastFrameUrl:  _dashFlfLastUrl || null,
+      noActor: true
+    };
+
+    var genRes = await apiFetch(BACKEND_URL + '/api/generate-video', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (genRes.status === 402) {
+      var errData = await genRes.json().catch(() => ({}));
+      if (barEl) barEl.style.width = '0%';
+      showNoCreditsModal({ cost: errData.cost || 0, available: errData.available || 0, plan: errData.plan || 'none' });
+      showDashPanel(0); return;
+    }
+    if (!genRes.ok) throw new Error('Error al iniciar la generación (' + genRes.status + ')');
+
+    var genData = await genRes.json();
+    var requestId = genData.requestId;
+    refreshCredits();
+    await setBar(68, 400);
+
+    if (statusEl) statusEl.textContent = 'Generando tu video con IA...';
+    if (hintEl) hintEl.textContent = 'Esto normalmente tarda entre 2 y 5 minutos.';
+    if (barEl) barEl.classList.add('waiting');
+
+    var histLinkFlf = '<a href="#" onclick="event.preventDefault();showScreen(\'historial\');" style="color:#c4b5fd;text-decoration:underline;">historial</a>';
+    var pollMaxFlf = 120; var pollCountFlf = 0;
+    var crawlFlf = (93 - 68) / pollMaxFlf;
+
+    var videoData = await new Promise(function(res, rej) {
+      if (_dashPollTimer) clearInterval(_dashPollTimer);
+      _dashPollTimer = setInterval(async function() {
+        pollCountFlf++;
+        prog = Math.min(68 + crawlFlf * pollCountFlf, 93);
+        if (barEl) barEl.style.width = prog + '%';
+        if      (pollCountFlf === 12) { if (hintEl) hintEl.textContent = 'El proveedor puede estar con mucha carga. Seguimos esperando...'; }
+        else if (pollCountFlf === 36) { if (hintEl) hintEl.innerHTML = 'Está tardando más de lo habitual. Podés ir al ' + histLinkFlf + ' y el resultado va a aparecer ahí.'; }
+        if (pollCountFlf > pollMaxFlf) {
+          clearInterval(_dashPollTimer); _dashPollTimer = null;
+          rej(new Error('timeout')); return;
+        }
+        try {
+          var { data: row } = await supa.from('videos').select('*').eq('request_id', requestId).single();
+          if (row && row.status === 'COMPLETED' && row.video_url) {
+            clearInterval(_dashPollTimer); _dashPollTimer = null; res(row);
+          } else if (row && row.status === 'FAILED') {
+            clearInterval(_dashPollTimer); _dashPollTimer = null;
+            rej(new Error('La generación de video falló'));
+          }
+        } catch(e) { /* sigue */ }
+      }, 5000);
+    });
+
+    if (barEl) { barEl.classList.remove('waiting'); }
+    await setBar(100, 350);
+    loadHistory(); loadDashRecent();
+    showDashResultPanel(videoData);
+    showDashPanel(3);
+
+  } catch(err) {
+    if (_dashPollTimer) { clearInterval(_dashPollTimer); _dashPollTimer = null; }
+    if (err.message === 'timeout') {
+      if (barEl) barEl.classList.remove('waiting');
+      showDashResultFallback();
+      showDashPanel(3); return;
+    }
+    console.error('runDashGenFlf error:', err);
+    if (barEl) barEl.style.width = '0%';
+    if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    setTimeout(() => showDashPanel(0), 3000);
+  }
 }
 
 async function runDashGenImage() {
