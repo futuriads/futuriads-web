@@ -7201,11 +7201,35 @@ body, #app { background: #07050f; }
 
         <!-- VIEW 5: PLAN -->
         <div id="clone-v-plan" style="display:none;">
-          <div style="margin-bottom:20px;">
+          <div style="margin-bottom:16px;">
             <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Tu anuncio clonado</div>
             <div style="font-size:12px;color:var(--text2);">Revisá los clips antes de generar</div>
           </div>
-          <div id="clonePlanClips" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+
+          <!-- Opciones: resolución + modelo + costo -->
+          <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:110px;">
+              <div style="font-size:11px;color:var(--text2);margin-bottom:5px;">Resolución</div>
+              <select id="cloneResolution" onchange="cloneUpdateCost()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;font-size:12px;color:#fff;cursor:pointer;">
+                <option value="480p">480p</option>
+                <option value="720p" selected>720p</option>
+                <option value="1080p">1080p</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:140px;">
+              <div style="font-size:11px;color:var(--text2);margin-bottom:5px;">Modelo</div>
+              <select disabled style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--text2);cursor:not-allowed;">
+                <option>Seedance 2.0</option>
+                <option>Gemini Omni (Próximamente)</option>
+              </select>
+            </div>
+            <div style="text-align:right;min-width:100px;">
+              <div style="font-size:11px;color:var(--text2);margin-bottom:3px;">Costo estimado</div>
+              <div id="cloneCostEst" style="font-size:18px;font-weight:700;color:#c4b5fd;">— cr</div>
+            </div>
+          </div>
+
+          <div id="clonePlanClips" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
           <button class="a-gen-btn" id="cloneGenBtn" onclick="cloneExecute()" style="width:100%;justify-content:center;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Generar anuncio
@@ -17011,6 +17035,16 @@ async function cloneSubmitAnswers() {
   }
 }
 
+function cloneUpdateCost() {
+  const res = document.getElementById('cloneResolution')?.value || '720p';
+  const rates = { '480p': 93.5, '720p': 207, '1080p': 521 };
+  const rate = rates[res] || 207;
+  const clips = _clonePlan?.clips || [];
+  const total = Math.round(clips.reduce((sum, c) => sum + ((c.duration || 6) * rate), 0));
+  const el = document.getElementById('cloneCostEst');
+  if (el) el.textContent = total.toLocaleString('es-AR') + ' cr';
+}
+
 function cloneRenderPlan(data) {
   const container = document.getElementById('clonePlanClips');
   if (!container) return;
@@ -17020,10 +17054,9 @@ function cloneRenderPlan(data) {
     return;
   }
   container.innerHTML = clips.map((clip, i) => {
-    // Compatibilidad con distintos nombres de campo que puede devolver Claude
     const script   = clip.guion || clip.script || clip.dialogue || clip.text || '';
     const visual   = clip.prompt_visual || clip.visual_prompt || clip.visual || clip.description || '';
-    const duration = clip.duration || clip.duracion || 8;
+    const duration = clip.duration || clip.duracion || 6;
     const index    = clip.index || i + 1;
     return `
     <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;">
@@ -17031,10 +17064,11 @@ function cloneRenderPlan(data) {
         <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${index}</span>
         <span style="font-size:11px;color:var(--text2);">${duration}s</span>
       </div>
-      ${script ? `<div style="font-size:13px;color:#fff;margin-bottom:6px;">"${script}"</div>` : ''}
-      ${visual  ? `<div style="font-size:11px;color:var(--text2);font-style:italic;">${visual}</div>` : ''}
+      ${script ? `<div style="font-size:13px;color:#fff;margin-bottom:8px;">"${script}"</div>` : ''}
+      ${visual  ? `<div style="font-size:11px;color:rgba(192,168,255,0.45);font-style:italic;line-height:1.5;">${visual}</div>` : ''}
     </div>`;
   }).join('');
+  cloneUpdateCost();
 }
 
 async function cloneExecute() {
@@ -17044,11 +17078,19 @@ async function cloneExecute() {
   cloneShowView('clone-v-generating');
 
   try {
-    // 1. Crear campaña en el backend
+    const resolution = document.getElementById('cloneResolution')?.value || '720p';
+
+    // 1. Crear campaña en el backend — mandamos plan y avatar directo, sin depender de sesión
     const execResp = await apiFetch(BACKEND_URL + '/api/clone/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId: _cloneSessionId })
+      body: JSON.stringify({
+        sessionId:    _cloneSessionId,
+        plan:         _clonePlan,
+        avatarBase64: _cloneAvatarB64,
+        avatarMime:   _cloneAvatarMime,
+        resolution
+      })
     });
     if (!execResp.ok) {
       const err = await execResp.json().catch(() => ({}));
@@ -17091,8 +17133,8 @@ async function cloneExecute() {
           masterPrompt:    prompt,
           variantImageUrl: avatarUrl,
           productImageUrl: productUrl || null,
-          clipDuration:    clip.duration || 8,
-          resolution:      '720p',
+          clipDuration:    clip.duration || 6,
+          resolution:      resolution,
           aspectRatio:     '9:16',
           totalClips:      clips.length
         })
