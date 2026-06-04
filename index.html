@@ -10130,11 +10130,6 @@ function campSelectRes(res, btn) {
 }
 
 function campSelectVideoProvider(provider, btn) {
-  const plan = _currentUser?.plan || 'none';
-  if (provider === 'kie' && plan !== 'growth' && plan !== 'scale') {
-    showToast('Gemini Omni Flash está disponible solo en planes Growth y Scale.', 'error');
-    return;
-  }
   _camp.videoProvider = provider;
 
   // Actualizar selección visual de las cards de modelo
@@ -14388,11 +14383,6 @@ function updateDashCreditPreview() {
 // ── Selección de Gemini Omni en el dashboard ─────────────────────────
 // Verifica plan antes de permitir la selección. Solo Growth y Scale.
 function dashSelectOmni(el) {
-  const plan = _currentUser?.plan || 'none';
-  if (plan !== 'growth' && plan !== 'scale') {
-    showToast('Gemini Omni Flash está disponible solo en planes Growth y Scale.', 'error');
-    return;
-  }
   selectCustomOption('cs-model', el);
   // Omni no tiene modos especiales — ocultar el dropdown de modo y resetear
   document.getElementById('cs-video-mode').style.display = 'none';
