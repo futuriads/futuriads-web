@@ -17404,7 +17404,7 @@ const _adm = {
   idea: '', productName: '', productDesc: '',
   productB64: null, productMime: null, productUrl: null,
   avatarB64: null, avatarMime: null, avatarUrl: null,
-  format: null, targetDur: 15, resolution: '720p', provider: 'enhancor',
+  format: null, targetDur: 15, resolution: '720p', provider: 'enhancor', avatarGender: null,
   clips: [],          // [{index, guion, duration, prompt_visual, status, campaignId, clipIndex}]
   campaignId: null,
   formatLabel: '',
@@ -17419,7 +17419,7 @@ function admStart() {
     idea:'', productName:'', productDesc:'',
     productB64:null, productMime:null, productUrl:null,
     avatarB64:null, avatarMime:null, avatarUrl:null,
-    format:null, targetDur:15, resolution:'720p', provider:'enhancor',
+    format:null, targetDur:15, resolution:'720p', provider:'enhancor', avatarGender:null,
     clips:[], campaignId:null
   });
   document.getElementById('admModelSeedance')?.classList.add('active');
@@ -17497,15 +17497,41 @@ function admPickAvatar() { document.getElementById('adm-avatar-file')?.click(); 
 function admHandleAvatar(input) {
   const file = input.files?.[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    _adm.avatarB64  = e.target.result.split(',')[1];
-    _adm.avatarMime = file.type;
+  reader.onload = async e => {
+    _adm.avatarB64   = e.target.result.split(',')[1];
+    _adm.avatarMime  = file.type;
+    _adm.avatarGender = null; // reset while detecting
     const preview = document.getElementById('adm-avatar-preview');
     preview.src = e.target.result;
     preview.style.display = 'block';
     document.getElementById('adm-avatar-placeholder').style.display = 'none';
     const btn = document.getElementById('adm-s2-next');
     btn.disabled = false; btn.style.opacity = '1';
+
+    // Subir imagen y detectar género automáticamente
+    try {
+      const upResp = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64: _adm.avatarB64, mimeType: _adm.avatarMime || 'image/jpeg' })
+      });
+      if (upResp.ok) {
+        const upData = await upResp.json();
+        _adm.avatarUrl = upData.url;
+        // Detectar género con la URL ya pública
+        const gResp = await apiFetch(BACKEND_URL + '/api/detect-avatar-gender', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: _adm.avatarUrl })
+        });
+        if (gResp.ok) {
+          const gData = await gResp.json();
+          _adm.avatarGender = gData.gender || 'female';
+          console.log('[adm] Género detectado:', _adm.avatarGender);
+        }
+      }
+    } catch(e) {
+      console.warn('[adm] No se pudo detectar género:', e.message);
+      _adm.avatarGender = 'female';
+    }
   };
   reader.readAsDataURL(file);
   input.value = '';
@@ -17619,6 +17645,7 @@ async function admGenerateScript() {
         productDesc:    _adm.productDesc,
         productUrl:     _adm.productUrl,
         avatarUrl:      _adm.avatarUrl,
+        avatarGender:   _adm.avatarGender || 'female',
         format:         _adm.format,
         targetDuration: _adm.targetDur,
         resolution:     _adm.resolution
