@@ -17412,6 +17412,16 @@ const _adm = {
 };
 
 const ADM_RATES = { '480p': 93.5, '720p': 207, '1080p': 521 };
+// Gemini Omni: costo fijo por clip según duración (no por segundo)
+const ADM_OMNI_RATES = { '720p': {4:1800,6:2400,8:3000,10:3600}, '1080p': {4:1800,6:2400,8:3000,10:3600}, '4k': {4:4200,6:4800,8:5400,10:6000} };
+function admSnapOmniDur(d) { return [4,6,8,10].reduce((prev,cur) => Math.abs(cur-d)<Math.abs(prev-d)?cur:prev); }
+function admClipCost(clip, resolution, provider) {
+  if (provider === 'kie') {
+    const snapped = admSnapOmniDur(clip.duration);
+    return (ADM_OMNI_RATES[resolution] || ADM_OMNI_RATES['720p'])[snapped] || 3600;
+  }
+  return Math.round(clip.duration * (ADM_RATES[resolution] || 207));
+}
 const ADM_WPS   = 2.5; // palabras por segundo (español argentino)
 
 function admStart() {
@@ -17605,9 +17615,8 @@ function admCalcDuration(text) {
   return Math.max(4, Math.min(15, Math.ceil(words / ADM_WPS)));
 }
 
-function admCalcTotalCost(clips, resolution) {
-  const rate = ADM_RATES[resolution] || 207;
-  return Math.round(clips.reduce((sum, c) => sum + (c.duration * rate), 0));
+function admCalcTotalCost(clips, resolution, provider) {
+  return clips.reduce((sum, c) => sum + admClipCost(c, resolution, provider || _adm.provider), 0);
 }
 
 // ── Generar guión con IA ─────────────────────────────────────────────────────
@@ -17648,7 +17657,8 @@ async function admGenerateScript() {
         avatarGender:   _adm.avatarGender || 'female',
         format:         _adm.format,
         targetDuration: _adm.targetDur,
-        resolution:     _adm.resolution
+        resolution:     _adm.resolution,
+        provider:       _adm.provider || 'enhancor'
       })
     });
     if (!resp.ok) {
@@ -17686,7 +17696,7 @@ function admRenderScript() {
         <span style="font-size:11px;font-weight:700;color:rgba(192,168,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Clip ${clip.index}</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <span id="adm-dur-${i}" style="font-size:12px;color:var(--text2);">${clip.duration}s</span>
-          <span id="adm-cost-${i}" style="font-size:11px;color:rgba(139,92,246,0.7);">${Math.round(clip.duration * (ADM_RATES[_adm.resolution]||207)).toLocaleString('es-AR')} cr</span>
+          <span id="adm-cost-${i}" style="font-size:11px;color:rgba(139,92,246,0.7);">${admClipCost(clip, _adm.resolution, _adm.provider).toLocaleString('es-AR')} cr</span>
           <span id="adm-clip-status-${i}" style="font-size:11px;"></span>
         </div>
       </div>
@@ -17717,7 +17727,7 @@ function admOnDialogueEdit(i) {
   const durEl  = document.getElementById(`adm-dur-${i}`);
   const costEl = document.getElementById(`adm-cost-${i}`);
   if (durEl)  durEl.textContent  = newDur + 's';
-  if (costEl) costEl.textContent = Math.round(newDur * (ADM_RATES[_adm.resolution]||207)).toLocaleString('es-AR') + ' cr';
+  if (costEl) costEl.textContent = admClipCost({duration: newDur}, _adm.resolution, _adm.provider).toLocaleString('es-AR') + ' cr';
   admUpdateTotals();
 }
 
