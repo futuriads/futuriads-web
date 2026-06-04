@@ -7238,7 +7238,10 @@ body, #app { background: #07050f; }
             <div style="font-size:12px;color:var(--text2);">Los clips se generan en segundo plano. Podés cerrar esta pestaña y volver a verlos en el historial.</div>
           </div>
           <div id="adm-gen-status" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
-          <button class="btn-ghost-sm" onclick="campBackToList()" style="margin-top:8px;">Ver mis anuncios</button>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn-ghost-sm" onclick="admGoStep(5)">← Ver guión y clips</button>
+            <button class="btn-ghost-sm" onclick="campBackToList()">Ver mis anuncios</button>
+          </div>
         </div>
 
       </div><!-- /campView-admaker -->
@@ -9660,6 +9663,10 @@ function campZapcapDone(downloadUrl) {
 function campBackToList() {
   if (_camp.pollingInterval)   { clearInterval(_camp.pollingInterval);   _camp.pollingInterval   = null; }
   if (_zapcapPollingInterval)  { clearInterval(_zapcapPollingInterval);  _zapcapPollingInterval  = null; }
+  // Guardar estado adm- y limpiar timers (los timers siguen en memoria aunque el wizard esté oculto)
+  admSaveState();
+  Object.entries(_adm.pollTimers || {}).forEach(([, id]) => clearInterval(id));
+  _adm.pollTimers = {};
   document.getElementById('campView-list').style.display = 'block';
   document.getElementById('campView-wizard').style.display = 'none';
   document.getElementById('campView-generating').style.display = 'none';
@@ -11593,8 +11600,25 @@ async function campLoadList() {
     });
     const data = await resp.json();
     const campaigns = data.campaigns || [];
-    _campListCache = campaigns; // cache for view switching
+    _campListCache = campaigns;
     campRenderList(campaigns);
+
+    // Banner de anuncio en progreso (adm- wizard)
+    const savedAdm = admLoadSavedState();
+    const resumeBanner = document.getElementById('adm-resume-banner');
+    if (resumeBanner) resumeBanner.remove();
+    if (savedAdm && savedAdm.clips && savedAdm.clips.length) {
+      const banner = document.createElement('div');
+      banner.id = 'adm-resume-banner';
+      banner.style.cssText = 'margin-bottom:16px;padding:12px 16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+      banner.innerHTML = `
+        <span style="font-size:13px;color:rgba(192,168,255,0.9);">✏️ Tenés un anuncio en progreso: <strong>${savedAdm.productName || 'Sin título'}</strong></span>
+        <div style="display:flex;gap:8px;margin-left:auto;">
+          <button onclick="admResumeSaved()" style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.15);color:#c4b5fd;cursor:pointer;">Continuar</button>
+          <button onclick="this.closest('#adm-resume-banner').remove();localStorage.removeItem('${ADM_STATE_KEY}')" style="font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text2);cursor:pointer;">Descartar</button>
+        </div>`;
+      container.parentNode.insertBefore(banner, container);
+    }
   } catch(e){ console.error('Error cargando anuncios:', e); }
 }
 
@@ -17408,7 +17432,11 @@ const _adm = {
   clips: [],          // [{index, guion, duration, prompt_visual, status, campaignId, clipIndex}]
   campaignId: null,
   formatLabel: '',
-  formatReason: ''
+  formatReason: '',
+  recurringAssets: [],       // [{name, clipIndices, imagePrompt}]
+  assetRefUrl: null,         // URL de la imagen de referencia del asset recurrente
+  assetClipIndices: [],      // índices (0-based) de clips que necesitan el asset ref
+  pollTimers: {}             // { clipIdx0: intervalId } — solo clips en curso
 };
 
 const ADM_RATES = { '480p': 93.5, '720p': 207, '1080p': 521 };
@@ -17425,12 +17453,16 @@ function admClipCost(clip, resolution, provider) {
 const ADM_WPS   = 2.5; // palabras por segundo (español argentino)
 
 function admStart() {
+  // Limpiar timers de polling activos antes de resetear el estado
+  Object.values(_adm.pollTimers || {}).forEach(id => clearInterval(id));
   Object.assign(_adm, {
     idea:'', productName:'', productDesc:'',
     productB64:null, productMime:null, productUrl:null,
     avatarB64:null, avatarMime:null, avatarUrl:null,
     format:null, targetDur:15, resolution:'720p', provider:'enhancor', avatarGender:null,
-    clips:[], campaignId:null
+    clips:[], campaignId:null,
+    recurringAssets:[], assetRefUrl:null, assetClipIndices:[],
+    pollTimers:{}
   });
   document.getElementById('admModelSeedance')?.classList.add('active');
   document.getElementById('admModelOmni')?.classList.remove('active');
@@ -17667,12 +17699,17 @@ async function admGenerateScript() {
     }
     const data = await resp.json();
 
-    _adm.clips         = data.clips;
-    _adm.campaignId    = data.campaignId;
-    _adm.formatLabel   = data.format_label || ADM_FORMAT_NAMES[_adm.format] || 'Tu anuncio';
-    _adm.formatReason  = data.format_reason || '';
+    _adm.clips             = data.clips;
+    _adm.campaignId        = data.campaignId;
+    _adm.formatLabel       = data.format_label || ADM_FORMAT_NAMES[_adm.format] || 'Tu anuncio';
+    _adm.formatReason      = data.format_reason || '';
+    _adm.recurringAssets   = data.recurringAssets || [];
+    _adm.assetRefUrl       = null;
+    _adm.assetClipIndices  = _adm.recurringAssets.length ? (_adm.recurringAssets[0].clipIndices || []) : [];
 
     admRenderScript();
+    admRenderAssetCard();
+    admSaveState();
     admGoStep(5);
 
   } catch (err) {
@@ -17711,10 +17748,225 @@ function admRenderScript() {
           ▶ Generar este clip
         </button>
       </div>
+      <div id="adm-clip-result-${i}" style="display:none;margin-top:12px;"></div>
     </div>
   `).join('');
 
   admUpdateTotals();
+}
+
+// ── Polling de clips — muestra progreso inline ────────────────────────────────
+function admStartClipPoll(clipIdx0) {
+  // Limpiar timer anterior si existe
+  if (_adm.pollTimers[clipIdx0]) {
+    clearInterval(_adm.pollTimers[clipIdx0]);
+    delete _adm.pollTimers[clipIdx0];
+  }
+
+  _adm.pollTimers[clipIdx0] = setInterval(async () => {
+    if (!_adm.campaignId) return;
+    try {
+      const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaignId: _adm.campaignId })
+      });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const clip = (data.clips || []).find(c => c.clip_index === clipIdx0);
+      if (!clip) return;
+
+      if (clip.status === 'completed') {
+        clearInterval(_adm.pollTimers[clipIdx0]);
+        delete _adm.pollTimers[clipIdx0];
+        admShowClipDone(clipIdx0, clip.video_url);
+      } else if (clip.status === 'failed') {
+        clearInterval(_adm.pollTimers[clipIdx0]);
+        delete _adm.pollTimers[clipIdx0];
+        admShowClipFailed(clipIdx0, clip.error_message);
+      }
+      // 'generating' o 'waiting' → seguir esperando
+    } catch(e) { /* ignorar errores de red en polling */ }
+  }, 5000);
+}
+
+function admShowClipDone(clipIdx0, videoUrl) {
+  const resultEl = document.getElementById(`adm-clip-result-${clipIdx0}`);
+  const btn      = document.getElementById(`adm-gen-clip-btn-${clipIdx0}`);
+  const statusEl = document.getElementById(`adm-clip-status-${clipIdx0}`);
+
+  if (statusEl) statusEl.innerHTML = '<span style="color:#22c55e;">✓</span>';
+  if (btn) { btn.textContent = '↺ Regenerar'; btn.disabled = false; btn.style.borderColor = 'rgba(139,92,246,0.4)'; btn.style.color = '#c4b5fd'; }
+
+  if (resultEl && videoUrl) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <video src="${videoUrl}" controls playsinline
+        style="width:100%;max-height:220px;border-radius:10px;background:#000;border:1px solid rgba(139,92,246,0.2);">
+      </video>`;
+  }
+
+  // Actualizar clip en estado
+  if (_adm.clips[clipIdx0]) _adm.clips[clipIdx0].status = 'completed';
+}
+
+function admShowClipFailed(clipIdx0, errorMsg) {
+  const resultEl = document.getElementById(`adm-clip-result-${clipIdx0}`);
+  const btn      = document.getElementById(`adm-gen-clip-btn-${clipIdx0}`);
+  const statusEl = document.getElementById(`adm-clip-status-${clipIdx0}`);
+
+  if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗</span>';
+  if (btn) { btn.textContent = '↺ Reintentar'; btn.disabled = false; btn.style.borderColor = 'rgba(239,68,68,0.4)'; btn.style.color = '#fca5a5'; }
+
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <div style="padding:10px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;font-size:12px;color:#fca5a5;">
+        ✗ Error del proveedor${errorMsg ? ': ' + errorMsg : ''}. Los créditos fueron reembolsados.
+      </div>`;
+  }
+
+  if (_adm.clips[clipIdx0]) _adm.clips[clipIdx0].status = 'failed';
+}
+
+// ── Continuar anuncio guardado desde la lista ─────────────────────────────────
+function admResumeSaved() {
+  const saved = admLoadSavedState();
+  if (!saved) return;
+
+  // Restaurar estado
+  Object.assign(_adm, {
+    campaignId:      saved.campaignId,
+    clips:           saved.clips,
+    formatLabel:     saved.formatLabel || '',
+    formatReason:    saved.formatReason || '',
+    productName:     saved.productName || '',
+    recurringAssets: saved.recurringAssets || [],
+    assetClipIndices: saved.assetClipIndices || [],
+    assetRefUrl:     saved.assetRefUrl || null,
+    resolution:      saved.resolution || '720p',
+    provider:        saved.provider || 'enhancor'
+  });
+
+  // Ir al wizard adm- paso 5
+  document.getElementById('campView-list').style.display = 'none';
+  document.getElementById('campView-admaker').style.display = 'block';
+  admGoStep(5);
+  admRenderScript();
+  admRenderAssetCard();
+
+  // Re-arrancar polling para clips que estén en estado 'sent' o 'generating'
+  _adm.clips.forEach((clip, i) => {
+    if (clip.status === 'sent' || clip.status === 'generating') {
+      admStartClipPoll(i);
+    }
+  });
+
+  showToast('Anuncio restaurado ✓', 'success');
+}
+
+// ── Guardar estado adm- en localStorage ──────────────────────────────────────
+const ADM_STATE_KEY = 'adm_inprogress_v1';
+
+function admSaveState() {
+  if (!_adm.campaignId || !_adm.clips.length) return;
+  try {
+    localStorage.setItem(ADM_STATE_KEY, JSON.stringify({
+      campaignId: _adm.campaignId,
+      clips:      _adm.clips,
+      formatLabel: _adm.formatLabel,
+      formatReason: _adm.formatReason,
+      productName: _adm.productName,
+      recurringAssets: _adm.recurringAssets,
+      assetClipIndices: _adm.assetClipIndices,
+      assetRefUrl: _adm.assetRefUrl,
+      resolution: _adm.resolution,
+      provider:   _adm.provider,
+      savedAt:    Date.now()
+    }));
+  } catch(e) {}
+}
+
+function admLoadSavedState() {
+  try {
+    const raw = localStorage.getItem(ADM_STATE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    // Expirar después de 24h
+    if (!saved.campaignId || (Date.now() - (saved.savedAt || 0)) > 86400000) {
+      localStorage.removeItem(ADM_STATE_KEY);
+      return false;
+    }
+    return saved;
+  } catch(e) { return false; }
+}
+
+// ── Asset recurrente detectado — card de referencia ──────────────────────────
+function admRenderAssetCard() {
+  // Busca el contenedor de clips (o insertamos la card antes del primer clip)
+  const container = document.getElementById('adm-clips-container');
+  if (!container) return;
+
+  // Eliminar card anterior si existe
+  const prev = document.getElementById('adm-asset-card');
+  if (prev) prev.remove();
+
+  if (!_adm.recurringAssets || !_adm.recurringAssets.length) return;
+
+  const asset = _adm.recurringAssets[0];
+  const clipsLabel = asset.clipIndices.map(i => `Clip ${i+1}`).join(', ');
+
+  const card = document.createElement('div');
+  card.id = 'adm-asset-card';
+  card.style.cssText = 'margin-bottom:16px;padding:14px 16px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.25);border-radius:12px;';
+  card.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <span style="font-size:18px;">🐾</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:rgba(251,191,36,0.9);margin-bottom:4px;">Asset recurrente en ${clipsLabel}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">La IA decidió incluir este asset en esos clips. Subí una foto de referencia para mantener coherencia visual (mismo aspecto en todos).</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <label style="font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.08);color:rgba(251,191,36,0.85);cursor:pointer;">
+            📎 Subir foto de referencia
+            <input type="file" accept="image/*" style="display:none;" onchange="admHandleAssetRef(event)">
+          </label>
+          <span id="adm-asset-ref-status" style="font-size:12px;color:var(--text2);"></span>
+        </div>
+        <div id="adm-asset-ref-preview" style="display:none;margin-top:10px;">
+          <img id="adm-asset-ref-img" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(251,191,36,0.3);">
+          <span style="font-size:11px;color:rgba(251,191,36,0.7);margin-left:8px;">✓ Imagen de referencia lista</span>
+        </div>
+      </div>
+    </div>`;
+  container.insertBefore(card, container.firstChild);
+}
+
+async function admHandleAssetRef(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const statusEl = document.getElementById('adm-asset-ref-status');
+  if (statusEl) statusEl.textContent = 'Subiendo...';
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result.split(',')[1];
+    try {
+      const r = await apiFetch(BACKEND_URL + '/api/upload-ref-image', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64, mimeType: file.type || 'image/jpeg' })
+      });
+      if (!r.ok) throw new Error('Error al subir');
+      const d = await r.json();
+      _adm.assetRefUrl = d.url;
+      if (statusEl) statusEl.textContent = '';
+      const preview = document.getElementById('adm-asset-ref-preview');
+      const img     = document.getElementById('adm-asset-ref-img');
+      if (preview) preview.style.display = 'block';
+      if (img)     img.src = d.url;
+    } catch(err) {
+      if (statusEl) statusEl.textContent = '✗ Error al subir';
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function admOnDialogueEdit(i) {
@@ -17753,16 +18005,21 @@ async function admGenerateClip(i) {
 
   try {
     const isOmni = _adm.provider === 'kie';
+    const clipIdx0 = clip.index - 1; // índice 0-based
     const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
     const endpoint = isOmni ? '/api/campaign/generate-clip-omni' : '/api/campaign/generate-clip';
+    // Claude decide por clip si mostrar producto y/o asset recurrente
+    const productUrl  = (clip.show_product && _adm.productUrl) ? _adm.productUrl : null;
+    const extraImageUrls = (clip.show_asset && _adm.assetRefUrl) ? [_adm.assetRefUrl] : undefined;
     const body = isOmni
-      ? { campaignId: _adm.campaignId, clipIndex: clip.index - 1, visualPrompt: fullPrompt,
-          avatarImageUrl: _adm.avatarUrl, productImageUrl: _adm.productUrl || null,
+      ? { campaignId: _adm.campaignId, clipIndex: clipIdx0, visualPrompt: fullPrompt,
+          avatarImageUrl: _adm.avatarUrl, productImageUrl: productUrl,
+          extraImageUrls,
           clipDuration: Math.min(clip.duration, 10), resolution: _adm.resolution,
           aspectRatio: '9:16', videoMode: 'talking' }
-      : { campaignId: _adm.campaignId, clipIndex: clip.index - 1, textChunk: guion,
+      : { campaignId: _adm.campaignId, clipIndex: clipIdx0, textChunk: guion,
           masterPrompt: fullPrompt, variantImageUrl: _adm.avatarUrl,
-          productImageUrl: _adm.productUrl || null, clipDuration: clip.duration,
+          productImageUrl: productUrl, clipDuration: clip.duration,
           resolution: _adm.resolution, aspectRatio: '9:16', totalClips: _adm.clips.length };
     const resp = await apiFetch(BACKEND_URL + endpoint, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -17772,9 +18029,10 @@ async function admGenerateClip(i) {
       const err = await resp.json().catch(() => ({}));
       throw new Error(err.message || err.error || 'Error generando clip');
     }
-    if (status) status.innerHTML = '<span style="color:#22c55e;">✓ Enviado</span>';
-    if (btn)    { btn.textContent = '↺ Regenerar'; btn.disabled = false; }
+    if (status) status.innerHTML = '<span style="color:rgba(251,191,36,0.8);">⏳</span>';
+    if (btn)    { btn.textContent = '⏳ Generando...'; btn.disabled = true; }
     clip.status = 'sent';
+    admStartClipPoll(clipIdx0);
   } catch (err) {
     if (status) status.innerHTML = `<span style="color:#f87171;">✗ Error</span>`;
     if (btn)    { btn.disabled = false; btn.textContent = '↺ Reintentar'; }
@@ -17809,31 +18067,77 @@ async function admExecuteAll() {
 
     try {
       const isOmni = _adm.provider === 'kie';
+      const clipIdx0 = clip.index - 1;
       const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
       const endpoint = isOmni ? '/api/campaign/generate-clip-omni' : '/api/campaign/generate-clip';
+      const productUrl  = (clip.show_product && _adm.productUrl) ? _adm.productUrl : null;
+      const extraImageUrls = (clip.show_asset && _adm.assetRefUrl) ? [_adm.assetRefUrl] : undefined;
       const body = isOmni
-        ? { campaignId: _adm.campaignId, clipIndex: clip.index - 1, visualPrompt: fullPrompt,
-            avatarImageUrl: _adm.avatarUrl, productImageUrl: _adm.productUrl || null,
+        ? { campaignId: _adm.campaignId, clipIndex: clipIdx0, visualPrompt: fullPrompt,
+            avatarImageUrl: _adm.avatarUrl, productImageUrl: productUrl,
+            extraImageUrls,
             clipDuration: Math.min(clip.duration, 10), resolution: _adm.resolution,
             aspectRatio: '9:16', videoMode: 'talking' }
-        : { campaignId: _adm.campaignId, clipIndex: clip.index - 1, textChunk: guion,
+        : { campaignId: _adm.campaignId, clipIndex: clipIdx0, textChunk: guion,
             masterPrompt: fullPrompt, variantImageUrl: _adm.avatarUrl,
-            productImageUrl: _adm.productUrl || null, clipDuration: clip.duration,
+            productImageUrl: productUrl, clipDuration: clip.duration,
             resolution: _adm.resolution, aspectRatio: '9:16', totalClips: _adm.clips.length };
       const resp = await apiFetch(BACKEND_URL + endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
       if (!resp.ok) throw new Error('Error');
-      if (dot) dot.style.background = '#22c55e';
-      if (st)  st.innerHTML = '<span style="color:#86efac;">Enviado ✓</span>';
+      // Enviado al proveedor — ahora amarillo, esperando resultado real
+      if (dot) dot.style.background = 'rgba(251,191,36,0.7)';
+      if (st)  st.innerHTML = '<span style="color:rgba(251,191,36,0.8);">⏳ Generando...</span>';
+      clip.status = 'sent';
+      // Polling: actualiza el dot cuando el clip termina
+      admStartClipPollForExecuteAll(clipIdx0, i);
     } catch {
       if (dot) dot.style.background = '#ef4444';
       if (st)  st.innerHTML = '<span style="color:#fca5a5;">Error ✗</span>';
     }
   }
+}
 
-  showToast('Clips enviados ✓ — los encontrás en Anuncios largos', 'success');
+// Polling para admExecuteAll — actualiza los dots del paso 6
+function admStartClipPollForExecuteAll(clipIdx0, rowIdx) {
+  if (_adm.pollTimers[clipIdx0]) {
+    clearInterval(_adm.pollTimers[clipIdx0]);
+    delete _adm.pollTimers[clipIdx0];
+  }
+  _adm.pollTimers[clipIdx0] = setInterval(async () => {
+    if (!_adm.campaignId) return;
+    try {
+      const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaignId: _adm.campaignId })
+      });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const clip = (data.clips || []).find(c => c.clip_index === clipIdx0);
+      if (!clip) return;
+
+      const dot = document.getElementById(`adm-gs-dot-${rowIdx}`);
+      const st  = document.getElementById(`adm-gs-status-${rowIdx}`);
+
+      if (clip.status === 'completed') {
+        clearInterval(_adm.pollTimers[clipIdx0]);
+        delete _adm.pollTimers[clipIdx0];
+        if (dot) dot.style.background = '#22c55e';
+        if (st)  st.innerHTML = '<span style="color:#86efac;">✓ Listo</span>';
+        if (_adm.clips[clipIdx0]) _adm.clips[clipIdx0].status = 'completed';
+        // Mostrar video también en el card del paso 5 (por si vuelve)
+        admShowClipDone(clipIdx0, clip.video_url);
+      } else if (clip.status === 'failed') {
+        clearInterval(_adm.pollTimers[clipIdx0]);
+        delete _adm.pollTimers[clipIdx0];
+        if (dot) dot.style.background = '#ef4444';
+        if (st)  st.innerHTML = '<span style="color:#fca5a5;">✗ Error (créditos reembolsados)</span>';
+        if (_adm.clips[clipIdx0]) _adm.clips[clipIdx0].status = 'failed';
+      }
+    } catch(e) {}
+  }, 5000);
 }
 
 // Sidebar estático — limpiar cualquier ancho guardado de versiones anteriores
