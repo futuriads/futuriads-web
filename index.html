@@ -11604,6 +11604,22 @@ async function campLoadList() {
 }
 
 async function campOpenDetail(campaignId, title) {
+  // Si estamos abriendo una campaña DIFERENTE a la que hay en memoria, limpiar _camp
+  // completamente para evitar que datos de otra campaña contaminen la vista actual.
+  if (_camp.campaignId && _camp.campaignId !== campaignId) {
+    Object.assign(_camp, {
+      title: '', script: '',
+      photoBase64: null, photoUrl: null,
+      productPhotoBase64: null, productPhotoUrl: null,
+      avatarGender: null, voice: 'valeria', voiceSettings: null,
+      audioUrl: null, audioDuration: 0, audioClips: [], audioWords: [],
+      visualPrompts: [], chunks: [], hooks: [], bodyChunks: [], corrections: [],
+      variantsMap: {}, currentClipIndex: 0, clipsLaunched: false, clipEnqueued: {},
+      videoMode: 'talking', videoProvider: 'enhancor',
+      aspectRatio: '9:16', resolution: '480p', finalVideoDuration: null
+    });
+  }
+
   // Si _camp no tiene chunks (ej: abriendo desde historial después de re-login),
   // intentar restaurar el draft si corresponde a esta misma campaña.
   if (!_camp.chunks || _camp.chunks.length === 0) {
@@ -11643,6 +11659,19 @@ async function campOpenDetail(campaignId, title) {
   document.getElementById('campAllDoneControls').style.display = 'none';
   document.getElementById('campGenProgressBar').style.width = '0%';
   document.getElementById('campClipsGrid').innerHTML = '';
+  // Limpiar video final y ZapCap de una campaña anterior
+  const _prevFinalDiv = document.getElementById('campFinalVideo');
+  if (_prevFinalDiv) _prevFinalDiv.style.display = 'none';
+  const _prevPlayer = document.getElementById('campFinalPlayer');
+  if (_prevPlayer) { _prevPlayer.pause(); _prevPlayer.src = ''; }
+  const _prevZapcap = document.getElementById('campZapcapSection');
+  if (_prevZapcap) _prevZapcap.style.display = 'none';
+  const _prevZapcapWords = document.getElementById('campZapcapWords');
+  if (_prevZapcapWords) _prevZapcapWords.value = '';
+  const _prevZapcapEditor = document.getElementById('campZapcapEditor');
+  if (_prevZapcapEditor) _prevZapcapEditor.style.display = 'none';
+  const _prevZapcapSuccess = document.getElementById('campZapcapSuccess');
+  if (_prevZapcapSuccess) _prevZapcapSuccess.style.display = 'none';
 
   try {
     const resp = await apiFetch(BACKEND_URL + '/api/campaign/status', {
