@@ -7192,9 +7192,9 @@ body, #app { background: #07050f; }
             <div>
               <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Modelo</div>
               <div style="display:flex;gap:8px;">
-                <button class="adm-dur-btn active" style="cursor:default;">Seedance 2.0</button>
-                <button class="adm-dur-btn" style="opacity:0.4;cursor:not-allowed;position:relative;" disabled>
-                  Gemini Omni <span style="font-size:9px;color:#a78bfa;margin-left:4px;">próx.</span>
+                <button class="adm-dur-btn active" id="admModelSeedance" onclick="admSetModel('enhancor',this)">Seedance 2.0</button>
+                <button class="adm-dur-btn" id="admModelOmni" onclick="admSetModel('kie',this)">
+                  Gemini Omni <span style="font-size:9px;color:#a78bfa;margin-left:4px;">PREMIUM</span>
                 </button>
               </div>
             </div>
@@ -17404,7 +17404,7 @@ const _adm = {
   idea: '', productName: '', productDesc: '',
   productB64: null, productMime: null, productUrl: null,
   avatarB64: null, avatarMime: null, avatarUrl: null,
-  format: null, targetDur: 15, resolution: '720p',
+  format: null, targetDur: 15, resolution: '720p', provider: 'enhancor',
   clips: [],          // [{index, guion, duration, prompt_visual, status, campaignId, clipIndex}]
   campaignId: null,
   formatLabel: '',
@@ -17419,9 +17419,13 @@ function admStart() {
     idea:'', productName:'', productDesc:'',
     productB64:null, productMime:null, productUrl:null,
     avatarB64:null, avatarMime:null, avatarUrl:null,
-    format:null, targetDur:15, resolution:'720p',
+    format:null, targetDur:15, resolution:'720p', provider:'enhancor',
     clips:[], campaignId:null
   });
+  document.getElementById('admModelSeedance')?.classList.add('active');
+  document.getElementById('admModelOmni')?.classList.remove('active');
+  const btn480 = document.querySelector('#adm-s4 .adm-dur-btn[data-res="480p"]');
+  if (btn480) btn480.style.display = '';
   // Limpiar campos
   ['adm-idea','adm-product-name','adm-product-desc'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
@@ -17530,6 +17534,18 @@ function admSelectFormat(format, el) {
 }
 
 // ── Ajustes ──────────────────────────────────────────────────────────────────
+function admSetModel(provider, el) {
+  _adm.provider = provider;
+  document.getElementById('admModelSeedance')?.classList.toggle('active', provider === 'enhancor');
+  document.getElementById('admModelOmni')?.classList.toggle('active', provider === 'kie');
+  // Omni no tiene 480p
+  const btn480 = document.querySelector('#adm-s4 .adm-dur-btn[data-res="480p"]');
+  if (btn480) {
+    btn480.style.display = provider === 'kie' ? 'none' : '';
+    if (provider === 'kie' && _adm.resolution === '480p') admSetRes('720p', document.querySelector('#adm-s4 .adm-dur-btn[data-res="720p"]'));
+  }
+}
+
 function admSetDur(n, el) {
   _adm.targetDur = n;
   document.querySelectorAll('.adm-dur-btn[data-dur]').forEach(b => b.classList.remove('active'));
@@ -17699,22 +17715,21 @@ async function admGenerateClip(i) {
   if (status) status.textContent = '⏳';
 
   try {
+    const isOmni = _adm.provider === 'kie';
     const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
-    const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId:      _adm.campaignId,
-        clipIndex:       clip.index - 1,
-        textChunk:       guion,
-        masterPrompt:    fullPrompt,
-        variantImageUrl: _adm.avatarUrl,
-        productImageUrl: _adm.productUrl || null,
-        clipDuration:    clip.duration,
-        resolution:      _adm.resolution,
-        aspectRatio:     '9:16',
-        totalClips:      _adm.clips.length
-      })
+    const endpoint = isOmni ? '/api/campaign/generate-clip-omni' : '/api/campaign/generate-clip';
+    const body = isOmni
+      ? { campaignId: _adm.campaignId, clipIndex: clip.index - 1, visualPrompt: fullPrompt,
+          avatarImageUrl: _adm.avatarUrl, productImageUrl: _adm.productUrl || null,
+          clipDuration: Math.min(clip.duration, 10), resolution: _adm.resolution,
+          aspectRatio: '9:16', videoMode: 'talking' }
+      : { campaignId: _adm.campaignId, clipIndex: clip.index - 1, textChunk: guion,
+          masterPrompt: fullPrompt, variantImageUrl: _adm.avatarUrl,
+          productImageUrl: _adm.productUrl || null, clipDuration: clip.duration,
+          resolution: _adm.resolution, aspectRatio: '9:16', totalClips: _adm.clips.length };
+    const resp = await apiFetch(BACKEND_URL + endpoint, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
@@ -17756,22 +17771,21 @@ async function admExecuteAll() {
     if (st)  st.textContent = 'Generando...';
 
     try {
+      const isOmni = _adm.provider === 'kie';
       const fullPrompt = `${prompt} The character says: "${guion}" NO TEXT OVERLAYS.`;
-      const resp = await apiFetch(BACKEND_URL + '/api/campaign/generate-clip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          campaignId:      _adm.campaignId,
-          clipIndex:       clip.index - 1,
-          textChunk:       guion,
-          masterPrompt:    fullPrompt,
-          variantImageUrl: _adm.avatarUrl,
-          productImageUrl: _adm.productUrl || null,
-          clipDuration:    clip.duration,
-          resolution:      _adm.resolution,
-          aspectRatio:     '9:16',
-          totalClips:      _adm.clips.length
-        })
+      const endpoint = isOmni ? '/api/campaign/generate-clip-omni' : '/api/campaign/generate-clip';
+      const body = isOmni
+        ? { campaignId: _adm.campaignId, clipIndex: clip.index - 1, visualPrompt: fullPrompt,
+            avatarImageUrl: _adm.avatarUrl, productImageUrl: _adm.productUrl || null,
+            clipDuration: Math.min(clip.duration, 10), resolution: _adm.resolution,
+            aspectRatio: '9:16', videoMode: 'talking' }
+        : { campaignId: _adm.campaignId, clipIndex: clip.index - 1, textChunk: guion,
+            masterPrompt: fullPrompt, variantImageUrl: _adm.avatarUrl,
+            productImageUrl: _adm.productUrl || null, clipDuration: clip.duration,
+            resolution: _adm.resolution, aspectRatio: '9:16', totalClips: _adm.clips.length };
+      const resp = await apiFetch(BACKEND_URL + endpoint, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       });
       if (!resp.ok) throw new Error('Error');
       if (dot) dot.style.background = '#22c55e';
