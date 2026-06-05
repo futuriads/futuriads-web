@@ -1828,6 +1828,30 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .a-credits-widget:hover { background: var(--hover); border-color: var(--text2); }
 /* Spacer ya no necesario — widget en flujo normal */
 .a-credits-widget-spacer { display: none; }
+
+/* Widget de contacto */
+.a-contact-widget {
+  margin: 0 10px 6px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--surface2, rgba(255,255,255,0.04));
+  border: 1px solid var(--border, rgba(255,255,255,0.07));
+  flex-shrink: 0;
+}
+.a-contact-label {
+  font-size: 10px; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+.a-contact-row {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--text2); text-decoration: none;
+  font-size: 11px; font-weight: 500;
+  padding: 3px 0;
+  transition: color 0.15s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.a-contact-row:hover { color: var(--text); }
 .a-credits-widget-label {
   font-size: 10px; color: var(--text2);
   text-transform: uppercase; letter-spacing: .5px;
@@ -2730,6 +2754,10 @@ body, #app { background: #07050f; }
 .a-credits-widget {
   background: linear-gradient(135deg, rgba(109,40,217,0.18), rgba(139,92,246,0.10)) !important;
   border: 1px solid rgba(139,92,246,0.25) !important;
+}
+.a-contact-widget {
+  background: linear-gradient(135deg, rgba(109,40,217,0.12), rgba(139,92,246,0.07)) !important;
+  border: 1px solid rgba(139,92,246,0.18) !important;
 }
 .a-credits-widget:hover { background: linear-gradient(135deg, rgba(109,40,217,0.28), rgba(139,92,246,0.18)) !important; border-color: rgba(139,92,246,0.4) !important; }
 .a-nav-item.active {
@@ -5798,6 +5826,18 @@ body, #app { background: #07050f; }
       </div>
     </nav>
     <div style="flex:1;"></div>
+    <!-- Contacto -->
+    <div class="a-contact-widget">
+      <div class="a-contact-label">Contacto</div>
+      <a class="a-contact-row" href="https://instagram.com/juancmondino" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span>@juancmondino</span>
+      </a>
+      <a class="a-contact-row" href="https://wa.me/543424323940" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        <span>342 432-3940</span>
+      </a>
+    </div>
     <div class="a-credits-widget" id="creditsWidget" onclick="openProfChangePlanModal()">
       <div class="a-credits-widget-label">Créditos</div>
       <div class="a-credits-widget-amount" id="creditsWidgetAmount">—</div>
