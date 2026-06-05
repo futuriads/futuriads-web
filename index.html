@@ -5890,6 +5890,7 @@ body, #app { background: #07050f; }
             <div class="custom-select-option" data-value="gemini-omni-video" onclick="dashSelectOmni(this)">Gemini Omni Flash <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">PREMIUM</span></div>
           </div>
         </div>
+        <div id="dash-seedance-warning" style="margin-top:6px;font-size:11px;color:rgba(251,191,36,0.75);">⚠️ Seedance 2.0 no está optimizado para el acento argentino</div>
         <div class="custom-select" id="cs-video-mode" title="Modo de generación">
           <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-video-mode')">
             <span>Estándar</span>
@@ -6608,6 +6609,7 @@ body, #app { background: #07050f; }
                 <div class="camp-mode-card selected" id="campProviderSeedance" onclick="campSelectVideoProvider('enhancor', this)" style="flex:1;cursor:pointer;">
                   <div class="camp-mode-card-title">Seedance 2.0</div>
                   <div class="camp-mode-card-sub">Avatar habla o voz en off. El modelo más completo y probado.</div>
+                  <div style="margin-top:8px;font-size:11px;color:rgba(251,191,36,0.75);">⚠️ No optimizado para acento argentino</div>
                 </div>
                 <div class="camp-mode-card" id="campProviderOmni" onclick="campSelectVideoProvider('kie', this)" style="flex:1;cursor:pointer;position:relative;">
                   <div style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:4px;padding:1px 6px;">PREMIUM</div>
@@ -7198,7 +7200,7 @@ body, #app { background: #07050f; }
                 </button>
               </div>
               <div id="adm-seedance-warning" style="margin-top:10px;padding:8px 12px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:12px;color:rgba(251,191,36,0.8);line-height:1.5;">
-                ⚠️ Seedance genera videos mudos — el audio lo ponés vos después. Si querés que el avatar hable con acento argentino, usá <strong>Gemini Omni</strong>.
+                ⚠️ Seedance 2.0 no está optimizado para el acento argentino — los resultados pueden variar.
               </div>
             </div>
           </div>
@@ -14473,6 +14475,8 @@ function updateDashCreditPreview() {
 // Verifica plan antes de permitir la selección. Solo Growth y Scale.
 function dashSelectOmni(el) {
   selectCustomOption('cs-model', el);
+  const w = document.getElementById('dash-seedance-warning');
+  if (w) w.style.display = 'none';
   // Omni no tiene modos especiales — ocultar el dropdown de modo y resetear
   document.getElementById('cs-video-mode').style.display = 'none';
   document.getElementById('flfZone').style.display = 'none';
@@ -14504,6 +14508,8 @@ function dashSelectOmni(el) {
 // Restaurar opciones de Seedance cuando vuelve a ese modelo
 function dashSelectSeedance(el) {
   selectCustomOption('cs-model', el);
+  const w = document.getElementById('dash-seedance-warning');
+  if (w) w.style.display = '';
   document.getElementById('cs-video-mode').style.display = ''; // restaurar dropdown de modo
 
   // Duraciones: ocultar las de Omni (4s, 6s, 8s), mostrar las de Seedance (5s, 15s)
