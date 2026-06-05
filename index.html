@@ -9570,37 +9570,50 @@ function campZapcapBuildCaptions(original, editedText) {
   const getStart = w => w.start_time ?? w.start ?? 0;
   const getEnd   = w => w.end_time   ?? w.end   ?? (getStart(w) + 0.5);
 
-  // Caso 1: misma cantidad de palabras → mapeo 1:1, timestamps exactos preservados
-  if (editedWords.length === original.length) {
-    return original.map((cap, i) => {
+  // ZapCap guarda puntuación como tokens separados (type:"punct", text:",", text:".", etc.)
+  // Al quitar comas/puntos el usuario genera un mismatch → filtrar tokens de puntuación
+  // antes de comparar cantidades, para no romper el timing.
+  const isPunct = w => {
+    const t = (w.text || w.word || '').trim();
+    return !t || w.type === 'punct' || /^[^\wáéíóúüñÁÉÍÓÚÜÑ]+$/.test(t);
+  };
+  const wordTokens = original.filter(w => !isPunct(w));
+
+  console.log('[zapcap] tokens total=' + original.length + ' word-only=' + wordTokens.length + ' edited=' + editedWords.length);
+
+  // Referencia base para interpolación: rango temporal de los tokens de palabras reales
+  const refFirst = wordTokens[0] || original[0];
+  const refLast  = wordTokens[wordTokens.length - 1] || original[original.length - 1];
+  const totalStart = getStart(refFirst);
+  const totalEnd   = getEnd(refLast);
+  const totalDur   = Math.max(totalEnd - totalStart, 0.001);
+
+  // Caso 1: misma cantidad → mapeo 1:1 con timing exacto preservado
+  if (editedWords.length === wordTokens.length) {
+    return wordTokens.map((cap, i) => {
       const st = getStart(cap);
       const et = getEnd(cap);
       return {
         ...cap,
         text:       editedWords[i],
         word:       editedWords[i],
-        start_time: st,   // campo ZapCap
-        end_time:   et,   // campo ZapCap
-        start:      st,   // compat ElevenLabs
+        start_time: st,
+        end_time:   et,
+        start:      st,
         end:        et,
       };
     });
   }
 
-  // Caso 2: distinta cantidad de palabras → interpolar timestamps
-  const totalStart = getStart(original[0]);
-  const totalEnd   = getEnd(original[original.length - 1]);
-  const totalDur   = Math.max(totalEnd - totalStart, 0.001);
-  const wordDur    = totalDur / editedWords.length;
-
-  console.log('[zapcap] Word count mismatch: original=' + original.length + ' edited=' + editedWords.length
-    + ' | totalStart=' + totalStart.toFixed(2) + 's totalEnd=' + totalEnd.toFixed(2) + 's wordDur=' + wordDur.toFixed(3) + 's');
+  // Caso 2: distinta cantidad → interpolar uniformemente sobre el timeline real
+  const wordDur = totalDur / editedWords.length;
+  console.log('[zapcap] Interpolando: ' + editedWords.length + ' palabras en ' + totalStart.toFixed(2) + 's–' + totalEnd.toFixed(2) + 's (' + wordDur.toFixed(3) + 's/palabra)');
 
   return editedWords.map((word, i) => {
     const st = totalStart + i * wordDur;
     const et = totalStart + (i + 1) * wordDur;
-    const origIdx = Math.round(i * (original.length - 1) / Math.max(editedWords.length - 1, 1));
-    const origCap = original[Math.min(origIdx, original.length - 1)];
+    const origIdx = Math.round(i * (wordTokens.length - 1) / Math.max(editedWords.length - 1, 1));
+    const origCap = wordTokens[Math.min(origIdx, wordTokens.length - 1)] || original[0];
     return {
       ...origCap,
       text:       word,
