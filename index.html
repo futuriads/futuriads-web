@@ -9566,34 +9566,50 @@ function campZapcapBuildCaptions(original, editedText) {
   const editedWords = editedText.split(/\s+/).filter(Boolean);
   if (!editedWords.length || !original.length) return null;
 
+  // ZapCap usa start_time/end_time. ElevenLabs usa start/end. Soportamos ambos.
+  const getStart = w => w.start_time ?? w.start ?? 0;
+  const getEnd   = w => w.end_time   ?? w.end   ?? (getStart(w) + 0.5);
+
   // Caso 1: misma cantidad de palabras → mapeo 1:1, timestamps exactos preservados
   if (editedWords.length === original.length) {
-    return original.map((cap, i) => ({
-      ...cap,
-      text: editedWords[i],
-      word: editedWords[i],
-    }));
+    return original.map((cap, i) => {
+      const st = getStart(cap);
+      const et = getEnd(cap);
+      return {
+        ...cap,
+        text:       editedWords[i],
+        word:       editedWords[i],
+        start_time: st,   // campo ZapCap
+        end_time:   et,   // campo ZapCap
+        start:      st,   // compat ElevenLabs
+        end:        et,
+      };
+    });
   }
 
   // Caso 2: distinta cantidad de palabras → interpolar timestamps
-  // Se distribuye proporcionalmente en el timeline del transcript original.
-  // Esto evita que las palabras "vuelen" al inicio o fin del video.
-  const totalStart = original[0].start || 0;
-  const totalEnd   = (original[original.length - 1].end
-                   || original[original.length - 1].start
-                   || 1);
+  const totalStart = getStart(original[0]);
+  const totalEnd   = getEnd(original[original.length - 1]);
   const totalDur   = Math.max(totalEnd - totalStart, 0.001);
   const wordDur    = totalDur / editedWords.length;
 
-  console.log('[zapcap] Word count mismatch: original=' + original.length + ' edited=' + editedWords.length + ' — interpolando timestamps.');
+  console.log('[zapcap] Word count mismatch: original=' + original.length + ' edited=' + editedWords.length
+    + ' | totalStart=' + totalStart.toFixed(2) + 's totalEnd=' + totalEnd.toFixed(2) + 's wordDur=' + wordDur.toFixed(3) + 's');
 
   return editedWords.map((word, i) => {
-    const start  = totalStart + i * wordDur;
-    const end    = totalStart + (i + 1) * wordDur;
-    // Copiar propiedades de estilo del word original proporcional (color, emphasis, etc.)
+    const st = totalStart + i * wordDur;
+    const et = totalStart + (i + 1) * wordDur;
     const origIdx = Math.round(i * (original.length - 1) / Math.max(editedWords.length - 1, 1));
     const origCap = original[Math.min(origIdx, original.length - 1)];
-    return { ...origCap, text: word, word, start, end };
+    return {
+      ...origCap,
+      text:       word,
+      word,
+      start_time: st,
+      end_time:   et,
+      start:      st,
+      end:        et,
+    };
   });
 }
 
