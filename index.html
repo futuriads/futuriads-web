@@ -18041,6 +18041,22 @@ async function admGenerateClip(i) {
 }
 
 async function admExecuteAll() {
+  // ── Verificación previa de créditos ───────────────────────────────────────
+  const totalCost      = admCalcTotalCost(_adm.clips, _adm.resolution);
+  const availCredits   = (_currentUser?.subscription_credits || 0) + (_currentUser?.topup_credits || 0);
+  if (availCredits > 0 && totalCost > availCredits) {
+    // Calcular cuántos clips alcanza
+    let accumulated = 0;
+    let canGenerate = 0;
+    for (const clip of _adm.clips) {
+      const clipCost = admClipCost(clip, _adm.resolution, _adm.provider);
+      if (accumulated + clipCost <= availCredits) { accumulated += clipCost; canGenerate++; }
+      else break;
+    }
+    const continuar = await admConfirmPartialGeneration(totalCost, availCredits, canGenerate, _adm.clips.length);
+    if (!continuar) return;
+  }
+
   const btn = document.getElementById('adm-gen-all-btn');
   if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
   admGoStep(6);
@@ -18098,6 +18114,39 @@ async function admExecuteAll() {
       if (st)  st.innerHTML = '<span style="color:#fca5a5;">Error ✗</span>';
     }
   }
+}
+
+// ── Modal: créditos insuficientes para todos los clips ────────────────────────
+function admConfirmPartialGeneration(totalCost, available, canGenerate, totalClips) {
+  return new Promise(resolve => {
+    // Eliminar modal anterior si existe
+    document.getElementById('adm-credits-modal')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'adm-credits-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#1a1a2e;border:1px solid rgba(139,92,246,0.3);border-radius:16px;padding:28px;max-width:400px;width:100%;">
+        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;">⚠️ Créditos insuficientes</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">
+          Este anuncio necesita <strong style="color:#c4b5fd;">${totalCost.toLocaleString('es-AR')} créditos</strong> para generar los ${totalClips} clips,
+          pero solo tenés <strong style="color:#fca5a5;">${available.toLocaleString('es-AR')} créditos</strong> disponibles.
+          ${canGenerate > 0
+            ? `<br><br>Si continuás, se van a generar los primeros <strong style="color:#86efac;">${canGenerate} clip${canGenerate > 1 ? 's' : ''}</strong> y los demás van a quedar sin generar.`
+            : `<br><br>No alcanza ni para generar el primer clip.`}
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button id="adm-cm-cancel" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;">Cancelar</button>
+          ${canGenerate > 0 ? `<button id="adm-cm-continue" style="padding:8px 18px;border-radius:8px;border:none;background:rgba(139,92,246,0.8);color:#fff;cursor:pointer;font-size:13px;font-weight:600;">Generar ${canGenerate} clip${canGenerate > 1 ? 's' : ''}</button>` : ''}
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('adm-cm-cancel')?.addEventListener('click', () => { modal.remove(); resolve(false); });
+    document.getElementById('adm-cm-continue')?.addEventListener('click', () => { modal.remove(); resolve(true); });
+    modal.addEventListener('click', e => { if (e.target === modal) { modal.remove(); resolve(false); } });
+  });
 }
 
 // Polling para admExecuteAll — actualiza los dots del paso 6
