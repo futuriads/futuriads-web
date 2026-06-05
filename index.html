@@ -7197,6 +7197,9 @@ body, #app { background: #07050f; }
                   Gemini Omni <span style="font-size:9px;color:#a78bfa;margin-left:4px;">PREMIUM</span>
                 </button>
               </div>
+              <div id="adm-seedance-warning" style="margin-top:10px;padding:8px 12px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:12px;color:rgba(251,191,36,0.8);line-height:1.5;">
+                ⚠️ Seedance genera videos mudos — el audio lo ponés vos después. Si querés que el avatar hable con acento argentino, usá <strong>Gemini Omni</strong>.
+              </div>
             </div>
           </div>
           <div class="camp-nav-row" style="margin-top:32px;">
@@ -17668,6 +17671,9 @@ function admSetModel(provider, el) {
   _adm.provider = provider;
   document.getElementById('admModelSeedance')?.classList.toggle('active', provider === 'enhancor');
   document.getElementById('admModelOmni')?.classList.toggle('active', provider === 'kie');
+  // Mostrar advertencia de acento solo para Seedance
+  const warning = document.getElementById('adm-seedance-warning');
+  if (warning) warning.style.display = provider === 'enhancor' ? '' : 'none';
   // Omni no tiene 480p
   const btn480 = document.querySelector('#adm-s4 .adm-dur-btn[data-res="480p"]');
   if (btn480) {
