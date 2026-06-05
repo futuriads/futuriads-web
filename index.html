@@ -6275,38 +6275,13 @@ body, #app { background: #07050f; }
             <button class="tutorial-modal-close" onclick="closeTutorialModal()">✕</button>
           </div>
           <div class="tutorial-video-wrap" id="tutorialVideoWrap">
-            <video id="tutorialVideo" src="/videos/tutorial.mp4" poster="/videos/tutorial-poster.jpg" preload="metadata"></video>
-            <!-- Overlay play -->
-            <div class="tutorial-play-overlay" id="tutorialPlayOverlay" onclick="tutorialTogglePlay()">
-              <div class="tutorial-play-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#000"><polygon points="6,4 20,12 6,20"/></svg>
-              </div>
-            </div>
-            <!-- Controles custom -->
-            <div class="tutorial-controls">
-              <!-- Play/Pause -->
-              <button class="tutorial-ctrl-btn" id="tutorialPlayPauseBtn" onclick="tutorialTogglePlay()">
-                <svg id="tutorialPlayIcon" width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="4,2 15,9 4,16"/></svg>
-                <svg id="tutorialPauseIcon" width="18" height="18" viewBox="0 0 18 18" fill="white" style="display:none;"><rect x="3" y="2" width="4" height="14" rx="1"/><rect x="11" y="2" width="4" height="14" rx="1"/></svg>
-              </button>
-              <!-- Progreso -->
-              <div class="tutorial-progress-wrap" id="tutorialProgressWrap" onclick="tutorialSeek(event)">
-                <div class="tutorial-progress-fill" id="tutorialProgressFill"></div>
-              </div>
-              <!-- Tiempo -->
-              <span class="tutorial-time" id="tutorialTime">0:00 / 0:00</span>
-              <!-- Volumen -->
-              <div class="tutorial-vol-wrap">
-                <button class="tutorial-ctrl-btn" onclick="tutorialToggleMute()">
-                  <svg id="tutorialVolIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5"><path d="M3 6H1v4h2l4 3V3L3 6z"/><path d="M11 5a4 4 0 010 6"/></svg>
-                </button>
-                <input class="tutorial-vol-slider" id="tutorialVolSlider" type="range" min="0" max="1" step="0.05" value="1" oninput="tutorialSetVol(this.value)">
-              </div>
-              <!-- Fullscreen -->
-              <button class="tutorial-ctrl-btn tutorial-fullscreen-btn" onclick="tutorialFullscreen()">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5"><path d="M1 6V1h5M10 1h5v5M15 10v5h-5M6 15H1v-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-            </div>
+            <iframe id="tutorialIframe"
+              src="https://www.youtube.com/embed/r46GJlAces4?enablejsapi=1&rel=0&modestbranding=1"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              style="width:100%;height:100%;border-radius:8px;display:block;">
+            </iframe>
           </div>
         </div>
       </div>
@@ -14015,67 +13990,10 @@ function closeTutorialModal(e) {
   if (e && e.target !== document.getElementById('tutorialModal')) return;
   const modal = document.getElementById('tutorialModal');
   modal.classList.remove('open');
-  const vid = document.getElementById('tutorialVideo');
-  if (vid) { vid.pause(); tutorialUpdatePlayPause(true); }
+  // Pausar el video de YouTube recargando el src
+  const iframe = document.getElementById('tutorialIframe');
+  if (iframe) { iframe.src = iframe.src; }
 }
-function tutorialTogglePlay() {
-  const vid = document.getElementById('tutorialVideo');
-  if (!vid) return;
-  if (vid.paused) {
-    vid.play();
-    tutorialUpdatePlayPause(false);
-    document.getElementById('tutorialPlayOverlay').classList.add('hidden');
-  } else {
-    vid.pause();
-    tutorialUpdatePlayPause(true);
-    document.getElementById('tutorialPlayOverlay').classList.remove('hidden');
-  }
-}
-function tutorialUpdatePlayPause(isPaused) {
-  document.getElementById('tutorialPlayIcon').style.display  = isPaused ? '' : 'none';
-  document.getElementById('tutorialPauseIcon').style.display = isPaused ? 'none' : '';
-}
-function tutorialSeek(e) {
-  const vid = document.getElementById('tutorialVideo');
-  const wrap = document.getElementById('tutorialProgressWrap');
-  if (!vid || !wrap) return;
-  const rect = wrap.getBoundingClientRect();
-  const pct  = (e.clientX - rect.left) / rect.width;
-  vid.currentTime = pct * vid.duration;
-}
-function tutorialToggleMute() {
-  const vid = document.getElementById('tutorialVideo');
-  if (!vid) return;
-  vid.muted = !vid.muted;
-  document.getElementById('tutorialVolSlider').value = vid.muted ? 0 : vid.volume;
-}
-function tutorialSetVol(v) {
-  const vid = document.getElementById('tutorialVideo');
-  if (!vid) return;
-  vid.volume = v; vid.muted = v == 0;
-}
-function tutorialFullscreen() {
-  const wrap = document.getElementById('tutorialVideoWrap');
-  if (wrap.requestFullscreen) wrap.requestFullscreen();
-}
-// Actualizar progreso
-document.addEventListener('DOMContentLoaded', function() {
-  const vid = document.getElementById('tutorialVideo');
-  if (!vid) return;
-  vid.addEventListener('timeupdate', function() {
-    if (!vid.duration) return;
-    const pct = (vid.currentTime / vid.duration) * 100;
-    const fill = document.getElementById('tutorialProgressFill');
-    if (fill) fill.style.width = pct + '%';
-    const fmt = t => Math.floor(t/60)+':'+(Math.floor(t%60)+'').padStart(2,'0');
-    const time = document.getElementById('tutorialTime');
-    if (time) time.textContent = fmt(vid.currentTime) + ' / ' + fmt(vid.duration);
-  });
-  vid.addEventListener('ended', function() {
-    tutorialUpdatePlayPause(true);
-    document.getElementById('tutorialPlayOverlay').classList.remove('hidden');
-  });
-});
 function toggleCreditsPopover(e) {
   e.stopPropagation();
   const popover = document.getElementById('creditsPopover');
