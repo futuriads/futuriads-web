@@ -11701,6 +11701,68 @@ async function campOpenDetail(campaignId, title) {
     const data = await resp.json();
     const { clips, variants, campaign } = data;
 
+    // ── Detectar campaña de adm- wizard (clips con source:'admaker') ──────────
+    const admClip = (clips || []).find(c => {
+      try { return JSON.parse(c.text_chunk)?.source === 'admaker'; } catch(e) { return false; }
+    });
+    if (admClip) {
+      // Restaurar wizard adm- en lugar de abrir la vista camp-
+      const savedAdm = admLoadSavedState();
+      // Reconstruir clips desde text_chunk de la DB
+      const restoredClips = (clips || [])
+        .sort((a, b) => a.clip_index - b.clip_index)
+        .map(c => {
+          let parsed = {};
+          try { parsed = JSON.parse(c.text_chunk) || {}; } catch(e) {}
+          return {
+            index:         (c.clip_index + 1),
+            guion:         parsed.guion         || '',
+            prompt_visual: parsed.prompt_visual || parsed.prompt || '',
+            show_product:  parsed.show_product  ?? false,
+            show_asset:    parsed.show_asset    ?? false,
+            duration:      parsed.duration      || 6,
+            status:        c.status             || 'pending',
+            video_url:     c.video_url          || null
+          };
+        });
+
+      // Limpiar poll timers anteriores
+      Object.values(_adm.pollTimers || {}).forEach(id => clearInterval(id));
+
+      Object.assign(_adm, {
+        campaignId:    campaignId,
+        clips:         restoredClips,
+        resolution:    (savedAdm?.resolution)  || campaign?.resolution  || '720p',
+        provider:      (savedAdm?.provider)    || 'enhancor',
+        avatarUrl:     (savedAdm?.avatarUrl)   || campaign?.avatar_url  || null,
+        productUrl:    (savedAdm?.productUrl)  || campaign?.product_url || null,
+        avatarGender:  savedAdm?.avatarGender  || null,
+        formatLabel:   savedAdm?.formatLabel   || title || '',
+        recurringAssets:   savedAdm?.recurringAssets   || [],
+        assetClipIndices:  savedAdm?.assetClipIndices  || [],
+        assetRefUrl:       savedAdm?.assetRefUrl        || null,
+        pollTimers: {}
+      });
+
+      // Mostrar wizard adm- en paso 5
+      document.getElementById('campView-list').style.display = 'none';
+      document.getElementById('campView-generating').style.display = 'none';
+      document.getElementById('campView-admaker').style.display = 'block';
+      admGoStep(5);
+      admRenderScript();
+      admRenderAssetCard();
+
+      // Para clips ya completados, mostrar video inline
+      restoredClips.forEach((clip, i) => {
+        if (clip.status === 'completed' && clip.video_url) {
+          admShowClipDone(i, clip.video_url);
+        } else if (clip.status === 'sent' || clip.status === 'generating') {
+          admStartClipPoll(i);
+        }
+      });
+      return; // no seguir con la lógica del wizard camp-
+    }
+
     // Detectar modo según si la campaña tiene audio_url (voiceover) o no (talking)
     _camp.videoMode = (campaign && campaign.audio_url) ? 'voiceover' : 'talking';
     _camp.title = title;
@@ -17876,17 +17938,20 @@ function admSaveState() {
   if (!_adm.campaignId || !_adm.clips.length) return;
   try {
     localStorage.setItem(ADM_STATE_KEY, JSON.stringify({
-      campaignId: _adm.campaignId,
-      clips:      _adm.clips,
-      formatLabel: _adm.formatLabel,
-      formatReason: _adm.formatReason,
-      productName: _adm.productName,
+      campaignId:      _adm.campaignId,
+      clips:           _adm.clips,
+      formatLabel:     _adm.formatLabel,
+      formatReason:    _adm.formatReason,
+      productName:     _adm.productName,
       recurringAssets: _adm.recurringAssets,
-      assetClipIndices: _adm.assetClipIndices,
-      assetRefUrl: _adm.assetRefUrl,
-      resolution: _adm.resolution,
-      provider:   _adm.provider,
-      savedAt:    Date.now()
+      assetClipIndices:_adm.assetClipIndices,
+      assetRefUrl:     _adm.assetRefUrl,
+      resolution:      _adm.resolution,
+      provider:        _adm.provider,
+      avatarUrl:       _adm.avatarUrl,
+      productUrl:      _adm.productUrl,
+      avatarGender:    _adm.avatarGender,
+      savedAt:         Date.now()
     }));
   } catch(e) {}
 }
