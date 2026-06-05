@@ -17638,6 +17638,11 @@ function admGoStep(n) {
     const el = document.getElementById(`adm-s${i}`);
     if (el) el.style.display = i === n ? '' : 'none';
   }
+  // Al volver al paso 5 (guión/clips), re-habilitar el botón "Generar todos"
+  if (n === 5) {
+    const genAllBtn = document.getElementById('adm-gen-all-btn');
+    if (genAllBtn) { genAllBtn.disabled = false; genAllBtn.style.opacity = ''; }
+  }
   admUpdateStepIndicator(n);
 }
 
