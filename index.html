@@ -34,7 +34,7 @@ html.pre-landing #app { display: none !important; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -5487,9 +5487,135 @@ body, #app { background: #07050f; }
 .a-recent-info { padding: 12px; }
 .a-recent-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
 .a-recent-meta { font-size: 11px; color: var(--text2); }
+
+/* ==============================================
+   V0 AESTHETIC UPGRADES
+   ============================================== */
+
+/* Noise overlay — textura sutil sobre toda la página */
+.noise-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Display font para el hero headline */
+.l-hero-headline {
+  font-family: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Shimmer button */
+.shimmer-btn { position: relative; overflow: hidden; }
+.shimmer-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+  background-size: 200% 100%; animation: btn-shimmer 3s ease-in-out infinite;
+}
+@keyframes btn-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* Nav drop animation */
+@keyframes l-nav-drop {
+  from { transform: translateX(-50%) translateY(-80px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+.l-nav { animation: l-nav-drop 0.65s cubic-bezier(0.22,1,0.36,1); }
+
+/* Hero line-up animation (máscara + slide para el titular) */
+.hero-line-mask { display: block; overflow: hidden; }
+.hero-line-up {
+  display: block;
+  transform: translateY(108%);
+  animation: hero-line-up 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-line-up.d1 { animation-delay: 0.05s; }
+.hero-line-up.d2 { animation-delay: 0.12s; }
+@keyframes hero-line-up { to { transform: translateY(0); } }
+
+/* Hero fade-up para elementos debajo del headline */
+.hero-fade-up {
+  opacity: 0;
+  animation: hero-fade-up 0.65s ease forwards;
+}
+.hero-fade-up.d3 { animation-delay: 0.38s; }
+.hero-fade-up.d4 { animation-delay: 0.52s; }
+.hero-fade-up.d5 { animation-delay: 0.66s; }
+.hero-fade-up.d6 { animation-delay: 0.78s; }
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulsing badge para el hero */
+.hero-pulse-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(109,40,217,0.1); border: 1px solid rgba(139,92,246,0.28);
+  border-radius: 999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; color: var(--accent2);
+  margin-bottom: 22px; letter-spacing: 0.2px;
+}
+.hero-pulse-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent2);
+  animation: pulse-dot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(167,139,250,0.6); }
+  50%      { opacity: 0.65; box-shadow: 0 0 0 5px rgba(167,139,250,0); }
+}
+
+/* Reveal on scroll */
+.reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Border beam en la tarjeta destacada (Growth) */
+.border-beam-wrap {
+  position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none;
+}
+.border-beam {
+  position: absolute; width: 90px; height: 90px;
+  background: rgba(167,139,250,0.4); filter: blur(20px);
+  offset-path: rect(0 100% 100% 0 round 16px);
+  animation: border-beam 6s linear infinite;
+}
+@keyframes border-beam { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+
+/* Gradient en em dentro de section titles */
+.l-section-title em {
+  background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%) !important;
+  background-clip: text !important; -webkit-background-clip: text !important;
+  color: transparent !important; -webkit-text-fill-color: transparent !important;
+  font-style: italic;
+}
+
+/* Mejorar hover en pricing cards (escala sutil) */
+.l-pricing-card {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s !important;
+}
+.l-pricing-card:hover { transform: translateY(-3px) !important; }
+.l-pricing-card.featured { transform: translateY(0) !important; }
+.l-pricing-card.featured:hover { transform: translateY(-4px) !important; }
+
+/* Mejorar hover en feature cards */
+.l-feat-card {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s !important;
+}
+.l-feat-card:hover { transform: translateY(-3px) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-line-up { animation: none; transform: none; }
+  .hero-fade-up { animation: none; opacity: 1; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .shimmer-btn::before, .hero-pulse-dot, .border-beam { animation: none; }
+}
 </style>
 </head>
 <body>
+
+<!-- Noise overlay: textura sutil sobre todo el sitio -->
+<div class="noise-overlay" aria-hidden="true"></div>
 
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
@@ -5563,7 +5689,7 @@ body, #app { background: #07050f; }
     </div>
     <div class="l-nav-actions">
       <button class="l-nav-signin" onclick="openAuthModal('login')">Iniciar sesión</button>
-      <button class="l-nav-cta" onclick="openAuthModal('signup')">Crear cuenta</button>
+      <button class="l-nav-cta shimmer-btn" onclick="openAuthModal('signup')">Crear cuenta</button>
     </div>
   </nav>
 
@@ -5578,21 +5704,27 @@ body, #app { background: #07050f; }
       <div class="actor-card"><video data-src="" loop muted playsinline preload="none"></video></div>
     </div>
     <div class="l-hero-center">
+      <!-- Badge pulsante -->
+      <div class="hero-pulse-badge hero-fade-up d3">
+        <span class="hero-pulse-dot"></span>
+        Anuncios UGC con IA · Sin actores · Sin producción
+      </div>
+      <!-- Headline con animación line-up -->
       <h1 class="l-hero-headline">
-        Creá anuncios
-        <span class="hl-line2">que venden de verdad</span>
+        <span class="hero-line-mask"><span class="hero-line-up d1">Creá anuncios</span></span>
+        <span class="hero-line-mask"><span class="hl-line2 hero-line-up d2">que venden de verdad</span></span>
       </h1>
-      <p class="l-hero-sub">Escribí tu script, elegí un actor IA y generá un video listo para Meta, TikTok e Instagram en minutos.</p>
-      <div class="l-hero-btns">
-        <button class="btn-w" onclick="goToApp()">Empezar ahora</button>
+      <p class="l-hero-sub hero-fade-up d3">Escribí tu script, elegí un actor IA y generá un video listo para Meta, TikTok e Instagram en minutos.</p>
+      <div class="l-hero-btns hero-fade-up d4">
+        <button class="btn-w shimmer-btn" onclick="goToApp()">Empezar ahora</button>
         <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
       </div>
-      <div class="l-hero-badges">
+      <div class="l-hero-badges hero-fade-up d5">
         <span class="l-badge">Actores IA realistas</span>
         <span class="l-badge">Videos en minutos</span>
         <span class="l-badge">↗ Listo para publicar</span>
       </div>
-      <div class="l-hero-nocc">Sin tarjeta de crédito · Cancelás cuando querés</div>
+      <div class="l-hero-nocc hero-fade-up d6">Sin tarjeta de crédito · Cancelás cuando querés</div>
     </div>
   </section>
 
@@ -5634,8 +5766,8 @@ body, #app { background: #07050f; }
 
   <!-- How it works -->
   <section class="l-section l-section-alt l-section-center" id="how">
-    <div class="l-section-label">Cómo funciona</div>
-    <h2 class="l-section-title">Tres pasos y tu anuncio <em>está listo</em></h2>
+    <div class="l-section-label reveal">Cómo funciona</div>
+    <h2 class="l-section-title reveal">Tres pasos y tu anuncio <em>está listo</em></h2>
     <p class="l-section-sub">Sin equipos de producción. Sin demoras. Solo resultados.</p>
     <div class="l-steps">
       <div class="l-step">
@@ -5659,8 +5791,8 @@ body, #app { background: #07050f; }
   <!-- Features -->
   <section class="l-section" id="features">
     <div class="l-section-center" style="margin-bottom:56px;">
-      <div class="l-section-label">Features</div>
-      <h2 class="l-section-title">Creá mejores anuncios <em>con IA</em></h2>
+      <div class="l-section-label reveal">Features</div>
+      <h2 class="l-section-title reveal">Creá mejores anuncios <em>con IA</em></h2>
       <p class="l-section-sub">Todo lo que necesitás para escalar tus campañas sin escalar tu equipo.</p>
     </div>
     <div class="l-features-wrap">
@@ -5705,8 +5837,8 @@ body, #app { background: #07050f; }
   <!-- Testimonials -->
   <section id="testimonios" class="l-section l-section-alt">
     <div class="l-section-center" style="margin-bottom:52px;">
-      <div class="l-section-label">Testimonios</div>
-      <h2 class="l-section-title">Lo que dicen nuestros <em>usuarios</em></h2>
+      <div class="l-section-label reveal">Testimonios</div>
+      <h2 class="l-section-title reveal">Lo que dicen nuestros <em>usuarios</em></h2>
       <p class="l-section-sub">Resultados reales de emprendedores que ya usan Futuriads</p>
     </div>
     <div class="l-testi-ss-grid">
@@ -5727,8 +5859,8 @@ body, #app { background: #07050f; }
 
   <!-- Comparison -->
   <section class="l-section l-section-alt l-section-center">
-    <div class="l-section-label">Comparación</div>
-    <h2 class="l-section-title">Dejá de pagar de más <em>por videos</em></h2>
+    <div class="l-section-label reveal">Comparación</div>
+    <h2 class="l-section-title reveal">Dejá de pagar de más <em>por videos</em></h2>
     <p class="l-section-sub" style="margin-bottom:40px;">Lo que antes costaba semanas y miles de dólares, hoy lo hacés en minutos.</p>
     <div class="l-compare-wrap">
       <div class="l-compare-row l-compare-header">
@@ -5766,8 +5898,8 @@ body, #app { background: #07050f; }
 
   <!-- Pricing -->
   <section class="l-section l-section-center" id="pricing">
-    <div class="l-section-label">Precios</div>
-    <h2 class="l-section-title">Simple, <em>sin sorpresas</em></h2>
+    <div class="l-section-label reveal">Precios</div>
+    <h2 class="l-section-title reveal">Simple, <em>sin sorpresas</em></h2>
     <p class="l-section-sub" style="padding: 22px">Pagás solo lo que usás. Cancelás cuando querés.</p>
     <!-- Early Access — TIEMPO LIMITADO (remover luego del lanzamiento) -->
     <div class="l-ea-wrap">
@@ -5818,7 +5950,9 @@ body, #app { background: #07050f; }
       </div>
 
       <!-- Growth — MEJOR VALOR -->
-      <div class="l-pricing-card featured">
+      <div class="l-pricing-card featured" style="position:relative;">
+        <!-- Border beam animado -->
+        <div class="border-beam-wrap" aria-hidden="true"><div class="border-beam"></div></div>
         <div class="l-pricing-save">MEJOR VALOR</div>
         <div class="l-pricing-icon-row">
           <div class="l-pricing-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg></div>
@@ -5892,8 +6026,8 @@ body, #app { background: #07050f; }
 
   <!-- FAQ -->
   <section class="l-section l-section-alt l-section-center">
-    <div class="l-section-label">FAQ</div>
-    <h2 class="l-section-title">Preguntas <em>frecuentes</em></h2>
+    <div class="l-section-label reveal">FAQ</div>
+    <h2 class="l-section-title reveal">Preguntas <em>frecuentes</em></h2>
     <div class="l-faq" style="margin-top:40px;">
       <div class="l-faq-item">
         <button class="l-faq-btn" onclick="toggleFaq(this)">
@@ -8153,7 +8287,7 @@ document.getElementById('heroSection').addEventListener('mousemove',e=>{
   });
 });
 
-/* ---- Intersection observer ---- */
+/* ---- Intersection observer (cards animadas con .visible) ---- */
 const io=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
@@ -8164,6 +8298,17 @@ const io=new IntersectionObserver(entries=>{
   });
 },{threshold:0.12});
 document.querySelectorAll('.l-step,.l-feat-big,.l-feat-card,.l-testi-ss-card,.fade-up').forEach(el=>io.observe(el));
+
+/* ---- Reveal on scroll (section labels, titles, etc.) ---- */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 /* ---- Landing ↔ App ---- */
 
