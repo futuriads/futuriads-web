@@ -5680,18 +5680,18 @@ body, #app { background: #07050f; }
       <!-- Starter -->
       <div class="l-pricing-card">
         <div class="l-pricing-name">Starter</div>
-        <div class="l-pricing-price">$29<span>/mes</span></div>
-        <div class="l-pricing-period">Facturado mensualmente · 35.000 créditos</div>
+        <div class="l-pricing-price">$39<span>/mes</span></div>
+        <div class="l-pricing-period">Facturado mensualmente · 65.000 créditos</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li class="hi">~10 anuncios de 15s por mes</li>
+          <li class="hi">~10 anuncios de 60s por mes</li>
           <li>Actores IA (4 voces)</li>
           <li>Guiones generados con IA</li>
           <li>Subtítulos automáticos</li>
           <li>Resolución hasta 720p</li>
           <li>Historial de campañas</li>
         </ul>
-        <div class="l-pricing-topup">Recarga: +10.000 créditos por $10</div>
+        <div class="l-pricing-topup">Recarga: +14.000 créditos por $10</div>
         <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Starter</button>
       </div>
 
@@ -5699,36 +5699,36 @@ body, #app { background: #07050f; }
       <div class="l-pricing-card featured">
         <div class="l-pricing-save">MEJOR VALOR</div>
         <div class="l-pricing-name">Growth</div>
-        <div class="l-pricing-price">$69<span>/mes</span></div>
-        <div class="l-pricing-period">Facturado mensualmente · 110.000 créditos</div>
+        <div class="l-pricing-price">$89<span>/mes</span></div>
+        <div class="l-pricing-period">Facturado mensualmente · 185.000 créditos</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li class="hi">~32 anuncios de 15s por mes</li>
-          <li class="hi">3× más créditos a solo 2.4× el precio</li>
+          <li class="hi">~30 anuncios de 60s por mes</li>
+          <li class="hi">Gemini Omni disponible (~7 anuncios/mes)</li>
           <li>Todo lo del plan Starter</li>
           <li>Imágenes IA de producto y avatar</li>
           <li>Resolución hasta 1080p</li>
           <li>Soporte prioritario por email</li>
         </ul>
-        <div class="l-pricing-topup">Recarga: +28.000 créditos por $25 · mejor precio/cr</div>
+        <div class="l-pricing-topup">Recarga: +50.000 créditos por $25 · mejor precio/cr</div>
         <button class="btn-w" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Growth</button>
       </div>
 
       <!-- Scale -->
       <div class="l-pricing-card">
         <div class="l-pricing-name">Scale</div>
-        <div class="l-pricing-price">$149<span>/mes</span></div>
-        <div class="l-pricing-period">Facturado mensualmente · 300.000 créditos</div>
+        <div class="l-pricing-price">$199<span>/mes</span></div>
+        <div class="l-pricing-period">Facturado mensualmente · 450.000 créditos</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li class="hi">~88 anuncios de 15s por mes</li>
-          <li class="hi">Créditos 40% más baratos que Starter</li>
+          <li class="hi">~70 anuncios de 60s por mes</li>
+          <li class="hi">Gemini Omni disponible (~16 anuncios/mes)</li>
           <li>Todo lo del plan Growth</li>
-          <li>Volumen sin interrupciones</li>
+          <li>Créditos 36% más baratos que Starter</li>
           <li>Acceso anticipado a nuevas features</li>
           <li>Account manager dedicado</li>
         </ul>
-        <div class="l-pricing-topup">Recarga: +60.000 créditos por $50 · precio más bajo por cr</div>
+        <div class="l-pricing-topup">Recarga: +110.000 créditos por $50 · precio más bajo por cr</div>
         <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Scale</button>
       </div>
 
@@ -8562,10 +8562,11 @@ function getFirstName(name) {
 function getPlanInfo(plan) {
   // Espejo de la config del backend en server.js > PLANS
   const plans = {
-    'none':    { label: 'Sin plan', price: '$0',  credits: 0,      topup_price: 0, topup_credits: 0    },
-    'starter': { label: 'Starter',  price: '$29', credits: 35000,  topup_price: 10, topup_credits: 10000 },
-    'growth':  { label: 'Growth',   price: '$69', credits: 110000, topup_price: 25, topup_credits: 28000 },
-    'scale':   { label: 'Scale',    price: '$149',credits: 300000, topup_price: 50, topup_credits: 60000 }
+    'none':         { label: 'Sin plan',          price: '$0',   credits: 0,      topup_price: 0,  topup_credits: 0      },
+    'early_access': { label: 'Acceso Anticipado', price: '$19',  credits: 30000,  topup_price: 10, topup_credits: 10000  },
+    'starter':      { label: 'Starter',           price: '$39',  credits: 65000,  topup_price: 10, topup_credits: 14000  },
+    'growth':       { label: 'Growth',            price: '$89',  credits: 185000, topup_price: 25, topup_credits: 50000  },
+    'scale':        { label: 'Scale',             price: '$199', credits: 450000, topup_price: 50, topup_credits: 110000 }
   };
   return plans[plan] || plans.none;
 }
@@ -12470,22 +12471,28 @@ function renderPlanCards() {
 
   const plans = [
     {
-      id: 'starter', label: 'Starter', priceM: 29, credits: 35000,
-      gens: '~10 anuncios de 15 segundos por mes',
-      feats: ['Actores IA (4 voces)', 'Guiones generados con IA', 'Subtítulos automáticos', 'Resolución hasta 720p', 'Historial de campañas'],
+      id: 'early_access', label: 'Acceso Anticipado', priceM: 19, credits: 30000,
+      gens: '~5 anuncios de 60s por mes · para probar la plataforma',
+      feats: ['Actores IA (4 voces)', 'Guiones generados con IA', 'Subtítulos automáticos', 'Resolución hasta 480p', 'Historial de campañas'],
       topup: 'Recarga: +10.000 cr · $10'
     },
     {
-      id: 'growth', label: 'Growth', priceM: 69, credits: 110000, popular: true,
-      gens: '~32 anuncios de 15 segundos por mes',
-      feats: ['Todo lo del plan Starter', 'Imágenes IA de producto y avatar', 'Resolución hasta 1080p', 'Soporte prioritario por email', '3× más créditos que Starter'],
-      topup: 'Recarga: +28.000 cr · $25 · mejor precio por crédito'
+      id: 'starter', label: 'Starter', priceM: 39, credits: 65000,
+      gens: '~10 anuncios de 60s por mes',
+      feats: ['Actores IA (4 voces)', 'Guiones generados con IA', 'Subtítulos automáticos', 'Resolución hasta 720p', 'Historial de campañas'],
+      topup: 'Recarga: +14.000 cr · $10'
     },
     {
-      id: 'scale', label: 'Scale', priceM: 149, credits: 300000,
-      gens: '~88 anuncios de 15 segundos por mes',
-      feats: ['Todo lo del plan Growth', 'Volumen sin interrupciones', 'Créditos 40% más baratos', 'Acceso anticipado a nuevas features', 'Account manager dedicado'],
-      topup: 'Recarga: +60.000 cr · $50 · precio más bajo por crédito'
+      id: 'growth', label: 'Growth', priceM: 89, credits: 185000, popular: true,
+      gens: '~30 anuncios de 60s (Seedance) · ~7 con Gemini Omni',
+      feats: ['Todo lo del plan Starter', 'Gemini Omni IA (modo talking)', 'Imágenes IA de producto y avatar', 'Resolución hasta 1080p', 'Soporte prioritario por email'],
+      topup: 'Recarga: +50.000 cr · $25 · mejor precio por crédito'
+    },
+    {
+      id: 'scale', label: 'Scale', priceM: 199, credits: 450000,
+      gens: '~70 anuncios de 60s (Seedance) · ~16 con Gemini Omni',
+      feats: ['Todo lo del plan Growth', 'Volumen sin interrupciones', 'Créditos 36% más baratos que Starter', 'Acceso anticipado a nuevas features', 'Account manager dedicado'],
+      topup: 'Recarga: +110.000 cr · $50 · precio más bajo por crédito'
     }
   ];
 
@@ -12535,9 +12542,10 @@ function confirmChangePlan(planId, event) {
 
 // ── WhatsApp plan contact modal ────────────────────────────────────────────────
 const PLAN_META = {
-  starter: { label: 'Starter', priceM: 29, priceY: Math.round(29*0.8), credits: 35000 },
-  growth:  { label: 'Growth',  priceM: 69, priceY: Math.round(69*0.8), credits: 110000 },
-  scale:   { label: 'Scale',   priceM: 149, priceY: Math.round(149*0.8), credits: 300000 }
+  early_access: { label: 'Acceso Anticipado', priceM: 19,  priceY: Math.round(19*0.8),  credits: 30000  },
+  starter:      { label: 'Starter',           priceM: 39,  priceY: Math.round(39*0.8),  credits: 65000  },
+  growth:       { label: 'Growth',            priceM: 89,  priceY: Math.round(89*0.8),  credits: 185000 },
+  scale:        { label: 'Scale',             priceM: 199, priceY: Math.round(199*0.8), credits: 450000 }
 };
 const FUTURIADS_WHATSAPP = '5493424323940';
 
@@ -14075,19 +14083,24 @@ function toggleCreditsPopover(e) {
   const currentPlan = (_currentUser && _currentUser.plan) || 'none';
   const allPlans = [
     {
-      key: 'starter', label: 'Starter', price: '$29/mes',
-      credits: '35.000 créditos/mes',
-      hint: '~10 anuncios de 15s · Recarga $10/+10k cr'
+      key: 'early_access', label: 'Acceso Anticipado', price: '$19/mes',
+      credits: '30.000 créditos/mes',
+      hint: '~5 anuncios de 60s · para probar · Recarga $10/+10k cr'
     },
     {
-      key: 'growth', label: 'Growth', price: '$69/mes', best: true,
-      credits: '110.000 créditos/mes',
-      hint: '~32 anuncios · 3× más créditos · Recarga $25/+28k cr'
+      key: 'starter', label: 'Starter', price: '$39/mes',
+      credits: '65.000 créditos/mes',
+      hint: '~10 anuncios de 60s · Recarga $10/+14k cr'
     },
     {
-      key: 'scale', label: 'Scale', price: '$149/mes',
-      credits: '300.000 créditos/mes',
-      hint: '~88 anuncios · Créditos 40% más baratos · Recarga $50/+60k cr'
+      key: 'growth', label: 'Growth', price: '$89/mes', best: true,
+      credits: '185.000 créditos/mes',
+      hint: '~30 anuncios · Omni disponible · Recarga $25/+50k cr'
+    },
+    {
+      key: 'scale', label: 'Scale', price: '$199/mes',
+      credits: '450.000 créditos/mes',
+      hint: '~70 anuncios · Omni disponible · Recarga $50/+110k cr'
     }
   ];
   const plansContainer = document.getElementById('creditsPopoverPlans');
