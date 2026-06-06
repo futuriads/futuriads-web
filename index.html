@@ -1543,19 +1543,73 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .l-pricing-period { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
 .l-pricing-hr { height: 1px; background: var(--border); margin-bottom: 20px; }
 .l-pricing-list {
-  list-style: none; display: flex; flex-direction: column; gap: 9px;
+  list-style: none; display: flex; flex-direction: column; gap: 11px;
   margin-bottom: 28px; flex: 1;
 }
 .l-pricing-list li {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 13px; color: var(--text2);
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13.5px; color: var(--text2); line-height: 1.45;
 }
 .l-pricing-list li::before {
-  content: ''; width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(255,255,255,0.4); flex-shrink: 0;
+  content: '✓';
+  font-size: 11px; font-weight: 800;
+  color: rgba(255,255,255,0.25);
+  flex-shrink: 0; margin-top: 2px;
+  width: 14px; text-align: center;
 }
-.l-pricing-list li.hi { color: var(--text); }
-.l-pricing-list li.hi::before { background: #4ade80; }
+.l-pricing-list li.hi { color: var(--text); font-weight: 500; }
+.l-pricing-list li.hi::before { color: #4ade80; }
+
+/* === Early Access card (tiempo limitado) === */
+.l-ea-wrap { max-width: 1020px; margin: 0 auto 28px; }
+.l-ea-badge-top {
+  text-align: center; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.6px; color: #fb923c; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.l-ea-badge-top::before, .l-ea-badge-top::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(251,146,60,0.25));
+}
+.l-ea-badge-top::after { background: linear-gradient(to left, transparent, rgba(251,146,60,0.25)); }
+.l-ea-card {
+  background: linear-gradient(135deg, rgba(251,146,60,0.06) 0%, rgba(234,88,12,0.1) 100%);
+  border: 1px solid rgba(251,146,60,0.3);
+  border-radius: var(--r-lg);
+  padding: 28px 32px;
+  display: flex; align-items: flex-start; gap: 28px;
+  box-shadow: 0 0 50px rgba(251,146,60,0.07);
+}
+.l-ea-info { flex: 1.2; min-width: 0; }
+.l-ea-name { font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.l-ea-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+.l-ea-list { flex: 1.5; margin-bottom: 0 !important; }
+.l-ea-list li::before { color: #fb923c !important; }
+.l-ea-list li.hi::before { color: #fb923c !important; }
+.l-ea-cta {
+  flex-shrink: 0; display: flex; flex-direction: column;
+  align-items: flex-end; gap: 5px;
+}
+.l-ea-price {
+  font-size: 42px; font-weight: 900; letter-spacing: -2px;
+  color: #fff; line-height: 1;
+}
+.l-ea-price span { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.45); letter-spacing: 0; }
+.l-ea-credits { font-size: 11.5px; color: rgba(255,255,255,0.3); }
+.l-ea-btn {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff; font-weight: 700; font-size: 14px;
+  border: none; border-radius: var(--r-pill);
+  padding: 12px 26px; cursor: pointer; margin-top: 10px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.l-ea-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.l-ea-btn:active { transform: scale(0.97); }
+@media (max-width: 768px) {
+  .l-ea-card { flex-direction: column; gap: 20px; }
+  .l-ea-cta { align-items: flex-start; }
+  .l-ea-price { font-size: 36px; }
+}
 .l-pricing-topup {
   font-size: 11.5px; color: rgba(255,255,255,0.28); margin-bottom: 20px; margin-top: -14px;
   padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 8px;
@@ -5675,6 +5729,29 @@ body, #app { background: #07050f; }
     <div class="l-section-label">Precios</div>
     <h2 class="l-section-title">Simple, <em>sin sorpresas</em></h2>
     <p class="l-section-sub" style="padding: 22px">Pagás solo lo que usás. Cancelás cuando querés.</p>
+    <!-- Early Access — TIEMPO LIMITADO (remover luego del lanzamiento) -->
+    <div class="l-ea-wrap">
+      <div class="l-ea-badge-top">🔥 &nbsp;SOLO POR TIEMPO LIMITADO — PRECIO DE LANZAMIENTO</div>
+      <div class="l-ea-card">
+        <div class="l-ea-info">
+          <div class="l-ea-name">Acceso Anticipado</div>
+          <div class="l-ea-desc">Probá la plataforma a precio especial de lanzamiento. Cuando se completen los cupos, este plan desaparece y el mínimo sube a Starter.</div>
+        </div>
+        <ul class="l-pricing-list l-ea-list">
+          <li>~5 anuncios de 60s por mes</li>
+          <li>Actores IA (4 voces)</li>
+          <li>Guiones generados con IA</li>
+          <li>Subtítulos automáticos</li>
+          <li>Resolución hasta 480p</li>
+        </ul>
+        <div class="l-ea-cta">
+          <div class="l-ea-price">$19<span>/mes</span></div>
+          <div class="l-ea-credits">30.000 créditos · recarga +10k por $10</div>
+          <button class="l-ea-btn" onclick="goToApp()">Empezar ahora →</button>
+        </div>
+      </div>
+    </div>
+
     <div class="l-pricing-grid">
 
       <!-- Starter -->
