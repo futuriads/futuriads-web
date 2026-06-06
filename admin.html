@@ -92,6 +92,19 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', system-u
 .plan-chip-n { font-size: 22px; font-weight: 700; color: var(--purple-light); line-height: 1; }
 .plan-chip-lbl { font-size: 10px; color: var(--sub); margin-top: 4px; text-transform: uppercase; letter-spacing: .04em; }
 
+/* ── User stats ── */
+.user-stats-row {
+  display: flex; align-items: center; gap: 20px;
+  background: rgba(139,92,246,.04); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.user-stats-total {
+  display: flex; flex-direction: column; align-items: center;
+  padding-right: 20px; border-right: 1px solid var(--border); min-width: 90px;
+}
+.user-stats-n { font-size: 30px; font-weight: 700; color: var(--purple-light); line-height: 1; }
+.user-stats-lbl { font-size: 10px; color: var(--sub); text-transform: uppercase; letter-spacing: .04em; margin-top: 4px; }
+
 /* ── Section header ── */
 .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .sec-title { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -285,6 +298,10 @@ tbody tr:hover td { background: rgba(139,92,246,.035); }
 
     <!-- Usuarios -->
     <div class="tab-pane" id="tab-users">
+      <div class="user-stats-row" id="userStatsRow">
+        <div class="user-stats-total"><div class="user-stats-n">—</div><div class="user-stats-lbl">Registrados</div></div>
+        <div class="plan-row" style="flex:1;" id="userStatsPlan"></div>
+      </div>
       <div class="sec-hdr">
         <div class="sec-title">Usuarios</div>
         <div style="display:flex;gap:8px;align-items:center;">
@@ -391,6 +408,7 @@ tbody tr:hover td { background: rgba(139,92,246,.035); }
 const BACKEND = 'https://futuriads-backend-production.up.railway.app';
 let _secret = '';
 let _reqFilter = 'pending';
+let _byPlan = {};
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 function doLogin() {
@@ -459,6 +477,8 @@ async function loadDashboard() {
 
   const active = Object.entries(data.byPlan || {}).filter(([k]) => k !== 'none').reduce((a,[,v]) => a+v, 0);
   document.getElementById('stat-active').textContent = active;
+  _byPlan = data.byPlan || {};
+  renderUserStats();
 
   if (data.pendingRequests > 0) {
     const chip = document.getElementById('pendingChip');
@@ -486,9 +506,12 @@ async function loadDashboard() {
   }).join('');
 
   // Plan dist
-  const labels = { none:'Sin plan', starter:'Starter', growth:'Growth', scale:'Scale' };
-  document.getElementById('planDist').innerHTML = Object.entries(data.byPlan || {}).map(([plan, cnt]) =>
-    `<div class="plan-chip"><div class="plan-chip-n">${cnt}</div><div class="plan-chip-lbl">${labels[plan]||plan}</div></div>`
+  const labels = { none:'Sin plan', early_access:'Acc. Anticipado', starter:'Starter', growth:'Growth', scale:'Scale' };
+  const planOrder = ['none','early_access','starter','growth','scale'];
+  const sortedPlan = planOrder.filter(p => data.byPlan?.[p] !== undefined)
+    .concat(Object.keys(data.byPlan||{}).filter(p => !planOrder.includes(p)));
+  document.getElementById('planDist').innerHTML = sortedPlan.map(plan =>
+    `<div class="plan-chip"><div class="plan-chip-n">${data.byPlan[plan]}</div><div class="plan-chip-lbl">${labels[plan]||plan}</div></div>`
   ).join('');
 
   // Recent payments
@@ -501,6 +524,24 @@ async function loadDashboard() {
         <td style="font-weight:600;color:var(--green);">$${fmt0(p.amount_usd)}</td>
         <td style="font-size:11px;color:var(--sub);">${fmtDate(p.created_at)}</td>
       </tr>`).join('');
+}
+
+// ── User stats (tab Usuarios) ─────────────────────────────────────────────────
+function renderUserStats() {
+  const labels = { none:'Sin plan', early_access:'Acc. Anticipado', starter:'Starter', growth:'Growth', scale:'Scale' };
+  const planOrder = ['none','early_access','starter','growth','scale'];
+  const total = Object.values(_byPlan).reduce((a, v) => a + v, 0);
+
+  document.querySelector('#userStatsRow .user-stats-n').textContent = total;
+
+  const sortedPlan = planOrder.filter(p => _byPlan[p] > 0)
+    .concat(Object.keys(_byPlan).filter(p => !planOrder.includes(p) && _byPlan[p] > 0));
+  document.getElementById('userStatsPlan').innerHTML = sortedPlan.map(plan =>
+    `<div class="plan-chip">
+       <div class="plan-chip-n">${_byPlan[plan]}</div>
+       <div class="plan-chip-lbl">${labels[plan] || plan}</div>
+     </div>`
+  ).join('');
 }
 
 // ── Requests ──────────────────────────────────────────────────────────────────
