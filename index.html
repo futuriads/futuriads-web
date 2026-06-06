@@ -1569,9 +1569,11 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 }
 .l-pricing-icon {
   width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
   background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.22);
+  color: #a78bfa;
 }
+.l-pricing-icon svg { width: 20px; height: 20px; }
 .l-pricing-icon-row .l-pricing-name { margin-bottom: 0; }
 
 /* Trust badges */
@@ -1582,8 +1584,9 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
 .l-trust-item { display: flex; align-items: center; gap: 12px; }
 .l-trust-icon {
   width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
   background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+  color: #a78bfa;
 }
 .l-trust-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
 .l-trust-sub { font-size: 11.5px; color: var(--text2); }
@@ -1600,12 +1603,19 @@ em, i, .l-hero-headline .hl-line2, .a-dash-greeting em {
   background: linear-gradient(to right, transparent, rgba(251,146,60,0.25));
 }
 .l-ea-badge-top::after { background: linear-gradient(to left, transparent, rgba(251,146,60,0.25)); }
+.l-ea-icon {
+  width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(251,146,60,0.14); border: 1px solid rgba(251,146,60,0.3);
+  color: #fb923c;
+}
+.l-ea-icon svg { width: 26px; height: 26px; }
 .l-ea-card {
   background: linear-gradient(135deg, rgba(251,146,60,0.06) 0%, rgba(234,88,12,0.1) 100%);
   border: 1px solid rgba(251,146,60,0.3);
   border-radius: var(--r-lg);
   padding: 28px 32px;
-  display: flex; align-items: flex-start; gap: 28px;
+  display: flex; align-items: center; gap: 28px;
   box-shadow: 0 0 50px rgba(251,146,60,0.07);
 }
 .l-ea-info { flex: 1.2; min-width: 0; }
@@ -5763,7 +5773,7 @@ body, #app { background: #07050f; }
     <div class="l-ea-wrap">
       <div class="l-ea-badge-top">🔥 &nbsp;SOLO POR TIEMPO LIMITADO — PRECIO DE LANZAMIENTO</div>
       <div class="l-ea-card">
-        <div class="l-ea-icon">⚡</div>
+        <div class="l-ea-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
         <div class="l-ea-info">
           <div class="l-ea-name">Acceso Anticipado</div>
           <div class="l-ea-desc">Probá la plataforma a precio especial de lanzamiento. Cuando se completen los cupos, este plan desaparece y el mínimo sube a Starter.</div>
@@ -5788,7 +5798,7 @@ body, #app { background: #07050f; }
       <!-- Starter -->
       <div class="l-pricing-card">
         <div class="l-pricing-icon-row">
-          <div class="l-pricing-icon">🚀</div>
+          <div class="l-pricing-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg></div>
           <div class="l-pricing-name">Starter</div>
         </div>
         <div class="l-pricing-price">$39<span>/mes</span></div>
@@ -5810,7 +5820,7 @@ body, #app { background: #07050f; }
       <div class="l-pricing-card featured">
         <div class="l-pricing-save">MEJOR VALOR</div>
         <div class="l-pricing-icon-row">
-          <div class="l-pricing-icon">📈</div>
+          <div class="l-pricing-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg></div>
           <div class="l-pricing-name">Growth</div>
         </div>
         <div class="l-pricing-price">$89<span>/mes</span></div>
@@ -5831,7 +5841,7 @@ body, #app { background: #07050f; }
       <!-- Scale -->
       <div class="l-pricing-card">
         <div class="l-pricing-icon-row">
-          <div class="l-pricing-icon">👑</div>
+          <div class="l-pricing-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg></div>
           <div class="l-pricing-name">Scale</div>
         </div>
         <div class="l-pricing-price">$199<span>/mes</span></div>
@@ -5854,21 +5864,21 @@ body, #app { background: #07050f; }
     <!-- Trust badges -->
     <div class="l-pricing-trust">
       <div class="l-trust-item">
-        <div class="l-trust-icon">🛡️</div>
+        <div class="l-trust-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></div>
         <div>
           <div class="l-trust-title">Sin permanencia</div>
           <div class="l-trust-sub">Cancelás cuando querás.</div>
         </div>
       </div>
       <div class="l-trust-item">
-        <div class="l-trust-icon">🔒</div>
+        <div class="l-trust-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <div>
           <div class="l-trust-title">Pago seguro</div>
           <div class="l-trust-sub">Tus datos siempre protegidos.</div>
         </div>
       </div>
       <div class="l-trust-item">
-        <div class="l-trust-icon">⚡</div>
+        <div class="l-trust-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
         <div>
           <div class="l-trust-title">Activa al instante</div>
           <div class="l-trust-sub">Acceso inmediato tras el pago.</div>
