@@ -129,6 +129,7 @@ tbody tr:hover td { background: rgba(139,92,246,.035); }
 .b-pending   { background: rgba(245,158,11,.1);  color: #f59e0b; }
 .b-confirmed { background: rgba(34,197,94,.1);   color: #22c55e; }
 .b-cancelled { background: rgba(239,68,68,.08);  color: #ef4444; }
+.b-early_access { background: rgba(251,146,60,.1);  color: #fb923c; }
 .b-starter   { background: rgba(99,102,241,.1);  color: #a5b4fc; }
 .b-growth    { background: rgba(139,92,246,.12); color: #c4b5fd; }
 .b-scale     { background: rgba(192,168,255,.08);color: #e9d5ff; }
@@ -367,9 +368,10 @@ tbody tr:hover td { background: rgba(139,92,246,.035); }
       <label>Nuevo plan</label>
       <select id="sp-plan">
         <option value="none">Sin plan</option>
-        <option value="starter">Starter — $29/mes · 35.000 cr</option>
-        <option value="growth">Growth — $69/mes · 110.000 cr</option>
-        <option value="scale">Scale — $149/mes · 300.000 cr</option>
+        <option value="early_access">Acceso Anticipado — $19/mes · 30.000 cr</option>
+        <option value="starter">Starter — $39/mes · 65.000 cr</option>
+        <option value="growth">Growth — $89/mes · 185.000 cr</option>
+        <option value="scale">Scale — $199/mes · 450.000 cr</option>
       </select>
     </div>
     <div class="modal-footer">
@@ -710,8 +712,8 @@ function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 function fmt0(n) { return Number(n||0).toFixed(0); }
 
 function planBadge(plan) {
-  const cls = { starter:'b-starter', growth:'b-growth', scale:'b-scale', none:'b-none' };
-  const lbl = { starter:'Starter', growth:'Growth', scale:'Scale', none:'Sin plan' };
+  const cls = { early_access:'b-early_access', starter:'b-starter', growth:'b-growth', scale:'b-scale', none:'b-none' };
+  const lbl = { early_access:'Acc. Anticipado', starter:'Starter', growth:'Growth', scale:'Scale', none:'Sin plan' };
   return `<span class="badge ${cls[plan]||'b-none'}">${lbl[plan]||plan}</span>`;
 }
 
