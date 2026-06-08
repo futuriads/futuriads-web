@@ -5652,78 +5652,79 @@ body, #app { background: #07050f; }
   justify-content: center !important;
   flex-direction: column !important;
   align-items: center !important;
-  margin-bottom: 28px !important;
+  margin-bottom: 32px !important;
 }
 .a-dash-greeting {
-  font-size: 48px !important;
+  font-size: 52px !important;
   font-weight: 800 !important;
-  letter-spacing: -1.5px !important;
-  line-height: 1.15 !important;
+  letter-spacing: -2px !important;
+  line-height: 1.1 !important;
+  color: #f0ecff !important;
 }
 .a-dash-greeting em {
-  background: linear-gradient(135deg, #e9d5ff 0%, #a855f7 100%) !important;
+  background: linear-gradient(125deg, #d8b4fe 0%, #a855f7 55%, #7c3aed 100%) !important;
   -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   font-style: italic !important;
 }
 .a-dash-sub {
-  font-size: 17px !important;
-  color: rgba(107,99,133,0.9) !important;
-  margin-top: 6px !important;
-}
-
-/* ── Metric cards: glassmorphism pronunciado, número con degradado ── */
-.a-metric {
-  background: rgba(11,7,24,0.58) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
-  border-radius: 14px !important;
-  padding: 22px 24px !important;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
-}
-.a-metric:hover {
-  border-color: rgba(147,51,234,0.30) !important;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.07) !important;
-  transform: scale(1.018) !important;
-}
-.a-metric-label {
-  font-size: 10.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.09em !important;
-  color: #3d3558 !important;
-  text-transform: uppercase !important;
-}
-.a-metric-icon {
-  background: transparent !important;
-  border-color: rgba(255,255,255,0.06) !important;
-  color: #4a4070 !important;
-}
-.a-metric-val {
-  font-size: 38px !important;
-  font-weight: 700 !important;
-  letter-spacing: -1.5px !important;
-  line-height: 1 !important;
-  background: linear-gradient(135deg, #f5f1ff 0%, #b8b0d0 100%) !important;
-  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-.a-metric-sub {
-  font-size: 12px !important;
-  color: #3d3558 !important;
+  font-size: 16px !important;
+  color: rgba(160,148,196,0.75) !important;
   margin-top: 8px !important;
 }
 
-/* ── Gen box: glass igual a las metric cards ── */
+/* ── Metric cards: borde violeta + glow sutil ── */
+.a-metric {
+  background: rgba(88,28,200,0.07) !important;
+  border: 1px solid rgba(147,51,234,0.22) !important;
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  padding: 22px 24px !important;
+  box-shadow: 0 0 0 1px rgba(147,51,234,0.05), 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.a-metric:hover {
+  border-color: rgba(147,51,234,0.42) !important;
+  box-shadow: 0 0 0 1px rgba(147,51,234,0.12), 0 12px 40px rgba(0,0,0,0.40), 0 0 30px rgba(147,51,234,0.12), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  transform: translateY(-2px) scale(1.012) !important;
+}
+.a-metric-label {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  color: rgba(147,51,234,0.6) !important;
+  text-transform: uppercase !important;
+}
+.a-metric-icon {
+  background: rgba(147,51,234,0.12) !important;
+  border-color: rgba(147,51,234,0.2) !important;
+  color: rgba(192,132,252,0.8) !important;
+}
+.a-metric-val {
+  font-size: 42px !important;
+  font-weight: 800 !important;
+  letter-spacing: -2px !important;
+  line-height: 1 !important;
+  color: #f0ecff !important;
+  -webkit-text-fill-color: unset !important;
+  background: none !important;
+}
+.a-metric-sub {
+  font-size: 12px !important;
+  color: rgba(147,100,200,0.55) !important;
+  margin-top: 8px !important;
+}
+
+/* ── Gen box: glass con borde violeta ── */
 .a-gen-box {
-  background: rgba(11,7,24,0.58) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  background: rgba(88,28,200,0.07) !important;
+  border: 1px solid rgba(147,51,234,0.22) !important;
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 0 0 1px rgba(147,51,234,0.05), 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06) !important;
 }
 .a-gen-toggle {
-  background: rgba(0,0,0,0.35) !important;
+  background: rgba(0,0,0,0.4) !important;
   border-radius: 9px !important;
   padding: 3px !important;
 }
@@ -5731,63 +5732,63 @@ body, #app { background: #07050f; }
   border-radius: 7px !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  color: #6b6385 !important;
-  padding: 7px 15px !important;
+  color: rgba(160,148,196,0.7) !important;
+  padding: 7px 16px !important;
 }
 .a-gen-tab.active {
   background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
   color: #fff !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 12px rgba(147,51,234,0.5) !important;
 }
 .a-gen-textarea {
-  background: rgba(0,0,0,0.30) !important;
-  border: 1px solid rgba(255,255,255,0.07) !important;
+  background: rgba(0,0,0,0.35) !important;
+  border: 1px solid rgba(147,51,234,0.15) !important;
   border-radius: 10px !important;
-  color: #ddd8f0 !important;
+  color: #e8e0ff !important;
 }
 .a-gen-textarea:focus {
   border-color: rgba(147,51,234,0.5) !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 3px rgba(147,51,234,0.1) !important;
 }
-/* Botón Generar: degradado violeta + efecto hover */
+/* Botón Generar: degradado violeta con glow */
 .a-gen-btn {
-  background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%) !important;
   color: #fff !important;
   border-radius: 9px !important;
   font-size: 13.5px !important;
   font-weight: 700 !important;
-  padding: 9px 22px !important;
-  border: 1px solid rgba(192,132,252,0.3) !important;
-  box-shadow: 0 4px 24px rgba(147,51,234,0.45) !important;
+  padding: 10px 24px !important;
+  border: 1px solid rgba(192,132,252,0.35) !important;
+  box-shadow: 0 4px 20px rgba(147,51,234,0.5), inset 0 1px 0 rgba(255,255,255,0.15) !important;
   transition: box-shadow 0.15s, transform 0.15s !important;
 }
 .a-gen-btn:hover:not(:disabled) {
   opacity: 1 !important;
-  box-shadow: 0 6px 32px rgba(147,51,234,0.62) !important;
+  box-shadow: 0 6px 32px rgba(147,51,234,0.68), inset 0 1px 0 rgba(255,255,255,0.2) !important;
   transform: translateY(-1px) !important;
 }
-.a-gen-btn:disabled { opacity: 0.55 !important; transform: none !important; }
+.a-gen-btn:disabled { opacity: 0.5 !important; transform: none !important; }
 
-/* ── Cards del bottom (Tips + Recientes): glassmorphism ── */
+/* ── Cards del bottom (Tips + Recientes) ── */
 .dash-tips-card, .dash-recent-card {
-  background: rgba(11,7,24,0.58) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  background: rgba(88,28,200,0.07) !important;
+  border: 1px solid rgba(147,51,234,0.22) !important;
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 0 0 1px rgba(147,51,234,0.05), 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06) !important;
 }
 .dash-tips-header, .dash-recent-header {
-  border-bottom-color: rgba(255,255,255,0.06) !important;
+  border-bottom-color: rgba(147,51,234,0.15) !important;
 }
-.dash-tips-title { color: #e0daf5 !important; }
+.dash-tips-title { color: #e8e0ff !important; font-weight: 700 !important; }
 .dash-tip-title  { color: #c4b5fd !important; }
-.dash-tip-body   { color: rgba(107,99,133,0.85) !important; }
+.dash-tip-body   { color: rgba(160,148,196,0.8) !important; }
 
-/* ── "Ver inspiración" botón: estilo sutil ── */
+/* ── "Ver inspiración" botón: sutil ── */
 .dash-inspo-btn {
   background: transparent !important;
   border: none !important;
-  color: #8b80a8 !important;
+  color: rgba(147,100,200,0.6) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   cursor: pointer !important;
