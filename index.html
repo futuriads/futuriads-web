@@ -5921,7 +5921,7 @@ body, #app { background: #07050f; }
         <div class="l-ea-cta">
           <div class="l-ea-price">$19<span>/mes</span></div>
           <div class="l-ea-credits">30.000 créditos · recarga +10k por $10</div>
-          <button class="l-ea-btn" onclick="goToApp()">Empezar ahora →</button>
+          <button class="l-ea-btn" onclick="selectPlanFromLanding('early_access')">Empezar ahora →</button>
         </div>
       </div>
     </div>
@@ -5947,7 +5947,7 @@ body, #app { background: #07050f; }
           <li>Historial de campañas</li>
         </ul>
         <div class="l-pricing-topup">Recarga: +14.000 créditos por $10</div>
-        <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Starter</button>
+        <button class="btn-outline" style="width:100%;justify-content:center;" onclick="selectPlanFromLanding('starter')">Empezar con Starter</button>
       </div>
 
       <!-- Growth — MEJOR VALOR -->
@@ -5972,7 +5972,7 @@ body, #app { background: #07050f; }
           <li>Soporte prioritario por email</li>
         </ul>
         <div class="l-pricing-topup">Recarga: +50.000 créditos por $25 · mejor precio/cr</div>
-        <button class="btn-w" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Growth</button>
+        <button class="btn-w" style="width:100%;justify-content:center;" onclick="selectPlanFromLanding('growth')">Empezar con Growth</button>
       </div>
 
       <!-- Scale -->
@@ -5994,7 +5994,7 @@ body, #app { background: #07050f; }
           <li>Account manager dedicado</li>
         </ul>
         <div class="l-pricing-topup">Recarga: +110.000 créditos por $50 · precio más bajo por cr</div>
-        <button class="btn-outline" style="width:100%;justify-content:center;" onclick="goToApp()">Empezar con Scale</button>
+        <button class="btn-outline" style="width:100%;justify-content:center;" onclick="selectPlanFromLanding('scale')">Empezar con Scale</button>
       </div>
 
     </div>
@@ -8754,7 +8754,16 @@ function goToApp(){
       setTimeout(updateDashCreditPreview, 500);
 
       // Cargar el perfil del usuario logueado (con retry por si falla la primera vez)
-      loadProfile().catch(err => {
+      loadProfile().then(() => {
+        // Si el usuario llegó desde un botón de plan en la landing, abrir el checkout
+        try {
+          const pendingPlan = localStorage.getItem('futuriads_pendingPlan');
+          if (pendingPlan && PLAN_PRICE_IDS[pendingPlan]) {
+            localStorage.removeItem('futuriads_pendingPlan');
+            setTimeout(() => confirmChangePlan(pendingPlan), 900);
+          }
+        } catch(e) {}
+      }).catch(err => {
         console.error('[goToApp] loadProfile falló, reintentando en 1s:', err);
         setTimeout(() => loadProfile(), 1000);
       });
@@ -12837,11 +12846,26 @@ function confirmChangePlan(planId, event) {
   if (planId === ((_currentUser && _currentUser.plan) || 'none')) {
     showToast('Ya tenés este plan activo', 'info'); return;
   }
-  // Abrir checkout de Paddle
-  openPaddleCheckout(PLAN_PRICE_IDS[planId]);
+  // Abrir checkout de Paddle (o WhatsApp si PADDLE_ACTIVE = false)
+  openPaddleCheckout(PLAN_PRICE_IDS[planId], planId);
+}
+
+// Llamado desde los botones de precios en la landing
+function selectPlanFromLanding(planId) {
+  if (_currentUser && _currentUser.userId) {
+    // Ya está logueado → ir directo al checkout
+    confirmChangePlan(planId);
+  } else {
+    // Guardar plan seleccionado y abrir modal de registro
+    try { localStorage.setItem('futuriads_pendingPlan', planId); } catch(e) {}
+    openAuthModal('signup');
+  }
 }
 
 // ── Paddle checkout ────────────────────────────────────────────────────────────
+// ⚡ Cambiar a true cuando Paddle apruebe la cuenta
+const PADDLE_ACTIVE = false;
+
 const PLAN_PRICE_IDS = {
   early_access: 'pri_01ktm0rvhvxj5saf8v7ckp9ea2',
   starter:      'pri_01ktm1092nc2ye1q4yjhhhdb3f',
@@ -12854,6 +12878,13 @@ const TOPUP_PRICE_IDS = {
   growth:       'pri_01ktm1643dy7q4vgs6k84jhtp4',
   scale:        'pri_01ktm16vcdx2cjmcn53zxpb9ts',
 };
+const PLAN_META = {
+  early_access: { label: 'Acceso Anticipado', price: 19  },
+  starter:      { label: 'Starter',           price: 39  },
+  growth:       { label: 'Growth',            price: 89  },
+  scale:        { label: 'Scale',             price: 199 },
+};
+const FUTURIADS_WHATSAPP = '5493424323940';
 
 // Inicializar Paddle con el client-side token
 Paddle.Initialize({
@@ -12866,7 +12897,18 @@ Paddle.Initialize({
   }
 });
 
-function openPaddleCheckout(priceId) {
+function openPaddleCheckout(priceId, planId) {
+  if (!PADDLE_ACTIVE) {
+    // Fallback WhatsApp mientras Paddle está pendiente de aprobación
+    const p = PLAN_META[planId] || {};
+    const userEmail = (_currentUser && _currentUser.email) || '';
+    const msg = encodeURIComponent(
+      `Hola! Quiero suscribirme al plan ${p.label || planId} de Futuriads ($${p.price || ''}/mes).` +
+      (userEmail ? ` Mi email es: ${userEmail}` : '')
+    );
+    window.open(`https://wa.me/${FUTURIADS_WHATSAPP}?text=${msg}`, '_blank');
+    return;
+  }
   const userId = (_currentUser && _currentUser.userId) || '';
   const email  = (_currentUser && _currentUser.email)  || '';
   if (!userId) { showToast('Iniciá sesión primero', 'error'); return; }
@@ -12879,7 +12921,7 @@ function openPaddleCheckout(priceId) {
   Paddle.Checkout.open(opts);
 }
 
-// Mantener para compatibilidad (modal viejo no se usa más, pero cierra si quedó abierto)
+// Mantener para compatibilidad
 function closePlanContactModal(e) {
   const el = document.getElementById('planContactModal');
   if (el) el.classList.remove('open');
@@ -14496,11 +14538,23 @@ function handleTopupCheckout() {
   closeModal();
   const userPlan = (_currentUser && _currentUser.plan) || 'none';
   const priceId = TOPUP_PRICE_IDS[userPlan];
-  if (!priceId) {
+  const pack = TOPUP_PACKS_BY_PLAN[userPlan];
+  if (!priceId || !pack) {
     showToast('Necesitás un plan activo para comprar créditos', 'info');
     return;
   }
-  openPaddleCheckout(priceId);
+  if (!PADDLE_ACTIVE) {
+    // Fallback WhatsApp
+    const userEmail = (_currentUser && _currentUser.email) || '';
+    const planLabel = (_currentUser && _currentUser.plan_label) || userPlan;
+    const msg = encodeURIComponent(
+      `Hola! Quiero recargar créditos en Futuriads. Plan: ${planLabel}. Pack: +${pack.credits.toLocaleString('es-AR')} créditos por $${pack.price}.` +
+      (userEmail ? ` Mi email es: ${userEmail}` : '')
+    );
+    window.open(`https://wa.me/${FUTURIADS_WHATSAPP}?text=${msg}`, '_blank');
+    return;
+  }
+  openPaddleCheckout(priceId, userPlan);
 }
 
 document.getElementById('creditsModal').addEventListener('click',function(e){
@@ -17128,8 +17182,16 @@ async function submitSignup() {
       document.getElementById('authModal').classList.remove('open');
       goToApp();
     } else {
-      document.getElementById('authModal').classList.remove('open');
-      showToast('Cuenta creada. Revisá tu email para confirmar antes de iniciar sesión.', 'info');
+      // Email de verificación enviado — mostrar mensaje prominente sin cerrar el modal
+      btn.style.display = 'none';
+      errEl.style.cssText = 'display:block;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);border-radius:10px;padding:16px;color:#c4b5fd;text-align:center;margin-top:8px;';
+      errEl.innerHTML = `<div style="font-size:20px;margin-bottom:8px;">📧</div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:6px;">¡Cuenta creada!</div>
+        <div style="font-size:13px;line-height:1.6;color:#b0b0be;">
+          Te enviamos un email de confirmación a <strong style="color:#e0d4ff;">${email}</strong>.<br>
+          <strong style="color:#e0d4ff;">Revisá también la carpeta de spam</strong> o correo no deseado — a veces llega ahí.<br><br>
+          Una vez confirmado, podés iniciar sesión.
+        </div>`;
     }
   } catch(e) {
     errEl.textContent = 'Error de conexión. Intentá de nuevo.'; errEl.style.display = 'block';
