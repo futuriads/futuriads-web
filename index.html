@@ -5611,6 +5611,7 @@ body, #app { background: #07050f; }
   .shimmer-btn::before, .hero-pulse-dot, .border-beam { animation: none; }
 }
 </style>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
 <body>
 
@@ -12836,54 +12837,52 @@ function confirmChangePlan(planId, event) {
   if (planId === ((_currentUser && _currentUser.plan) || 'none')) {
     showToast('Ya tenés este plan activo', 'info'); return;
   }
-  // Mostrar modal de contacto WhatsApp
-  openPlanContactModal(planId);
+  // Abrir checkout de Paddle
+  openPaddleCheckout(PLAN_PRICE_IDS[planId]);
 }
 
-// ── WhatsApp plan contact modal ────────────────────────────────────────────────
-const PLAN_META = {
-  early_access: { label: 'Acceso Anticipado', priceM: 19,  priceY: Math.round(19*0.8),  credits: 30000  },
-  starter:      { label: 'Starter',           priceM: 39,  priceY: Math.round(39*0.8),  credits: 65000  },
-  growth:       { label: 'Growth',            priceM: 89,  priceY: Math.round(89*0.8),  credits: 185000 },
-  scale:        { label: 'Scale',             priceM: 199, priceY: Math.round(199*0.8), credits: 450000 }
+// ── Paddle checkout ────────────────────────────────────────────────────────────
+const PLAN_PRICE_IDS = {
+  early_access: 'pri_01ktm0rvhvxj5saf8v7ckp9ea2',
+  starter:      'pri_01ktm1092nc2ye1q4yjhhhdb3f',
+  growth:       'pri_01ktm11cer4vpn93mqh3c2nt01',
+  scale:        'pri_01ktm12aj7w1621qdrrt594ba9',
 };
-const FUTURIADS_WHATSAPP = '5493424323940';
+const TOPUP_PRICE_IDS = {
+  early_access: 'pri_01ktm145g0zfj3wdsb9v8axpm2',
+  starter:      'pri_01ktm156x4tgfhj2mwyyrmcebr',
+  growth:       'pri_01ktm1643dy7q4vgs6k84jhtp4',
+  scale:        'pri_01ktm16vcdx2cjmcn53zxpb9ts',
+};
 
-function openPlanContactModal(planId) {
-  const isYearly = _plnBillingMode === 'yearly';
-  const p = PLAN_META[planId];
-  if (!p) return;
-  const price = isYearly ? p.priceY : p.priceM;
-  const billing = isYearly ? 'anual' : 'mensual';
-  const userEmail = (_currentUser && _currentUser.email) || '';
+// Inicializar Paddle con el client-side token
+Paddle.Initialize({
+  token: 'live_195611754b2c7f594470bdd6b37',
+  eventCallback: function(data) {
+    if (data.name === 'checkout.completed') {
+      showToast('¡Pago exitoso! Tu plan se activará en unos segundos.', 'success');
+      setTimeout(() => loadProfile().catch(() => {}), 4000);
+    }
+  }
+});
 
-  // Log the request silently (fire and forget)
-  apiFetch(BACKEND_URL + '/api/payment-request', {
-    method: 'POST',
-    body: JSON.stringify({ plan: planId, billingMode: isYearly ? 'yearly' : 'monthly' })
-  }).catch(() => {});
-
-  // Build WhatsApp message
-  const msg = encodeURIComponent(
-    `Hola! Quiero suscribirme al plan ${p.label} de Futuriads ($${price}/mes, facturación ${billing}).` +
-    (userEmail ? ` Mi email es: ${userEmail}` : '')
-  );
-  const waUrl = `https://wa.me/${FUTURIADS_WHATSAPP}?text=${msg}`;
-
-  // Populate modal
-  const el = document.getElementById('planContactModal');
-  if (!el) return;
-  el.querySelector('#pcm-plan-name').textContent = p.label;
-  el.querySelector('#pcm-plan-price').textContent = `$${price}/mes`;
-  el.querySelector('#pcm-plan-credits').textContent = `${p.credits.toLocaleString('es-AR')} créditos`;
-  el.querySelector('#pcm-plan-billing').textContent = isYearly ? 'Facturación anual' : 'Facturación mensual';
-  el.querySelector('#pcm-wa-btn').href = waUrl;
-  el.classList.add('open');
+function openPaddleCheckout(priceId) {
+  const userId = (_currentUser && _currentUser.userId) || '';
+  const email  = (_currentUser && _currentUser.email)  || '';
+  if (!userId) { showToast('Iniciá sesión primero', 'error'); return; }
+  if (!priceId) { showToast('Opción no disponible', 'error'); return; }
+  const opts = {
+    items: [{ priceId: priceId, quantity: 1 }],
+    customData: { user_id: userId }
+  };
+  if (email) opts.customer = { email: email };
+  Paddle.Checkout.open(opts);
 }
 
+// Mantener para compatibilidad (modal viejo no se usa más, pero cierra si quedó abierto)
 function closePlanContactModal(e) {
-  if (e && e.target !== document.getElementById('planContactModal')) return;
-  document.getElementById('planContactModal').classList.remove('open');
+  const el = document.getElementById('planContactModal');
+  if (el) el.classList.remove('open');
 }
 
 /* --- Payment modals --- */
@@ -14454,45 +14453,39 @@ document.addEventListener('click', function() {
   if (popover) popover.classList.remove('open');
 });
 
-/* ── Topup packs ─────────────────────────────── */
-const TOPUP_PACKS = [
-  { id: 's',  label: 'Pack S',  credits: 10000,  price: 10,  save: null,  best: false },
-  { id: 'm',  label: 'Pack M',  credits: 30000,  price: 25,  save: 17,    best: false },
-  { id: 'l',  label: 'Pack L',  credits: 70000,  price: 50,  save: 29,    best: true  },
-  { id: 'xl', label: 'Pack XL', credits: 160000, price: 99,  save: 38,    best: false },
-];
-let _selectedTopupPack = 'l';
+/* ── Topup packs — plan-específicos ──────────────────────────────────── */
+const TOPUP_PACKS_BY_PLAN = {
+  early_access: { credits: 10000,  price: 10 },
+  starter:      { credits: 14000,  price: 10 },
+  growth:       { credits: 50000,  price: 25 },
+  scale:        { credits: 110000, price: 50 },
+};
 
 function renderTopupPacks() {
   const grid = document.getElementById('topupPacksGrid');
   if (!grid) return;
-  grid.innerHTML = TOPUP_PACKS.map(p => `
-    <div class="topup-pack${_selectedTopupPack === p.id ? ' selected' : ''}${p.best ? ' best-val' : ''}"
-         onclick="selectTopupPack('${p.id}')">
-      <div class="topup-pack-label">${p.label}${p.best ? ' · Mejor valor' : ''}</div>
-      <div class="topup-pack-credits">${p.credits.toLocaleString('es-AR')} cr</div>
-      <div class="topup-pack-price">$${p.price}</div>
-      ${p.save ? `<span class="topup-pack-save">ahorrás ${p.save}%</span>` : ''}
-    </div>`).join('');
-  _updateTopupBtn();
-}
-
-function selectTopupPack(id) {
-  _selectedTopupPack = id;
-  document.querySelectorAll('.topup-pack').forEach((el, i) =>
-    el.classList.toggle('selected', TOPUP_PACKS[i].id === id)
-  );
-  _updateTopupBtn();
-}
-
-function _updateTopupBtn() {
-  const pack = TOPUP_PACKS.find(p => p.id === _selectedTopupPack);
+  const userPlan = (_currentUser && _currentUser.plan) || 'none';
+  const pack = TOPUP_PACKS_BY_PLAN[userPlan];
+  if (!pack) {
+    grid.innerHTML = `<div style="text-align:center;padding:20px;color:rgba(192,168,255,0.5);font-size:13px;">Necesitás un plan activo para comprar créditos.</div>`;
+    const btn = document.getElementById('topupContinueBtn');
+    if (btn) btn.disabled = true;
+    return;
+  }
+  grid.innerHTML = `
+    <div class="topup-pack selected best-val">
+      <div class="topup-pack-label">Recarga de créditos</div>
+      <div class="topup-pack-credits">+${pack.credits.toLocaleString('es-AR')} cr</div>
+      <div class="topup-pack-price">$${pack.price}</div>
+    </div>`;
   const btn = document.getElementById('topupContinueBtn');
-  if (btn && pack) btn.textContent = `Recargar ${pack.credits.toLocaleString('es-AR')} créditos — $${pack.price}`;
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = `Recargar ${pack.credits.toLocaleString('es-AR')} créditos — $${pack.price}`;
+  }
 }
 
 function openCreditsModal() {
-  _selectedTopupPack = 'l';
   renderTopupPacks();
   document.getElementById('creditsModal').classList.add('open');
 }
@@ -14500,10 +14493,14 @@ function openCreditsModal() {
 function closeModal(){ document.getElementById('creditsModal').classList.remove('open'); }
 
 function handleTopupCheckout() {
-  const pack = TOPUP_PACKS.find(p => p.id === _selectedTopupPack);
   closeModal();
-  // TODO: integrar Paddle checkout con pack.id, pack.credits, pack.price
-  showToast(`Pack ${pack ? pack.label : ''} seleccionado — Sistema de pagos próximamente`, 'info');
+  const userPlan = (_currentUser && _currentUser.plan) || 'none';
+  const priceId = TOPUP_PRICE_IDS[userPlan];
+  if (!priceId) {
+    showToast('Necesitás un plan activo para comprar créditos', 'info');
+    return;
+  }
+  openPaddleCheckout(priceId);
 }
 
 document.getElementById('creditsModal').addEventListener('click',function(e){
