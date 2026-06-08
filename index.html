@@ -5641,6 +5641,159 @@ body, #app { background: #07050f; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .shimmer-btn::before, .hero-pulse-dot, .border-beam { animation: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   REDESIGN v6 — Dashboard visual upgrade
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Greeting: más grande, centrado, nombre en degradado ── */
+.a-dash-header {
+  text-align: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin-bottom: 28px !important;
+}
+.a-dash-greeting {
+  font-size: 48px !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.5px !important;
+  line-height: 1.15 !important;
+}
+.a-dash-greeting em {
+  background: linear-gradient(135deg, #e9d5ff 0%, #a855f7 100%) !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-style: italic !important;
+}
+.a-dash-sub {
+  font-size: 17px !important;
+  color: rgba(107,99,133,0.9) !important;
+  margin-top: 6px !important;
+}
+
+/* ── Metric cards: glassmorphism pronunciado, número con degradado ── */
+.a-metric {
+  background: rgba(11,7,24,0.58) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
+  border-radius: 14px !important;
+  padding: 22px 24px !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.a-metric:hover {
+  border-color: rgba(147,51,234,0.30) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+  transform: scale(1.018) !important;
+}
+.a-metric-label {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.09em !important;
+  color: #3d3558 !important;
+  text-transform: uppercase !important;
+}
+.a-metric-icon {
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #4a4070 !important;
+}
+.a-metric-val {
+  font-size: 38px !important;
+  font-weight: 700 !important;
+  letter-spacing: -1.5px !important;
+  line-height: 1 !important;
+  background: linear-gradient(135deg, #f5f1ff 0%, #b8b0d0 100%) !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+.a-metric-sub {
+  font-size: 12px !important;
+  color: #3d3558 !important;
+  margin-top: 8px !important;
+}
+
+/* ── Gen box: glass igual a las metric cards ── */
+.a-gen-box {
+  background: rgba(11,7,24,0.58) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+.a-gen-toggle {
+  background: rgba(0,0,0,0.35) !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
+}
+.a-gen-tab {
+  border-radius: 7px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #6b6385 !important;
+  padding: 7px 15px !important;
+}
+.a-gen-tab.active {
+  background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+.a-gen-textarea {
+  background: rgba(0,0,0,0.30) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 10px !important;
+  color: #ddd8f0 !important;
+}
+.a-gen-textarea:focus {
+  border-color: rgba(147,51,234,0.5) !important;
+  box-shadow: none !important;
+}
+/* Botón Generar: degradado violeta + efecto hover */
+.a-gen-btn {
+  background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+  color: #fff !important;
+  border-radius: 9px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  padding: 9px 22px !important;
+  border: 1px solid rgba(192,132,252,0.3) !important;
+  box-shadow: 0 4px 24px rgba(147,51,234,0.45) !important;
+  transition: box-shadow 0.15s, transform 0.15s !important;
+}
+.a-gen-btn:hover:not(:disabled) {
+  opacity: 1 !important;
+  box-shadow: 0 6px 32px rgba(147,51,234,0.62) !important;
+  transform: translateY(-1px) !important;
+}
+.a-gen-btn:disabled { opacity: 0.55 !important; transform: none !important; }
+
+/* ── Cards del bottom (Tips + Recientes): glassmorphism ── */
+.dash-tips-card, .dash-recent-card {
+  background: rgba(11,7,24,0.58) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+.dash-tips-header, .dash-recent-header {
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+.dash-tips-title { color: #e0daf5 !important; }
+.dash-tip-title  { color: #c4b5fd !important; }
+.dash-tip-body   { color: rgba(107,99,133,0.85) !important; }
+
+/* ── "Ver inspiración" botón: estilo sutil ── */
+.dash-inspo-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #8b80a8 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: color 0.14s !important;
+}
+.dash-inspo-btn:hover { color: #c084fc !important; }
 </style>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
