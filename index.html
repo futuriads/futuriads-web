@@ -12898,20 +12898,26 @@ Paddle.Initialize({
 });
 
 function openPaddleCheckout(priceId, planId) {
+  // Siempre requerir cuenta antes de cualquier pago
+  const userId = (_currentUser && _currentUser.userId) || '';
+  const email  = (_currentUser && _currentUser.email)  || '';
+  if (!userId) {
+    // Sin sesión: guardar plan pendiente y pedir que se registre primero
+    try { localStorage.setItem('futuriads_pendingPlan', planId); } catch(e) {}
+    openAuthModal('signup');
+    return;
+  }
+
   if (!PADDLE_ACTIVE) {
-    // Fallback WhatsApp mientras Paddle está pendiente de aprobación
+    // Fallback WhatsApp — el email siempre está presente porque ya está logueado
     const p = PLAN_META[planId] || {};
-    const userEmail = (_currentUser && _currentUser.email) || '';
     const msg = encodeURIComponent(
-      `Hola! Quiero suscribirme al plan ${p.label || planId} de Futuriads ($${p.price || ''}/mes).` +
-      (userEmail ? ` Mi email es: ${userEmail}` : '')
+      `Hola! Quiero suscribirme al plan ${p.label || planId} de Futuriads ($${p.price || ''}/mes). Mi email es: ${email}`
     );
     window.open(`https://wa.me/${FUTURIADS_WHATSAPP}?text=${msg}`, '_blank');
     return;
   }
-  const userId = (_currentUser && _currentUser.userId) || '';
-  const email  = (_currentUser && _currentUser.email)  || '';
-  if (!userId) { showToast('Iniciá sesión primero', 'error'); return; }
+
   if (!priceId) { showToast('Opción no disponible', 'error'); return; }
   const opts = {
     items: [{ priceId: priceId, quantity: 1 }],
