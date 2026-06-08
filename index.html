@@ -3079,6 +3079,37 @@ body, #app { background: #07050f; }
 .dash-result-btn-new:hover { color: rgba(255,255,255,0.65); border-color: rgba(255,255,255,0.2); }
 /* Barra de progreso "en espera" — pulsa suavemente */
 @keyframes dashBarPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+/* ── Panel 3 como modal overlay (resultado de generación) ── */
+@keyframes backdropIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes modalCardIn { from { opacity:0; transform:scale(0.88) } to { opacity:1; transform:scale(1) } }
+#dash-panel-3 {
+  position: fixed !important; inset: 0 !important; z-index: 900;
+  align-items: center !important; justify-content: center !important;
+  cursor: pointer;
+}
+#dash-panel-3.active {
+  background: rgba(0,0,0,0.65) !important;
+  backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important;
+  animation: backdropIn 0.28s ease forwards !important;
+}
+#dash-panel-3 .dash-result-wrap {
+  cursor: default;
+  background: rgba(11,7,24,0.90);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px;
+  padding: 18px;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 14px !important;
+  max-width: 90vw; max-height: 90vh;
+  overflow-y: auto;
+  animation: modalCardIn 0.42s cubic-bezier(0.34,1.20,0.64,1) forwards;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(147,51,234,0.07);
+}
+#dash-panel-3 .dash-result-media { width: auto !important; border-radius: 10px; }
+#dash-panel-3 .dash-result-side  { align-items: center; min-width: 0; width: 100%; overflow: visible; }
+#dash-panel-3 .dash-result-btns  { flex-direction: row !important; justify-content: center; flex-wrap: wrap; padding-top: 0; margin-top: 4px; }
 .dash-prog-fill.waiting { animation: dashBarPulse 2s ease-in-out infinite; }
 
 /* Generating panel */
@@ -6415,7 +6446,7 @@ body, #app { background: #07050f; }
       </div>
 
       <div id="dashCreditPreview" style="font-size:12px;color:rgba(167,139,250,0.7);margin-bottom:6px;min-height:16px;text-align:right;"></div>
-      <button class="a-gen-btn" onclick="startFromDashboard()">Empezar</button>
+      <button class="a-gen-btn" onclick="startFromDashboard()">Generar</button>
     </div>
   </div><!-- /dash-panel-0 -->
 
@@ -6446,9 +6477,9 @@ body, #app { background: #07050f; }
     </div>
   </div><!-- /dash-panel-2 -->
 
-  <!-- PANEL 3: Resultado inline -->
-  <div id="dash-panel-3" class="dash-gen-panel">
-    <div class="dash-result-wrap">
+  <!-- PANEL 3: Resultado como modal overlay -->
+  <div id="dash-panel-3" class="dash-gen-panel" onclick="if(event.target===this)showDashPanel(0)">
+    <div class="dash-result-wrap" onclick="event.stopPropagation()">
       <!-- Media: video o imagen se inserta dinámicamente -->
       <div class="dash-result-media" id="dashResultMedia"></div>
       <!-- Info -->
@@ -15405,16 +15436,25 @@ function showDashResultPanel(row) {
   var specsEl  = document.getElementById('dashResultSpecs');
   var dlBtn    = document.getElementById('dashResultDlBtn');
 
-  // ── Tamaño del media según aspect ratio ─────────────────────────
+  // ── Tamaño del media en modal: proporcional al viewport ──────────
   if (mediaEl) {
     var ratioNum = {
       '9:16': 9/16, '16:9': 16/9, '1:1': 1,
       '4:5': 4/5, '3:4': 3/4, '2:3': 2/3, 'auto': 1
     }[row.aspect_ratio] || 9/16;
 
-    // Altura base: portrait más alto, landscape más bajo pero suficientemente grande
-    var fixedH = ratioNum < 1 ? 280 : 200;
-    var calcW  = Math.round(fixedH * ratioNum);
+    var vph = window.innerHeight, vpw = window.innerWidth;
+    var fixedH, calcW;
+    if (ratioNum < 1) {        // portrait (9:16, 3:4, etc.)
+      fixedH = Math.round(Math.min(vph * 0.65, 600));
+      calcW  = Math.round(fixedH * ratioNum);
+    } else if (ratioNum > 1) { // landscape (16:9)
+      calcW  = Math.round(Math.min(vpw * 0.68, 860));
+      fixedH = Math.round(calcW / ratioNum);
+    } else {                   // square (1:1)
+      var s  = Math.round(Math.min(vph * 0.55, vpw * 0.55, 560));
+      fixedH = calcW = s;
+    }
 
     mediaEl.style.width  = calcW + 'px';
     mediaEl.style.height = fixedH + 'px';
