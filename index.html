@@ -6098,6 +6098,7 @@ body, #app { background: #07050f; }
         </div>
         <ul class="l-pricing-list l-ea-list">
           <li>~17 anuncios de 15s · ~5 de 60s por mes</li>
+          <li>~18 clips de 15s en Seedance 480p (solo video, sin extras)</li>
           <li>Actores IA (4 voces)</li>
           <li>Guiones generados con IA</li>
           <li>Subtítulos automáticos</li>
@@ -6125,6 +6126,7 @@ body, #app { background: #07050f; }
         <ul class="l-pricing-list">
           <li class="hi">~37 anuncios de 15s por mes</li>
           <li class="hi">~10 anuncios de 60s por mes</li>
+          <li>~40 clips de 15s en Seedance 480p (solo video, sin extras)</li>
           <li>Actores IA (4 voces)</li>
           <li>Guiones generados con IA</li>
           <li>Subtítulos automáticos</li>
@@ -6145,18 +6147,19 @@ body, #app { background: #07050f; }
           <div class="l-pricing-name">Growth</div>
         </div>
         <div class="l-pricing-price">$89<span>/mes</span></div>
-        <div class="l-pricing-period">Facturado mensualmente · 185.000 créditos</div>
+        <div class="l-pricing-period">Facturado mensualmente · 140.000 créditos</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li class="hi">~107 anuncios de 15s por mes</li>
-          <li class="hi">~30 anuncios de 60s por mes</li>
-          <li class="hi">Gemini Omni disponible (~7 anuncios/mes)</li>
+          <li class="hi">~82 anuncios de 15s por mes</li>
+          <li class="hi">~23 anuncios de 60s por mes</li>
+          <li class="hi">Gemini Omni disponible (~6 anuncios/mes)</li>
+          <li class="hi">~87 clips de 15s en Seedance 480p (solo video, sin extras)</li>
           <li>Todo lo del plan Starter</li>
           <li>Imágenes IA de producto y avatar</li>
           <li>Resolución hasta 1080p</li>
           <li>Soporte prioritario por email</li>
         </ul>
-        <div class="l-pricing-topup">Recarga: +50.000 créditos por $25 · mejor precio/cr</div>
+        <div class="l-pricing-topup">Recarga: +50.000 créditos por $25</div>
         <button class="btn-w" style="width:100%;justify-content:center;" onclick="selectPlanFromLanding('growth')">Empezar con Growth</button>
       </div>
 
@@ -6167,18 +6170,19 @@ body, #app { background: #07050f; }
           <div class="l-pricing-name">Scale</div>
         </div>
         <div class="l-pricing-price">$199<span>/mes</span></div>
-        <div class="l-pricing-period">Facturado mensualmente · 450.000 créditos</div>
+        <div class="l-pricing-period">Facturado mensualmente · 315.000 créditos</div>
         <div class="l-pricing-hr"></div>
         <ul class="l-pricing-list">
-          <li class="hi">~261 anuncios de 15s por mes</li>
-          <li class="hi">~70 anuncios de 60s por mes</li>
-          <li class="hi">Gemini Omni disponible (~16 anuncios/mes)</li>
+          <li class="hi">~182 anuncios de 15s por mes</li>
+          <li class="hi">~51 anuncios de 60s por mes</li>
+          <li class="hi">Gemini Omni disponible (~14 anuncios/mes)</li>
+          <li class="hi">~196 clips de 15s en Seedance 480p (solo video, sin extras)</li>
           <li>Todo lo del plan Growth</li>
-          <li>Créditos 36% más baratos que Starter</li>
+          <li>Mayor volumen de créditos del portfolio</li>
           <li>Acceso anticipado a nuevas features</li>
           <li>Account manager dedicado</li>
         </ul>
-        <div class="l-pricing-topup">Recarga: +110.000 créditos por $50 · precio más bajo por cr</div>
+        <div class="l-pricing-topup">Recarga: +110.000 créditos por $50</div>
         <button class="btn-outline" style="width:100%;justify-content:center;" onclick="selectPlanFromLanding('scale')">Empezar con Scale</button>
       </div>
 
@@ -9060,8 +9064,8 @@ function getPlanInfo(plan) {
     'none':         { label: 'Sin plan',          price: '$0',   credits: 0,      topup_price: 0,  topup_credits: 0      },
     'early_access': { label: 'Acceso Anticipado', price: '$19',  credits: 30000,  topup_price: 10, topup_credits: 10000  },
     'starter':      { label: 'Starter',           price: '$39',  credits: 65000,  topup_price: 10, topup_credits: 14000  },
-    'growth':       { label: 'Growth',            price: '$89',  credits: 185000, topup_price: 25, topup_credits: 50000  },
-    'scale':        { label: 'Scale',             price: '$199', credits: 450000, topup_price: 50, topup_credits: 110000 }
+    'growth':       { label: 'Growth',            price: '$89',  credits: 140000, topup_price: 25, topup_credits: 50000  },
+    'scale':        { label: 'Scale',             price: '$199', credits: 315000, topup_price: 50, topup_credits: 110000 }
   };
   return plans[plan] || plans.none;
 }
@@ -12982,16 +12986,16 @@ function renderPlanCards() {
       topup: 'Recarga: +14.000 cr · $10'
     },
     {
-      id: 'growth', label: 'Growth', priceM: 89, credits: 185000, popular: true,
-      gens: '~107 anuncios de 15s · ~30 de 60s · ~7 con Omni',
+      id: 'growth', label: 'Growth', priceM: 89, credits: 140000, popular: true,
+      gens: '~82 anuncios de 15s · ~23 de 60s · ~6 con Omni',
       feats: ['Todo lo del plan Starter', 'Gemini Omni IA (modo talking)', 'Imágenes IA de producto y avatar', 'Resolución hasta 1080p', 'Soporte prioritario por email'],
-      topup: 'Recarga: +50.000 cr · $25 · mejor precio por crédito'
+      topup: 'Recarga: +50.000 cr · $25'
     },
     {
-      id: 'scale', label: 'Scale', priceM: 199, credits: 450000,
-      gens: '~261 anuncios de 15s · ~70 de 60s · ~16 con Omni',
-      feats: ['Todo lo del plan Growth', 'Volumen sin interrupciones', 'Créditos 36% más baratos que Starter', 'Acceso anticipado a nuevas features', 'Account manager dedicado'],
-      topup: 'Recarga: +110.000 cr · $50 · precio más bajo por crédito'
+      id: 'scale', label: 'Scale', priceM: 199, credits: 315000,
+      gens: '~182 anuncios de 15s · ~51 de 60s · ~14 con Omni',
+      feats: ['Todo lo del plan Growth', 'Mayor volumen de créditos del portfolio', 'Acceso anticipado a nuevas features', 'Account manager dedicado'],
+      topup: 'Recarga: +110.000 cr · $50'
     }
   ];
 
@@ -14630,13 +14634,13 @@ function toggleCreditsPopover(e) {
     },
     {
       key: 'growth', label: 'Growth', price: '$89/mes', best: true,
-      credits: '185.000 créditos/mes',
-      hint: '~107 ads de 15s · ~30 de 60s · Recarga $25/+50k cr'
+      credits: '140.000 créditos/mes',
+      hint: '~82 ads de 15s · ~23 de 60s · Recarga $25/+50k cr'
     },
     {
       key: 'scale', label: 'Scale', price: '$199/mes',
-      credits: '450.000 créditos/mes',
-      hint: '~261 ads de 15s · ~70 de 60s · Recarga $50/+110k cr'
+      credits: '315.000 créditos/mes',
+      hint: '~182 ads de 15s · ~51 de 60s · Recarga $50/+110k cr'
     }
   ];
   const plansContainer = document.getElementById('creditsPopoverPlans');
