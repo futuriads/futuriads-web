@@ -227,9 +227,9 @@ tbody tr:hover td { background: rgba(139,92,246,.035); }
     <div class="tab-pane active" id="tab-dashboard">
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-label">Revenue total</div>
+          <div class="stat-label">Revenue mensual</div>
           <div class="stat-val" id="stat-total">—</div>
-          <div class="stat-hint">acumulado</div>
+          <div class="stat-hint" id="stat-total-hint">calculando…</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Este mes</div>
@@ -411,6 +411,7 @@ const BACKEND = 'https://futuriads-backend-production.up.railway.app';
 let _secret = '';
 let _reqFilter = 'pending';
 let _byPlan = {};
+const PLAN_PRICES = { early_access: 19, starter: 39, growth: 89, scale: 199 };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 function doLogin() {
@@ -471,7 +472,11 @@ async function loadDashboard() {
   const data = await apiCall('/admin/revenue', { adminSecret: _secret });
   if (data.error) { toast('Error cargando dashboard: ' + data.error, 'err'); return; }
 
-  document.getElementById('stat-total').textContent = '$' + fmt0(data.totalRevenue);
+  const mrr = Object.entries(data.byPlan || {})
+    .filter(([k]) => k !== 'none')
+    .reduce((sum, [plan, count]) => sum + (PLAN_PRICES[plan] || 0) * count, 0);
+  document.getElementById('stat-total').textContent = '$' + fmt0(mrr);
+  document.getElementById('stat-total-hint').textContent = 'revenue mensual estimado (MRR)';
   const mo = new Date().toISOString().slice(0,7);
   document.getElementById('stat-month').textContent = '$' + fmt0(data.byMonth?.[mo] || 0);
   document.getElementById('stat-month-lbl').textContent = fmtMonth(mo);
@@ -512,9 +517,14 @@ async function loadDashboard() {
   const planOrder = ['none','early_access','starter','growth','scale'];
   const sortedPlan = planOrder.filter(p => data.byPlan?.[p] !== undefined)
     .concat(Object.keys(data.byPlan||{}).filter(p => !planOrder.includes(p)));
-  document.getElementById('planDist').innerHTML = sortedPlan.map(plan =>
-    `<div class="plan-chip"><div class="plan-chip-n">${data.byPlan[plan]}</div><div class="plan-chip-lbl">${labels[plan]||plan}</div></div>`
-  ).join('');
+  document.getElementById('planDist').innerHTML = sortedPlan.map(plan => {
+    const count = data.byPlan[plan];
+    const price = PLAN_PRICES[plan] || 0;
+    const sub = plan !== 'none' && price > 0
+      ? `${count} × $${price} = <b>$${fmt0(count * price)}</b>`
+      : `${count} usuario${count !== 1 ? 's' : ''}`;
+    return `<div class="plan-chip"><div class="plan-chip-n">${labels[plan]||plan}</div><div class="plan-chip-lbl">${sub}</div></div>`;
+  }).join('');
 
   // Recent payments
   const rows = data.recentPayments || [];
