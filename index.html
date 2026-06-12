@@ -10363,10 +10363,15 @@ async function campResumeDraft() {
         await campOpenDetail(draft.campaignId, draft.title || 'Anuncio');
         return;
       }
+    } else {
+      // Campaña no encontrada en el backend (404) o sin permisos — resetear el ID
+      // para que campLaunchTalking/Voiceover cree una campaña nueva en vez de usar un ID inválido
+      _camp.campaignId = null;
     }
   } catch(e) {
     console.warn('[campResumeDraft] Backend check falló, restaurando wizard:', e.message);
-    // No mostrar toast de error — continuar con el wizard como fallback
+    // Reset campaignId por si el draft tenía un ID obsoleto
+    _camp.campaignId = null;
   }
 
   // Sin clips todavía → restaurar wizard en el paso correcto
